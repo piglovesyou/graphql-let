@@ -1,0 +1,24 @@
+node_modules/
+__generated__
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editors and IDEs
+.idea
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Misc
+.DS_Store
+dist
+*.tgz
+
+# Not lock yet
+yarn.lock
+package-lock.json
