@@ -13,8 +13,16 @@ export default function genDts(inputFileName: string): string {
     outputText = text;
   };
 
-  const program = createProgram([ inputFileName ], options, compilerHost);
-  program.emit();
+  const program = createProgram([ inputFileName ], options, compilerHost, undefined, []);
+  program.emit(
+      undefined, // targetSourceFile?: SourceFile,
+      undefined, // writeFile?: WriteFileCallback,
+      undefined, // cancellationToken?: CancellationToken,
+      true, // emitOnlyDtsFiles?: boolean,
+      undefined, // customTransformers?: CustomTransformers
+      // @ts-ignore
+      true, // forceEmitDts
+  );
 
   return outputText!;
 }
