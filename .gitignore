@@ -22,3 +22,5 @@ dist
 # Not lock yet
 yarn.lock
 package-lock.json
+
+*.graphql.d.ts

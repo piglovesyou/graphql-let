@@ -1,9 +1,9 @@
-import { promises as fsPromises } from "fs";
+import { promises as fsPromises, writeFileSync } from "fs";
 import { loader } from 'webpack';
 import { getOptions } from 'loader-utils';
 import path, { join as pathJoin } from 'path';
 import { parse as parseYaml } from "yaml";
-import createCodegenOpts from "./opts";
+import createCodegenOpts from "./create-codegen-opts";
 import { processCodegen } from "./process-codegen";
 import { ConfigTypes } from "./types";
 import rimraf from 'rimraf'
@@ -19,12 +19,11 @@ const graphlqCodegenLoader: loader.Loader = function (this, gqlContent) {
 
   const options = getOptions(this) as any || {};
   const callback = this.async()!;
-  const { resourcePath: gqlFullPath } = this;
+  const { resourcePath: gqlFullPath, rootContext: userDir } = this;
 
-  const cwd = process.cwd();
-  const configPath = pathJoin(cwd, options.config || DEFAULT_CONFIG_FILENAME);
+  const configPath = pathJoin(userDir, options.config || DEFAULT_CONFIG_FILENAME);
 
-  const gqlRelPath = path.relative(cwd, gqlFullPath);
+  const gqlRelPath = path.relative(userDir, gqlFullPath);
   const tsxRelPath = `${gqlRelPath  }.tsx`;
   const tsxFullPath = path.join(tsxBaseDir, tsxRelPath);
   const dtsFullPath = `${ gqlFullPath }.d.ts`;
@@ -32,15 +31,18 @@ const graphlqCodegenLoader: loader.Loader = function (this, gqlContent) {
   (async () => {
     const config = parseYaml(await readFile(configPath, 'utf-8') ) as ConfigTypes;
 
-    const codegenOpts = createCodegenOpts(config);
+    const codegenOpts = await createCodegenOpts(config, userDir);
 
     // Pretend .tsx for later loaders.
     // babel-loader at least doesn't respond the .graphql extension.
     this.resourcePath = `${ gqlFullPath }.tsx`;
 
-    const tsxContent = await processCodegen(gqlContent.toString(), gqlFullPath, tsxFullPath, dtsFullPath, config, codegenOpts);
-
-    callback(undefined, tsxContent);
+    try {
+      const tsxContent = await processCodegen(gqlContent.toString(), gqlFullPath, tsxFullPath, dtsFullPath, config, codegenOpts);
+      callback(undefined, tsxContent);
+    } catch (e) {
+      callback(e);
+    }
   })();
 };
 
