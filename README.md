@@ -100,7 +100,7 @@ Also don't forget to setup `graphql-let/loader` in your webpack.config like this
 In your react components file, temporarily write `import`. For example:
 
 ```typescript jsx
-import `./news.graphql` 
+import './news.graphql' 
 ```
 
 And run
