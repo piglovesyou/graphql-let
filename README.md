@@ -44,13 +44,7 @@ npm install @apollo/react-common @apollo/react-components @apollo/react-hooks
 
 ### 2. Configure
 
-graphql-let generates `.graphql.d.ts`. Ignore them from Git.
-
-Add this in .gitignore
-
-```diff
-+*.graphql.d.ts
-```
+#### .graphql-let.yml
 
 To configure, start with running
 
@@ -80,7 +74,19 @@ Available options:
 | `plugins` | ✔︎ | `string[]` | The plugin names of graphql-codegen. [more info](https://graphql-code-generator.com/docs/plugins/) | `typescript-react-apollo` |
 | `config` |  | `Record<string, boolean \| string>` | The configuration for the plugins. [more info](https://graphql-code-generator.com/docs/getting-started/config-field)  | `withHOC: false` |
 
-Also don't forget to setup `graphql-let/loader` in your webpack.config like this:
+#### .gitignore
+
+graphql-let generates `.graphql.d.ts`. Ignore them from Git.
+
+Add this in .gitignore
+
+```diff
++*.graphql.d.ts
+```
+
+#### webpack.config.ts
+
+The webpack loader also needs to be configured. Note that what `graphql-let/loader` generates is TypeScript-JSX. You have to compile it to JavaScript with additional loader such as `babel-loader`.
 
 ```diff
  const config: Configuration = {
