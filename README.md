@@ -88,7 +88,10 @@ Also don't forget to setup `graphql-let/loader` in your webpack.config like this
      rules: [
 +      {
 +        test: /\.graphql$/,
-+        loader: 'graphql-let/loader'
++        use: [
++          { loader: 'babel-loader', options: { presets: ['@babel/preset-typescript', '@babel/preset-react'] } },
++          { loader: 'graphql-let/loader' },
++        ]
 +      }
      ]
    }
