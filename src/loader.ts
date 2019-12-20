@@ -6,9 +6,11 @@ import { parse as parseYaml } from "yaml";
 import createCodegenOpts from "./opts";
 import { processCodegen } from "./process-codegen";
 import { ConfigTypes } from "./types";
+import rimraf from 'rimraf'
 
 const libDir = path.resolve(__dirname, '..');
 const tsxBaseDir = path.join(libDir, '__generated__');
+rimraf.sync(tsxBaseDir);
 
 const DEFAULT_CONFIG_FILENAME = '.graphql-let.yml';
 
