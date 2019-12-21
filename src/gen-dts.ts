@@ -13,23 +13,8 @@ export default function genDts(inputFileName: string): string {
     outputText = text;
   };
 
-  const program = createProgram(
-    [inputFileName],
-    options,
-    compilerHost,
-    undefined,
-    [],
-  );
-  program.emit(
-    undefined, // targetSourceFile?: SourceFile,
-    undefined, // writeFile?: WriteFileCallback,
-    undefined, // cancellationToken?: CancellationToken,
-    true, // emitOnlyDtsFiles?: boolean,
-    undefined, // customTransformers?: CustomTransformers
-    /* eslint-disable-next-line @typescript-eslint/ban-ts-ignore */
-    // @ts-ignore
-    true, // forceEmitDts
-  );
+  const program = createProgram([inputFileName], options, compilerHost);
+  program.emit();
 
   if (!outputText) {
     throw new Error('Fails to generate .d.ts.');

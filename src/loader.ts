@@ -4,7 +4,7 @@ import path, { join as pathJoin } from 'path';
 import { parse as parseYaml } from 'yaml';
 import createCodegenOpts from './create-codegen-opts';
 import { getTsxBaseDir } from './dirs';
-import { printInfo } from "./print";
+import { printInfo } from './print';
 import { processCodegen } from './process-codegen';
 import { ConfigTypes } from './types';
 import rimraf from 'rimraf';
@@ -17,14 +17,14 @@ const { readFile } = fsPromises;
 const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
   // const options = getOptions(this) || {};
   const callback = this.async()!;
-  const { resourcePath: gqlFullPath, rootContext: userDir } = this;
+  const { resourcePath: gqlFullPath, rootContext: userDir, target } = this;
 
   const configPath = pathJoin(userDir, DEFAULT_CONFIG_FILENAME);
 
   const gqlRelPath = path.relative(userDir, gqlFullPath);
   const tsxRelPath = `${gqlRelPath}.tsx`;
   // Put webpack target ("node" or "web", etc.) to avoid conflict SSR parallel build like Next.js does
-  const tsxFullPath = path.join(tsxBaseDir, this.target, tsxRelPath);
+  const tsxFullPath = path.join(tsxBaseDir, target, tsxRelPath);
   const dtsFullPath = `${gqlFullPath}.d.ts`;
   const dtsRelPath = path.relative(userDir, dtsFullPath);
 
@@ -48,7 +48,7 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
         config,
         codegenOpts,
       );
-      printInfo(`${dtsRelPath} was generated.`);
+      printInfo(`${dtsRelPath} was generated for ${target}.`);
       callback(undefined, tsxContent);
     } catch (e) {
       callback(e);

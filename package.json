@@ -79,7 +79,7 @@
     ]
   },
   "scripts": {
-    "lint": "eslint --ext .ts --ext .tsx --ignore-path .gitignore --ignore-pattern \"!**/.*\" .",
+    "lint": "eslint --ext .ts,.tsx --ignore-path .gitignore .",
     "fix": "yarn lint --fix",
     "test": "tsc --noEmit && jest",
     "build": "rimraf dist && tsc --declaration",
