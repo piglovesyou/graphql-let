@@ -19,7 +19,6 @@ export async function processCodegen(
   options: ConfigTypes,
   codegenOpts: PartialCodegenOpts,
 ): Promise<string> {
-  // TODO: Better error logs
   const tsxContent = await graphqlCodegenCodegen({
     ...codegenOpts,
     filename: tsxFullPath,

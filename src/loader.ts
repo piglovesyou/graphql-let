@@ -23,7 +23,8 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
 
   const gqlRelPath = path.relative(userDir, gqlFullPath);
   const tsxRelPath = `${gqlRelPath}.tsx`;
-  const tsxFullPath = path.join(tsxBaseDir, tsxRelPath);
+  // Put webpack target ("node" or "web", etc.) to avoid conflict SSR parallel build like Next.js does
+  const tsxFullPath = path.join(tsxBaseDir, this.target, tsxRelPath);
   const dtsFullPath = `${gqlFullPath}.d.ts`;
   const dtsRelPath = path.relative(userDir, dtsFullPath);
 
