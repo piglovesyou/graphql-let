@@ -1,4 +1,5 @@
-# graphql-let
+# graphql-let ![](https://github.com/piglovesyou/graphql-let/workflows/Node%20CI/badge.svg) [![npm version](https://badge.fury.io/js/graphql-let.svg)](https://badge.fury.io/js/graphql-let)
+
 
 A webpack loader to import type-protected codegen results directly from GraphQL documents. 
 
