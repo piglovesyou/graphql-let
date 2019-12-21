@@ -1,6 +1,6 @@
 {
   "name": "graphql-let",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "bin": {
     "graphql-let": "bin/graphql-let.js"
   },
