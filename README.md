@@ -36,6 +36,8 @@ Please note:
 
 This is an example of TypeScript + React + Apollo Client. Please replace the config with your preference.
 
+👉 [Here is an example on Next.js](https://github.com/piglovesyou/nextjs-example-typescript-graphql#readme) with almost the same configuration below. Please check.
+
 ### 1. Install dependencies
 
 ```
