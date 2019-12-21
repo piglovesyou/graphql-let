@@ -7,8 +7,7 @@
   "files": [
     "bin",
     "dist",
-    "loader.js",
-    "tsconfig.json"
+    "loader.js"
   ],
   "dependencies": {
     "@graphql-codegen/core": "^1.9.1",
@@ -45,22 +44,23 @@
     "@types/webpack": "^4.41.0",
     "@types/webpack-node-externals": "^1.7.0",
     "@types/yaml": "^1.2.0",
-    "@typescript-eslint/eslint-plugin": "^2.10.0",
-    "@typescript-eslint/parser": "^2.10.0",
+    "@typescript-eslint/eslint-plugin": "^2.12.0",
+    "@typescript-eslint/parser": "^2.12.0",
     "apollo-client": "^2.6.8",
     "babel-jest": "^24.9.0",
     "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.7.0",
-    "eslint": "^6.7.2",
+    "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-jest": "^23.1.1",
-    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-prettier": "^3.1.2",
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "husky": "^3.1.0",
     "jest": "^24.9.0",
     "lint-staged": "^9.5.0",
     "memory-fs": "^0.5.0",
+    "prettier": "^1.19.1",
     "react": "^16.12.0",
     "ts-jest": "^24.2.0",
     "typescript": "^3.7.3",
@@ -82,7 +82,7 @@
     "lint": "eslint --ext .ts --ext .tsx --ignore-path .gitignore --ignore-pattern \"!**/.*\" .",
     "fix": "yarn lint --fix",
     "test": "tsc --noEmit && jest",
-    "build": "rimraf dist && tsc --declaration --declarationMap",
+    "build": "rimraf dist && tsc --declaration",
     "prepare": "yarn lint && yarn test && yarn build"
   },
   "husky": {

@@ -1,4 +1,4 @@
-import { createCompilerHost, createProgram, CompilerOptions } from "typescript";
+import { createCompilerHost, createProgram, CompilerOptions } from 'typescript';
 
 const options: CompilerOptions = {
   declaration: true,
@@ -7,22 +7,33 @@ const options: CompilerOptions = {
 };
 
 export default function genDts(inputFileName: string): string {
-  let outputText: string;
+  let outputText = '';
   const compilerHost = createCompilerHost({});
   compilerHost.writeFile = (name, text) => {
     outputText = text;
   };
 
-  const program = createProgram([ inputFileName ], options, compilerHost, undefined, []);
+  const program = createProgram(
+    [inputFileName],
+    options,
+    compilerHost,
+    undefined,
+    [],
+  );
   program.emit(
-      undefined, // targetSourceFile?: SourceFile,
-      undefined, // writeFile?: WriteFileCallback,
-      undefined, // cancellationToken?: CancellationToken,
-      true, // emitOnlyDtsFiles?: boolean,
-      undefined, // customTransformers?: CustomTransformers
-      // @ts-ignore
-      true, // forceEmitDts
+    undefined, // targetSourceFile?: SourceFile,
+    undefined, // writeFile?: WriteFileCallback,
+    undefined, // cancellationToken?: CancellationToken,
+    true, // emitOnlyDtsFiles?: boolean,
+    undefined, // customTransformers?: CustomTransformers
+    /* eslint-disable-next-line @typescript-eslint/ban-ts-ignore */
+    // @ts-ignore
+    true, // forceEmitDts
   );
 
-  return outputText!;
+  if (!outputText) {
+    throw new Error('Fails to generate .d.ts.');
+  }
+
+  return outputText;
 }

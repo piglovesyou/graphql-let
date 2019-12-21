@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import assert from 'assert';
 import compiler from './compiler';
 
-test('Inserts name and outputs JavaScript', async () => {
-  const fixture = 'queries-and-mutations/viewer.graphql';
-  const expect = `function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+test(
+  'Inserts name and outputs JavaScript',
+  async () => {
+    const fixture = 'queries-and-mutations/viewer.graphql';
+    const expect = `function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 import gql from 'graphql-tag';
 import * as React from 'react';
@@ -44,9 +48,14 @@ export function useViewerLazyQuery(baseOptions) {
   return ApolloReactHooks.useLazyQuery(ViewerDocument, baseOptions);
 }`;
 
-  const stats = await compiler(fixture);
-  const { 0: actual, length } = stats.toJson().modules!.map(m => m.source).filter(Boolean);
+    const stats = await compiler(fixture);
+    const { 0: actual, length } = stats
+      .toJson()
+      .modules!.map(m => m.source)
+      .filter(Boolean);
 
-  assert.deepStrictEqual(length, 1);
-  assert.deepStrictEqual(actual, expect);
-}, 60 * 1000);
+    assert.deepStrictEqual(length, 1);
+    assert.deepStrictEqual(actual, expect);
+  },
+  60 * 1000,
+);

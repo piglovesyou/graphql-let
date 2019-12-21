@@ -1,11 +1,20 @@
 import minimist from 'minimist';
-import {join as pathJoin} from 'path';
-import { CommandOpts } from "./types";
+import { join as pathJoin } from 'path';
+import { printError } from './print';
+import { CommandOpts } from './types';
+import { DEFAULT_CONFIG_FILENAME } from './consts';
 
 const argv = minimist(process.argv.slice(2));
+const HELP_TEXT = `Usage: graphql-let [command]
 
-// TODO const.ts
-const DEFAULT_CONFIG_FILENAME = '.graphql-let.yml';
+graphql-let         Generates .graphql.d.ts beside all GraphQL documents based on .graphql-let.yml config
+graphql-let init    Generates a template of .graphql-let.yml configuration file 
+`;
+
+if (argv.help || argv.h) {
+  console.info(HELP_TEXT);
+  process.exit(0);
+}
 
 let command: string;
 switch (argv._[0]) {
@@ -17,18 +26,21 @@ switch (argv._[0]) {
     command = 'init';
     break;
   default:
-    throw new Error('help text');
-}
-
-run(command).catch((err: Error) => console.error(err));
-
-function run(command: string) {
-  const fn = require(`./${command}`).default as any;
-  return Promise.resolve(fn(createOpts()));
+    throw new Error(HELP_TEXT);
 }
 
 function createOpts(): CommandOpts {
   const cwd = process.cwd();
-  const configPath = pathJoin(cwd, argv.config || argv.c || DEFAULT_CONFIG_FILENAME);
-  return {cwd, configPath}
+  const configPath = pathJoin(
+    cwd,
+    argv.config || argv.c || DEFAULT_CONFIG_FILENAME,
+  );
+  return { cwd, configPath };
 }
+
+function run(command: string) {
+  const fn = require(`./${command}`).default;
+  return Promise.resolve(fn(createOpts()));
+}
+
+run(command).catch(printError);

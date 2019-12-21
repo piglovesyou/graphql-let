@@ -4,8 +4,8 @@ export type CommandOpts = {
 };
 
 export type ConfigTypes = {
-  config?: any;
+  config?: Record<string, boolean | string>;
   schema: string;
   documents: string;
   plugins: string[];
-}
+};

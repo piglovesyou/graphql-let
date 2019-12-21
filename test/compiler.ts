@@ -1,9 +1,9 @@
 import path from 'path';
 import webpack from 'webpack';
 import memoryfs from 'memory-fs';
-import nodeExternals from "webpack-node-externals";
+import nodeExternals from 'webpack-node-externals';
 
-export default (fixture: string, options = {}): Promise<webpack.Stats> => {
+export default (fixture: string): Promise<webpack.Stats> => {
   const compiler = webpack({
     mode: 'production',
     context: __dirname,
@@ -15,23 +15,22 @@ export default (fixture: string, options = {}): Promise<webpack.Stats> => {
     target: 'node',
     externals: [nodeExternals()],
     module: {
-      rules: [{
-        test: /\.graphql$/,
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              babelrc: false,
-              configFile: false,
-              presets: [
-                '@babel/preset-react',
-                '@babel/preset-typescript',
-              ],
-            }
-          },
-          { loader: path.resolve(__dirname, '../src/loader.ts') },
-        ],
-      }]
+      rules: [
+        {
+          test: /\.graphql$/,
+          use: [
+            {
+              loader: 'babel-loader',
+              options: {
+                babelrc: false,
+                configFile: false,
+                presets: ['@babel/preset-react', '@babel/preset-typescript'],
+              },
+            },
+            { loader: path.resolve(__dirname, '../src/loader.ts') },
+          ],
+        },
+      ],
     },
   });
 
@@ -40,7 +39,8 @@ export default (fixture: string, options = {}): Promise<webpack.Stats> => {
   return new Promise((resolve, reject) => {
     compiler.run((err, stats) => {
       if (err) reject(err);
-      if (stats.hasErrors()) reject(new Error(stats.toJson().errors.join('\n')));
+      if (stats.hasErrors())
+        reject(new Error(stats.toJson().errors.join('\n')));
 
       resolve(stats);
     });

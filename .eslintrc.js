@@ -1,20 +1,26 @@
 module.exports = {
-  parser: '@typescript-eslint/parser',
+  root: true,
 
-  extends: [
-    'prettier',
-  ],
+  parser: '@typescript-eslint/parser',
 
   plugins: ['@typescript-eslint/eslint-plugin', 'prettier', 'jest'],
 
-  parserOptions: {
-    sourceType: 'module',
-    project: './tsconfig.eslint.json',
-  },
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
+    'prettier/@typescript-eslint',
+    'prettier/babel',
+    'prettier/react',
+  ],
 
   env: {
     jest: true,
   },
 
-  rules: { }
+  rules: {
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+  }
 };
