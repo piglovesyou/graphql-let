@@ -1,9 +1,9 @@
-const PREFIX = '[graphql-let]';
+const PREFIX = '[ graphql-let ]';
 
-export function printInfo(...messages: string[]): void {
-  console.info.apply([PREFIX, ...messages]);
+export function printInfo(message: string): void {
+  console.info([PREFIX, message].join('\t'));
 }
 
 export function printError(err: Error): void {
-  console.error.apply([PREFIX, err.message].join(' '));
+  console.error([PREFIX, err.message].join(' '));
 }

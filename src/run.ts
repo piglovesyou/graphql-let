@@ -26,7 +26,9 @@ switch (argv._[0]) {
     command = 'init';
     break;
   default:
-    throw new Error(HELP_TEXT);
+    printError(new Error(HELP_TEXT));
+    process.exit(1);
+    break;
 }
 
 function createOpts(): CommandOpts {
@@ -43,4 +45,7 @@ function run(command: string) {
   return Promise.resolve(fn(createOpts()));
 }
 
-run(command).catch(printError);
+run(command).catch((err: Error) => {
+  printError(err);
+  process.exit(1);
+});

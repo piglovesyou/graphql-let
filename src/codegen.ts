@@ -26,19 +26,20 @@ export default async function codegen(commandOpts: CommandOpts): Promise<void> {
   for (const gqlFullPath of gqlFullPaths) {
     const gqlRelPath = path.relative(cwd, gqlFullPath);
     const gqlContent = await readFile(gqlFullPath, 'utf-8');
-    const tsxRelPath = `${gqlRelPath}.tsx`;
+    const tsxRelPath = `${ gqlRelPath }.tsx`;
     const tsxFullPath = path.join(tsxBaseDir, tsxRelPath);
-    const dtsFullPath = `${gqlFullPath}.d.ts`;
+    const dtsFullPath = `${ gqlFullPath }.d.ts`;
+    const dtsRelPath = path.relative(cwd, dtsFullPath);
 
     await processCodegen(
-      gqlContent,
-      gqlFullPath,
-      tsxFullPath,
-      dtsFullPath,
-      config,
-      codegenOpts,
+        gqlContent,
+        gqlFullPath,
+        tsxFullPath,
+        dtsFullPath,
+        config,
+        codegenOpts,
     );
 
-    printInfo(`${dtsFullPath} is generated`);
+    printInfo(`${ dtsRelPath } was generated.`);
   }
 }

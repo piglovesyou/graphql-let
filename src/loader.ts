@@ -4,6 +4,7 @@ import path, { join as pathJoin } from 'path';
 import { parse as parseYaml } from 'yaml';
 import createCodegenOpts from './create-codegen-opts';
 import { getTsxBaseDir } from './dirs';
+import { printInfo } from "./print";
 import { processCodegen } from './process-codegen';
 import { ConfigTypes } from './types';
 import rimraf from 'rimraf';
@@ -24,6 +25,7 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
   const tsxRelPath = `${gqlRelPath}.tsx`;
   const tsxFullPath = path.join(tsxBaseDir, tsxRelPath);
   const dtsFullPath = `${gqlFullPath}.d.ts`;
+  const dtsRelPath = path.relative(userDir, dtsFullPath);
 
   (async () => {
     const config = parseYaml(
@@ -45,6 +47,7 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
         config,
         codegenOpts,
       );
+      printInfo(`${dtsRelPath} was generated.`);
       callback(undefined, tsxContent);
     } catch (e) {
       callback(e);
