@@ -9,7 +9,7 @@ One of the strengths of GraphQL is enforcing data types on runtime. Further, Typ
 
 To enhance the development pattern, it's necessary to focus on a more specific use-case than what graphql-codegen allows; binding TypeScript (and assuming the use of  Apollo-Client and React). In the way, graphql-let behaves like a subset of graphql-codegen.
 
-graphql-let lets you import graphql-codegen results per GraphQL documents directly from the `.graphql` files with TypeScript type definitions by webpack Loader power.
+graphql-let lets you import graphql-codegen results directly per GraphQL documents with TypeScript type definitions by webpack Loader power.
 
 ```typescript jsx
 import { useNewsQuery } from './news.grpahql'
@@ -25,18 +25,16 @@ const  News: React.FC<{}> = (props) => {
 
 Two things:
 
-* The webpack loader runs graphql-codegen with the specified configuration in `.graphql-let.yml`. The generated result is what you can import, such as `useNewsQuery` function in the above example.
-* It also generates a file `.graphql.d.ts` by the file `.graphql` so you can get GraphQL data types of the graphql-codegen results.
+* The webpack loader runs graphql-codegen with the configuration in `.graphql-let.yml`. The generated result is what you can import, such as `useNewsQuery` function in the above example.
+* It also generates a file `.graphql.d.ts` by the `.graphql` so you can get data types of the graphql-codegen results.
 
-Please note:
-
-* It has a stand-alone `graphql-let` command to generate `.graphql.d.ts`. You'll need it especially in CI before type checking.
+Also a webpack-free command `graphql-let` can generate `.graphql.d.ts`. You may want to run it before a webpack build so the former type checking of `tsc` can pass. 
 
 ## How to get started
 
-This is an example of TypeScript + React + Apollo Client. Please replace the config with your preference.
+This is an example of **TypeScript + React + Apollo Client**. Help yourself to replace the corresponding lines depending on your needs.
 
-👉 [Here is an example on Next.js](https://github.com/piglovesyou/nextjs-example-typescript-graphql#readme) with almost the same configuration below. Please check.
+[Here also is the example of Next.js integration](https://github.com/piglovesyou/nextjs-example-typescript-graphql#readme).
 
 ### 1. Install dependencies
 
