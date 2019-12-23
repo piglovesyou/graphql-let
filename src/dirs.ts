@@ -1,6 +1,5 @@
 import path from 'path';
 
-export function getTsxBaseDir(): string {
-  const libDir = path.resolve(__dirname, '..');
-  return path.join(libDir, '__generated__');
+export function getTsxBaseDir(cwd: string, generateDir: string): string {
+  return path.join(cwd, generateDir);
 }

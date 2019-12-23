@@ -14,11 +14,11 @@ const rimraf = promisify(_rimraf);
 const { readFile } = fsPromises;
 
 export default async function codegen(commandOpts: CommandOpts): Promise<void> {
-  const tsxBaseDir = getTsxBaseDir();
-  await rimraf(tsxBaseDir);
-
   const { configPath, cwd } = commandOpts;
   const config = parseYaml(await readFile(configPath, 'utf-8')) as ConfigTypes;
+
+  const tsxBaseDir = getTsxBaseDir(cwd, config.generateDir);
+  await rimraf(tsxBaseDir);
 
   const codegenOpts = await createCodegenOpts(config, cwd);
   const gqlFullPaths = await glob(path.join(cwd, config.documents));
