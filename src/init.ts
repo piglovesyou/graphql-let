@@ -4,6 +4,7 @@ import { printInfo } from './print';
 import { CommandOpts } from './types';
 
 const defaultYamlContent = yamlStringify({
+  generateDir: '__generated__',
   schema: 'path/to/**/*.graphqls',
   documents: 'path/to/**/*.graphql',
   plugins: ['typescript'],
