@@ -3,6 +3,7 @@ import path from 'path';
 export function createPaths(
   cwd: string,
   genRelPath: string,
+  targetName: 'command' | 'web' | 'node' | 'types' | string,
   gqlFullPath: string,
 ) {
   const genFullPath = path.join(cwd, genRelPath);

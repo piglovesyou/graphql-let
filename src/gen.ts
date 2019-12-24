@@ -28,6 +28,7 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
     const { tsxFullPath, dtsFullPath, dtsRelPath } = createPaths(
       cwd,
       config.generateDir,
+      'command',
       gqlFullPath,
     );
 

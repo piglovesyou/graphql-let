@@ -23,6 +23,7 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
     const { tsxFullPath, dtsFullPath, dtsRelPath } = createPaths(
       userDir,
       config.generateDir,
+      target,
       gqlFullPath,
     );
 
