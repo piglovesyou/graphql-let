@@ -1,9 +1,9 @@
 import { promises as fsPromises } from 'fs';
 import { loader } from 'webpack';
-import path, { join as pathJoin } from 'path';
+import { join as pathJoin } from 'path';
 import { parse as parseYaml } from 'yaml';
 import createCodegenOpts from './create-codegen-opts';
-import { getTsxBaseDir } from './dirs';
+import { createPaths } from './dirs';
 import { printInfo } from './print';
 import { processCodegen } from './process-codegen';
 import { ConfigTypes } from './types';
@@ -20,13 +20,11 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
       await readFile(configPath, 'utf-8'),
     ) as ConfigTypes;
 
-    const gqlRelPath = path.relative(userDir, gqlFullPath);
-    const tsxRelPath = `${gqlRelPath}.tsx`;
-    const tsxBaseDir = getTsxBaseDir(userDir, config.generateDir);
-    // Put webpack target ("node" or "web", etc.) to avoid conflict SSR parallel build like Next.js does
-    const tsxFullPath = path.join(tsxBaseDir, target, tsxRelPath);
-    const dtsFullPath = `${gqlFullPath}.d.ts`;
-    const dtsRelPath = path.relative(userDir, dtsFullPath);
+    const { tsxFullPath, dtsFullPath, dtsRelPath } = createPaths(
+      userDir,
+      config.generateDir,
+      gqlFullPath,
+    );
 
     const codegenOpts = await createCodegenOpts(config, userDir);
     // Pretend .tsx for later loaders.
