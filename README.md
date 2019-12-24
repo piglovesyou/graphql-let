@@ -1,6 +1,5 @@
 # graphql-let ![](https://github.com/piglovesyou/graphql-let/workflows/Node%20CI/badge.svg) [![npm version](https://badge.fury.io/js/graphql-let.svg)](https://badge.fury.io/js/graphql-let)
 
-
 A webpack loader to import type-protected codegen results directly from GraphQL documents. 
 
 ## Why it exists
@@ -47,13 +46,13 @@ npm install @apollo/react-common @apollo/react-components @apollo/react-hooks
 
 #### .graphql-let.yml
 
-To configure, start with running
+Run this command to have a configuration template.
 
 ```
 npx graphql-let init
 ```
 
-then you'll get a file `.graphql-let.yml` in the directory. Edit it like this:
+You now have a file `.graphql-let.yml` on your directory. Edit it like this:
 
 ```diff
  generateDir: __generated__
@@ -77,23 +76,31 @@ Available options:
 | `plugins` | ✔︎ | `string[]` | The plugin names of graphql-codegen. [more info](https://graphql-code-generator.com/docs/plugins/) | `typescript-react-apollo` |
 | `config` |  | `Record<string, boolean \| string>` | The configuration for the plugins. [more info](https://graphql-code-generator.com/docs/getting-started/config-field)  | `withHOC: false` |
 
-#### typeRoots in tsconfig.json
+#### tsconfig.json
 
-TODO: 
+graphql-let will generate `.d.ts` files in `__generated__/types`. Mark the directory as one of `typeRoots` in you tsconfig.json.
+
+```diff
+ {
+   "compilerOptions": {
++    "typeRoots": [
++      "node_modules/@types",
++      "__generated__/types"
++    ]
+   },
+```
 
 #### .gitignore
 
-graphql-let generates `.graphql.d.ts`. Ignore them from Git.
-
-Add this in .gitignore
+You may want to exclude auto-generated files by graphql-let. Add this line in your .gitignore.
 
 ```diff
-+*.graphql.d.ts
++__generated__
 ```
 
 #### webpack.config.ts
 
-The webpack loader also needs to be configured. Note that what `graphql-let/loader` generates is TypeScript-JSX. You have to compile it to JavaScript with additional loader such as `babel-loader`.
+The webpack loader also needs to be configured. Note that the content `graphql-let/loader` generates is JSX-TypeScript. You have to compile it to JavaScript with additional loader such as `babel-loader`.
 
 ```diff
  const config: Configuration = {
@@ -111,25 +118,18 @@ The webpack loader also needs to be configured. Note that what `graphql-let/load
  }
 ```
 
-### 3. Generate types 
+### 3. Prepare types 
 
-In your react components file, temporarily write `import`. For example:
-
-```typescript jsx
-import './news.graphql' 
-```
-
-And run
+Run this command, so graphql-let looks for `.graphql` GraphQL documents by the config.documents glob pattern. Then it'll generate corresponding `.grpahql.d.ts` files in the config.generateDir directory.
 
 ```
 npx graphql-let
+# This will generate __generated__/types/news.graphql.d.ts
 ```
-
-This will generate a file `news.graphql.d.ts` right next to the `news.graphql`.
 
 ### 4. Code more
 
-Now you can write React components with typed react-apollo hooks function.
+Now you can use react-apollo hooks function with IDE code assists.
 
 ```typescript jsx
 import { useNewsQuery } from './news.grpahql'
