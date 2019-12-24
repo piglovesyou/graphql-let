@@ -11,7 +11,12 @@ import { ConfigTypes } from './types';
 const { writeFile } = fsPromises;
 const mkdirp = promisify(_mkdirp);
 
-export async function processCodegen(
+function wrapAsModule(fileName: string, content: string) {
+  return `declare module '*/${fileName}' {
+  ${content.replace(/\n/g, '\n  ')}}`;
+}
+
+export async function codegen(
   gqlContent: string,
   gqlFullPath: string,
   tsxFullPath: string,
@@ -29,10 +34,16 @@ export async function processCodegen(
       },
     ],
   });
-  await mkdirp(path.dirname(tsxFullPath));
+  await Promise.all([
+    mkdirp(path.dirname(tsxFullPath)),
+    mkdirp(path.dirname(dtsFullPath)),
+  ]);
   await writeFile(tsxFullPath, tsxContent);
   const dtsContent = await genDts(tsxFullPath);
   if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
-  await writeFile(dtsFullPath, dtsContent);
+  await writeFile(
+    dtsFullPath,
+    wrapAsModule(path.basename(gqlFullPath), dtsContent),
+  );
   return tsxContent;
 }

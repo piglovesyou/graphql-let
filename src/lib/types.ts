@@ -4,6 +4,7 @@ export type CommandOpts = {
 };
 
 export type ConfigTypes = {
+  generateDir: string;
   config?: Record<string, boolean | string>;
   schema: string;
   documents: string;
