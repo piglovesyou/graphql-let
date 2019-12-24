@@ -16,7 +16,7 @@ function wrapAsModule(fileName: string, content: string) {
   ${content.replace(/\n/g, '\n  ')}}`;
 }
 
-export async function processCodegen(
+export async function codegen(
   gqlContent: string,
   gqlFullPath: string,
   tsxFullPath: string,

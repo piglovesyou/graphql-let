@@ -2,12 +2,12 @@ import { promises as fsPromises } from 'fs';
 import { loader } from 'webpack';
 import { join as pathJoin } from 'path';
 import { parse as parseYaml } from 'yaml';
-import createCodegenOpts from './create-codegen-opts';
-import { createPaths } from './dirs';
-import { printInfo } from './print';
-import { processCodegen } from './process-codegen';
-import { ConfigTypes } from './types';
-import { DEFAULT_CONFIG_FILENAME } from './consts';
+import createCodegenOpts from './lib/create-codegen-opts';
+import { createPaths } from './lib/paths';
+import { printInfo } from './lib/print';
+import { codegen } from './lib/codegen';
+import { ConfigTypes } from './lib/types';
+import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 
 const { readFile } = fsPromises;
 const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
@@ -32,7 +32,7 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
     this.resourcePath = `${gqlFullPath}.tsx`;
 
     try {
-      const tsxContent = await processCodegen(
+      const tsxContent = await codegen(
         gqlContent.toString(),
         gqlFullPath,
         tsxFullPath,

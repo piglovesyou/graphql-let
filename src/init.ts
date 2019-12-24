@@ -1,7 +1,7 @@
 import { stringify as yamlStringify } from 'yaml';
 import { writeFileSync } from 'fs';
-import { printInfo } from './print';
-import { CommandOpts } from './types';
+import { printInfo } from './lib/print';
+import { CommandOpts } from './lib/types';
 
 const defaultYamlContent = yamlStringify({
   generateDir: '__generated__',

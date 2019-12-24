@@ -1,8 +1,8 @@
 import minimist from 'minimist';
 import { join as pathJoin } from 'path';
-import { printError } from './print';
-import { CommandOpts } from './types';
-import { DEFAULT_CONFIG_FILENAME } from './consts';
+import { printError } from './lib/print';
+import { CommandOpts } from './lib/types';
+import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 
 const argv = minimist(process.argv.slice(2));
 const HELP_TEXT = `Usage: graphql-let [command]
@@ -18,9 +18,9 @@ if (argv.help || argv.h) {
 
 let command: string;
 switch (argv._[0]) {
-  case 'codegen':
+  case 'gen':
   case undefined:
-    command = 'codegen';
+    command = 'gen';
     break;
   case 'init':
     command = 'init';
