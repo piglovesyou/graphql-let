@@ -11,7 +11,7 @@ To enhance the development pattern, it's necessary to focus on a more specific u
 graphql-let lets you import graphql-codegen results directly per GraphQL documents with TypeScript type definitions by webpack Loader power.
 
 ```typescript jsx
-import { useNewsQuery } from './news.grpahql'
+import { useNewsQuery } from './news.graphql'
 
 const  News: React.FC<{}> = (props) => {
 	// Typed already️⚡️
@@ -120,7 +120,7 @@ The webpack loader also needs to be configured. Note that the content `graphql-l
 
 ### 3. Prepare types 
 
-Run this command, so graphql-let looks for `.graphql` GraphQL documents by the config.documents glob pattern. Then it'll generate corresponding `.grpahql.d.ts` files in the config.generateDir directory.
+Run this command, so graphql-let looks for `.graphql` GraphQL documents by the config.documents glob pattern. Then it'll generate corresponding `.graphql.d.ts` files in the config.generateDir directory.
 
 ```
 npx graphql-let
@@ -132,7 +132,7 @@ npx graphql-let
 Now you can use react-apollo hooks function with IDE code assists.
 
 ```typescript jsx
-import { useNewsQuery } from './news.grpahql'
+import { useNewsQuery } from './news.graphql'
 
 const  News: React.FC<{}> = (props) => {
     // Already typed⚡️
@@ -149,7 +149,7 @@ No, you need to have separated document files to run the webpack loader. Besides
 
 > What's `.graphqls`? Do I need to use `.graphqls` for schema and `.graphql` for documents?
 
-Not exactly, but I'll recommend using such different extensions for webpack loader detection since these will want the different loaders. And `.graphqls` is one of [the supported extensions for GrpahQL schema by graphql-toolkit](https://github.com/ardatan/graphql-toolkit/blob/d29e518a655c02e3e14377c8c7d3de61f08e6200/packages/loaders/graphql-file/src/index.ts#L9).
+Not exactly, but I'll recommend using such different extensions for webpack loader detection since these will want the different loaders. And `.graphqls` is one of [the supported extensions for GraphQL schema by graphql-toolkit](https://github.com/ardatan/graphql-toolkit/blob/d29e518a655c02e3e14377c8c7d3de61f08e6200/packages/loaders/graphql-file/src/index.ts#L9).
 
 ## License
 
