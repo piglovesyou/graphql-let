@@ -11,11 +11,10 @@ To enhance the development pattern, it's necessary to focus on a more specific u
 graphql-let lets you import graphql-codegen results directly per GraphQL documents with TypeScript type definitions by webpack Loader power.
 
 ```typescript jsx
-// Import GraphQL document and load graphql-codegen result directly
 import { useNewsQuery } from './news.graphql'
 
 const  News: React.FC<{}> = (props) => {
-	// The loaded function is typed⚡️
+	// Typed already️⚡️
 	const { data: { news } } = useNewsQuery()
 	if (news) <div>{news.map(...)}</div>
 }
@@ -127,7 +126,7 @@ The webpack loader also needs to be configured. Note that the content `graphql-l
 
 ### 3. Prepare types 
 
-Run this command, so graphql-let looks for `.graphql` document files by the `documents` glob pattern in the config. Then it'll generate corresponding `.d.ts` files in the `generateDir` directory.
+Run this command, so graphql-let looks for `.graphql` GraphQL documents by the config.documents glob pattern. Then it'll generate corresponding `.d.ts` files in the config.generateDir directory.
 
 ```
 npx graphql-let
@@ -142,7 +141,7 @@ Enjoy the generated functions of react-apollo hooks with IDE code assists.
 import { useNewsQuery } from './news.graphql'
 
 const  News: React.FC<{}> = (props) => {
-    // It's typed⚡️
+    // Already typed⚡️
     const { data: { news } } = useNewsQuery()
     if (news) <div>{ news.map(...) }</div>
 }
