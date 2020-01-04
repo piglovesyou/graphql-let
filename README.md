@@ -4,9 +4,9 @@ A webpack loader to import type-protected codegen results directly from GraphQL 
 
 ## Why it exists
 
-One of the strengths of GraphQL is enforcing data types on runtime. Further, TypeScript and [GraphQL Code Generator](https://graphql-code-generator.com/) (graphql-codegen) make it safer to type data statically, so you can write truly type-protected code with rich IDE assists.
+One of the strengths of GraphQL is [enforcing data types on runtime](https://graphql.github.io/graphql-spec/June2018/#sec-Value-Completion). Further, TypeScript and [GraphQL Code Generator](https://graphql-code-generator.com/) (graphql-codegen) make it safer by typing data statically, so you can write truly type-protected code with rich IDE assists.
 
-To enhance the development pattern, it's necessary to focus on a more specific use-case than what graphql-codegen allows; binding TypeScript (and assuming the use of  Apollo-Client and React). In the way, graphql-let behaves like a subset of graphql-codegen.
+To enhance the development pattern, it's necessary to focus on a more specific use-case than what graphql-codegen allows; binding TypeScript (and assuming the use of Apollo-Client and React). In the way, graphql-let behaves like a subset of graphql-codegen.
 
 graphql-let lets you import graphql-codegen results directly per GraphQL documents with TypeScript type definitions by webpack Loader power.
 
@@ -24,16 +24,20 @@ const  News: React.FC<{}> = (props) => {
 
 Two things:
 
-* The webpack loader runs graphql-codegen with the configuration in `.graphql-let.yml`. The generated result is what you can import, such as `useNewsQuery` function in the above example.
-* It also generates a file `.graphql.d.ts` by the `.graphql` so you can get data types of the graphql-codegen results.
+* graphql-let/loader runs graphql-codegen inside according to the `.graphql-let.yml` configuration. It's supposed to generate TypeScript source so you'll want the additional loader to generate `.js` by such as babel-loader. The result is what you can import from your `.tsx`, such as `useNewsQuery` function in the above example.
+* It also generates a file `.d.ts` for the intermediate TypeScript result.
 
-Also a webpack-free command `graphql-let` can generate `.graphql.d.ts`. You may want to run it before a webpack build so the former type checking of `tsc` can pass. 
+<p align="center"><img src="./resource/graphql-let-loader.png" /></p>
+
+You may also want `.d.ts` before starting a webpack build for type checking purposes. Run `graphql-let` command only to get `.d.ts` without webpack. 
+
+<p align="center"><img src="./resource/graphql-let.png" /></p>
 
 ## How to get started
 
 This is an example of **TypeScript + React + Apollo Client**. Help yourself to replace the corresponding lines depending on your needs.
 
-[Here also is the example of Next.js integration](https://github.com/piglovesyou/nextjs-example-typescript-graphql#readme).
+[Here is the example of Next.js integration](https://github.com/piglovesyou/nextjs-example-typescript-graphql#readme).
 
 ### 1. Install dependencies
 
@@ -52,7 +56,9 @@ Run this command to have a configuration template.
 npx graphql-let init
 ```
 
-You now have a file `.graphql-let.yml` on your directory. Edit it like this:
+You now have a file `.graphql-let.yml` on your directory. **Please note that you need to generate TypeScript source** here, otherwise you don't want to use graphql-let.
+
+Edit like this:
 
 ```diff
  generateDir: __generated__
@@ -78,7 +84,7 @@ Available options:
 
 #### tsconfig.json
 
-graphql-let will generate `.d.ts` files in `__generated__/types`. Mark the directory as one of `typeRoots` in you tsconfig.json.
+graphql-let will generate `.d.ts` files in `__generated__/types`. Mark the directory as one of `typeRoots` in your tsconfig.json.
 
 ```diff
  {
@@ -120,7 +126,7 @@ The webpack loader also needs to be configured. Note that the content `graphql-l
 
 ### 3. Prepare types 
 
-Run this command, so graphql-let looks for `.graphql` GraphQL documents by the config.documents glob pattern. Then it'll generate corresponding `.graphql.d.ts` files in the config.generateDir directory.
+Run this command, so graphql-let looks for `.graphql` GraphQL documents by the config.documents glob pattern. Then it'll generate corresponding `.d.ts` files in the config.generateDir directory.
 
 ```
 npx graphql-let
@@ -129,7 +135,7 @@ npx graphql-let
 
 ### 4. Code more
 
-Now you can use react-apollo hooks function with IDE code assists.
+Enjoy the generated functions of react-apollo hooks with IDE code assists.
 
 ```typescript jsx
 import { useNewsQuery } from './news.graphql'
@@ -143,13 +149,17 @@ const  News: React.FC<{}> = (props) => {
 
 ## FAQ
 
-> Can I write GraphQL documents in my `.tsx` like ``const query = gql`query News{ ... }`;``?
+#### Do I have to use React with graphql-let?
 
-No, you need to have separated document files to run the webpack loader. Besides, typing with that syntax would be impossible.
+No, I believe. There are [more plugins that also generates `.ts` from `.graphql` documents](https://graphql-code-generator.com/docs/plugins/) where one might want the source and `.d.ts` through graphql-let.
 
-> What's `.graphqls`? Do I need to use `.graphqls` for schema and `.graphql` for documents?
+#### Can I write GraphQL documents in my `.tsx` as ``const query = gql`query News{ ... }`;``?
 
-Not exactly, but I'll recommend using such different extensions for webpack loader detection since these will want the different loaders. And `.graphqls` is one of [the supported extensions for GraphQL schema by graphql-toolkit](https://github.com/ardatan/graphql-toolkit/blob/d29e518a655c02e3e14377c8c7d3de61f08e6200/packages/loaders/graphql-file/src/index.ts#L9).
+Afraid not, you need to have separate document files to execute the webpack loader. Besides, typing the value of ``gql`...` `` will be impossible.
+
+#### What's `.graphqls`? Do I need to use `.graphqls` for schema and `.graphql` for documents?
+
+Not exactly, but I'll recommend that. I think such different extensions lead to more simple configuration for the webpack loaders with less pitfalls. And the reason for using `.graphqls` is that it's one of [the supported extensions in the core library](https://github.com/ardatan/graphql-toolkit/blob/d29e518a655c02e3e14377c8c7d3de61f08e6200/packages/loaders/graphql-file/src/index.ts#L9).
 
 ## License
 
