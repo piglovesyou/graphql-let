@@ -1,8 +1,13 @@
 language: node_js
+os:
+  #  - linux
+  #  - osx
+  - windows
+bundler_args: --retry 5
 node_js:
-  - 'stable'
-  - '12'
-  - '10'
+  - 13
+  - 12
+  - 10
 cache: yarn
 script:
   - yarn lint
