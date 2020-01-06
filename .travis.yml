@@ -2,7 +2,7 @@ language: node_js
 os:
   - linux
   - windows
-bundler_args: --retry 5
+bundler_args: --retry 1
 node_js:
   - 13
   - 12
