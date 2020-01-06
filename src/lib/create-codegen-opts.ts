@@ -1,6 +1,9 @@
+import { join as pathJoin, isAbsolute } from 'path';
 import { GraphQLSchema, parse, printSchema, DocumentNode } from 'graphql';
 import { loadSchema } from '@graphql-toolkit/core';
-import { join as pathJoin, isAbsolute } from 'path';
+import { UrlLoader } from '@graphql-toolkit/url-loader';
+import { JsonFileLoader } from '@graphql-toolkit/json-file-loader';
+import { GraphQLFileLoader } from '@graphql-toolkit/graphql-file-loader';
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { ConfigTypes } from './types';
 
@@ -26,7 +29,9 @@ async function generateSchema(
     isURL(path) || isAbsolute(path) ? path : pathJoin(cwd, path);
 
   // TODO: Memoize building schema
-  const loadedSchema: GraphQLSchema = await loadSchema(schemaPath, {});
+  const loadedSchema: GraphQLSchema = await loadSchema(schemaPath, {
+    loaders: [new UrlLoader(), new JsonFileLoader(), new GraphQLFileLoader()],
+  });
   return parse(printSchema(loadedSchema));
 }
 
