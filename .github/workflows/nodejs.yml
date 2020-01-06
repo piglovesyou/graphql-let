@@ -9,8 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest]
-        # os: [macos-latest, windows-latest, ubuntu-18.04]
+        os: [macos-latest, windows-latest, ubuntu-18.04]
         node-version: [13.x, 12.x, 10.x]
 
     steps:
@@ -19,9 +18,9 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: npm install, build, and test
+    - name: yarn install, lint, and test
       run: |
-        yarn
+        yarn install
         yarn lint
         yarn test
       env:
