@@ -1,6 +1,9 @@
-import { GraphQLSchema, parse, printSchema, DocumentNode } from 'graphql';
-import { loadSchema } from 'graphql-toolkit';
 import { join as pathJoin, isAbsolute } from 'path';
+import { GraphQLSchema, parse, printSchema, DocumentNode } from 'graphql';
+import { loadSchema } from '@graphql-toolkit/core';
+import { UrlLoader } from '@graphql-toolkit/url-loader';
+import { JsonFileLoader } from '@graphql-toolkit/json-file-loader';
+import { GraphQLFileLoader } from '@graphql-toolkit/graphql-file-loader';
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { ConfigTypes } from './types';
 
@@ -22,11 +25,19 @@ async function generateSchema(
   path: string,
   cwd: string,
 ): Promise<DocumentNode> {
-  const schemaPath =
-    isURL(path) || isAbsolute(path) ? path : pathJoin(cwd, path);
+  // XXX: Waiting for the fix of https://github.com/ardatan/graphql-toolkit/issues/399
+  let loadedSchema: GraphQLSchema;
+  if (isURL(path)) {
+    loadedSchema = await loadSchema(path, { loaders: [new UrlLoader()] });
+  } else {
+    loadedSchema = await loadSchema(
+      isAbsolute(path) ? path : pathJoin(cwd, path),
+      {
+        loaders: [new JsonFileLoader(), new GraphQLFileLoader()],
+      },
+    );
+  }
 
-  // TODO: Memoize building schema
-  const loadedSchema: GraphQLSchema = await loadSchema(schemaPath);
   return parse(printSchema(loadedSchema));
 }
 
