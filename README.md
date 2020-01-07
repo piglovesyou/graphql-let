@@ -13,10 +13,10 @@ graphql-let lets you import graphql-codegen results directly per GraphQL documen
 ```typescript jsx
 import { useNewsQuery } from './news.graphql'
 
-const  News: React.FC<{}> = (props) => {
+const News: React.FC = () => {
 	// Typed already️⚡️
 	const { data: { news } } = useNewsQuery()
-	if (news) <div>{news.map(...)}</div>
+	if (news) return <div>{news.map(...)}</div>
 }
 ```
 
@@ -24,8 +24,8 @@ const  News: React.FC<{}> = (props) => {
 
 Two things:
 
-* graphql-let/loader runs graphql-codegen inside according to the `.graphql-let.yml` configuration. It's supposed to generate TypeScript source so you'll want the additional loader to generate `.js` by such as babel-loader. The result is what you can import from your `.tsx`, such as `useNewsQuery` function in the above example.
-* It also generates a file `.d.ts` for the intermediate TypeScript result.
+* graphql-let/loader runs graphql-codegen inside according to the `.graphql-let.yml` config and generates TypeScript source, such as `useNewsQuery` function in the above example.
+* It also generates a file `.d.ts` for it so all the data and functions is typed.
 
 <p align="center"><img src="./resource/graphql-let-loader.png" /></p>
 
@@ -56,7 +56,7 @@ Run this command to have a configuration template.
 npx graphql-let init
 ```
 
-You now have a file `.graphql-let.yml` on your directory. **Please note that you need to generate TypeScript source** here, otherwise you don't want to use graphql-let.
+You now have a file `.graphql-let.yml` on your directory. **Please note you have to generate TypeScript source** here.
 
 Edit like this:
 
@@ -138,10 +138,10 @@ Enjoy the generated functions of react-apollo hooks with IDE code assists.
 ```typescript jsx
 import { useNewsQuery } from './news.graphql'
 
-const  News: React.FC<{}> = (props) => {
+const News: React.FC = () => {
     // Already typed⚡️
     const { data: { news } } = useNewsQuery()
-    if (news) <div>{ news.map(...) }</div>
+    if (news) return <div>{ news.map(...) }</div>
 }
 ```
 
