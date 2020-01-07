@@ -126,7 +126,7 @@ The webpack loader also needs to be configured. Note that the content `graphql-l
 
 ### 3. Prepare types 
 
-Run this command, so graphql-let looks for `.graphql` document files by the `documents` glob pattern in the config. Then it'll generate corresponding `.d.ts` files in the `generateDir` directory.
+Run this command, so graphql-let looks for `.graphql` GraphQL documents by the config.documents glob pattern. Then it'll generate corresponding `.d.ts` files in the config.generateDir directory.
 
 ```
 npx graphql-let
