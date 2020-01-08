@@ -27,6 +27,7 @@
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "rimraf": "^3.0.0",
+    "unixify": "*",
     "yaml": "^1.7.2"
   },
   "devDependencies": {
@@ -49,6 +50,7 @@
     "@types/minimist": "^1.2.0",
     "@types/mkdirp": "^0.5.2",
     "@types/node": "^13.1.0",
+    "@types/prettier": "^1.19.0",
     "@types/react": "^16.9.17",
     "@types/rimraf": "^2.0.3",
     "@types/webpack": "^4.41.0",
