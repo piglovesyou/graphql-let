@@ -14,6 +14,14 @@ import unixify from 'unixify';
 const rimraf = promisify(_rimraf);
 const { readFile } = fsPromises;
 
+function normalizeGqlPaths(cwd: string, globPath: string | string[]): string[] {
+  const globPaths = Array.isArray(globPath) ? globPath : [globPath];
+  return globPaths.map(documentPath => {
+    // Taking care of Windows
+    return unixify(path.join(cwd, documentPath));
+  });
+}
+
 export default async function gen(commandOpts: CommandOpts): Promise<void> {
   const { configPath, cwd } = commandOpts;
   const config = parseYaml(await readFile(configPath, 'utf-8')) as ConfigTypes;
@@ -21,13 +29,13 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
   await rimraf(path.join(cwd, config.generateDir));
 
   const codegenOpts = await createCodegenOpts(config, cwd);
-  // Taking care of Windows
-  const gqlFullGlob = unixify(path.join(cwd, config.documents));
-  const gqlFullPaths = await glob(gqlFullGlob);
+  const gqlFullPaths = await glob(normalizeGqlPaths(cwd, config.documents));
 
   if (gqlFullPaths.length === 0) {
     throw new Error(
-      `No GraphQL documents are found from the path ${gqlFullGlob}. Check "documents" in .graphql-let.yml.`,
+      `No GraphQL documents are found from the path ${JSON.stringify(
+        config.documents,
+      )}. Check "documents" in .graphql-let.yml.`,
     );
   }
 
