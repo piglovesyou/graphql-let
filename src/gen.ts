@@ -9,6 +9,7 @@ import { codegen } from './lib/codegen';
 import { CommandOpts, ConfigTypes } from './lib/types';
 import { promisify } from 'util';
 import _rimraf from 'rimraf';
+import unixify from 'unixify';
 
 const rimraf = promisify(_rimraf);
 const { readFile } = fsPromises;
@@ -17,10 +18,12 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
   const { configPath, cwd } = commandOpts;
   const config = parseYaml(await readFile(configPath, 'utf-8')) as ConfigTypes;
 
-  await rimraf(path.join(path.join(cwd, config.generateDir)));
+  await rimraf(path.join(cwd, config.generateDir));
 
   const codegenOpts = await createCodegenOpts(config, cwd);
-  const gqlFullPaths = await glob(path.join(cwd, config.documents));
+  // Taking care of Windows
+  const gqlFullGlob = unixify(path.join(cwd, config.documents));
+  const gqlFullPaths = await glob(gqlFullGlob);
 
   for (const gqlFullPath of gqlFullPaths) {
     const gqlContent = await readFile(gqlFullPath, 'utf-8');

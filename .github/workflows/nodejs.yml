@@ -4,13 +4,15 @@ on: [push]
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-18.04]
+        platform: [
+          ubuntu-latest,
+          # TODO: Pass in Windows
+          # windows-latest
+        ]
         node-version: [13.x, 12.x, 10.x]
+    runs-on: ${{ matrix.platform }}
 
     steps:
     - uses: actions/checkout@v1
@@ -20,7 +22,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: yarn install, lint, and test
       run: |
-        yarn install
+        yarn install --ignore-scripts
         yarn lint
         yarn test
       env:
