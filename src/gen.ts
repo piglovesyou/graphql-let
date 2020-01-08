@@ -25,6 +25,12 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
   const gqlFullGlob = unixify(path.join(cwd, config.documents));
   const gqlFullPaths = await glob(gqlFullGlob);
 
+  if (gqlFullPaths.length === 0) {
+    throw new Error(
+      `No GraphQL documents are found from the path ${gqlFullGlob}. Check "documents" in .graphql-let.yml.`,
+    );
+  }
+
   for (const gqlFullPath of gqlFullPaths) {
     const gqlContent = await readFile(gqlFullPath, 'utf-8');
 
