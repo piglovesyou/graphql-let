@@ -62,10 +62,8 @@ Edit like this:
 
 ```diff
  generateDir: __generated__
--schema: path/to/**/*.graphqls
-+schema: graphql/**/*.graphqls
--documents: path/to/**/*.graphql
-+documents: queries-and-mutations/**/*.graphql
+ schema: **/*.graphqls
+ documents: **/*.graphql
  plugins:
    - typescript
 +  - typescript-operations
