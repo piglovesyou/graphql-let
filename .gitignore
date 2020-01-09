@@ -19,8 +19,4 @@ yarn-error.log*
 dist
 *.tgz
 
-# Not lock yet
-yarn.lock
-package-lock.json
-
 *.graphql.d.ts
