@@ -1,6 +1,6 @@
 import { promises as fsPromises } from 'fs';
 import { loader } from 'webpack';
-import { join as pathJoin } from 'path';
+import { join as pathJoin, relative as pathRelative } from 'path';
 import { parse as parseYaml } from 'yaml';
 import createCodegenOpts from './lib/create-codegen-opts';
 import { createPaths } from './lib/paths';
@@ -24,7 +24,7 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
       userDir,
       config.generateDir,
       target,
-      gqlFullPath,
+      pathRelative(userDir, gqlFullPath),
     );
 
     const codegenOpts = await createCodegenOpts(config, userDir);
