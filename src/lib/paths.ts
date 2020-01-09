@@ -4,13 +4,12 @@ export function createPaths(
   cwd: string,
   genRelPath: string,
   targetName: 'command' | 'web' | 'node' | string,
-  gqlFullPath: string,
+  gqlRelPath: string,
 ) {
   const genFullDir = path.join(cwd, genRelPath);
   const tsxFullDir = path.join(genFullDir, targetName);
   const dtsFullDir = path.join(genFullDir, 'types');
 
-  const gqlRelPath = path.relative(cwd, gqlFullPath);
   const gqlBasename = path.basename(gqlRelPath);
   const tsxRelPath = `${gqlRelPath}.tsx`;
   const tsxFullPath = path.join(tsxFullDir, tsxRelPath);

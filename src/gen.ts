@@ -9,18 +9,9 @@ import { codegen } from './lib/codegen';
 import { CommandOpts, ConfigTypes } from './lib/types';
 import { promisify } from 'util';
 import _rimraf from 'rimraf';
-import unixify from 'unixify';
 
 const rimraf = promisify(_rimraf);
 const { readFile } = fsPromises;
-
-function normalizeGqlPaths(cwd: string, globPath: string | string[]): string[] {
-  const globPaths = Array.isArray(globPath) ? globPath : [globPath];
-  return globPaths.map(documentPath => {
-    // Taking care of Windows
-    return unixify(path.join(cwd, documentPath));
-  });
-}
 
 export default async function gen(commandOpts: CommandOpts): Promise<void> {
   const { configPath, cwd } = commandOpts;
@@ -29,9 +20,9 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
   await rimraf(path.join(cwd, config.generateDir));
 
   const codegenOpts = await createCodegenOpts(config, cwd);
-  const gqlFullPaths = await glob(normalizeGqlPaths(cwd, config.documents));
+  const gqlRelPaths = await glob(config.documents, { cwd });
 
-  if (gqlFullPaths.length === 0) {
+  if (gqlRelPaths.length === 0) {
     throw new Error(
       `No GraphQL documents are found from the path ${JSON.stringify(
         config.documents,
@@ -39,19 +30,19 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
     );
   }
 
-  for (const gqlFullPath of gqlFullPaths) {
-    const gqlContent = await readFile(gqlFullPath, 'utf-8');
+  for (const gqlRelPath of gqlRelPaths) {
+    const gqlContent = await readFile(path.join(cwd, gqlRelPath), 'utf-8');
 
     const { tsxFullPath, dtsFullPath, dtsRelPath } = createPaths(
       cwd,
       config.generateDir,
       'command',
-      gqlFullPath,
+      gqlRelPath,
     );
 
     await codegen(
       gqlContent,
-      gqlFullPath,
+      gqlRelPath,
       tsxFullPath,
       dtsFullPath,
       config,

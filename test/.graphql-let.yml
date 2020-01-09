@@ -1,8 +1,8 @@
 generateDir: __generated__
 schema: schema/**/*.graphqls
 documents:
-- pages/**/*.graphql
-- x/**/*.graphql
+  - "!xx"
+  - "**/*.graphql"
 plugins:
   - typescript
   - typescript-operations
