@@ -1,9 +1,6 @@
 import { join as pathJoin, isAbsolute } from 'path';
 import { GraphQLSchema, parse, printSchema, DocumentNode } from 'graphql';
-import { loadSchema } from '@graphql-toolkit/core';
-import { UrlLoader } from '@graphql-toolkit/url-loader';
-import { JsonFileLoader } from '@graphql-toolkit/json-file-loader';
-import { GraphQLFileLoader } from '@graphql-toolkit/graphql-file-loader';
+import { CodegenContext } from '@graphql-codegen/cli';
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { ConfigTypes } from './types';
 
@@ -21,15 +18,20 @@ function isURL(path: string): boolean {
   }
 }
 
+function loadSchema(pointer: Types.Schema) {
+  return CodegenContext.prototype.loadSchema.call(
+    { getConfig: () => ({}) },
+    pointer,
+  );
+}
+
 async function generateSchema(
   path: string,
   cwd: string,
 ): Promise<DocumentNode> {
   const schemaPointer =
     isURL(path) || isAbsolute(path) ? path : pathJoin(cwd, path);
-  const loadedSchema: GraphQLSchema = await loadSchema(schemaPointer, {
-    loaders: [new UrlLoader(), new JsonFileLoader(), new GraphQLFileLoader()],
-  });
+  const loadedSchema: GraphQLSchema = await loadSchema(schemaPointer);
 
   return parse(printSchema(loadedSchema));
 }
