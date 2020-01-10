@@ -3,7 +3,10 @@ import webpack from 'webpack';
 import memoryfs from 'memory-fs';
 import nodeExternals from 'webpack-node-externals';
 
-export default (fixture: string): Promise<webpack.Stats> => {
+export default (
+  fixture: string,
+  target: 'node' | 'web',
+): Promise<webpack.Stats> => {
   const compiler = webpack({
     mode: 'production',
     context: __dirname,
@@ -12,7 +15,7 @@ export default (fixture: string): Promise<webpack.Stats> => {
       path: path.resolve(__dirname),
       filename: 'bundle.js',
     },
-    target: 'node',
+    target,
     externals: [nodeExternals()],
     module: {
       rules: [
