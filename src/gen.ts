@@ -9,7 +9,6 @@ import { codegen } from './lib/codegen';
 import { CommandOpts, ConfigTypes } from './lib/types';
 import { promisify } from 'util';
 import _rimraf from 'rimraf';
-import unixify from 'unixify';
 
 const rimraf = promisify(_rimraf);
 const { readFile } = fsPromises;
@@ -21,29 +20,29 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
   await rimraf(path.join(cwd, config.generateDir));
 
   const codegenOpts = await createCodegenOpts(config, cwd);
-  // Taking care of Windows
-  const gqlFullGlob = unixify(path.join(cwd, config.documents));
-  const gqlFullPaths = await glob(gqlFullGlob);
+  const gqlRelPaths = await glob(config.documents, { cwd });
 
-  if (gqlFullPaths.length === 0) {
+  if (gqlRelPaths.length === 0) {
     throw new Error(
-      `No GraphQL documents are found from the path ${gqlFullGlob}. Check "documents" in .graphql-let.yml.`,
+      `No GraphQL documents are found from the path ${JSON.stringify(
+        config.documents,
+      )}. Check "documents" in .graphql-let.yml.`,
     );
   }
 
-  for (const gqlFullPath of gqlFullPaths) {
-    const gqlContent = await readFile(gqlFullPath, 'utf-8');
+  for (const gqlRelPath of gqlRelPaths) {
+    const gqlContent = await readFile(path.join(cwd, gqlRelPath), 'utf-8');
 
     const { tsxFullPath, dtsFullPath, dtsRelPath } = createPaths(
       cwd,
       config.generateDir,
       'command',
-      gqlFullPath,
+      gqlRelPath,
     );
 
     await codegen(
       gqlContent,
-      gqlFullPath,
+      gqlRelPath,
       tsxFullPath,
       dtsFullPath,
       config,
