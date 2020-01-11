@@ -2,6 +2,7 @@ import { promises as fsPromises } from 'fs';
 import { loader } from 'webpack';
 import { join as pathJoin, relative as pathRelative } from 'path';
 import { parse as parseYaml } from 'yaml';
+import getHash from './hash';
 import createCodegenOpts from './lib/create-codegen-opts';
 import { createPaths } from './lib/paths';
 import { printInfo } from './lib/print';
@@ -20,11 +21,14 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
       await readFile(configPath, 'utf-8'),
     ) as ConfigTypes;
 
+    const hash = getHash(gqlContent);
+
     const { tsxFullPath, dtsFullPath, dtsRelPath } = createPaths(
       userDir,
       config.generateDir,
       target,
       pathRelative(userDir, gqlFullPath),
+      hash,
     );
 
     const codegenOpts = await createCodegenOpts(config, userDir);

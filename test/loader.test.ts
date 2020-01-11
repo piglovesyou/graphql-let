@@ -2,6 +2,11 @@
 
 import assert from 'assert';
 import compiler from './compiler';
+import { promisify } from 'util';
+import { join as pathJoin } from 'path';
+import _rimraf from 'rimraf';
+
+const rimraf = promisify(_rimraf);
 
 const expect = `function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
@@ -45,6 +50,10 @@ export function useViewerLazyQuery(baseOptions) {
 }`;
 
 describe('graphql-let/loader', () => {
+  beforeEach(async () => {
+    await rimraf(pathJoin(__dirname, '__generated__'));
+  });
+
   test(
     'generates .tsx and .d.ts',
     async () => {

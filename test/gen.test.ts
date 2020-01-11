@@ -12,7 +12,10 @@ const rimraf = promisify(_rimraf);
 test(
   '"graphql-let" generates .d.ts',
   async () => {
-    const expect = ['__generated__/types/viewer.graphql.d.ts'];
+    const expect = [
+      '__generated__/types/viewer.graphql-33e322e3dadea27c5f274eda803fd353ad6ab510.d.ts',
+    ];
+
     await rimraf(path.join(__dirname, '__generated__'));
     await gen({
       cwd: __dirname,
