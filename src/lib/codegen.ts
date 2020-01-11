@@ -6,6 +6,7 @@ import path from 'path';
 import { promisify } from 'util';
 import genDts from './gen-dts';
 import { PartialCodegenOpts } from './create-codegen-opts';
+import { printInfo } from './print';
 import { ConfigTypes } from './types';
 import { existsSync } from 'fs';
 
@@ -41,10 +42,28 @@ async function processGraphQLCodegen(
   return tsxContent;
 }
 
+async function processGenDts(
+  dtsFullPath: string,
+  tsxFullPath: string,
+  gqlFullPath: string,
+  dtsRelPath: string,
+) {
+  await mkdirp(path.dirname(dtsFullPath));
+  const dtsContent = await genDts(tsxFullPath);
+  if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
+  await writeFile(
+    dtsFullPath,
+    wrapAsModule(path.basename(gqlFullPath), dtsContent),
+  );
+  printInfo(`${dtsRelPath} was generated.`);
+  return dtsContent;
+}
+
 export async function codegen(
   gqlContent: string,
   gqlFullPath: string,
   tsxFullPath: string,
+  dtsRelPath: string,
   dtsFullPath: string,
   options: ConfigTypes,
   codegenOpts: PartialCodegenOpts,
@@ -66,17 +85,18 @@ export async function codegen(
     processingTasks.delete(tsxFullPath);
   }
 
-  let dtsContent: string;
   if (existsSync(dtsFullPath) || processingTasks.has(dtsFullPath)) {
     // Already exists or is processing. Just skip.
   } else {
-    await mkdirp(path.dirname(dtsFullPath));
-    dtsContent = await genDts(tsxFullPath);
-    if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
-    await writeFile(
+    const dtsPromise = processGenDts(
       dtsFullPath,
-      wrapAsModule(path.basename(gqlFullPath), dtsContent),
+      tsxFullPath,
+      gqlFullPath,
+      dtsRelPath,
     );
+    processingTasks.set(dtsFullPath, dtsPromise);
+    await dtsPromise;
+    processingTasks.delete(dtsFullPath);
   }
 
   return tsxContent;

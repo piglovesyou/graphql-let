@@ -5,7 +5,6 @@ import glob from 'fast-glob';
 import getHash from './hash';
 import createCodegenOpts from './lib/create-codegen-opts';
 import { createPaths } from './lib/paths';
-import { printInfo } from './lib/print';
 import { codegen } from './lib/codegen';
 import { CommandOpts, ConfigTypes } from './lib/types';
 import { promisify } from 'util';
@@ -37,7 +36,6 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
     const { tsxFullPath, dtsFullPath, dtsRelPath } = createPaths(
       cwd,
       config.generateDir,
-      'command',
       gqlRelPath,
       getHash(gqlContent),
     );
@@ -46,11 +44,10 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
       gqlContent,
       gqlRelPath,
       tsxFullPath,
+      dtsRelPath,
       dtsFullPath,
       config,
       codegenOpts,
     );
-
-    printInfo(`${dtsRelPath} was generated.`);
   }
 }

@@ -3,13 +3,12 @@ import path from 'path';
 export function createPaths(
   cwd: string,
   genRelPath: string,
-  targetName: 'command' | 'web' | 'node' | string,
   gqlRelPath: string,
   hash: string,
 ) {
   const genFullDir = path.join(cwd, genRelPath);
   const dtsRelDir = path.join(genRelPath, 'types');
-  const tsxFullDir = path.join(genFullDir, targetName);
+  const tsxFullDir = path.join(genFullDir, '__intermediate__');
 
   const gqlBasename = path.basename(gqlRelPath);
   const tsxRelPath = `${gqlRelPath}-${hash}.tsx`;
