@@ -12,14 +12,20 @@ const rimraf = promisify(_rimraf);
 test(
   '"graphql-let" generates .d.ts',
   async () => {
-    const expect = ['__generated__/types/viewer.graphql.d.ts'];
+    const expect = new RegExp(
+      '^__generated__/types/viewer.graphql-[a-z\\d]+.d.ts$',
+    );
+
     await rimraf(path.join(__dirname, '__generated__'));
     await gen({
       cwd: __dirname,
       configPath: path.join(__dirname, '.graphql-let.yml'),
     });
-    const actual = await glob('__generated__/types/**', { cwd: __dirname });
-    assert.deepStrictEqual(actual, expect);
+    const { length, 0: actual } = await glob('__generated__/types/**', {
+      cwd: __dirname,
+    });
+    assert.strictEqual(length, 1);
+    assert(expect.test(actual));
   },
   60 * 1000,
 );
