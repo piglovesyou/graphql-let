@@ -2,7 +2,7 @@
 
 A webpack loader to import type-protected codegen results directly from GraphQL documents. 
 
-Try [the Next.js example](https://github.com/zeit/next.js/tree/canary/examples/with-typescript-graphql#readme) that integrates graphql-let.
+Try [the Next.js example](https://github.com/zeit/next.js/blob/canary/examples/with-typescript-graphql/README.md#readme) that integrates graphql-let.
 
 ## Why it exists
 
