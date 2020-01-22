@@ -147,7 +147,7 @@ const News: React.FC = () => {
 
 ## FAQ
 
-#### So, it just a graphql-codegen wrapper for the syntax `import '*.graphql'` ...?
+#### So, it just a graphql-codegen wrapper with generating `d.ts`...?
 
 _Yes._
 
@@ -161,7 +161,7 @@ Afraid not. You need to have separate files to execute the webpack loader. Besid
 
 #### What's the extension `.graphqls`? Do I have to use it for schema and `.graphql` for documents?
 
-Not exactly, but I'll recommend that. I think the difference between the extensions leads to more simple configuration for the webpack loaders with less pitfalls. Another reason for `.graphqls` is that it's one of [the supported extensions in the internal library](https://github.com/ardatan/graphql-toolkit/blob/d29e518a655c02e3e14377c8c7d3de61f08e6200/packages/loaders/graphql-file/src/index.ts#L9).
+Not exactly, but I'd recommend it. I think the difference between the extensions leads to more understandable configuration for the webpack loaders with less pitfalls. Another reason for `.graphqls` is that it's one of [the supported extensions in the internal library](https://github.com/ardatan/graphql-toolkit/blob/d29e518a655c02e3e14377c8c7d3de61f08e6200/packages/loaders/graphql-file/src/index.ts#L9).
 
 ## License
 
