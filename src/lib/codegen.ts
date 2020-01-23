@@ -16,12 +16,12 @@ const mkdirp = promisify(_mkdirp);
 // For the loader can process a same file simultaneously
 const processingTasks = new Map<string /*fileFullPath*/, Promise<string>>();
 
-function wrapAsModule(fileName: string, content: string) {
+export function wrapAsModule(fileName: string, content: string) {
   return `declare module '*/${fileName}' {
   ${content.replace(/\n/g, '\n  ')}}`;
 }
 
-async function processGraphQLCodegen(
+export async function processGraphQLCodegen(
   codegenOpts: PartialCodegenOpts,
   tsxFullPath: string,
   gqlRelPath: string,
@@ -49,7 +49,7 @@ async function processGenDts(
   dtsRelPath: string,
 ) {
   await mkdirp(path.dirname(dtsFullPath));
-  const dtsContent = await genDts(tsxFullPath);
+  const [dtsContent] = await genDts([tsxFullPath]);
   if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
   await writeFile(
     dtsFullPath,
