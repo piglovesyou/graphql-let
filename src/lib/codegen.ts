@@ -24,7 +24,7 @@ function wrapAsModule(fileName: string, content: string) {
 async function processGraphQLCodegen(
   codegenOpts: PartialCodegenOpts,
   tsxFullPath: string,
-  gqlFullPath: string,
+  gqlRelPath: string,
   gqlContent: string,
 ): Promise<string> {
   const tsxContent = await graphqlCodegen({
@@ -32,7 +32,7 @@ async function processGraphQLCodegen(
     filename: tsxFullPath,
     documents: [
       {
-        filePath: gqlFullPath,
+        filePath: gqlRelPath,
         content: gql(gqlContent),
       },
     ],
@@ -45,7 +45,7 @@ async function processGraphQLCodegen(
 async function processGenDts(
   dtsFullPath: string,
   tsxFullPath: string,
-  gqlFullPath: string,
+  gqlRelPath: string,
   dtsRelPath: string,
 ) {
   await mkdirp(path.dirname(dtsFullPath));
@@ -53,7 +53,7 @@ async function processGenDts(
   if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
   await writeFile(
     dtsFullPath,
-    wrapAsModule(path.basename(gqlFullPath), dtsContent),
+    wrapAsModule(path.basename(gqlRelPath), dtsContent),
   );
   printInfo(`${dtsRelPath} was generated.`);
   return dtsContent;
@@ -61,7 +61,7 @@ async function processGenDts(
 
 export async function codegen(
   gqlContent: string,
-  gqlFullPath: string,
+  gqlRelPath: string,
   tsxFullPath: string,
   dtsRelPath: string,
   dtsFullPath: string,
@@ -77,7 +77,7 @@ export async function codegen(
     const tsxPromise = processGraphQLCodegen(
       codegenOpts,
       tsxFullPath,
-      gqlFullPath,
+      gqlRelPath,
       gqlContent,
     );
     processingTasks.set(tsxFullPath, tsxPromise);
@@ -91,7 +91,7 @@ export async function codegen(
     const dtsPromise = processGenDts(
       dtsFullPath,
       tsxFullPath,
-      gqlFullPath,
+      gqlRelPath,
       dtsRelPath,
     );
     processingTasks.set(dtsFullPath, dtsPromise);
