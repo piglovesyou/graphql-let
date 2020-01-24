@@ -2,7 +2,7 @@ import { promises as fsPromises } from 'fs';
 import { loader } from 'webpack';
 import { join as pathJoin, relative as pathRelative } from 'path';
 import { parse as parseYaml } from 'yaml';
-import getHash from './hash';
+import getHash from './lib/hash';
 import createCodegenOpts from './lib/create-codegen-opts';
 import { createPaths } from './lib/paths';
 import { codegen } from './lib/codegen';

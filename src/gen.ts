@@ -3,7 +3,7 @@ import path from 'path';
 import { parse as parseYaml } from 'yaml';
 import { promises as fsPromises } from 'fs';
 import glob from 'fast-glob';
-import getHash from './hash';
+import getHash from './lib/hash';
 import createCodegenOpts from './lib/create-codegen-opts';
 import genDts from './lib/gen-dts';
 import { createPaths } from './lib/paths';
