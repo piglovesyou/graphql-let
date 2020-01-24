@@ -6,9 +6,10 @@ import path from 'path';
 import { promisify } from 'util';
 import genDts from './gen-dts';
 import { PartialCodegenOpts } from './create-codegen-opts';
-import { printInfo } from './print';
+import { PREFIX as PRINT_PREFIX } from './print';
 import { ConfigTypes } from './types';
 import { existsSync } from 'fs';
+import logUpdate from 'log-update';
 
 const { readFile, writeFile } = fsPromises;
 const mkdirp = promisify(_mkdirp);
@@ -46,7 +47,6 @@ async function processGenDts(
   dtsFullPath: string,
   tsxFullPath: string,
   gqlRelPath: string,
-  dtsRelPath: string,
 ) {
   await mkdirp(path.dirname(dtsFullPath));
   const [dtsContent] = await genDts([tsxFullPath]);
@@ -55,7 +55,6 @@ async function processGenDts(
     dtsFullPath,
     wrapAsModule(path.basename(gqlRelPath), dtsContent),
   );
-  printInfo(`${dtsRelPath} was generated.`);
   return dtsContent;
 }
 
@@ -74,6 +73,7 @@ export async function codegen(
   } else if (processingTasks.has(tsxFullPath)) {
     tsxContent = await processingTasks.get(tsxFullPath)!;
   } else {
+    logUpdate(PRINT_PREFIX + 'Running graphql-codegen...');
     const tsxPromise = processGraphQLCodegen(
       codegenOpts,
       tsxFullPath,
@@ -88,15 +88,14 @@ export async function codegen(
   if (existsSync(dtsFullPath) || processingTasks.has(dtsFullPath)) {
     // Already exists or is processing. Just skip.
   } else {
-    const dtsPromise = processGenDts(
-      dtsFullPath,
-      tsxFullPath,
-      gqlRelPath,
-      dtsRelPath,
-    );
+    logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
+
+    const dtsPromise = processGenDts(dtsFullPath, tsxFullPath, gqlRelPath);
     processingTasks.set(dtsFullPath, dtsPromise);
     await dtsPromise;
     processingTasks.delete(dtsFullPath);
+
+    logUpdate(PRINT_PREFIX + `${dtsRelPath} were generated.`);
   }
 
   return tsxContent;
