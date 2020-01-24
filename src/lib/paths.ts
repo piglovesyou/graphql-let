@@ -1,5 +1,12 @@
 import path from 'path';
 
+export const DTS_OUTPUT_DIR = 'types';
+export const TSX_OUTPUT_DIR = '__intermediate__';
+
+export function createDtsRelDir(genRelPath: string) {
+  return path.join(genRelPath, DTS_OUTPUT_DIR);
+}
+
 export function createPaths(
   cwd: string,
   genRelPath: string,
@@ -7,8 +14,8 @@ export function createPaths(
   hash: string,
 ) {
   const genFullDir = path.join(cwd, genRelPath);
-  const dtsRelDir = path.join(genRelPath, 'types');
-  const tsxFullDir = path.join(genFullDir, '__intermediate__');
+  const dtsRelDir = createDtsRelDir(genRelPath);
+  const tsxFullDir = path.join(genFullDir, TSX_OUTPUT_DIR);
 
   const gqlBasename = path.basename(gqlRelPath);
   const tsxRelPath = `${gqlRelPath}-${hash}.tsx`;
