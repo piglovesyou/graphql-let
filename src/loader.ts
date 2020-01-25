@@ -4,12 +4,8 @@ import { loader } from 'webpack';
 import { join as pathJoin, relative as pathRelative } from 'path';
 import { parse as parseYaml } from 'yaml';
 import { writeDts } from './lib/dts';
-import {
-  writeGraphQLCodegen,
-  processGraphQLCodegenFromConfig,
-} from './lib/graphql-codegen';
+import { processGraphQLCodegenFromConfig } from './lib/graphql-codegen';
 import getHash from './lib/hash';
-import memoize from './lib/memoize';
 import { createPaths } from './lib/paths';
 import { ConfigTypes } from './lib/types';
 import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
