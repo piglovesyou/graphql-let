@@ -5,18 +5,23 @@ import { promises as fsPromises } from 'fs';
 import glob from 'fast-glob';
 import getHash from './lib/hash';
 import createCodegenOpts from './lib/create-codegen-opts';
-import { createDts, wrapAsModule } from './lib/dts';
+import { genDts, wrapAsModule } from './lib/dts';
+import memoize from './lib/memoize';
 import { createDtsRelDir, createPaths } from './lib/paths';
 import { PRINT_PREFIX } from './lib/print';
 import { CommandOpts, ConfigTypes } from './lib/types';
 import { promisify } from 'util';
 import _rimraf from 'rimraf';
 import logUpdate from 'log-update';
-import { processGraphQLCodegen } from './lib/graphql-codegen';
+import { processGraphQLCodegen as _processGraphQLCodegen } from './lib/graphql-codegen';
 
 const mkdirp = promisify(_mkdirp);
 const rimraf = promisify(_rimraf);
 const { readFile, writeFile } = fsPromises;
+const processGraphQLCodegen = memoize(
+  _processGraphQLCodegen,
+  (_, tsxFullPath) => tsxFullPath,
+);
 
 export default async function gen(commandOpts: CommandOpts): Promise<void> {
   logUpdate(PRINT_PREFIX + 'Running graphql-codegen...');
@@ -64,7 +69,7 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
   }
 
   logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
-  const dtsContents = createDts(codegenContexts.map(s => s.tsxFullPath));
+  const dtsContents = genDts(codegenContexts.map(s => s.tsxFullPath));
 
   await mkdirp(path.dirname(codegenContexts[0].dtsFullPath));
 

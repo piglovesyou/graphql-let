@@ -3,15 +3,21 @@ import logUpdate from 'log-update';
 import { loader } from 'webpack';
 import { join as pathJoin, relative as pathRelative } from 'path';
 import { parse as parseYaml } from 'yaml';
-import { writeDts } from './lib/dts';
-import { processGraphQLCodegenFromConfig } from './lib/graphql-codegen';
+import { processGenDts as _processGenDts } from './lib/dts';
+import { processGraphQLCodegenFromConfig as _processGraphQLCodegenFromConfig } from './lib/graphql-codegen';
 import getHash from './lib/hash';
+import memoize from './lib/memoize';
 import { createPaths } from './lib/paths';
 import { ConfigTypes } from './lib/types';
 import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 import { PRINT_PREFIX } from './lib/print';
 
 const { readFile } = fsPromises;
+const processGraphQLCodegenFromConfig = memoize(
+  _processGraphQLCodegenFromConfig,
+  (_, __, tsxFullPath) => tsxFullPath,
+);
+const processGenDts = memoize(_processGenDts, dtsFullPath => dtsFullPath);
 
 const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
   const callback = this.async()!;
@@ -48,7 +54,7 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
 
       if (!existsSync(dtsFullPath)) {
         logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
-        await writeDts(dtsFullPath, tsxFullPath, gqlRelPath);
+        await processGenDts(dtsFullPath, tsxFullPath, gqlRelPath);
         logUpdate(PRINT_PREFIX + `${dtsRelPath} was generated for ${target}.`);
         // Hack to prevent duplicated logs for simultaneous build, in SSR app for an example.
         await new Promise(resolve => setTimeout(resolve, 0));
