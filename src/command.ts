@@ -16,14 +16,14 @@ if (argv.help || argv.h) {
   process.exit(0);
 }
 
-let command: string;
+let task: string;
 switch (argv._[0]) {
   case 'gen':
   case undefined:
-    command = 'gen';
+    task = 'gen';
     break;
   case 'init':
-    command = 'init';
+    task = 'init';
     break;
   default:
     printError(new Error(HELP_TEXT));
@@ -40,12 +40,12 @@ function createOpts(): CommandOpts {
   return { cwd, configPath };
 }
 
-function run(command: string) {
+function command(command: string) {
   const fn = require(`./${command}`).default;
   return Promise.resolve(fn(createOpts()));
 }
 
-run(command).catch((err: Error) => {
+command(task).catch((err: Error) => {
   printError(err);
   process.exit(1);
 });

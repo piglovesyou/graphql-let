@@ -1,5 +1,12 @@
+import { promises as fsPromises } from 'fs';
+import _mkdirp from 'mkdirp';
 import path from 'path';
 import { createCompilerHost, createProgram, CompilerOptions } from 'typescript';
+import { promisify } from 'util';
+import memoize from './memoize';
+
+const { writeFile } = fsPromises;
+const mkdirp = promisify(_mkdirp);
 
 const options: CompilerOptions = {
   declaration: true,
@@ -7,7 +14,7 @@ const options: CompilerOptions = {
   skipLibCheck: false,
 };
 
-export default function genDts(tsxFullPaths: string[]): string[] {
+export function createDts(tsxFullPaths: string[]): string[] {
   const compilerHost = createCompilerHost({});
 
   const dtsContents: string[] = [];
@@ -35,3 +42,22 @@ export default function genDts(tsxFullPaths: string[]): string[] {
 
   return dtsContents;
 }
+
+export function wrapAsModule(fileName: string, content: string) {
+  return `declare module '*/${fileName}' {
+  ${content.replace(/\n/g, '\n  ')}}`;
+}
+
+export const writeDts = memoize(
+  async function(dtsFullPath: string, tsxFullPath: string, gqlRelPath: string) {
+    await mkdirp(path.dirname(dtsFullPath));
+    const [dtsContent] = await createDts([tsxFullPath]);
+    if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
+    await writeFile(
+      dtsFullPath,
+      wrapAsModule(path.basename(gqlRelPath), dtsContent),
+    );
+    return dtsContent;
+  },
+  dtsFullPath => dtsFullPath,
+);

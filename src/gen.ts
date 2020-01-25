@@ -3,21 +3,24 @@ import path from 'path';
 import { parse as parseYaml } from 'yaml';
 import { promises as fsPromises } from 'fs';
 import glob from 'fast-glob';
-import getHash from './hash';
+import getHash from './lib/hash';
 import createCodegenOpts from './lib/create-codegen-opts';
-import genDts from './lib/gen-dts';
-import { createPaths } from './lib/paths';
-import { processGraphQLCodegen, wrapAsModule } from './lib/codegen';
-import { printInfo } from './lib/print';
+import { createDts, wrapAsModule } from './lib/dts';
+import { createDtsRelDir, createPaths } from './lib/paths';
+import { PRINT_PREFIX } from './lib/print';
 import { CommandOpts, ConfigTypes } from './lib/types';
 import { promisify } from 'util';
 import _rimraf from 'rimraf';
+import logUpdate from 'log-update';
+import { processGraphQLCodegen } from './lib/graphql-codegen';
 
 const mkdirp = promisify(_mkdirp);
 const rimraf = promisify(_rimraf);
 const { readFile, writeFile } = fsPromises;
 
 export default async function gen(commandOpts: CommandOpts): Promise<void> {
+  logUpdate(PRINT_PREFIX + 'Running graphql-codegen...');
+
   const { configPath, cwd } = commandOpts;
   const config = parseYaml(await readFile(configPath, 'utf-8')) as ConfigTypes;
 
@@ -62,18 +65,27 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
     tsSources.push({ tsxFullPath, dtsFullPath, gqlRelPath, dtsRelPath });
   }
 
+  logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
+
   await mkdirp(path.dirname(tsSources[0].dtsFullPath));
 
-  const dtsContents = genDts(tsSources.map(s => s.tsxFullPath));
+  const dtsContents = createDts(tsSources.map(s => s.tsxFullPath));
 
   for (let i = 0; i < tsSources.length; i++) {
-    const { dtsFullPath, gqlRelPath, dtsRelPath } = tsSources[i]!;
+    const { dtsFullPath, gqlRelPath } = tsSources[i]!;
     const dtsContent = dtsContents[i]!;
 
     await writeFile(
       dtsFullPath,
       wrapAsModule(path.basename(gqlRelPath), dtsContent),
     );
-    printInfo(`${dtsRelPath} was generated.`);
   }
+
+  logUpdate(
+    PRINT_PREFIX +
+      `${dtsContents.length} .d.ts were generated in ${createDtsRelDir(
+        config.generateDir,
+      )}.`,
+  );
+  logUpdate.done();
 }

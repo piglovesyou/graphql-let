@@ -3,10 +3,10 @@ import webpack from 'webpack';
 import memoryfs from 'memory-fs';
 import nodeExternals from 'webpack-node-externals';
 
-export default (
+export default function compile(
   fixture: string,
   target: 'node' | 'web',
-): Promise<webpack.Stats> => {
+): Promise<webpack.Stats> {
   const compiler = webpack({
     mode: 'production',
     context: __dirname,
@@ -48,4 +48,4 @@ export default (
       resolve(stats);
     });
   });
-};
+}
