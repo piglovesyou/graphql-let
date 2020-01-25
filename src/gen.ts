@@ -7,12 +7,13 @@ import getHash from './lib/hash';
 import createCodegenOpts from './lib/create-codegen-opts';
 import genDts from './lib/gen-dts';
 import { createDtsRelDir, createPaths } from './lib/paths';
-import { processGraphQLCodegen, wrapAsModule } from './lib/codegen';
+import { wrapAsModule } from './lib/codegen';
 import { PREFIX as PRINT_PREFIX } from './lib/print';
 import { CommandOpts, ConfigTypes } from './lib/types';
 import { promisify } from 'util';
 import _rimraf from 'rimraf';
 import logUpdate from 'log-update';
+import { processGraphQLCodegen } from './lib/graphql-codegen';
 
 const mkdirp = promisify(_mkdirp);
 const rimraf = promisify(_rimraf);
