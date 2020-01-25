@@ -6,6 +6,10 @@ import path from 'path';
 import { promisify } from 'util';
 import genDts from './gen-dts';
 import { PartialCodegenOpts } from './create-codegen-opts';
+import {
+  processGraphQLCodegen,
+  readGraphQLCodegenCache,
+} from './graphql-codegen';
 import { PREFIX as PRINT_PREFIX } from './print';
 import { ConfigTypes } from './types';
 import { existsSync } from 'fs';
@@ -20,27 +24,6 @@ const processingTasks = new Map<string /*fileFullPath*/, Promise<string>>();
 export function wrapAsModule(fileName: string, content: string) {
   return `declare module '*/${fileName}' {
   ${content.replace(/\n/g, '\n  ')}}`;
-}
-
-export async function processGraphQLCodegen(
-  codegenOpts: PartialCodegenOpts,
-  tsxFullPath: string,
-  gqlRelPath: string,
-  gqlContent: string,
-): Promise<string> {
-  const tsxContent = await graphqlCodegen({
-    ...codegenOpts,
-    filename: tsxFullPath,
-    documents: [
-      {
-        filePath: gqlRelPath,
-        content: gql(gqlContent),
-      },
-    ],
-  });
-  await mkdirp(path.dirname(tsxFullPath));
-  await writeFile(tsxFullPath, tsxContent);
-  return tsxContent;
 }
 
 async function processGenDts(
@@ -67,23 +50,14 @@ export async function codegen(
   options: ConfigTypes,
   codegenOpts: PartialCodegenOpts,
 ): Promise<string> {
-  let tsxContent: string;
-  if (existsSync(tsxFullPath)) {
-    tsxContent = await readFile(tsxFullPath, 'utf-8');
-  } else if (processingTasks.has(tsxFullPath)) {
-    tsxContent = await processingTasks.get(tsxFullPath)!;
-  } else {
-    logUpdate(PRINT_PREFIX + 'Running graphql-codegen...');
-    const tsxPromise = processGraphQLCodegen(
+  const tsxContent =
+    (await readGraphQLCodegenCache(tsxFullPath)) ||
+    (await processGraphQLCodegen(
       codegenOpts,
       tsxFullPath,
       gqlRelPath,
       gqlContent,
-    );
-    processingTasks.set(tsxFullPath, tsxPromise);
-    tsxContent = await tsxPromise;
-    processingTasks.delete(tsxFullPath);
-  }
+    ));
 
   if (existsSync(dtsFullPath) || processingTasks.has(dtsFullPath)) {
     // Already exists or is processing. Just skip.
