@@ -13,7 +13,7 @@ import { CommandOpts, ConfigTypes } from './lib/types';
 import { promisify } from 'util';
 import _rimraf from 'rimraf';
 import logUpdate from 'log-update';
-import { processGraphQLCodegen } from './lib/graphql-codegen';
+import processGraphQLCodegen from './lib/graphql-codegen';
 
 const mkdirp = promisify(_mkdirp);
 const rimraf = promisify(_rimraf);

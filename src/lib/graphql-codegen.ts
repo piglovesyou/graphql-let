@@ -1,18 +1,16 @@
 import { codegen as graphqlCodegen } from '@graphql-codegen/core';
-import { existsSync, promises as fsPromises } from 'fs';
+import { promises as fsPromises } from 'fs';
 import gql from 'graphql-tag';
 import _mkdirp from 'mkdirp';
 import path from 'path';
 import { promisify } from 'util';
 import { PartialCodegenOpts } from './create-codegen-opts';
+import memoize from './memoize';
 
-const { readFile, writeFile } = fsPromises;
+const { writeFile } = fsPromises;
 const mkdirp = promisify(_mkdirp);
 
-// For the loader can process a same file simultaneously
-const processingTasks = new Map</*fileFullPath*/ string, Promise<string>>();
-
-export async function processGraphQLCodegen(
+async function _processGraphQLCodegen(
   codegenOpts: PartialCodegenOpts,
   tsxFullPath: string,
   gqlRelPath: string,
@@ -33,13 +31,9 @@ export async function processGraphQLCodegen(
   return tsxContent;
 }
 
-export async function readGraphQLCodegenCache(
-  tsxFullPath: string,
-): Promise<string | null> {
-  if (existsSync(tsxFullPath)) {
-    return await readFile(tsxFullPath, 'utf-8');
-  } else if (processingTasks.has(tsxFullPath)) {
-    return await processingTasks.get(tsxFullPath)!;
-  }
-  return null;
-}
+const processGraphQLCodegen = memoize(
+  _processGraphQLCodegen,
+  (_, tsxFullPath) => tsxFullPath,
+);
+
+export default processGraphQLCodegen;

@@ -1,15 +1,10 @@
-import { codegen as graphqlCodegen } from '@graphql-codegen/core';
 import { promises as fsPromises } from 'fs';
-import gql from 'graphql-tag';
 import _mkdirp from 'mkdirp';
 import path from 'path';
 import { promisify } from 'util';
 import genDts from './gen-dts';
 import { PartialCodegenOpts } from './create-codegen-opts';
-import {
-  processGraphQLCodegen,
-  readGraphQLCodegenCache,
-} from './graphql-codegen';
+import processGraphQLCodegen from './graphql-codegen';
 import { PREFIX as PRINT_PREFIX } from './print';
 import { ConfigTypes } from './types';
 import { existsSync } from 'fs';
@@ -50,14 +45,17 @@ export async function codegen(
   options: ConfigTypes,
   codegenOpts: PartialCodegenOpts,
 ): Promise<string> {
-  const tsxContent =
-    (await readGraphQLCodegenCache(tsxFullPath)) ||
-    (await processGraphQLCodegen(
+  let tsxContent: string;
+  if (existsSync(tsxFullPath)) {
+    tsxContent = await readFile(tsxFullPath, 'utf-8');
+  } else {
+    tsxContent = await processGraphQLCodegen(
       codegenOpts,
       tsxFullPath,
       gqlRelPath,
       gqlContent,
-    ));
+    );
+  }
 
   if (existsSync(dtsFullPath) || processingTasks.has(dtsFullPath)) {
     // Already exists or is processing. Just skip.
