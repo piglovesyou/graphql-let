@@ -10,7 +10,7 @@ import memoize from './memoize';
 const { writeFile } = fsPromises;
 const mkdirp = promisify(_mkdirp);
 
-async function _processGraphQLCodegen(
+async function writeGraphQLCodegen(
   codegenOpts: PartialCodegenOpts,
   tsxFullPath: string,
   gqlRelPath: string,
@@ -31,9 +31,7 @@ async function _processGraphQLCodegen(
   return tsxContent;
 }
 
-const processGraphQLCodegen = memoize(
-  _processGraphQLCodegen,
+export const processGraphQLCodegen = memoize(
+  writeGraphQLCodegen,
   (_, tsxFullPath) => tsxFullPath,
 );
-
-export default processGraphQLCodegen;

@@ -2,9 +2,9 @@ import { promises as fsPromises } from 'fs';
 import _mkdirp from 'mkdirp';
 import path from 'path';
 import { promisify } from 'util';
-import genDts from './gen-dts';
+import { createDts } from './create-dts';
 import { PartialCodegenOpts } from './create-codegen-opts';
-import processGraphQLCodegen from './graphql-codegen';
+import { processGraphQLCodegen } from './graphql-codegen';
 import { PREFIX as PRINT_PREFIX } from './print';
 import { ConfigTypes } from './types';
 import { existsSync } from 'fs';
@@ -27,7 +27,7 @@ async function processGenDts(
   gqlRelPath: string,
 ) {
   await mkdirp(path.dirname(dtsFullPath));
-  const [dtsContent] = await genDts([tsxFullPath]);
+  const [dtsContent] = await createDts([tsxFullPath]);
   if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
   await writeFile(
     dtsFullPath,

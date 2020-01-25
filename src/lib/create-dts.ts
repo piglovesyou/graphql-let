@@ -1,5 +1,6 @@
 import path from 'path';
 import { createCompilerHost, createProgram, CompilerOptions } from 'typescript';
+import memoize from './memoize';
 
 const options: CompilerOptions = {
   declaration: true,
@@ -7,7 +8,7 @@ const options: CompilerOptions = {
   skipLibCheck: false,
 };
 
-export default function genDts(tsxFullPaths: string[]): string[] {
+export function createDts(tsxFullPaths: string[]): string[] {
   const compilerHost = createCompilerHost({});
 
   const dtsContents: string[] = [];

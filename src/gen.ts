@@ -5,7 +5,7 @@ import { promises as fsPromises } from 'fs';
 import glob from 'fast-glob';
 import getHash from './lib/hash';
 import createCodegenOpts from './lib/create-codegen-opts';
-import genDts from './lib/gen-dts';
+import { createDts } from './lib/create-dts';
 import { createDtsRelDir, createPaths } from './lib/paths';
 import { wrapAsModule } from './lib/codegen';
 import { PREFIX as PRINT_PREFIX } from './lib/print';
@@ -13,7 +13,7 @@ import { CommandOpts, ConfigTypes } from './lib/types';
 import { promisify } from 'util';
 import _rimraf from 'rimraf';
 import logUpdate from 'log-update';
-import processGraphQLCodegen from './lib/graphql-codegen';
+import { processGraphQLCodegen } from './lib/graphql-codegen';
 
 const mkdirp = promisify(_mkdirp);
 const rimraf = promisify(_rimraf);
@@ -70,7 +70,7 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
 
   await mkdirp(path.dirname(tsSources[0].dtsFullPath));
 
-  const dtsContents = genDts(tsSources.map(s => s.tsxFullPath));
+  const dtsContents = createDts(tsSources.map(s => s.tsxFullPath));
 
   for (let i = 0; i < tsSources.length; i++) {
     const { dtsFullPath, gqlRelPath } = tsSources[i]!;
