@@ -36,9 +36,7 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
       )}. Check "documents" in .graphql-let.yml.`,
     );
   }
-
-  // XXX: Rough implementation to patch a performance issue
-  const tsSources: {
+  const codegenContexts: {
     tsxFullPath: string;
     dtsFullPath: string;
     dtsRelPath: string;
@@ -62,18 +60,16 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
       gqlContent,
     );
 
-    tsSources.push({ tsxFullPath, dtsFullPath, gqlRelPath, dtsRelPath });
+    codegenContexts.push({ tsxFullPath, dtsFullPath, gqlRelPath, dtsRelPath });
   }
 
   logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
+  const dtsContents = createDts(codegenContexts.map(s => s.tsxFullPath));
 
-  await mkdirp(path.dirname(tsSources[0].dtsFullPath));
+  await mkdirp(path.dirname(codegenContexts[0].dtsFullPath));
 
-  const dtsContents = createDts(tsSources.map(s => s.tsxFullPath));
-
-  for (let i = 0; i < tsSources.length; i++) {
-    const { dtsFullPath, gqlRelPath } = tsSources[i]!;
-    const dtsContent = dtsContents[i]!;
+  for (const [i, dtsContent] of dtsContents.entries()) {
+    const { dtsFullPath, gqlRelPath } = codegenContexts[i]!;
 
     await writeFile(
       dtsFullPath,

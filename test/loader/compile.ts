@@ -30,7 +30,7 @@ export default function compile(
                 presets: ['@babel/preset-react', '@babel/preset-typescript'],
               },
             },
-            { loader: path.resolve(__dirname, '../src/loader.ts') },
+            { loader: path.resolve(__dirname, '../../src/loader.ts') },
           ],
         },
       ],

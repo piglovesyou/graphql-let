@@ -2,7 +2,7 @@
 
 import path from 'path';
 import assert from 'assert';
-import gen from '../src/gen';
+import gen from '../../src/gen';
 import glob from 'fast-glob';
 import { promisify } from 'util';
 import _rimraf from 'rimraf';
@@ -24,7 +24,7 @@ test(
     const { length, 0: actual } = await glob('__generated__/types/**', {
       cwd: __dirname,
     });
-    assert.strictEqual(length, 1);
+    assert.strictEqual(length, 2);
     assert(expect.test(actual));
   },
   60 * 1000,
