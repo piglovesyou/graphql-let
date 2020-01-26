@@ -1,14 +1,12 @@
 import { codegen as graphqlCodegen } from '@graphql-codegen/core';
 import { promises as fsPromises } from 'fs';
 import gql from 'graphql-tag';
-import _mkdirp from 'mkdirp';
+import makeDir from 'make-dir';
 import path from 'path';
-import { promisify } from 'util';
 import createCodegenOpts, { PartialCodegenOpts } from './create-codegen-opts';
 import { ConfigTypes } from './types';
 
 const { writeFile } = fsPromises;
-const mkdirp = promisify(_mkdirp);
 
 export async function processGraphQLCodegen(
   codegenOpts: PartialCodegenOpts,
@@ -26,7 +24,7 @@ export async function processGraphQLCodegen(
       },
     ],
   });
-  await mkdirp(path.dirname(tsxFullPath));
+  await makeDir(path.dirname(tsxFullPath));
   await writeFile(tsxFullPath, tsxContent);
   return tsxContent;
 }

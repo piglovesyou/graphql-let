@@ -1,4 +1,4 @@
-import _mkdirp from 'mkdirp';
+import makeDir from 'make-dir';
 import path from 'path';
 import { parse as parseYaml } from 'yaml';
 import { promises as fsPromises } from 'fs';
@@ -15,7 +15,6 @@ import _rimraf from 'rimraf';
 import logUpdate from 'log-update';
 import { processGraphQLCodegen as _processGraphQLCodegen } from './lib/graphql-codegen';
 
-const mkdirp = promisify(_mkdirp);
 const rimraf = promisify(_rimraf);
 const { readFile, writeFile } = fsPromises;
 const processGraphQLCodegen = memoize(
@@ -71,7 +70,7 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
   logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
   const dtsContents = genDts(codegenContexts.map(s => s.tsxFullPath));
 
-  await mkdirp(path.dirname(codegenContexts[0].dtsFullPath));
+  await makeDir(path.dirname(codegenContexts[0].dtsFullPath));
 
   for (const [i, dtsContent] of dtsContents.entries()) {
     const { dtsFullPath, gqlRelPath } = codegenContexts[i]!;

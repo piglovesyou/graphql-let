@@ -151,7 +151,7 @@ const News: React.FC = () => {
 
 _Yes._
 
-#### Do I have to use React?
+#### Is this a tool only for React?
 
 No. There are [more plugins that also generates `.ts` from GraphQL documents](https://graphql-code-generator.com/docs/plugins/).
 
@@ -159,9 +159,9 @@ No. There are [more plugins that also generates `.ts` from GraphQL documents](ht
 
 Afraid not. You need to have separate files to execute the webpack loader. Besides, typing the value of ``gql`...` `` would be impossible.
 
-#### What's the extension `.graphqls`? Do I have to use it for schema and `.graphql` for documents?
+#### What's the extension `.graphqls`? Should I use it for schema and `.graphql` for documents?
 
-Not exactly, but I'd recommend it. I think the difference between the extensions leads to a more understandable configuration for the webpack loaders with fewer pitfalls. Another reason for `.graphqls` is that it's one of [the supported extensions in the internal library](https://github.com/ardatan/graphql-toolkit/blob/d29e518a655c02e3e14377c8c7d3de61f08e6200/packages/loaders/graphql-file/src/index.ts#L9).
+Not exactly, but I'd recommend them. I think using different extensions for schema/documents leads to a more understandable configuration for webpack loaders with fewer pitfalls. Another reason for `.graphqls` is that it's one of [the supported extensions in the internal library](https://github.com/ardatan/graphql-toolkit/blob/d29e518a655c02e3e14377c8c7d3de61f08e6200/packages/loaders/graphql-file/src/index.ts#L9).
 
 ## License
 

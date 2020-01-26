@@ -25,7 +25,7 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
   // Wrap them because loader.Loader doesn't expect Promise as the returned value
   (async () => {
     try {
-      const { resourcePath: gqlFullPath, rootContext: userDir, target } = this;
+      const { resourcePath: gqlFullPath, rootContext: userDir } = this;
       const configPath = pathJoin(userDir, DEFAULT_CONFIG_FILENAME);
       const config = parseYaml(
         await readFile(configPath, 'utf-8'),
@@ -55,7 +55,7 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
       if (!existsSync(dtsFullPath)) {
         logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
         await processGenDts(dtsFullPath, tsxFullPath, gqlRelPath);
-        logUpdate(PRINT_PREFIX + `${dtsRelPath} was generated for ${target}.`);
+        logUpdate(PRINT_PREFIX + `${dtsRelPath} was generated.`);
         // Hack to prevent duplicated logs for simultaneous build, in SSR app for an example.
         await new Promise(resolve => setTimeout(resolve, 0));
         logUpdate.done();
