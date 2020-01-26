@@ -1,11 +1,9 @@
 import { promises as fsPromises } from 'fs';
-import _mkdirp from 'mkdirp';
+import makeDir from 'make-dir';
 import path from 'path';
 import { createCompilerHost, createProgram, CompilerOptions } from 'typescript';
-import { promisify } from 'util';
 
 const { writeFile } = fsPromises;
-const mkdirp = promisify(_mkdirp);
 
 const options: CompilerOptions = {
   declaration: true,
@@ -57,7 +55,7 @@ export async function processGenDts(
   tsxFullPath: string,
   gqlRelPath: string,
 ) {
-  await mkdirp(path.dirname(dtsFullPath));
+  await makeDir(path.dirname(dtsFullPath));
   const [dtsContent] = await genDts([tsxFullPath]);
   if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
   await writeFile(
