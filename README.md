@@ -54,11 +54,12 @@ Run this command to have a configuration template.
 
 ```
 npx graphql-let init
+# This will generate .graphql-let.yml
 ```
 
-You now have a file `.graphql-let.yml` on your directory. **Please note you have to generate TypeScript source** here.
+Next add [graphql-codegen plugins](https://graphql-code-generator.com/docs/plugins/#available-plugins) in it. **Please note that you have to generate TypeScript source** by the plugins.
 
-Edit like this:
+Edit it like this:
 
 ```diff
  generateDir: __generated__
