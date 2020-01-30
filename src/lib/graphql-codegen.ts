@@ -19,8 +19,8 @@ export async function processGraphQLCodegen(
     filename: tsxFullPath,
     documents: [
       {
-        filePath: gqlRelPath,
-        content: gql(gqlContent),
+        location: gqlRelPath,
+        document: gql(gqlContent),
       },
     ],
   });
