@@ -19,4 +19,7 @@ yarn-error.log*
 dist
 *.tgz
 
+# To develop with closer deps version that users will use
+yarn.lock
+
 *.graphql.d.ts
