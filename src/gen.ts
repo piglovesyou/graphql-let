@@ -9,6 +9,10 @@ import { genDts, wrapAsModule } from './lib/dts';
 import memoize from './lib/memoize';
 import { createDtsRelDir, createPaths } from './lib/paths';
 import { PRINT_PREFIX } from './lib/print';
+import {
+  processGenerateResolverTypes,
+  shouldGenResolverTypes,
+} from './lib/resolver-types';
 import { CommandOpts, ConfigTypes } from './lib/types';
 import { promisify } from 'util';
 import _rimraf from 'rimraf';
@@ -75,15 +79,22 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
   for (const [i, dtsContent] of dtsContents.entries()) {
     const { dtsFullPath, gqlRelPath } = codegenContexts[i]!;
 
-    await writeFile(
-      dtsFullPath,
-      wrapAsModule(path.basename(gqlRelPath), dtsContent),
-    );
+    await writeFile(dtsFullPath, wrapAsModule(gqlRelPath, dtsContent));
   }
 
+  if (shouldGenResolverTypes(commandOpts, config)) {
+    logUpdate(
+      PRINT_PREFIX +
+        `Local schema files are detected. Generating resolver types...`,
+    );
+    await processGenerateResolverTypes(cwd, config, codegenOpts);
+  }
+
+  const dtsLength =
+    dtsContents.length + (shouldGenResolverTypes(commandOpts, config) ? 1 : 0);
   logUpdate(
     PRINT_PREFIX +
-      `${dtsContents.length} .d.ts were generated in ${createDtsRelDir(
+      `${dtsLength} .d.ts were generated in ${createDtsRelDir(
         config.generateDir,
       )}.`,
   );

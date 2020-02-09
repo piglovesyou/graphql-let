@@ -12,20 +12,29 @@ const rimraf = promisify(_rimraf);
 test(
   '"graphql-let" generates .d.ts',
   async () => {
-    const expect = new RegExp(
-      '^__generated__/types/viewer.graphql-[a-z\\d]+.d.ts$',
-    );
+    const expectDtsLength = 3; // 2 for documents and 1 for schema
 
     await rimraf(path.join(__dirname, '__generated__'));
     await gen({
       cwd: __dirname,
       configPath: path.join(__dirname, '.graphql-let.yml'),
+      noResolverTypes: false,
     });
-    const { length, 0: actual } = await glob('__generated__/types/**', {
+
+    const globResults = await glob('__generated__/types/**', {
       cwd: __dirname,
     });
-    assert.strictEqual(length, 2);
-    assert(expect.test(actual));
+    const { length } = globResults;
+    assert.strictEqual(length, expectDtsLength);
+
+    const [schema, doc1, doc2] = globResults.sort();
+    const genDir = '^__generated__/types';
+    const hash = '[a-z\\d]+';
+    assert(new RegExp(`${genDir}/viewer.graphql-${hash}.d.ts$`).test(doc1));
+    assert(new RegExp(`${genDir}/viewer2.graphql-${hash}.d.ts$`).test(doc2));
+    assert(
+      new RegExp(`${genDir}/__concatedschema__-${hash}.d.ts$`).test(schema),
+    );
   },
   60 * 1000,
 );

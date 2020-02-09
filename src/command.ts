@@ -37,7 +37,8 @@ function createOpts(): CommandOpts {
     cwd,
     argv.config || argv.c || DEFAULT_CONFIG_FILENAME,
   );
-  return { cwd, configPath };
+  const noResolverTypes = argv.noResolverTypes;
+  return { cwd, configPath, noResolverTypes };
 }
 
 function command(command: string) {

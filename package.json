@@ -39,6 +39,7 @@
     "@graphql-codegen/typescript": "^1.12.1",
     "@graphql-codegen/typescript-operations": "^1.12.1",
     "@graphql-codegen/typescript-react-apollo": "^1.12.1",
+    "@graphql-codegen/typescript-resolvers": "^1.12.2",
     "@types/babel__core": "^7.1.3",
     "@types/eslint": "^6.1.7",
     "@types/eslint-plugin-prettier": "^2.2.0",
