@@ -1,8 +1,13 @@
+import glob from 'fast-glob';
+import { promises } from 'fs';
 import { PartialCodegenOpts } from './create-codegen-opts';
+import getHash from './hash';
 import { createPaths, isURL } from './paths';
 import { printInfo } from './print';
 import { CommandOpts, ConfigTypes } from './types';
 import { processGraphQLCodegen } from './graphql-codegen';
+
+const { readFile } = promises;
 
 export function shouldGenResolverTypes(
   commandOpts: CommandOpts,
@@ -25,17 +30,30 @@ To suppress this message, put --no-resolver-types to your command.
   }
 }
 
+async function getHashOfSchema(cwd: string, schemaPattern: string) {
+  // Instead of concatenating all the schema content,
+  // concatenating hashes for the contents to save memory.
+  const hashes: string[] = [];
+  for (const schemaFullPath of await glob(schemaPattern, { cwd })) {
+    const content = await readFile(schemaFullPath);
+    hashes.push(getHash(content));
+  }
+  return getHash(hashes.join(''));
+}
+
 export async function processGenerateResolverTypes(
   cwd: string,
   config: ConfigTypes,
   codegenOpts: PartialCodegenOpts,
 ) {
+  const hash = await getHashOfSchema(cwd, config.schema);
   const { tsxFullPath, gqlRelPath, dtsFullPath } = createPaths(
     cwd,
     config.generateDir,
     '__concatedschema__',
-    'xxx',
+    hash,
   );
+
   await processGraphQLCodegen(
     {
       ...codegenOpts,
@@ -52,5 +70,6 @@ export async function processGenerateResolverTypes(
     gqlRelPath,
     '',
   );
+
   return { tsxFullPath, dtsFullPath };
 }
