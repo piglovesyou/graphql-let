@@ -45,17 +45,17 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
       )}. Check "documents" in .graphql-let.yml.`,
     );
   }
-  const codegenContexts: {
+
+  const codegenContext: {
     tsxFullPath: string;
     dtsFullPath: string;
-    dtsRelPath: string;
     gqlRelPath: string;
   }[] = [];
 
   for (const gqlRelPath of gqlRelPaths) {
     const gqlContent = await readFile(path.join(cwd, gqlRelPath), 'utf-8');
 
-    const { tsxFullPath, dtsFullPath, dtsRelPath } = createPaths(
+    const { tsxFullPath, dtsFullPath } = createPaths(
       cwd,
       config.generateDir,
       gqlRelPath,
@@ -69,55 +69,39 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
       gqlContent,
     );
 
-    codegenContexts.push({ tsxFullPath, dtsFullPath, gqlRelPath, dtsRelPath });
+    codegenContext.push({ tsxFullPath, dtsFullPath, gqlRelPath });
   }
-
-  const documentsTsxPaths = codegenContexts.map(s => s.tsxFullPath);
-  let resolverTypesResult: Maybe<{ tsxFullPath: string; dtsFullPath: string }>;
 
   if (shouldGenResolverTypes(commandOpts, config)) {
     logUpdate(
       PRINT_PREFIX +
         `Local schema files are detected. Generating resolver types...`,
     );
-    resolverTypesResult = await processGenerateResolverTypes(
+    const { tsxFullPath, dtsFullPath } = await processGenerateResolverTypes(
       cwd,
       config,
       codegenOpts,
     );
+    codegenContext.push({
+      tsxFullPath,
+      dtsFullPath,
+      gqlRelPath: config.schema,
+    });
   }
 
   logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
-  const dtsResults = genDts(
-    resolverTypesResult
-      ? [resolverTypesResult.tsxFullPath, ...documentsTsxPaths]
-      : documentsTsxPaths,
-  );
+  const dtsContents = genDts(codegenContext.map(s => s.tsxFullPath));
 
-  let dtsContents: string[];
-  let schemaDtsContent: Maybe<string>;
-
-  await makeDir(path.dirname(codegenContexts[0].dtsFullPath));
-
-  if (resolverTypesResult) {
-    [schemaDtsContent, ...dtsContents] = dtsResults;
-    await writeFile(
-      resolverTypesResult.dtsFullPath,
-      wrapAsModule(config.schema, schemaDtsContent),
-    );
-  } else {
-    dtsContents = dtsResults;
-  }
-
+  await makeDir(path.dirname(codegenContext[0].dtsFullPath));
   for (const [i, dtsContent] of dtsContents.entries()) {
-    const { dtsFullPath, gqlRelPath } = codegenContexts[i]!;
+    const { dtsFullPath, gqlRelPath } = codegenContext[i]!;
 
     await writeFile(dtsFullPath, wrapAsModule(gqlRelPath, dtsContent));
   }
 
   logUpdate(
     PRINT_PREFIX +
-      `${dtsResults.length} .d.ts were generated in ${createDtsRelDir(
+      `${dtsContents.length} .d.ts were generated in ${createDtsRelDir(
         config.generateDir,
       )}.`,
   );

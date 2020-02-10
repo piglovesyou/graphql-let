@@ -34,7 +34,10 @@ async function getHashOfSchema(cwd: string, schemaPattern: string) {
   // Instead of concatenating all the schema content,
   // concatenating hashes for the contents to save memory.
   const hashes: string[] = [];
-  for (const schemaFullPath of await glob(schemaPattern, { cwd })) {
+  for (const schemaFullPath of await glob(schemaPattern, {
+    cwd,
+    absolute: true,
+  })) {
     const content = await readFile(schemaFullPath);
     hashes.push(getHash(content));
   }
@@ -71,5 +74,5 @@ export async function processGenerateResolverTypes(
     '',
   );
 
-  return { tsxFullPath, dtsFullPath };
+  return { tsxFullPath, dtsFullPath, gqlRelPath };
 }
