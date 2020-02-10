@@ -1,4 +1,4 @@
-import { join as pathJoin, basename, extname, isAbsolute } from 'path';
+import { join as pathJoin, isAbsolute } from 'path';
 import { GraphQLSchema, parse, printSchema, DocumentNode } from 'graphql';
 import { CodegenContext } from '@graphql-codegen/cli';
 import { Types } from '@graphql-codegen/plugin-helpers';

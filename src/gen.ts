@@ -1,3 +1,4 @@
+import Maybe from 'graphql/tsutils/Maybe';
 import makeDir from 'make-dir';
 import path from 'path';
 import { parse as parseYaml } from 'yaml';
@@ -71,10 +72,42 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
     codegenContexts.push({ tsxFullPath, dtsFullPath, gqlRelPath, dtsRelPath });
   }
 
+  const documentsTsxPaths = codegenContexts.map(s => s.tsxFullPath);
+  let resolverTypesResult: Maybe<{ tsxFullPath: string; dtsFullPath: string }>;
+
+  if (shouldGenResolverTypes(commandOpts, config)) {
+    logUpdate(
+      PRINT_PREFIX +
+        `Local schema files are detected. Generating resolver types...`,
+    );
+    resolverTypesResult = await processGenerateResolverTypes(
+      cwd,
+      config,
+      codegenOpts,
+    );
+  }
+
   logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
-  const dtsContents = genDts(codegenContexts.map(s => s.tsxFullPath));
+  const dtsResults = genDts(
+    resolverTypesResult
+      ? [resolverTypesResult.tsxFullPath, ...documentsTsxPaths]
+      : documentsTsxPaths,
+  );
+
+  let dtsContents: string[];
+  let schemaDtsContent: Maybe<string>;
 
   await makeDir(path.dirname(codegenContexts[0].dtsFullPath));
+
+  if (resolverTypesResult) {
+    [schemaDtsContent, ...dtsContents] = dtsResults;
+    await writeFile(
+      resolverTypesResult.dtsFullPath,
+      wrapAsModule(config.schema, schemaDtsContent),
+    );
+  } else {
+    dtsContents = dtsResults;
+  }
 
   for (const [i, dtsContent] of dtsContents.entries()) {
     const { dtsFullPath, gqlRelPath } = codegenContexts[i]!;
@@ -82,19 +115,9 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
     await writeFile(dtsFullPath, wrapAsModule(gqlRelPath, dtsContent));
   }
 
-  if (shouldGenResolverTypes(commandOpts, config)) {
-    logUpdate(
-      PRINT_PREFIX +
-        `Local schema files are detected. Generating resolver types...`,
-    );
-    await processGenerateResolverTypes(cwd, config, codegenOpts);
-  }
-
-  const dtsLength =
-    dtsContents.length + (shouldGenResolverTypes(commandOpts, config) ? 1 : 0);
   logUpdate(
     PRINT_PREFIX +
-      `${dtsLength} .d.ts were generated in ${createDtsRelDir(
+      `${dtsResults.length} .d.ts were generated in ${createDtsRelDir(
         config.generateDir,
       )}.`,
   );

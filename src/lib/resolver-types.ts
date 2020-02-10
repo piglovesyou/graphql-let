@@ -1,13 +1,8 @@
-import { promises as fsPromises } from 'fs';
-import path from 'path';
 import { PartialCodegenOpts } from './create-codegen-opts';
-import { genDts, wrapAsModule } from './dts';
 import { createPaths, isURL } from './paths';
 import { printInfo } from './print';
 import { CommandOpts, ConfigTypes } from './types';
 import { processGraphQLCodegen } from './graphql-codegen';
-
-const { writeFile } = fsPromises;
 
 export function shouldGenResolverTypes(
   commandOpts: CommandOpts,
@@ -28,10 +23,6 @@ To suppress this message, put --no-resolver-types to your command.
 `);
     return false;
   }
-}
-
-export function getGenResolverTypes(p: string): string {
-  return `*/${path.basename(p)}`;
 }
 
 export async function processGenerateResolverTypes(
@@ -61,8 +52,5 @@ export async function processGenerateResolverTypes(
     gqlRelPath,
     '',
   );
-
-  const [dtsContent] = genDts([tsxFullPath]);
-
-  await writeFile(dtsFullPath, wrapAsModule(config.schema, dtsContent));
+  return { tsxFullPath, dtsFullPath };
 }
