@@ -1,4 +1,3 @@
-import Maybe from 'graphql/tsutils/Maybe';
 import makeDir from 'make-dir';
 import path from 'path';
 import { parse as parseYaml } from 'yaml';

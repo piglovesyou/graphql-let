@@ -3,7 +3,6 @@ import { promises } from 'fs';
 import { PartialCodegenOpts } from './create-codegen-opts';
 import getHash from './hash';
 import { createPaths, isURL } from './paths';
-import { printInfo } from './print';
 import { CommandOpts, ConfigTypes } from './types';
 import { processGraphQLCodegen } from './graphql-codegen';
 
@@ -13,7 +12,6 @@ export function shouldGenResolverTypes(
   commandOpts: CommandOpts,
   config: ConfigTypes,
 ) {
-  if (commandOpts.noResolverTypes) return;
   if (isURL(config.schema)) return;
 
   try {
@@ -21,11 +19,7 @@ export function shouldGenResolverTypes(
     require('@graphql-codegen/typescript-resolvers');
     return true;
   } catch (e) {
-    printInfo(`To generate schema resolver types, you have to add as deps:
- * @graphql-codegen/typescript
- * @graphql-codegen/typescript-resolvers
-To suppress this message, put --no-resolver-types to your command.
-`);
+    // Just skip.
     return false;
   }
 }

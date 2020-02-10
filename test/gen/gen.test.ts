@@ -18,7 +18,6 @@ test(
     await gen({
       cwd: __dirname,
       configPath: path.join(__dirname, '.graphql-let.yml'),
-      noResolverTypes: false,
     });
 
     const globResults = await glob('__generated__/types/**', {

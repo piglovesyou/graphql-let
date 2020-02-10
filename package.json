@@ -82,6 +82,9 @@
     "graphql-tag": "*",
     "typescript": "*"
   },
+  "optionalDependencies": {
+    "@graphql-codegen/typescript-resolvers": "*"
+  },
   "lint-staged": {
     "*.ts": [
       "yarn fix",

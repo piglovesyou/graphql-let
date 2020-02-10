@@ -1,7 +1,6 @@
 export type CommandOpts = {
   cwd: string;
   configPath: string;
-  noResolverTypes: boolean;
 };
 
 export type ConfigTypes = {
