@@ -5,7 +5,6 @@ import { CommandOpts } from './lib/types';
 import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 
 const argv = minimist(process.argv.slice(2));
-
 const HELP_TEXT = `Usage: graphql-let [command]
 
 graphql-let         Generates .graphql.d.ts beside all GraphQL documents based on .graphql-let.yml config

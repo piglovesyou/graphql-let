@@ -43,8 +43,8 @@ export function genDts(tsxFullPaths: string[]): string[] {
         'TypeScript API was not expected as graphql-let developer, it needs to be fixed',
       );
     }
-    // TODO: Refactor. This should be handled as yield value,
-    // so that the results won't put pressure on our memory.
+    // TODO: It's more preferable to consuming dtsCnotent here
+    // instead of pile them up on memory. Any idea?
     dtsContents.push(dtsContent);
   };
 
