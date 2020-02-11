@@ -3,20 +3,12 @@ import { GraphQLSchema, parse, printSchema, DocumentNode } from 'graphql';
 import { CodegenContext } from '@graphql-codegen/cli';
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { ConfigTypes } from './types';
+import { isURL } from './paths';
 
 export type PartialCodegenOpts = Pick<
   Types.GenerateOptions,
   'schema' | 'config' | 'plugins' | 'pluginMap'
 >;
-
-function isURL(path: string): boolean {
-  try {
-    new URL(path);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
 
 function loadSchema(pointer: Types.Schema) {
   return CodegenContext.prototype.loadSchema.call(

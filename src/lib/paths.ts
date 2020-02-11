@@ -30,3 +30,12 @@ export function createPaths(
     dtsRelPath,
   };
 }
+
+export function isURL(p: string): boolean {
+  try {
+    new URL(p);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}

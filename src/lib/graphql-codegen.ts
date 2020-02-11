@@ -1,4 +1,4 @@
-import { codegen as graphqlCodegen } from '@graphql-codegen/core';
+import { codegen } from '@graphql-codegen/core';
 import { promises as fsPromises } from 'fs';
 import gql from 'graphql-tag';
 import makeDir from 'make-dir';
@@ -14,15 +14,19 @@ export async function processGraphQLCodegen(
   gqlRelPath: string,
   gqlContent: string,
 ): Promise<string> {
-  const tsxContent = await graphqlCodegen({
+  const documents = gqlContent
+    ? [
+        {
+          location: gqlRelPath,
+          document: gql(gqlContent),
+        },
+      ]
+    : [];
+
+  const tsxContent = await codegen({
     ...codegenOpts,
     filename: tsxFullPath,
-    documents: [
-      {
-        location: gqlRelPath,
-        document: gql(gqlContent),
-      },
-    ],
+    documents,
   });
   await makeDir(path.dirname(tsxFullPath));
   await writeFile(tsxFullPath, tsxContent);

@@ -146,6 +146,36 @@ const News: React.FC = () => {
 }
 ```
 
+## Experimental feature: Resolver Types
+
+If you:
+
+* have local GraphQL schema files (`.graphqls`)
+* have installed [`@graphql-codegen/typescript-resolvers`](https://graphql-code-generator.com/docs/plugins/typescript-resolvers) in dependencies
+
+, graphql-let command will generate `__concatedschema__-*.d.ts` to help you write GraphQL resolvers. Run: 
+
+```bash
+yarn add -D @graphql-codegen/typescript-resolvers
+```
+
+then you can import `Resolver` type from any GraphQL schema files you have.
+
+```typescript
+import { Resolvers } from "./type-defs.graphqls";
+
+const resolvers: Resolvers = {
+  Query: {
+    // All typed⚡️
+    viewer(parent, args, context, info) {
+      return { ... }
+    },
+  }
+};
+
+export default resolvers;
+```
+
 ## FAQ
 
 #### So, it's just a graphql-codegen wrapper generating `d.ts`...?

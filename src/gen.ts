@@ -9,6 +9,10 @@ import { genDts, wrapAsModule } from './lib/dts';
 import memoize from './lib/memoize';
 import { createDtsRelDir, createPaths } from './lib/paths';
 import { PRINT_PREFIX } from './lib/print';
+import {
+  processGenerateResolverTypes,
+  shouldGenResolverTypes,
+} from './lib/resolver-types';
 import { CommandOpts, ConfigTypes } from './lib/types';
 import { promisify } from 'util';
 import _rimraf from 'rimraf';
@@ -40,17 +44,17 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
       )}. Check "documents" in .graphql-let.yml.`,
     );
   }
-  const codegenContexts: {
+
+  const codegenContext: {
     tsxFullPath: string;
     dtsFullPath: string;
-    dtsRelPath: string;
     gqlRelPath: string;
   }[] = [];
 
   for (const gqlRelPath of gqlRelPaths) {
     const gqlContent = await readFile(path.join(cwd, gqlRelPath), 'utf-8');
 
-    const { tsxFullPath, dtsFullPath, dtsRelPath } = createPaths(
+    const { tsxFullPath, dtsFullPath } = createPaths(
       cwd,
       config.generateDir,
       gqlRelPath,
@@ -64,21 +68,34 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
       gqlContent,
     );
 
-    codegenContexts.push({ tsxFullPath, dtsFullPath, gqlRelPath, dtsRelPath });
+    codegenContext.push({ tsxFullPath, dtsFullPath, gqlRelPath });
+  }
+
+  if (shouldGenResolverTypes(commandOpts, config)) {
+    logUpdate(
+      PRINT_PREFIX +
+        `Local schema files are detected. Generating resolver types...`,
+    );
+    const { tsxFullPath, dtsFullPath } = await processGenerateResolverTypes(
+      cwd,
+      config,
+      codegenOpts,
+    );
+    codegenContext.push({
+      tsxFullPath,
+      dtsFullPath,
+      gqlRelPath: config.schema,
+    });
   }
 
   logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
-  const dtsContents = genDts(codegenContexts.map(s => s.tsxFullPath));
+  const dtsContents = genDts(codegenContext.map(s => s.tsxFullPath));
 
-  await makeDir(path.dirname(codegenContexts[0].dtsFullPath));
-
+  await makeDir(path.dirname(codegenContext[0].dtsFullPath));
   for (const [i, dtsContent] of dtsContents.entries()) {
-    const { dtsFullPath, gqlRelPath } = codegenContexts[i]!;
+    const { dtsFullPath, gqlRelPath } = codegenContext[i]!;
 
-    await writeFile(
-      dtsFullPath,
-      wrapAsModule(path.basename(gqlRelPath), dtsContent),
-    );
+    await writeFile(dtsFullPath, wrapAsModule(gqlRelPath, dtsContent));
   }
 
   logUpdate(

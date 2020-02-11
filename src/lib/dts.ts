@@ -11,8 +11,14 @@ const options: CompilerOptions = {
   skipLibCheck: false,
 };
 
-export function wrapAsModule(fileName: string, content: string) {
-  return `declare module '*/${fileName}' {
+function getModuleNameForPath(p: string): string {
+  const baseName = path.basename(p);
+  return baseName.startsWith('*') ? baseName : '*/' + baseName;
+}
+
+export function wrapAsModule(filePath: string, content: string) {
+  const moduleName = getModuleNameForPath(filePath);
+  return `declare module '${moduleName}' {
   ${content
     .trim()
     // Not sure if it's necessary, is it?
@@ -37,6 +43,8 @@ export function genDts(tsxFullPaths: string[]): string[] {
         'TypeScript API was not expected as graphql-let developer, it needs to be fixed',
       );
     }
+    // TODO: It's more preferable to consuming dtsCnotent here
+    // instead of pile them up on memory. Any idea?
     dtsContents.push(dtsContent);
   };
 
@@ -58,9 +66,6 @@ export async function processGenDts(
   await makeDir(path.dirname(dtsFullPath));
   const [dtsContent] = await genDts([tsxFullPath]);
   if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
-  await writeFile(
-    dtsFullPath,
-    wrapAsModule(path.basename(gqlRelPath), dtsContent),
-  );
+  await writeFile(dtsFullPath, wrapAsModule(gqlRelPath, dtsContent));
   return dtsContent;
 }
