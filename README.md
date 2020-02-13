@@ -1,4 +1,4 @@
-# graphql-let ![](https://github.com/piglovesyou/graphql-let/workflows/Node%20CI/badge.svg) [![npm version](https://badge.fury.io/js/graphql-let.svg)](https://badge.fury.io/js/graphql-let)
+# graphql-let [![](https://github.com/piglovesyou/graphql-let/workflows/Node%20CI/badge.svg)](https://github.com/piglovesyou/graphql-let/actions) [![npm version](https://badge.fury.io/js/graphql-let.svg)](https://badge.fury.io/js/graphql-let)
 
 A webpack loader to import type-protected codegen results directly from GraphQL documents.
 
@@ -41,6 +41,8 @@ This is an example of **TypeScript + React + Apollo Client**. Please replace the
 
 ### 1. Install dependencies
 
+Note graphql-let is `devDependencies`.
+
 ```
 npm install -D graphql-let @graphql-codegen/cli @graphql-codegen/plugin-helpers @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo
 npm install @apollo/react-common @apollo/react-components @apollo/react-hooks
@@ -82,7 +84,8 @@ Available options:
 
 #### .gitignore
 
-You may want to exclude auto-generated files by graphql-let. Add this line in your .gitignore.
+graphql-let will generate `.d.ts` files in the same folder of `.graphql`  
+and `.graphqls`. Add these line in your .gitignore.
 
 ```diff
 +*.graphql.d.ts
@@ -109,18 +112,31 @@ The webpack loader also needs to be configured. Note that the content `graphql-l
  }
 ```
 
-### 3. Prepare types
+### 3. Generate type declarations
 
-Run this command to generate `.d.ts` for `.graphql`. You may want to run it every time before running `tsc`. Please check your npm scripts in `package.json`.
+Run this to generate `.d.ts`.
 
 ```
 npx graphql-let
-# This will generate __generated__/types/news.graphql-${hash}.d.ts
+
+# This will generate files such as:
+#   - src/query.graphql.d.ts
+#   - src/schema.graphqls.d.ts
+```
+
+You may want to run it everytime calling `tsc`. Please check your `package.json` and modify like this.
+
+```diff
+   "scripts": {
+-     "build": "tsc"
++     "build": "graphql-let && tsc"
+   },
 ```
 
 ### 4. Code more
 
-Enjoy the webpack Hot Module Replacement with the generated react-apollo hooks and IDE code assists.
+Enjoy HMR (Hot Module Replacement) of webpack with the generated  
+react-apollo hooks and IDE code assists.
 
 ```typescript jsx
 import { useNewsQuery } from './news.graphql'

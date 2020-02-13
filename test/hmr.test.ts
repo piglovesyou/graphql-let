@@ -335,7 +335,7 @@ type Query {
       stderrContent = '';
 
       /************************************************************************
-       * Correcting GraphQL schema should re-generate d.ts properly
+       * Modifying GraphQL schema should re-generate d.ts properly
        */
 
       await timeout(3 * 1000);
