@@ -1,5 +1,5 @@
 import { extname } from 'path';
-import glob from 'fast-glob';
+import glob from 'globby';
 import { promises } from 'fs';
 import { PartialCodegenOpts } from './create-codegen-opts';
 import getHash from './hash';

@@ -2,7 +2,7 @@ import makeDir from 'make-dir';
 import path from 'path';
 import { parse as parseYaml } from 'yaml';
 import { promises as fsPromises } from 'fs';
-import glob from 'fast-glob';
+import glob from 'globby';
 import getHash from './lib/hash';
 import createCodegenOpts from './lib/create-codegen-opts';
 import { genDts, wrapAsModule } from './lib/dts';

@@ -3,7 +3,7 @@
 import path from 'path';
 import assert from 'assert';
 import gen from '../../src/gen';
-import glob from 'fast-glob';
+import glob from 'globby';
 import { promisify } from 'util';
 import _rimraf from 'rimraf';
 

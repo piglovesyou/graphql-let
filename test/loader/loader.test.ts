@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import assert from 'assert';
-import glob from 'fast-glob';
+import glob from 'globby';
 import compiler from './compile';
 import { promisify } from 'util';
 import { join as pathJoin } from 'path';

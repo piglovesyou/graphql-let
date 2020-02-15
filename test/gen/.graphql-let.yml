@@ -1,11 +1,12 @@
 generateDir: __generated__
 schema:
-  - "!xx"
   - schema/**/*.graphqls
-documents:
   - "!xx"
+documents:
   - "**/*.graphql"
+  - "!xx"
 plugins:
   - typescript
   - typescript-operations
   - typescript-react-apollo
+respectGitIgnore: true
