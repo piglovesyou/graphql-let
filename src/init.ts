@@ -6,7 +6,7 @@ import { CommandOpts, ConfigTypes } from './lib/types';
 const defaultYamlContent = yamlStringify({
   generateDir: '__generated__',
   schema: ['!node_modules', '**/*.graphqls'],
-  documents: ['**/*.graphql'],
+  documents: ['!node_modules', '**/*.graphql'],
   plugins: ['typescript'],
 } as ConfigTypes);
 
