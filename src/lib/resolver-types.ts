@@ -73,28 +73,22 @@ export async function processGenerateResolverTypes(
   codegenOpts: PartialCodegenOpts,
   { dtsFullPath, dtsRelPath, gqlRelPath, tsxFullPath }: CreatedPaths,
 ) {
-  if (!existsSync(dtsFullPath)) {
-    logUpdate(
-      PRINT_PREFIX +
-        `Local schema files are detected. Generating resolver types...`,
-    );
-    await processGraphQLCodegen(
-      {
-        ...codegenOpts,
-        pluginMap: {
-          '@graphql-codegen/typescript': require('@graphql-codegen/typescript'),
-          '@graphql-codegen/typescript-resolvers': require('@graphql-codegen/typescript-resolvers'),
-        },
-        plugins: [
-          { '@graphql-codegen/typescript': {} },
-          { '@graphql-codegen/typescript-resolvers': {} },
-        ],
+  await processGraphQLCodegen(
+    {
+      ...codegenOpts,
+      pluginMap: {
+        '@graphql-codegen/typescript': require('@graphql-codegen/typescript'),
+        '@graphql-codegen/typescript-resolvers': require('@graphql-codegen/typescript-resolvers'),
       },
-      tsxFullPath,
-      gqlRelPath,
-      '',
-    );
-  }
+      plugins: [
+        { '@graphql-codegen/typescript': {} },
+        { '@graphql-codegen/typescript-resolvers': {} },
+      ],
+    },
+    tsxFullPath,
+    gqlRelPath,
+    '',
+  );
 
   const schemaPathWithExtension = getSchemaPointerWithExtension(config.schema);
   if (!schemaPathWithExtension) throw new Error('never');

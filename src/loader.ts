@@ -1,6 +1,7 @@
 import { existsSync, promises as fsPromises } from 'fs';
 import logUpdate from 'log-update';
 import glob from 'globby';
+import { memo } from 'react';
 import _rimraf from 'rimraf';
 import { promisify } from 'util';
 import { loader } from 'webpack';
@@ -12,8 +13,8 @@ import getHash from './lib/hash';
 import memoize from './lib/memoize';
 import { createPaths } from './lib/paths';
 import {
-  getHashOfSchema,
-  getSchemaPaths,
+  getHashOfSchema as _getHashOfSchema,
+  getSchemaPaths as _getSchemaPaths,
   shouldGenResolverTypes,
 } from './lib/resolver-types';
 import { ConfigTypes } from './lib/types';
@@ -28,6 +29,8 @@ const processGraphQLCodegenFromConfig = memoize(
   (_, __, tsxFullPath) => tsxFullPath,
 );
 const processGenDts = memoize(_processGenDts, dtsFullPath => dtsFullPath);
+const getSchemaPaths = memoize(_getSchemaPaths, () => 'getSchemaPaths');
+const getHashOfSchema = memoize(_getHashOfSchema, () => 'getHashOfSchema');
 
 const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
   const callback = this.async()!;
@@ -66,18 +69,18 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
         hash,
       );
 
-      // Erasing old cache in __generated__ on HMR.
-      // Otherwise the multiple `declare module "*/x.graphql"` are exposed.
-      const oldFiles = await glob([tsxRelRegex, dtsRelRegex], {
-        cwd: userDir,
-        absolute: true,
-      });
-      await Promise.all(oldFiles.map(f => rimraf(f)));
-
       let tsxContent: string;
       if (existsSync(tsxFullPath)) {
         tsxContent = await readFile(tsxFullPath, 'utf-8');
       } else {
+        // Erasing old cache in __generated__ on HMR.
+        // Otherwise the multiple `declare module "*/x.graphql"` are exposed.
+        const oldFiles = await glob([tsxRelRegex, dtsRelRegex], {
+          cwd: userDir,
+          absolute: true,
+        });
+        await Promise.all(oldFiles.map(f => rimraf(f)));
+
         logUpdate(`${PRINT_PREFIX}Running graphql-codegen...`);
         tsxContent = await processGraphQLCodegenFromConfig(
           config,
@@ -91,7 +94,7 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
       if (!existsSync(dtsFullPath)) {
         logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
         await processGenDts(dtsFullPath, tsxFullPath, gqlRelPath);
-        logUpdate(PRINT_PREFIX + `${dtsRelPath} was regenerated.`);
+        logUpdate(PRINT_PREFIX + `${dtsRelPath} was generated.`);
         // Hack to prevent duplicated logs for simultaneous build, in SSR app for an example.
         await new Promise(resolve => setTimeout(resolve, 0));
         logUpdate.done();
