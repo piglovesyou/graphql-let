@@ -1,10 +1,11 @@
+import logUpdate from 'log-update';
 import { extname } from 'path';
 import glob from 'globby';
 import slash from 'slash';
-import { promises } from 'fs';
+import { promises, existsSync } from 'fs';
 import { PartialCodegenOpts } from './create-codegen-opts';
 import getHash from './hash';
-import { createPaths, isURL } from './paths';
+import { CreatedPaths, isURL } from './paths';
 import { PRINT_PREFIX } from './print';
 import { ConfigTypes } from './types';
 import { processGraphQLCodegen } from './graphql-codegen';
@@ -66,39 +67,34 @@ export async function getHashOfSchema(schemaPaths: string[]) {
 }
 
 export async function processGenerateResolverTypes(
-  cwd: string,
+  schemaHash: string,
+  schemaPaths: string[],
   config: ConfigTypes,
   codegenOpts: PartialCodegenOpts,
+  { dtsFullPath, dtsRelPath, gqlRelPath, tsxFullPath }: CreatedPaths,
 ) {
-  const schemaPaths = await getSchemaPaths(
-    cwd,
-    config.schema,
-    config.respectGitIgnore,
-  );
-  const schemaHash = await getHashOfSchema(schemaPaths);
-  const { tsxFullPath, dtsFullPath, dtsRelPath, gqlRelPath } = createPaths(
-    cwd,
-    config.generateDir,
-    '__concatedschema__',
-    schemaHash,
-  );
-
-  await processGraphQLCodegen(
-    {
-      ...codegenOpts,
-      pluginMap: {
-        '@graphql-codegen/typescript': require('@graphql-codegen/typescript'),
-        '@graphql-codegen/typescript-resolvers': require('@graphql-codegen/typescript-resolvers'),
+  if (!existsSync(dtsFullPath)) {
+    logUpdate(
+      PRINT_PREFIX +
+        `Local schema files are detected. Generating resolver types...`,
+    );
+    await processGraphQLCodegen(
+      {
+        ...codegenOpts,
+        pluginMap: {
+          '@graphql-codegen/typescript': require('@graphql-codegen/typescript'),
+          '@graphql-codegen/typescript-resolvers': require('@graphql-codegen/typescript-resolvers'),
+        },
+        plugins: [
+          { '@graphql-codegen/typescript': {} },
+          { '@graphql-codegen/typescript-resolvers': {} },
+        ],
       },
-      plugins: [
-        { '@graphql-codegen/typescript': {} },
-        { '@graphql-codegen/typescript-resolvers': {} },
-      ],
-    },
-    tsxFullPath,
-    gqlRelPath,
-    '',
-  );
+      tsxFullPath,
+      gqlRelPath,
+      '',
+    );
+  }
 
   const schemaPathWithExtension = getSchemaPointerWithExtension(config.schema);
   if (!schemaPathWithExtension) throw new Error('never');

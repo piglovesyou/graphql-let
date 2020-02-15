@@ -7,12 +7,22 @@ export function createDtsRelDir(genRelPath: string) {
   return path.join(genRelPath, DTS_OUTPUT_DIR);
 }
 
+export type CreatedPaths = {
+  gqlRelPath: string;
+  tsxRelPath: string;
+  tsxFullPath: string;
+  dtsFullPath: string;
+  dtsRelPath: string;
+  tsxRelRegex: string;
+  dtsRelRegex: string;
+};
+
 export function createPaths(
   cwd: string,
   genRelPath: string,
   gqlRelPath: string,
   hash: string,
-) {
+): CreatedPaths {
   const genFullDir = path.join(cwd, genRelPath);
   const dtsRelDir = createDtsRelDir(genRelPath);
   const tsxFullDir = path.join(genFullDir, TSX_OUTPUT_DIR);

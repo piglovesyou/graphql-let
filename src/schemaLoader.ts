@@ -3,12 +3,14 @@ import logUpdate from 'log-update';
 import { loader } from 'webpack';
 import { join as pathJoin } from 'path';
 import { parse as parseYaml } from 'yaml';
-import fullGenerate from './lib/full-generate';
+import _fullGenerate from './lib/full-generate';
+import memoize from './lib/memoize';
 import { ConfigTypes } from './lib/types';
 import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 import { PRINT_PREFIX } from './lib/print';
 
 const { readFile } = fsPromises;
+const fullGenerate = memoize(_fullGenerate, () => 'resolver-type');
 
 const graphlqCodegenSchemaLoader: loader.Loader = function(gqlContent) {
   const callback = this.async()!;
