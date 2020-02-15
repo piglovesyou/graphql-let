@@ -35,7 +35,10 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
   await rimraf(path.join(cwd, config.generateDir));
 
   const codegenOpts = await createCodegenOpts(config, cwd);
-  const gqlRelPaths = await glob(config.documents, { cwd });
+  const gqlRelPaths = await glob(config.documents, {
+    cwd,
+    gitignore: config.respectGitIgnore,
+  });
 
   if (gqlRelPaths.length === 0) {
     throw new Error(

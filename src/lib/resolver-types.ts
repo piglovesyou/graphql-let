@@ -1,5 +1,6 @@
 import { extname } from 'path';
 import glob from 'globby';
+import slash from 'slash';
 import { promises } from 'fs';
 import { PartialCodegenOpts } from './create-codegen-opts';
 import getHash from './hash';
@@ -44,12 +45,17 @@ export function shouldGenResolverTypes(
   }
 }
 
-async function getHashOfSchema(cwd: string, schemaPattern: string | string[]) {
+async function getHashOfSchema(
+  cwd: string,
+  schemaPattern: string | string[],
+  respectGitIgnore: boolean,
+) {
   // Instead of concatenating all the schema content,
   // concatenating hashes for the contents to save memory.
   const hashes: string[] = [];
   for (const schemaFullPath of await glob(schemaPattern, {
-    cwd,
+    cwd: slash(cwd),
+    gitignore: respectGitIgnore,
     absolute: true,
   })) {
     const content = await readFile(schemaFullPath);
@@ -63,7 +69,11 @@ export async function processGenerateResolverTypes(
   config: ConfigTypes,
   codegenOpts: PartialCodegenOpts,
 ) {
-  const hash = await getHashOfSchema(cwd, config.schema);
+  const hash = await getHashOfSchema(
+    cwd,
+    config.schema,
+    config.respectGitIgnore,
+  );
   const { tsxFullPath, dtsFullPath, gqlRelPath } = createPaths(
     cwd,
     config.generateDir,

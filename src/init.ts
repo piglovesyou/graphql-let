@@ -3,12 +3,15 @@ import { writeFileSync } from 'fs';
 import { printInfo } from './lib/print';
 import { CommandOpts, ConfigTypes } from './lib/types';
 
-const defaultYamlContent = yamlStringify({
+const DEFAULT_CONFIG: ConfigTypes = {
   generateDir: '__generated__',
-  schema: ['!node_modules', '**/*.graphqls'],
-  documents: ['!node_modules', '**/*.graphql'],
+  schema: '**/*.graphqls',
+  documents: '**/*.graphql',
   plugins: ['typescript'],
-} as ConfigTypes);
+  respectGitIgnore: true,
+};
+
+const defaultYamlContent = yamlStringify(DEFAULT_CONFIG);
 
 export default function init({ configPath }: CommandOpts) {
   writeFileSync(configPath, defaultYamlContent);

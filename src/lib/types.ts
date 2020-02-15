@@ -8,5 +8,6 @@ export type ConfigTypes = {
   config?: Record<string, boolean | string>;
   schema: string | string[];
   documents: string | string[];
+  respectGitIgnore: boolean;
   plugins: string[];
 };
