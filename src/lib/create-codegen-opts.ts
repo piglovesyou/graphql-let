@@ -10,19 +10,27 @@ export type PartialCodegenOpts = Pick<
   'schema' | 'config' | 'plugins' | 'pluginMap'
 >;
 
-function loadSchema(pointer: Types.Schema) {
-  return CodegenContext.prototype.loadSchema.call(
-    { getConfig: () => ({}) },
-    pointer,
-  );
+type MultipleSchemaPointer = { [pointer: string]: {} };
+
+function loadSchema(pointer: MultipleSchemaPointer) {
+  // Do shit as they do
+  // https://github.com/dotansimha/graphql-code-generator/blob/d3438740d96c8c716c3af65b73f2b7f7a9e70c3d/packages/graphql-codegen-cli/src/codegen.ts#L170
+  const pointerAny = pointer as any;
+  return new CodegenContext({}).loadSchema(pointerAny);
 }
 
 async function generateSchema(
-  path: string,
+  path: string | string[],
   cwd: string,
 ): Promise<DocumentNode> {
-  const schemaPointer =
-    isURL(path) || isAbsolute(path) ? path : pathJoin(cwd, path);
+  const schemaPointer: MultipleSchemaPointer = (Array.isArray(path)
+    ? path
+    : [path]
+  ).reduce((acc, pointer) => {
+    const p =
+      isURL(pointer) || isAbsolute(pointer) ? pointer : pathJoin(cwd, pointer);
+    return { ...acc, [p]: {} };
+  }, {});
   const loadedSchema: GraphQLSchema = await loadSchema(schemaPointer);
 
   return parse(printSchema(loadedSchema));

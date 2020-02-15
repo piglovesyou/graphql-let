@@ -6,7 +6,7 @@ export type CommandOpts = {
 export type ConfigTypes = {
   generateDir: string;
   config?: Record<string, boolean | string>;
-  schema: string;
+  schema: string | string[];
   documents: string | string[];
   plugins: string[];
 };

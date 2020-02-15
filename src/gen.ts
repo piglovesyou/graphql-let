@@ -76,15 +76,15 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
       PRINT_PREFIX +
         `Local schema files are detected. Generating resolver types...`,
     );
-    const { tsxFullPath, dtsFullPath } = await processGenerateResolverTypes(
-      cwd,
-      config,
-      codegenOpts,
-    );
+    const {
+      tsxFullPath,
+      dtsFullPath,
+      gqlRelPath,
+    } = await processGenerateResolverTypes(cwd, config, codegenOpts);
     codegenContext.push({
       tsxFullPath,
       dtsFullPath,
-      gqlRelPath: config.schema,
+      gqlRelPath,
     });
   }
 

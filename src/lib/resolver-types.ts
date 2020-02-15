@@ -1,30 +1,50 @@
+import { extname } from 'path';
 import glob from 'fast-glob';
 import { promises } from 'fs';
 import { PartialCodegenOpts } from './create-codegen-opts';
 import getHash from './hash';
 import { createPaths, isURL } from './paths';
+import { PRINT_PREFIX } from './print';
 import { CommandOpts, ConfigTypes } from './types';
 import { processGraphQLCodegen } from './graphql-codegen';
 
 const { readFile } = promises;
 
+// If it's ['!node_modules', '**/*.graphqls']
+// then we want to pick '**/*.graphqls'.
+function getSchemaPointerWithExtension(
+  s: string | string[],
+): string | undefined {
+  if (typeof s === 'string') {
+    if (extname(s).length) return s;
+    return undefined;
+  }
+  return s.find(e => require('path').extname(e).length);
+}
+
 export function shouldGenResolverTypes(
   commandOpts: CommandOpts,
   config: ConfigTypes,
-) {
-  if (isURL(config.schema)) return;
+): boolean {
+  if (typeof config.schema === 'string' && isURL(config.schema)) return false;
 
   try {
     require('@graphql-codegen/typescript');
     require('@graphql-codegen/typescript-resolvers');
-    return true;
+
+    if (getSchemaPointerWithExtension(config.schema)) return true;
+    console.info(
+      PRINT_PREFIX +
+        'Failed to generate Resolver Types. You have to specify at least one schema (glob) path WITH an extension, such as "**/*.graphqls"',
+    );
+    return false;
   } catch (e) {
     // Just skip.
     return false;
   }
 }
 
-async function getHashOfSchema(cwd: string, schemaPattern: string) {
+async function getHashOfSchema(cwd: string, schemaPattern: string | string[]) {
   // Instead of concatenating all the schema content,
   // concatenating hashes for the contents to save memory.
   const hashes: string[] = [];
@@ -44,7 +64,7 @@ export async function processGenerateResolverTypes(
   codegenOpts: PartialCodegenOpts,
 ) {
   const hash = await getHashOfSchema(cwd, config.schema);
-  const { tsxFullPath, gqlRelPath, dtsFullPath } = createPaths(
+  const { tsxFullPath, dtsFullPath, gqlRelPath } = createPaths(
     cwd,
     config.generateDir,
     '__concatedschema__',
@@ -68,5 +88,8 @@ export async function processGenerateResolverTypes(
     '',
   );
 
-  return { tsxFullPath, dtsFullPath, gqlRelPath };
+  const schemaPathWithExtension = getSchemaPointerWithExtension(config.schema);
+  if (!schemaPathWithExtension) throw new Error('never');
+
+  return { tsxFullPath, dtsFullPath, gqlRelPath: schemaPathWithExtension };
 }

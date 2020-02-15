@@ -1,5 +1,7 @@
 generateDir: __generated__
-schema: schema/**/*.graphqls
+schema:
+  - "!xx"
+  - schema/**/*.graphqls
 documents:
   - "!xx"
   - "**/*.graphql"
