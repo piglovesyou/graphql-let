@@ -3,7 +3,7 @@ import glob from 'globby';
 import logUpdate from 'log-update';
 import makeDir from 'make-dir';
 import { join as pathJoin, dirname } from 'path';
-import createCodegenOpts from './create-codegen-opts';
+import createCodegenOpts, { PartialCodegenOpts } from './create-codegen-opts';
 import { genDts, wrapAsModule } from './dts';
 import getHash from './hash';
 import { createDtsRelDir, createPaths } from './paths';
@@ -19,19 +19,22 @@ import { processGraphQLCodegen } from './graphql-codegen';
 
 const { readFile, writeFile } = fsPromises;
 
-async function fullGenerate(config: ConfigTypes, cwd: string) {
-  const codegenOpts = await createCodegenOpts(config, cwd);
-  const gqlRelPaths = await glob(config.documents, {
-    cwd,
-    gitignore: config.respectGitIgnore,
-  });
+export type CodegenContext = {
+  tsxFullPath: string;
+  dtsFullPath: string;
+  gqlRelPath: string;
+}[];
 
-  const codegenContext: {
+export async function processResolverTypesIfNeeded(
+  config: ConfigTypes,
+  cwd: string,
+  codegenOpts: PartialCodegenOpts,
+  codegenContext: {
     tsxFullPath: string;
     dtsFullPath: string;
     gqlRelPath: string;
-  }[] = [];
-
+  }[],
+) {
   let schemaHash = '';
   if (shouldGenResolverTypes(config)) {
     const schemaPaths = await getSchemaPaths(
@@ -47,7 +50,11 @@ async function fullGenerate(config: ConfigTypes, cwd: string) {
       _schemaHash,
     );
 
-    if (!existsSync(createdPaths.dtsFullPath)) {
+    if (!existsSync(createdPaths.tsxFullPath)) {
+      logUpdate(
+        PRINT_PREFIX +
+          `Local schema files are detected. Generating resolver types...`,
+      );
       const {
         tsxFullPath,
         dtsFullPath,
@@ -64,18 +71,24 @@ async function fullGenerate(config: ConfigTypes, cwd: string) {
         dtsFullPath,
         gqlRelPath,
       });
-      schemaHash = _schemaHash;
     }
+    schemaHash = _schemaHash;
   }
+  return schemaHash;
+}
 
-  if (gqlRelPaths.length === 0) {
-    throw new Error(
-      `No GraphQL documents are found from the path ${JSON.stringify(
-        config.documents,
-      )}. Check "documents" in .graphql-let.yml.`,
-    );
-  }
-
+export async function processDocuments(
+  gqlRelPaths: string[],
+  cwd: string,
+  config: ConfigTypes,
+  schemaHash: string,
+  codegenOpts: PartialCodegenOpts,
+  codegenContext: {
+    tsxFullPath: string;
+    dtsFullPath: string;
+    gqlRelPath: string;
+  }[],
+) {
   for (const gqlRelPath of gqlRelPaths) {
     const gqlContent = await readFile(pathJoin(cwd, gqlRelPath), 'utf-8');
 
@@ -88,7 +101,7 @@ async function fullGenerate(config: ConfigTypes, cwd: string) {
       getHash(gqlContent + schemaHash),
     );
 
-    if (!existsSync(dtsFullPath)) {
+    if (!existsSync(tsxFullPath)) {
       await processGraphQLCodegen(
         codegenOpts,
         tsxFullPath,
@@ -99,7 +112,32 @@ async function fullGenerate(config: ConfigTypes, cwd: string) {
       codegenContext.push({ tsxFullPath, dtsFullPath, gqlRelPath });
     }
   }
+}
 
+export async function prepareFullGenerate(config: ConfigTypes, cwd: string) {
+  const codegenOpts = await createCodegenOpts(config, cwd);
+  const gqlRelPaths = await glob(config.documents, {
+    cwd,
+    gitignore: config.respectGitIgnore,
+  });
+  if (gqlRelPaths.length === 0) {
+    throw new Error(
+      `No GraphQL documents are found from the path ${JSON.stringify(
+        config.documents,
+      )}. Check "documents" in .graphql-let.yml.`,
+    );
+  }
+  return { codegenOpts, gqlRelPaths };
+}
+
+export async function finalizeCodegenContextIfNeeded(
+  codegenContext: {
+    tsxFullPath: string;
+    dtsFullPath: string;
+    gqlRelPath: string;
+  }[],
+  config: ConfigTypes,
+) {
   if (codegenContext.length) {
     logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
     const dtsContents = genDts(codegenContext.map(s => s.tsxFullPath));
@@ -119,6 +157,30 @@ async function fullGenerate(config: ConfigTypes, cwd: string) {
     );
     logUpdate.done();
   }
+}
+
+async function fullGenerate(config: ConfigTypes, cwd: string): Promise<void> {
+  const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(config, cwd);
+
+  const codegenContext: CodegenContext = [];
+
+  const schemaHash = await processResolverTypesIfNeeded(
+    config,
+    cwd,
+    codegenOpts,
+    codegenContext,
+  );
+
+  await processDocuments(
+    gqlRelPaths,
+    cwd,
+    config,
+    schemaHash,
+    codegenOpts,
+    codegenContext,
+  );
+
+  await finalizeCodegenContextIfNeeded(codegenContext, config);
 }
 
 export default fullGenerate;

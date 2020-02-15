@@ -3,14 +3,32 @@ import logUpdate from 'log-update';
 import { loader } from 'webpack';
 import { join as pathJoin } from 'path';
 import { parse as parseYaml } from 'yaml';
-import _fullGenerate from './lib/full-generate';
+import {
+  finalizeCodegenContextIfNeeded as _finalizeCodegenContextIfNeeded,
+  prepareFullGenerate as _prepareFullGenerate,
+  processDocuments as _processDocuments,
+  processResolverTypesIfNeeded as _processResolverTypesIfNeeded,
+  CodegenContext,
+} from './lib/full-generate';
 import memoize from './lib/memoize';
 import { ConfigTypes } from './lib/types';
 import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 import { PRINT_PREFIX } from './lib/print';
 
 const { readFile } = fsPromises;
-const fullGenerate = memoize(_fullGenerate, () => 'resolver-type');
+const prepareFullGenerate = memoize(
+  _prepareFullGenerate,
+  () => 'prepareFullGenerate',
+);
+const processResolverTypesIfNeeded = memoize(
+  _processResolverTypesIfNeeded,
+  () => 'processResolverTypesIfNeeded',
+);
+const processDocuments = memoize(_processDocuments, () => 'processDocuments');
+const finalizeCodegenContextIfNeeded = memoize(
+  _finalizeCodegenContextIfNeeded,
+  () => 'finalizeCodegenContextIfNeeded',
+);
 
 const graphlqCodegenSchemaLoader: loader.Loader = function(gqlContent) {
   const callback = this.async()!;
@@ -24,7 +42,32 @@ const graphlqCodegenSchemaLoader: loader.Loader = function(gqlContent) {
         await readFile(configPath, 'utf-8'),
       ) as ConfigTypes;
 
-      await fullGenerate(config, cwd);
+      const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(
+        config,
+        cwd,
+      );
+
+      const codegenContext: CodegenContext = [];
+
+      const schemaHash = await processResolverTypesIfNeeded(
+        config,
+        cwd,
+        codegenOpts,
+        codegenContext,
+      );
+
+      // Only if schema was changed, documents are also handled for quick startup.
+      if (codegenContext.length) {
+        await processDocuments(
+          gqlRelPaths,
+          cwd,
+          config,
+          schemaHash,
+          codegenOpts,
+          codegenContext,
+        );
+        await finalizeCodegenContextIfNeeded(codegenContext, config);
+      }
 
       // It just passes as it is
       callback(undefined, gqlContent);
