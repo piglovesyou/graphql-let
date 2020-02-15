@@ -1,5 +1,8 @@
 import { existsSync, promises as fsPromises } from 'fs';
 import logUpdate from 'log-update';
+import glob from 'globby';
+import _rimraf from 'rimraf';
+import { promisify } from 'util';
 import { loader } from 'webpack';
 import { join as pathJoin, relative as pathRelative } from 'path';
 import { parse as parseYaml } from 'yaml';
@@ -8,9 +11,16 @@ import { processGraphQLCodegenFromConfig as _processGraphQLCodegenFromConfig } f
 import getHash from './lib/hash';
 import memoize from './lib/memoize';
 import { createPaths } from './lib/paths';
+import {
+  getHashOfSchema,
+  getSchemaPaths,
+  shouldGenResolverTypes,
+} from './lib/resolver-types';
 import { ConfigTypes } from './lib/types';
 import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 import { PRINT_PREFIX } from './lib/print';
+
+const rimraf = promisify(_rimraf);
 
 const { readFile } = fsPromises;
 const processGraphQLCodegenFromConfig = memoize(
@@ -30,13 +40,39 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
       const config = parseYaml(
         await readFile(configPath, 'utf-8'),
       ) as ConfigTypes;
-      const hash = getHash(gqlContent);
-      const { tsxFullPath, dtsFullPath, dtsRelPath, gqlRelPath } = createPaths(
+
+      let schemaHash = '';
+      if (shouldGenResolverTypes(config)) {
+        const schemaPaths = await getSchemaPaths(
+          userDir,
+          config.schema,
+          config.respectGitIgnore,
+        );
+        schemaHash = await getHashOfSchema(schemaPaths);
+      }
+
+      const hash = getHash(gqlContent + schemaHash);
+      const {
+        tsxFullPath,
+        dtsFullPath,
+        dtsRelPath,
+        gqlRelPath,
+        tsxRelRegex,
+        dtsRelRegex,
+      } = createPaths(
         userDir,
         config.generateDir,
         pathRelative(userDir, gqlFullPath),
         hash,
       );
+
+      // Erasing old cache in __generated__ on HMR.
+      // Otherwise the multiple `declare module "*/x.graphql"` are exposed.
+      const oldFiles = await glob([tsxRelRegex, dtsRelRegex], {
+        cwd: userDir,
+        absolute: true,
+      });
+      await Promise.all(oldFiles.map(f => rimraf(f)));
 
       let tsxContent: string;
       if (existsSync(tsxFullPath)) {
@@ -55,7 +91,7 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
       if (!existsSync(dtsFullPath)) {
         logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
         await processGenDts(dtsFullPath, tsxFullPath, gqlRelPath);
-        logUpdate(PRINT_PREFIX + `${dtsRelPath} was generated.`);
+        logUpdate(PRINT_PREFIX + `${dtsRelPath} was regenerated.`);
         // Hack to prevent duplicated logs for simultaneous build, in SSR app for an example.
         await new Promise(resolve => setTimeout(resolve, 0));
         logUpdate.done();

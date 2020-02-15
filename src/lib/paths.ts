@@ -22,12 +22,20 @@ export function createPaths(
   const tsxFullPath = path.join(tsxFullDir, tsxRelPath);
   const dtsRelPath = path.join(dtsRelDir, `${gqlBasename}-${hash}.d.ts`);
   const dtsFullPath = path.join(cwd, dtsRelPath);
+
+  // These are used to erase old cache from __generated__ on HMR.
+  // Otherwise the multiple `declare module "*/x.graphql"` are exposed.
+  const tsxRelRegex = `${gqlRelPath}-[a-z0-9]+.tsx`;
+  const dtsRelRegex = path.join(dtsRelDir, `${gqlBasename}-[a-z0-9]+.d.ts`);
+
   return {
     gqlRelPath,
     tsxRelPath,
     tsxFullPath,
     dtsFullPath,
     dtsRelPath,
+    tsxRelRegex,
+    dtsRelRegex,
   };
 }
 
