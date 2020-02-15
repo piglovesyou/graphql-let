@@ -19,13 +19,13 @@
   "dependencies": {
     "@graphql-codegen/cli": "^1.12.1",
     "@graphql-codegen/plugin-helpers": "^1.12.1",
-    "fast-glob": "^3.1.1",
+    "globby": "*",
     "loader-utils": "^1.2.3",
     "log-update": "^3.3.0",
     "make-dir": "^3.0.0",
     "minimist": "^1.2.0",
     "rimraf": "^3.0.1",
-    "unixify": "*",
+    "slash": "*",
     "yaml": "^1.7.2"
   },
   "devDependencies": {

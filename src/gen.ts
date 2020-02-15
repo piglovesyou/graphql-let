@@ -2,7 +2,7 @@ import makeDir from 'make-dir';
 import path from 'path';
 import { parse as parseYaml } from 'yaml';
 import { promises as fsPromises } from 'fs';
-import glob from 'fast-glob';
+import glob from 'globby';
 import getHash from './lib/hash';
 import createCodegenOpts from './lib/create-codegen-opts';
 import { genDts, wrapAsModule } from './lib/dts';
@@ -35,7 +35,10 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
   await rimraf(path.join(cwd, config.generateDir));
 
   const codegenOpts = await createCodegenOpts(config, cwd);
-  const gqlRelPaths = await glob(config.documents, { cwd });
+  const gqlRelPaths = await glob(config.documents, {
+    cwd,
+    gitignore: config.respectGitIgnore,
+  });
 
   if (gqlRelPaths.length === 0) {
     throw new Error(
@@ -76,15 +79,15 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
       PRINT_PREFIX +
         `Local schema files are detected. Generating resolver types...`,
     );
-    const { tsxFullPath, dtsFullPath } = await processGenerateResolverTypes(
-      cwd,
-      config,
-      codegenOpts,
-    );
+    const {
+      tsxFullPath,
+      dtsFullPath,
+      gqlRelPath,
+    } = await processGenerateResolverTypes(cwd, config, codegenOpts);
     codegenContext.push({
       tsxFullPath,
       dtsFullPath,
-      gqlRelPath: config.schema,
+      gqlRelPath,
     });
   }
 

@@ -1,8 +1,8 @@
 generateDir: __generated__
 schema: schema/**/*.graphqls
-documents:
-  - "**/*.graphql"
+documents: "**/*.graphql"
 plugins:
   - typescript
   - typescript-operations
   - typescript-react-apollo
+respectGitIgnore: true
