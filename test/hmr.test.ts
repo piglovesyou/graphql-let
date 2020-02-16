@@ -202,7 +202,7 @@ query Viewer {
 `,
         'utf-8',
       );
-      await timeout(30 * 1000);
+      await timeout(60 * 1000);
       const result3 = await ensureOutputDts(
         'Verify HMR on document modification',
       );
@@ -260,7 +260,7 @@ type Query {
 `.trim(),
         'utf-8',
       );
-      await timeout(30 * 1000);
+      await timeout(60 * 1000);
       const result4 = await ensureOutputDts(
         'Verify HMR on schema modification - add "age" field',
       );
