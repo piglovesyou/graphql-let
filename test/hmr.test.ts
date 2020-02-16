@@ -48,7 +48,7 @@ describe('HMR', () => {
       const ensureOutputDts = async () => {
         const globResults = await glob('__generated__/types/**', { cwd });
         assert.deepStrictEqual(globResults.length, 2);
-        const [schemaDtsPath, documentDtsPath] = globResults;
+        const [schemaDtsPath, documentDtsPath] = globResults.sort();
         assert.ok(
           new RegExp(`${d}/__concatedschema__-${h}.d.ts$`).test(schemaDtsPath),
           `${schemaDtsPath} is something wrong.`,
