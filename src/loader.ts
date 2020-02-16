@@ -47,6 +47,9 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
           config.respectGitIgnore,
         );
         schemaHash = await getHashOfSchema(schemaPaths);
+
+        // If using resolver types, all documents should depend on all schema files.
+        schemaPaths.forEach(p => this.addDependency(p));
       }
 
       const hash = getHash(gqlContent + schemaHash);

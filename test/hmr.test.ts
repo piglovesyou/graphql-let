@@ -60,7 +60,7 @@ describe('"graphql-let" command', () => {
   };
 `),
       );
-      assert(new RegExp(`${d}/viewer.graphql-${h}.d.ts$`).test(d1));
+      assert.ok(new RegExp(`${d}/viewer.graphql-${h}.d.ts$`).test(d1));
       assert(
         (await read(d1)).includes(`export declare function useViewerQuery`),
       );
