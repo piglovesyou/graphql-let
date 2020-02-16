@@ -12,16 +12,11 @@ const rimraf = promisify(_rimraf);
 const { rename } = promises;
 
 const cwd = pathJoin(__dirname, 'fixtures/gen');
+const rel = (relPath: string) => pathJoin(cwd, relPath);
 
 describe('"graphql-let" command', () => {
-  beforeAll(
-    async () =>
-      await rename(pathJoin(cwd, '_gitignore'), pathJoin(cwd, '.gitignore')),
-  );
-  afterAll(
-    async () =>
-      await rename(pathJoin(cwd, '.gitignore'), pathJoin(cwd, '_gitignore')),
-  );
+  beforeAll(async () => await rename(rel('_gitignore'), rel('.gitignore')));
+  afterAll(async () => await rename(rel('.gitignore'), rel('_gitignore')));
 
   test(
     `generates .d.ts
@@ -31,10 +26,10 @@ describe('"graphql-let" command', () => {
     async () => {
       const expectDtsLength = 3; // 2 documents and 1 schema
 
-      await rimraf(pathJoin(cwd, '__generated__'));
+      await rimraf(rel('__generated__'));
       await gen({
         cwd,
-        configPath: pathJoin(cwd, '.graphql-let.yml'),
+        configPath: rel('.graphql-let.yml'),
       });
 
       const globResults = await glob('__generated__/types/**', { cwd });
