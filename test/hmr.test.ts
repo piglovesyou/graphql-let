@@ -25,7 +25,9 @@ const spawn = (command: string, args: string[], options?: Options) =>
 
 describe('"graphql-let" command', () => {
   // beforeAll(async () => await rename(rel('_gitignore'), rel('.gitignore')));
-  // afterAll(async () => await rename(rel('.gitignore'), rel('_gitignore')));
+  afterAll(async () => {
+    await spawn('git', ['checkout', '.'], { cwd });
+  });
 
   test(
     `generates .d.ts `,
