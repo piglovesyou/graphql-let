@@ -70,15 +70,17 @@ describe('HMR', () => {
        */
       const result1 = await ensureOutputDts();
       assert.ok(
-        result1.schema.includes(`
+        result1.schema.includes(
+          `
   export type User = {
       __typename?: 'User';
       id: Scalars['ID'];
       name: Scalars['String'];
       status: Scalars['String'];
   };
-`),
-        `${result1.schema} is something wrong`,
+`.trim(),
+        ),
+        `"${result1.schema}" is something wrong`,
       );
       assert.ok(
         result1.document.includes(`
