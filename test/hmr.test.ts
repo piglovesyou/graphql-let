@@ -34,7 +34,7 @@ describe('HMR', () => {
   afterAll(async () => await spawn('git', ['checkout', '.'], { cwd }));
 
   test(
-    `effect to both schema and documents`,
+    `should effect to both schema and documents properly`,
     async () => {
       await rimraf(rel('__generated__'));
 
@@ -49,11 +49,13 @@ describe('HMR', () => {
         const globResults = await glob('__generated__/types/**', { cwd });
         assert.deepStrictEqual(globResults.length, 2);
         const [schemaDtsPath, documentDtsPath] = globResults;
-        assert(
+        assert.ok(
           new RegExp(`${d}/__concatedschema__-${h}.d.ts$`).test(schemaDtsPath),
+          `${schemaDtsPath} is something wrong.`,
         );
         assert.ok(
           new RegExp(`${d}/viewer.graphql-${h}.d.ts$`).test(documentDtsPath),
+          `${documentDtsPath} is something wrong.`,
         );
         return {
           schemaDtsPath,
