@@ -1,36 +1,52 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import path from 'path';
+import { join as pathJoin } from 'path';
 import assert from 'assert';
 import gen from '../src/gen';
 import glob from 'globby';
 import { promisify } from 'util';
 import _rimraf from 'rimraf';
+import { promises } from 'fs';
 
 const rimraf = promisify(_rimraf);
+const { rename } = promises;
 
-const cwd = path.join(__dirname, 'fixtures/gen');
+const cwd = pathJoin(__dirname, 'fixtures/gen');
 
-test(
-  '"graphql-let" generates .d.ts',
-  async () => {
-    const expectDtsLength = 3; // 2 for documents and 1 for schema
+describe('"graphql-let" command', () => {
+  beforeAll(
+    async () =>
+      await rename(pathJoin(cwd, '_gitignore'), pathJoin(cwd, '.gitignore')),
+  );
+  afterAll(
+    async () =>
+      await rename(pathJoin(cwd, '.gitignore'), pathJoin(cwd, '_gitignore')),
+  );
 
-    await rimraf(path.join(cwd, '__generated__'));
-    await gen({
-      cwd,
-      configPath: path.join(cwd, '.graphql-let.yml'),
-    });
+  test(
+    `generates .d.ts
+* ignoring "!" paths in "schema" and "documents" of graphql-let.yml
+* ignoring files specified in .gitignore
+`,
+    async () => {
+      const expectDtsLength = 3; // 2 documents and 1 schema
 
-    const globResults = await glob('__generated__/types/**', { cwd });
-    assert.strictEqual(globResults.length, expectDtsLength);
+      await rimraf(pathJoin(cwd, '__generated__'));
+      await gen({
+        cwd,
+        configPath: pathJoin(cwd, '.graphql-let.yml'),
+      });
 
-    const [schema, doc1, doc2] = globResults.sort();
-    const d = '^__generated__/types';
-    const h = '[a-z\\d]+';
-    assert(new RegExp(`${d}/viewer.graphql-${h}.d.ts$`).test(doc1));
-    assert(new RegExp(`${d}/viewer2.graphql-${h}.d.ts$`).test(doc2));
-    assert(new RegExp(`${d}/__concatedschema__-${h}.d.ts$`).test(schema));
-  },
-  60 * 1000,
-);
+      const globResults = await glob('__generated__/types/**', { cwd });
+      assert.strictEqual(globResults.length, expectDtsLength);
+
+      const [schema, doc1, doc2] = globResults.sort();
+      const d = '^__generated__/types';
+      const h = '[a-z\\d]+';
+      assert(new RegExp(`${d}/viewer.graphql-${h}.d.ts$`).test(doc1));
+      assert(new RegExp(`${d}/viewer2.graphql-${h}.d.ts$`).test(doc2));
+      assert(new RegExp(`${d}/__concatedschema__-${h}.d.ts$`).test(schema));
+    },
+    60 * 1000,
+  );
+});
