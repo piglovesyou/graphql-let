@@ -4,15 +4,16 @@ import memoryfs from 'memory-fs';
 import nodeExternals from 'webpack-node-externals';
 
 export default function compile(
+  cwd: string,
   fixture: string,
   target: 'node' | 'web',
 ): Promise<webpack.Stats> {
   const compiler = webpack({
     mode: 'production',
-    context: __dirname,
+    context: cwd,
     entry: `./${fixture}`,
     output: {
-      path: path.resolve(__dirname),
+      path: path.resolve(cwd),
       filename: 'bundle.js',
     },
     target,
