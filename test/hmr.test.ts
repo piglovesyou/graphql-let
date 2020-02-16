@@ -36,8 +36,14 @@ const spawn = (command: string, args: string[], options?: Options) =>
   });
 
 describe('HMR', () => {
+  let app: any;
+
   beforeAll(async () => await spawn('git', ['checkout', '.'], { cwd }));
-  afterAll(async () => await spawn('git', ['checkout', '.'], { cwd }));
+  afterAll(async () => {
+    await spawn('git', ['checkout', '.'], { cwd });
+
+    await killApp(app);
+  });
 
   test(
     `should effect to both schema and documents properly`,
@@ -110,7 +116,7 @@ describe('HMR', () => {
       /************************************************************************
        * Start dev server
        */
-      const app = spawn('yarn', ['webpack-dev-server']);
+      app = spawn('yarn', ['webpack-dev-server']);
       await waitApp(8080);
 
       /************************************************************************
@@ -303,8 +309,6 @@ type Query {
 `.n,
         ),
       );
-
-      await killApp(app);
     },
     60 * 1000 * 2,
   );
