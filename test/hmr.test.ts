@@ -8,6 +8,7 @@ import _rimraf from 'rimraf';
 import { promises } from 'fs';
 import execa, { Options } from 'execa';
 import { killApp, timeout, waitApp } from './lib/child-process';
+// import jest from 'jest';
 
 const rimraf = promisify(_rimraf);
 const { /*rename,*/ readFile, writeFile } = promises;
@@ -25,9 +26,8 @@ const spawn = (command: string, args: string[], options?: Options) =>
 
 describe('"graphql-let" command', () => {
   // beforeAll(async () => await rename(rel('_gitignore'), rel('.gitignore')));
-  afterAll(async () => {
-    await spawn('git', ['checkout', '.'], { cwd });
-  });
+  beforeAll(async () => await spawn('git', ['checkout', '.'], { cwd }));
+  afterAll(async () => await spawn('git', ['checkout', '.'], { cwd }));
 
   test(
     `generates .d.ts `,
@@ -69,7 +69,13 @@ describe('"graphql-let" command', () => {
       const app = spawn('yarn', ['webpack-dev-server']);
       await waitApp(8080);
 
-      const built1 = require('./fixtures/hmr/dist/main.js');
+      const loadModule = () => {
+        jest.resetModules();
+        return require('./fixtures/hmr/dist/main.js');
+      };
+
+      const built1 = loadModule();
+
       assert.ok(
         built1.schema.includes(
           `
@@ -77,8 +83,22 @@ type User {
     id: ID!
     name: String!
     status: String!
-}`.trim(),
+}
+`.trim(),
         ),
+      );
+      assert.ok(
+        built1.document.includes(
+          `
+export type User = {
+   __typename?: 'User',
+  id: Scalars['ID'],
+  name: Scalars['String'],
+  status: Scalars['String'],
+};
+`.trim(),
+        ),
+        '"User" type should contain "id", "name" and "status" first.',
       );
       assert.ok(
         built1.document.includes(
@@ -92,9 +112,10 @@ export type ViewerQuery = (
 );
 `.trim(),
         ),
+        '"ViewerQuery" should only contain "id" and "name" first.',
       );
 
-      // Modify a document. "status" is the new field.
+      // Modify a document to add "status" field
       await writeFile(
         rel('src/viewer.graphql'),
         `
@@ -110,10 +131,116 @@ query Viewer {
       );
       await timeout(10 * 1000);
 
-      delete require.cache[require.resolve('./fixtures/hmr/dist/main.js')];
-      const built2 = require('./fixtures/hmr/dist/main.js');
+      const built2 = loadModule();
+      assert.ok(
+        built2.document.includes(
+          `
+export type ViewerQuery = (
+  { __typename?: 'Query' }
+  & { viewer: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name' | 'status'>
+  )> }
+);
+`.trim(),
+        ),
+        'It should now include "status" field by HMR.',
+      );
 
-      console.log(built2);
+      // Modify schema to add "age" field.
+      await writeFile(
+        rel('src/type-defs.graphqls'),
+        `
+type User {
+    id: ID!
+    name: String!
+    status: String!
+    age: Int!
+}
+
+type Query {
+    viewer: User
+}
+`,
+        'utf-8',
+      );
+      await timeout(10 * 1000);
+
+      const built3 = loadModule();
+
+      assert.ok(
+        built3.schema.includes(
+          `
+type User {
+    id: ID!
+    name: String!
+    status: String!
+    age: Int!
+}
+`.trim(),
+        ),
+      );
+      assert.ok(
+        built3.document.includes(
+          `
+export type User = {
+   __typename?: 'User',
+  id: Scalars['ID'],
+  name: Scalars['String'],
+  status: Scalars['String'],
+  age: Scalars['Int'],
+};
+`.trim(),
+        ),
+        '',
+      );
+      assert.ok(
+        built3.document.includes(
+          `
+export type ViewerQuery = (
+  { __typename?: 'Query' }
+  & { viewer: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name'>
+  )> }
+);
+`.trim(),
+        ),
+        '',
+      );
+
+      // Modify a document again to add "age" field
+      await writeFile(
+        rel('src/viewer.graphql'),
+        `
+query Viewer {
+    viewer {
+        id
+        name
+        status
+        age
+    }
+}
+`,
+        'utf-8',
+      );
+      await timeout(10 * 1000);
+
+      const built4 = loadModule();
+      assert.ok(
+        built4.document.includes(
+          `
+export type ViewerQuery = (
+  { __typename?: 'Query' }
+  & { viewer: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name' | 'age'>
+  )> }
+);
+`.trim(),
+        ),
+        '',
+      );
 
       await killApp(app);
     },
