@@ -75,9 +75,9 @@ describe('HMR', () => {
           `${documentDtsPath} is something wrong. ${message}`,
         );
         return {
-          schemaDtsPath,
+          schemaDtsPath: schemaDtsPath.n,
           schema: await read(schemaDtsPath),
-          documentDtsPath,
+          documentDtsPath: documentDtsPath.n,
           document: await read(documentDtsPath),
         };
       };
