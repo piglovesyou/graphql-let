@@ -22,6 +22,12 @@ const cwd = pathJoin(__dirname, 'fixtures/hmr');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
 const read = (relPath: string) => readFile(rel(relPath), 'utf-8');
 
+Object.defineProperty(String.prototype, 'n', {
+  get(): string {
+    return this.trim().replace(/\r?\n */g, '\n');
+  },
+});
+
 const spawn = (command: string, args: string[], options?: Options) =>
   execa(command, args, {
     stdio: ['ignore', 'inherit', 'inherit'],
@@ -70,7 +76,7 @@ describe('HMR', () => {
        */
       const result1 = await ensureOutputDts();
       assert.ok(
-        result1.schema.includes(
+        result1.schema.n.includes(
           `
   export type User = {
       __typename?: 'User';
@@ -78,7 +84,7 @@ describe('HMR', () => {
       name: Scalars['String'];
       status: Scalars['String'];
   };
-`,
+`.n,
         ),
         `"${result1.schema}" is something wrong`,
       );
