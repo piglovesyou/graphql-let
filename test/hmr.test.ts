@@ -89,7 +89,8 @@ describe('HMR', () => {
         `"${result1.schema}" is something wrong`,
       );
       assert.ok(
-        result1.document.includes(`
+        result1.document.n.includes(
+          `
   export type ViewerQuery = ({
       __typename?: 'Query';
   } & {
@@ -97,7 +98,8 @@ describe('HMR', () => {
           __typename?: 'User';
       } & Pick<User, 'id' | 'name'>)>;
   });
-`),
+`.n,
+        ),
         `${result1.document} is something wrong`,
       );
 
@@ -212,7 +214,8 @@ query Viewer {
         'Document should be renewed.',
       );
       assert.ok(
-        result3.document.includes(`
+        result3.document.n.includes(
+          `
   export type ViewerQuery = ({
       __typename?: 'Query';
   } & {
@@ -220,7 +223,8 @@ query Viewer {
           __typename?: 'User';
       } & Pick<User, 'id' | 'name' | 'status'>)>;
   });
-`),
+`.n,
+        ),
       );
 
       /************************************************************************
@@ -266,7 +270,7 @@ type Query {
         'Document should be renewed.',
       );
       assert.ok(
-        result4.schema.includes(
+        result4.schema.n.includes(
           `
   export type User = {
       __typename?: 'User';
@@ -275,11 +279,12 @@ type Query {
       status: Scalars['String'];
       age: Scalars['Int'];
   };
-`,
+`.n,
         ),
       );
       assert.ok(
-        result4.document.includes(`
+        result4.document.n.includes(
+          `
   export type User = {
       __typename?: 'User';
       id: Scalars['ID'];
@@ -287,7 +292,8 @@ type Query {
       status: Scalars['String'];
       age: Scalars['Int'];
   };
-`),
+`.n,
+        ),
       );
 
       await killApp(app);
