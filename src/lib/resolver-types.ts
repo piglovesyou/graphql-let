@@ -1,15 +1,13 @@
 import { extname } from 'path';
 import glob from 'globby';
 import slash from 'slash';
-import { promises } from 'fs';
 import { PartialCodegenOpts } from './create-codegen-opts';
 import getHash from './hash';
 import { CreatedPaths, isURL } from './paths';
 import { PRINT_PREFIX } from './print';
 import { ConfigTypes } from './types';
 import { processGraphQLCodegen } from './graphql-codegen';
-
-const { readFile } = promises;
+import { readFile } from './file';
 
 // If it's ['!node_modules', '**/*.graphqls']
 // then we want to pick '**/*.graphqls'.

@@ -1,4 +1,4 @@
-import { promises as fsPromises, existsSync } from 'fs';
+import { existsSync } from 'fs';
 import glob from 'globby';
 import logUpdate from 'log-update';
 import makeDir from 'make-dir';
@@ -6,7 +6,7 @@ import { join as pathJoin, dirname } from 'path';
 import createCodegenOpts, { PartialCodegenOpts } from './create-codegen-opts';
 import { genDts, wrapAsModule } from './dts';
 import getHash from './hash';
-import { createDtsRelDir, createPaths } from './paths';
+import { createPaths } from './paths';
 import { PRINT_PREFIX } from './print';
 import {
   getHashOfSchema,
@@ -16,8 +16,7 @@ import {
 } from './resolver-types';
 import { ConfigTypes } from './types';
 import { processGraphQLCodegen } from './graphql-codegen';
-
-const { readFile, writeFile } = fsPromises;
+import { readFile, writeFile, removeOldCache } from './file';
 
 export type CodegenContext = {
   tsxFullPath: string;
@@ -29,25 +28,22 @@ export async function processResolverTypesIfNeeded(
   config: ConfigTypes,
   cwd: string,
   codegenOpts: PartialCodegenOpts,
-  codegenContext: {
-    tsxFullPath: string;
-    dtsFullPath: string;
-    gqlRelPath: string;
-  }[],
+  codegenContext: CodegenContext,
 ) {
+  let schemaPaths: string[] = [];
   let schemaHash = '';
   if (shouldGenResolverTypes(config)) {
-    const schemaPaths = await getSchemaPaths(
+    schemaPaths = await getSchemaPaths(
       cwd,
       config.schema,
       config.respectGitIgnore,
     );
-    const _schemaHash = await getHashOfSchema(schemaPaths);
+    schemaHash = await getHashOfSchema(schemaPaths);
     const createdPaths = createPaths(
       cwd,
       config.generateDir,
       '__concatedschema__',
-      _schemaHash,
+      schemaHash,
     );
 
     if (!existsSync(createdPaths.tsxFullPath)) {
@@ -55,26 +51,33 @@ export async function processResolverTypesIfNeeded(
         PRINT_PREFIX +
           `Local schema files are detected. Generating resolver types...`,
       );
+
+      await removeOldCache(
+        cwd,
+        createdPaths.tsxRelRegex,
+        createdPaths.dtsRelRegex,
+      );
+
       const {
         tsxFullPath,
         dtsFullPath,
         gqlRelPath,
       } = await processGenerateResolverTypes(
-        _schemaHash,
+        schemaHash,
         schemaPaths,
         config,
         codegenOpts,
         createdPaths,
       );
+
       codegenContext.push({
         tsxFullPath,
         dtsFullPath,
         gqlRelPath,
       });
     }
-    schemaHash = _schemaHash;
   }
-  return schemaHash;
+  return { schemaHash, schemaPaths };
 }
 
 export async function processDocuments(
@@ -83,16 +86,12 @@ export async function processDocuments(
   config: ConfigTypes,
   schemaHash: string,
   codegenOpts: PartialCodegenOpts,
-  codegenContext: {
-    tsxFullPath: string;
-    dtsFullPath: string;
-    gqlRelPath: string;
-  }[],
+  codegenContext: CodegenContext,
 ) {
   for (const gqlRelPath of gqlRelPaths) {
     const gqlContent = await readFile(pathJoin(cwd, gqlRelPath), 'utf-8');
 
-    const { tsxFullPath, dtsFullPath } = createPaths(
+    const { tsxFullPath, dtsFullPath, tsxRelRegex, dtsRelRegex } = createPaths(
       cwd,
       config.generateDir,
       gqlRelPath,
@@ -102,6 +101,8 @@ export async function processDocuments(
     );
 
     if (!existsSync(tsxFullPath)) {
+      await removeOldCache(cwd, tsxRelRegex, dtsRelRegex);
+
       await processGraphQLCodegen(
         codegenOpts,
         tsxFullPath,
@@ -130,41 +131,26 @@ export async function prepareFullGenerate(config: ConfigTypes, cwd: string) {
   return { codegenOpts, gqlRelPaths };
 }
 
-export async function finalizeCodegenContextIfNeeded(
-  codegenContext: {
-    tsxFullPath: string;
-    dtsFullPath: string;
-    gqlRelPath: string;
-  }[],
-  config: ConfigTypes,
+export async function processDtsForCodegenContext(
+  codegenContext: CodegenContext,
 ) {
-  if (codegenContext.length) {
-    logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
-    const dtsContents = genDts(codegenContext.map(s => s.tsxFullPath));
+  logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
+  const dtsContents = genDts(codegenContext.map(s => s.tsxFullPath));
 
-    await makeDir(dirname(codegenContext[0].dtsFullPath));
-    for (const [i, dtsContent] of dtsContents.entries()) {
-      const { dtsFullPath, gqlRelPath } = codegenContext[i]!;
+  await makeDir(dirname(codegenContext[0].dtsFullPath));
+  for (const [i, dtsContent] of dtsContents.entries()) {
+    const { dtsFullPath, gqlRelPath } = codegenContext[i]!;
 
-      await writeFile(dtsFullPath, wrapAsModule(gqlRelPath, dtsContent));
-    }
-
-    logUpdate(
-      PRINT_PREFIX +
-        `${dtsContents.length} .d.ts were generated in ${createDtsRelDir(
-          config.generateDir,
-        )}.`,
-    );
-    logUpdate.done();
+    await writeFile(dtsFullPath, wrapAsModule(gqlRelPath, dtsContent));
   }
 }
 
-async function fullGenerate(config: ConfigTypes, cwd: string): Promise<void> {
-  const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(config, cwd);
-
+async function fullGenerate(config: ConfigTypes, cwd: string): Promise<number> {
   const codegenContext: CodegenContext = [];
 
-  const schemaHash = await processResolverTypesIfNeeded(
+  const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(config, cwd);
+
+  const { schemaHash } = await processResolverTypesIfNeeded(
     config,
     cwd,
     codegenOpts,
@@ -180,7 +166,9 @@ async function fullGenerate(config: ConfigTypes, cwd: string): Promise<void> {
     codegenContext,
   );
 
-  await finalizeCodegenContextIfNeeded(codegenContext, config);
+  if (codegenContext.length) await processDtsForCodegenContext(codegenContext);
+
+  return codegenContext.length;
 }
 
 export default fullGenerate;

@@ -35,7 +35,11 @@ export function createPaths(
 
   // These are used to erase old cache from __generated__ on HMR.
   // Otherwise the multiple `declare module "*/x.graphql"` are exposed.
-  const tsxRelRegex = `${gqlRelPath}-[a-z0-9]+.tsx`;
+  const tsxRelRegex = path.join(
+    genRelPath,
+    TSX_OUTPUT_DIR,
+    `${gqlRelPath}-[a-z0-9]+.tsx`,
+  );
   const dtsRelRegex = path.join(dtsRelDir, `${gqlBasename}-[a-z0-9]+.d.ts`);
 
   return {

@@ -1,12 +1,10 @@
 import { existsSync, promises as fsPromises } from 'fs';
 import logUpdate from 'log-update';
-import glob from 'globby';
-import _rimraf from 'rimraf';
-import { promisify } from 'util';
 import { loader } from 'webpack';
 import { join as pathJoin, relative as pathRelative } from 'path';
 import { parse as parseYaml } from 'yaml';
 import { processGenDts as _processGenDts } from './lib/dts';
+import { removeOldCache } from './lib/file';
 import { processGraphQLCodegenFromConfig as _processGraphQLCodegenFromConfig } from './lib/graphql-codegen';
 import getHash from './lib/hash';
 import memoize from './lib/memoize';
@@ -19,8 +17,6 @@ import {
 import { ConfigTypes } from './lib/types';
 import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 import { PRINT_PREFIX } from './lib/print';
-
-const rimraf = promisify(_rimraf);
 
 const { readFile } = fsPromises;
 const processGraphQLCodegenFromConfig = memoize(
@@ -72,13 +68,7 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
       if (existsSync(tsxFullPath)) {
         tsxContent = await readFile(tsxFullPath, 'utf-8');
       } else {
-        // Erasing old cache in __generated__ on HMR.
-        // Otherwise the multiple `declare module "*/x.graphql"` are exposed.
-        const oldFiles = await glob([tsxRelRegex, dtsRelRegex], {
-          cwd: userDir,
-          absolute: true,
-        });
-        await Promise.all(oldFiles.map(f => rimraf(f)));
+        await removeOldCache(userDir, tsxRelRegex, dtsRelRegex);
 
         logUpdate(`${PRINT_PREFIX}Running graphql-codegen...`);
         tsxContent = await processGraphQLCodegenFromConfig(

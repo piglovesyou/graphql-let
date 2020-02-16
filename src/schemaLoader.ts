@@ -4,7 +4,7 @@ import { loader } from 'webpack';
 import { join as pathJoin } from 'path';
 import { parse as parseYaml } from 'yaml';
 import {
-  finalizeCodegenContextIfNeeded as _finalizeCodegenContextIfNeeded,
+  processDtsForCodegenContext as _finalizeCodegenContextIfNeeded,
   prepareFullGenerate as _prepareFullGenerate,
   processDocuments as _processDocuments,
   processResolverTypesIfNeeded as _processResolverTypesIfNeeded,
@@ -42,21 +42,25 @@ const graphlqCodegenSchemaLoader: loader.Loader = function(gqlContent) {
         await readFile(configPath, 'utf-8'),
       ) as ConfigTypes;
 
+      const codegenContext: CodegenContext = [];
+
       const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(
         config,
         cwd,
       );
 
-      const codegenContext: CodegenContext = [];
-
-      const schemaHash = await processResolverTypesIfNeeded(
+      const { schemaHash, schemaPaths } = await processResolverTypesIfNeeded(
         config,
         cwd,
         codegenOpts,
         codegenContext,
       );
 
-      // Only if schema was changed, documents are also handled for quick startup.
+      // All documents and schema are dependencies, which change should invalidate caches.
+      gqlRelPaths.forEach(p => this.addDependency(p));
+      schemaPaths.forEach(p => this.addDependency(p));
+
+      // Only if schema was changed, documents are also handled for quick startup of webpack dev.
       if (codegenContext.length) {
         await processDocuments(
           gqlRelPaths,
@@ -66,7 +70,8 @@ const graphlqCodegenSchemaLoader: loader.Loader = function(gqlContent) {
           codegenOpts,
           codegenContext,
         );
-        await finalizeCodegenContextIfNeeded(codegenContext, config);
+
+        await finalizeCodegenContextIfNeeded(codegenContext);
       }
 
       // It just passes as it is

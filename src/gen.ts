@@ -1,15 +1,10 @@
-import path from 'path';
-import _rimraf from 'rimraf';
-import { promisify } from 'util';
 import { parse as parseYaml } from 'yaml';
-import { promises as fsPromises } from 'fs';
 import fullGenerate from './lib/full-generate';
+import { createDtsRelDir } from './lib/paths';
 import { PRINT_PREFIX } from './lib/print';
 import { CommandOpts, ConfigTypes } from './lib/types';
 import logUpdate from 'log-update';
-
-const { readFile } = fsPromises;
-const rimraf = promisify(_rimraf);
+import { readFile } from './lib/file';
 
 export default async function gen(commandOpts: CommandOpts): Promise<void> {
   logUpdate(PRINT_PREFIX + 'Running graphql-codegen...');
@@ -17,8 +12,17 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
   const { configPath, cwd } = commandOpts;
   const config = parseYaml(await readFile(configPath, 'utf-8')) as ConfigTypes;
 
-  // When we rebuild from schema, we have to restart from very beginning.
-  await rimraf(path.join(cwd, config.generateDir));
+  const numberAffected = await fullGenerate(config, cwd);
 
-  await fullGenerate(config, cwd);
+  if (numberAffected) {
+    logUpdate(
+      PRINT_PREFIX +
+        `${numberAffected} .d.ts were generated in ${createDtsRelDir(
+          config.generateDir,
+        )}.`,
+    );
+  } else {
+    logUpdate(PRINT_PREFIX + `Done nothing, caches are still fresh.`);
+  }
+  logUpdate.done();
 }
