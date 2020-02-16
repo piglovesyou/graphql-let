@@ -78,6 +78,7 @@ describe('HMR', () => {
       status: Scalars['String'];
   };
 `),
+        `${result1.schema} is something wrong`,
       );
       assert.ok(
         result1.document.includes(`
@@ -89,6 +90,7 @@ describe('HMR', () => {
       } & Pick<User, 'id' | 'name'>)>;
   });
 `),
+        `${result1.document} is something wrong`,
       );
 
       /************************************************************************
