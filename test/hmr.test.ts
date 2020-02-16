@@ -8,14 +8,19 @@ import _rimraf from 'rimraf';
 import { promises } from 'fs';
 import execa, { Options } from 'execa';
 import { killApp, timeout, waitApp } from './lib/child-process';
-// import jest from 'jest';
 
 const rimraf = promisify(_rimraf);
-const { /*rename,*/ readFile, writeFile } = promises;
+const { readFile, writeFile } = promises;
 
 const cwd = pathJoin(__dirname, 'fixtures/hmr');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
 const read = (relPath: string) => readFile(rel(relPath), 'utf-8');
+
+// TODO: Test loader value
+// const loadModule = () => {
+//   jest.resetModules();
+//   return require('./fixtures/hmr/dist/main.js');
+// };
 
 const spawn = (command: string, args: string[], options?: Options) =>
   execa(command, args, {
@@ -25,7 +30,6 @@ const spawn = (command: string, args: string[], options?: Options) =>
   });
 
 describe('"graphql-let" command', () => {
-  // beforeAll(async () => await rename(rel('_gitignore'), rel('.gitignore')));
   beforeAll(async () => await spawn('git', ['checkout', '.'], { cwd }));
   afterAll(async () => await spawn('git', ['checkout', '.'], { cwd }));
 
@@ -40,14 +44,31 @@ describe('"graphql-let" command', () => {
 
       const d = '^__generated__/types';
       const h = '[a-z\\d]+';
-      const r1 = await glob('__generated__/types/**', { cwd });
-      assert.deepStrictEqual(r1.length, 2);
 
-      // Ensure the initial state
-      const [s1, d1] = r1;
-      assert(new RegExp(`${d}/__concatedschema__-${h}.d.ts$`).test(s1));
-      assert(
-        (await read(s1)).includes(`
+      const ensureOutputDts = async () => {
+        const globResults = await glob('__generated__/types/**', { cwd });
+        assert.deepStrictEqual(globResults.length, 2);
+        const [schemaDtsPath, documentDtsPath] = globResults;
+        assert(
+          new RegExp(`${d}/__concatedschema__-${h}.d.ts$`).test(schemaDtsPath),
+        );
+        assert.ok(
+          new RegExp(`${d}/viewer.graphql-${h}.d.ts$`).test(documentDtsPath),
+        );
+        return {
+          schemaDtsPath,
+          schema: await read(schemaDtsPath),
+          documentDtsPath,
+          document: await read(documentDtsPath),
+        };
+      };
+
+      /************************************************************************
+       * Ensure the initial state
+       */
+      const result1 = await ensureOutputDts();
+      assert.ok(
+        result1.schema.includes(`
   export declare type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
       id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
       name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -60,65 +81,96 @@ describe('"graphql-let" command', () => {
   };
 `),
       );
-      assert.ok(new RegExp(`${d}/viewer.graphql-${h}.d.ts$`).test(d1));
-      assert(
-        (await read(d1)).includes(`export declare function useViewerQuery`),
+      assert.ok(
+        result1.document.includes(`
+  export declare type ViewerQuery = ({
+      __typename?: 'Query';
+  } & {
+      viewer: Maybe<({
+          __typename?: 'User';
+      } & Pick<User, 'id' | 'name'>)>;
+  });
+`),
       );
 
-      // Verify loader result
+      /************************************************************************
+       * Start dev server
+       */
       const app = spawn('yarn', ['webpack-dev-server']);
       await waitApp(8080);
 
-      const loadModule = () => {
-        jest.resetModules();
-        return require('./fixtures/hmr/dist/main.js');
-      };
-
-      const built1 = loadModule();
-
-      assert.ok(
-        built1.schema.includes(
-          `
-type User {
-    id: ID!
-    name: String!
-    status: String!
-}
-`.trim(),
-        ),
+      /************************************************************************
+       * Verify initial loader behavior
+       */
+      const result2 = await ensureOutputDts();
+      assert.deepStrictEqual(
+        result2.schemaDtsPath,
+        result1.schemaDtsPath,
+        'Initially Loader should respect cache.',
       );
-      assert.ok(
-        built1.document.includes(
-          `
-export type User = {
-   __typename?: 'User',
-  id: Scalars['ID'],
-  name: Scalars['String'],
-  status: Scalars['String'],
-};
-`.trim(),
-        ),
-        '"User" type should contain "id", "name" and "status" first.',
+      assert.deepStrictEqual(
+        result2.schema,
+        result1.schema,
+        'Initially Loader should respect cache.',
       );
-      assert.ok(
-        built1.document.includes(
-          `
-export type ViewerQuery = (
-  { __typename?: 'Query' }
-  & { viewer: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'name'>
-  )> }
-);
-`.trim(),
-        ),
-        '"ViewerQuery" should only contain "id" and "name" first.',
+      assert.deepStrictEqual(
+        result2.documentDtsPath,
+        result1.documentDtsPath,
+        'Initially Loader should respect cache.',
+      );
+      assert.deepStrictEqual(
+        result2.document,
+        result1.document,
+        'Initially Loader should respect cache.',
       );
 
-      // Modify a document to add "status" field
+      // const built1 = loadModule();
+      //       assert.ok(
+      //         built1.schema.includes(
+      //           `
+      // type User {
+      //     id: ID!
+      //     name: String!
+      //     status: String!
+      // }
+      // `.trim(),
+      //         ),
+      //       );
+      //       assert.ok(
+      //         built1.document.includes(
+      //           `
+      // export type User = {
+      //    __typename?: 'User',
+      //   id: Scalars['ID'],
+      //   name: Scalars['String'],
+      //   status: Scalars['String'],
+      // };
+      // `.trim(),
+      //         ),
+      //         '"User" type should contain "id", "name" and "status" first.',
+      //       );
+      //       assert.ok(
+      //         built1.document.includes(
+      //           `
+      // export type ViewerQuery = (
+      //   { __typename?: 'Query' }
+      //   & { viewer: Maybe<(
+      //     { __typename?: 'User' }
+      //     & Pick<User, 'id' | 'name'>
+      //   )> }
+      // );
+      // `.trim(),
+      //         ),
+      //         '"ViewerQuery" should only contain "id" and "name" first.',
+      //       );
+
+      /************************************************************************
+       * Verify HMR on document modification
+       */
       await writeFile(
         rel('src/viewer.graphql'),
         `
+# Add "status" field for testing
 query Viewer {
     viewer {
         id
@@ -130,27 +182,46 @@ query Viewer {
         'utf-8',
       );
       await timeout(10 * 1000);
-
-      const built2 = loadModule();
+      const result3 = await ensureOutputDts();
+      assert.deepStrictEqual(
+        result3.schemaDtsPath,
+        result1.schemaDtsPath,
+        'Schema should not be effected by document modification.',
+      );
+      assert.deepStrictEqual(
+        result3.schema,
+        result1.schema,
+        'Schema should not be effected by document modification.',
+      );
+      assert.notDeepStrictEqual(
+        result3.documentDtsPath,
+        result1.documentDtsPath,
+        'Document should be renewed.',
+      );
+      assert.notDeepStrictEqual(
+        result3.document,
+        result1.document,
+        'Document should be renewed.',
+      );
       assert.ok(
-        built2.document.includes(
-          `
-export type ViewerQuery = (
-  { __typename?: 'Query' }
-  & { viewer: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'name' | 'status'>
-  )> }
-);
-`.trim(),
-        ),
-        'It should now include "status" field by HMR.',
+        result3.document.includes(`
+  export declare type ViewerQuery = ({
+      __typename?: 'Query';
+  } & {
+      viewer: Maybe<({
+          __typename?: 'User';
+      } & Pick<User, 'id' | 'name' | 'status'>)>;
+  });
+`),
       );
 
-      // Modify schema to add "age" field.
+      /************************************************************************
+       * Verify HMR on schema modification - add "age" field
+       */
       await writeFile(
         rel('src/type-defs.graphqls'),
         `
+# Add "age" field for testing
 type User {
     id: ID!
     name: String!
@@ -161,85 +232,54 @@ type User {
 type Query {
     viewer: User
 }
-`,
+`.trim(),
         'utf-8',
       );
       await timeout(10 * 1000);
-
-      const built3 = loadModule();
-
-      assert.ok(
-        built3.schema.includes(
-          `
-type User {
-    id: ID!
-    name: String!
-    status: String!
-    age: Int!
-}
-`.trim(),
-        ),
+      const result4 = await ensureOutputDts();
+      assert.notDeepStrictEqual(
+        result4.schemaDtsPath,
+        result3.schemaDtsPath,
+        'Schema should be renewed.',
+      );
+      assert.notDeepStrictEqual(
+        result4.schema,
+        result3.schema,
+        'Schema should be renewed.',
+      );
+      assert.notDeepStrictEqual(
+        result4.documentDtsPath,
+        result3.documentDtsPath,
+        'Document should be renewed.',
+      );
+      assert.notDeepStrictEqual(
+        result4.document,
+        result3.document,
+        'Document should be renewed.',
       );
       assert.ok(
-        built3.document.includes(
+        result4.schema.includes(
           `
-export type User = {
-   __typename?: 'User',
-  id: Scalars['ID'],
-  name: Scalars['String'],
-  status: Scalars['String'],
-  age: Scalars['Int'],
-};
-`.trim(),
-        ),
-        '',
-      );
-      assert.ok(
-        built3.document.includes(
-          `
-export type ViewerQuery = (
-  { __typename?: 'Query' }
-  & { viewer: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'name'>
-  )> }
-);
-`.trim(),
-        ),
-        '',
-      );
-
-      // Modify a document again to add "age" field
-      await writeFile(
-        rel('src/viewer.graphql'),
-        `
-query Viewer {
-    viewer {
-        id
-        name
-        status
-        age
-    }
-}
+  export declare type User = {
+      __typename?: 'User';
+      id: Scalars['ID'];
+      name: Scalars['String'];
+      status: Scalars['String'];
+      age: Scalars['Int'];
+  };
 `,
-        'utf-8',
-      );
-      await timeout(10 * 1000);
-
-      const built4 = loadModule();
-      assert.ok(
-        built4.document.includes(
-          `
-export type ViewerQuery = (
-  { __typename?: 'Query' }
-  & { viewer: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'name' | 'age'>
-  )> }
-);
-`.trim(),
         ),
-        '',
+      );
+      assert.ok(
+        result4.document.includes(`
+  export declare type User = {
+      __typename?: 'User';
+      id: Scalars['ID'];
+      name: Scalars['String'];
+      status: Scalars['String'];
+      age: Scalars['Int'];
+  };
+`),
       );
 
       await killApp(app);
