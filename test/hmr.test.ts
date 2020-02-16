@@ -203,12 +203,12 @@ query Viewer {
         result1.schema,
         'Schema should not be effected by document modification.',
       );
-      assert.notDeepStrictEqual(
+      assert.notEqual(
         result3.documentDtsPath,
         result1.documentDtsPath,
         'Document should be renewed.',
       );
-      assert.notDeepStrictEqual(
+      assert.notEqual(
         result3.document,
         result1.document,
         'Document should be renewed.',
@@ -249,22 +249,22 @@ type Query {
       );
       await timeout(30 * 1000);
       const result4 = await ensureOutputDts();
-      assert.notDeepStrictEqual(
+      assert.notEqual(
         result4.schemaDtsPath,
         result3.schemaDtsPath,
         'Schema should be renewed.',
       );
-      assert.notDeepStrictEqual(
+      assert.notEqual(
         result4.schema,
         result3.schema,
         'Schema should be renewed.',
       );
-      assert.notDeepStrictEqual(
+      assert.notEqual(
         result4.documentDtsPath,
         result3.documentDtsPath,
         'Document should be renewed.',
       );
-      assert.notDeepStrictEqual(
+      assert.notEqual(
         result4.document,
         result3.document,
         'Document should be renewed.',
