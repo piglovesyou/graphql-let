@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion,  @typescript-eslint/no-var-requires */
 
 import { join as pathJoin } from 'path';
 import assert from 'assert';
@@ -7,9 +7,10 @@ import { promisify } from 'util';
 import _rimraf from 'rimraf';
 import { promises } from 'fs';
 import execa, { Options } from 'execa';
+import { killApp, timeout, waitApp } from './lib/child-process';
 
 const rimraf = promisify(_rimraf);
-const { rename, readFile } = promises;
+const { /*rename,*/ readFile, writeFile } = promises;
 
 const cwd = pathJoin(__dirname, 'fixtures/hmr');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
@@ -23,8 +24,8 @@ const spawn = (command: string, args: string[], options?: Options) =>
   });
 
 describe('"graphql-let" command', () => {
-  beforeAll(async () => await rename(rel('_gitignore'), rel('.gitignore')));
-  afterAll(async () => await rename(rel('.gitignore'), rel('_gitignore')));
+  // beforeAll(async () => await rename(rel('_gitignore'), rel('.gitignore')));
+  // afterAll(async () => await rename(rel('.gitignore'), rel('_gitignore')));
 
   test(
     `generates .d.ts `,
@@ -59,11 +60,61 @@ describe('"graphql-let" command', () => {
       );
       assert(new RegExp(`${d}/viewer.graphql-${h}.d.ts$`).test(d1));
       assert(
-        (await read(d1)).includes(`
-  export declare function useViewerQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ViewerQuery, ViewerQueryVariables>): ApolloReactCommon.QueryResult<ViewerQuery, ViewerQueryVariables>;
-`),
+        (await read(d1)).includes(`export declare function useViewerQuery`),
       );
+
+      // Verify loader result
+      const app = spawn('yarn', ['webpack-dev-server']);
+      await waitApp(8080);
+
+      const built1 = require('./fixtures/hmr/dist/main.js');
+      assert.ok(
+        built1.schema.includes(
+          `
+type User {
+    id: ID!
+    name: String!
+    status: String!
+}`.trim(),
+        ),
+      );
+      assert.ok(
+        built1.document.includes(
+          `
+export type ViewerQuery = (
+  { __typename?: 'Query' }
+  & { viewer: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name'>
+  )> }
+);
+`.trim(),
+        ),
+      );
+
+      // Modify a document. "status" is the new field.
+      await writeFile(
+        rel('src/viewer.graphql'),
+        `
+query Viewer {
+    viewer {
+        id
+        name
+        status
+    }
+}
+`,
+        'utf-8',
+      );
+      await timeout(10 * 1000);
+
+      delete require.cache[require.resolve('./fixtures/hmr/dist/main.js')];
+      const built2 = require('./fixtures/hmr/dist/main.js');
+
+      console.log(built2);
+
+      await killApp(app);
     },
-    60 * 1000,
+    60 * 1000 * 2,
   );
 });

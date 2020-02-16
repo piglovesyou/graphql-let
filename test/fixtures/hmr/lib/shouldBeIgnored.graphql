@@ -1,7 +1,0 @@
-query Xxx {
-    viewer {
-        id
-        name
-        status
-    }
-}

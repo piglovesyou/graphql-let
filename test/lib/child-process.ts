@@ -37,14 +37,3 @@ export async function killApp(app: ExecaChildProcess) {
 export function timeout(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-
-export async function openBrowser(port: number): Promise<[Browser, Page]> {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  page.on('pageerror', err => {
-    throw new Error(`The page got an error: ${err}`);
-  });
-  const url = getUrl(port);
-  await page.goto(url);
-  return [browser, page];
-}

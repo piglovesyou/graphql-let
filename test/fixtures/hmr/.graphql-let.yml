@@ -1,6 +1,6 @@
 generateDir: __generated__
-schema: '**/*.graphqls'
-documents: '**/*.graphql'
+schema: 'src/**/*.graphqls'
+documents: 'src/**/*.graphql'
 plugins:
   - typescript
   - typescript-operations

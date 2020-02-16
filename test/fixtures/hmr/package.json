@@ -3,20 +3,10 @@
   "private": true,
   "version": "1.0.0",
   "license": "ISC",
-  "scripts": {
-    "dev": "next",
-    "build": "next build",
-    "start": "next start"
-  },
   "dependencies": {
-    "graphql": "^14.5.8",
-    "graphql-tag": "^2.10.1",
-    "next": "latest"
-  },
-  "devDependencies": {
-    "@graphql-codegen/typescript": "^1.9.1",
-    "@graphql-codegen/typescript-operations": "^1.9.1",
-    "@graphql-codegen/typescript-react-apollo": "^1.9.1",
-    "@graphql-codegen/typescript-resolvers": "^1.12.2"
+    "graphql-tag": "^2.10.3",
+    "raw-loader": "^4.0.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
   }
 }
