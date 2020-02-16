@@ -23,3 +23,5 @@ dist
 yarn.lock
 
 *.graphql.d.ts
+
+.next
