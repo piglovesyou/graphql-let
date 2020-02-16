@@ -60,7 +60,7 @@ describe('HMR', () => {
 
       const ensureOutputDts = async (message: string) => {
         const globResults = await glob('__generated__/types/**', { cwd });
-        assert.strictEqual(
+        assert.equal(
           globResults.length,
           2,
           `"${JSON.stringify(globResults)}" is something wrong. ${message}`,
@@ -124,22 +124,22 @@ describe('HMR', () => {
        * Verify initial loader behavior
        */
       const result2 = await ensureOutputDts('Verify initial loader behavior');
-      assert.strictEqual(
+      assert.equal(
         result2.schemaDtsPath,
         result1.schemaDtsPath,
         'Initially Loader should respect cache.',
       );
-      assert.strictEqual(
+      assert.equal(
         result2.schema,
         result1.schema,
         'Initially Loader should respect cache.',
       );
-      assert.strictEqual(
+      assert.equal(
         result2.documentDtsPath,
         result1.documentDtsPath,
         'Initially Loader should respect cache.',
       );
-      assert.strictEqual(
+      assert.equal(
         result2.document,
         result1.document,
         'Initially Loader should respect cache.',
@@ -206,22 +206,22 @@ query Viewer {
       const result3 = await ensureOutputDts(
         'Verify HMR on document modification',
       );
-      assert.strictEqual(
+      assert.equal(
         result3.schemaDtsPath,
         result1.schemaDtsPath,
         'Schema should not be effected by document modification.',
       );
-      assert.strictEqual(
+      assert.equal(
         result3.schema,
         result1.schema,
         'Schema should not be effected by document modification.',
       );
-      assert.notStrictEqual(
+      assert.notEqual(
         result3.documentDtsPath,
         result1.documentDtsPath,
         'Document should be renewed.',
       );
-      assert.notStrictEqual(
+      assert.notEqual(
         result3.document,
         result1.document,
         'Document should be renewed.',
@@ -264,22 +264,22 @@ type Query {
       const result4 = await ensureOutputDts(
         'Verify HMR on schema modification - add "age" field',
       );
-      assert.notStrictEqual(
+      assert.notEqual(
         result4.schemaDtsPath,
         result3.schemaDtsPath,
         'Schema should be renewed.',
       );
-      assert.notStrictEqual(
+      assert.notEqual(
         result4.schema,
         result3.schema,
         'Schema should be renewed.',
       );
-      assert.notStrictEqual(
+      assert.notEqual(
         result4.documentDtsPath,
         result3.documentDtsPath,
         'Document should be renewed.',
       );
-      assert.notStrictEqual(
+      assert.notEqual(
         result4.document,
         result3.document,
         'Document should be renewed.',
