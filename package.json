@@ -99,8 +99,9 @@
   "scripts": {
     "lint": "eslint --ext .ts,.tsx --ignore-path .gitignore .",
     "fix": "yarn lint --fix",
-    "test": "tsc --noEmit && jest",
-    "build": "rimraf dist && tsc --declaration",
+    "compile": "tsc --project tsconfig.compile.json",
+    "test": "rimraf \"**/__generated__\" && yarn compile --noEmit && jest",
+    "build": "rimraf dist && yarn compile",
     "prepare": "yarn lint && yarn test && yarn build"
   },
   "husky": {

@@ -29,12 +29,12 @@ const spawn = (command: string, args: string[], options?: Options) =>
     ...(options ? options : {}),
   });
 
-describe('"graphql-let" command', () => {
+describe('HMR', () => {
   beforeAll(async () => await spawn('git', ['checkout', '.'], { cwd }));
   afterAll(async () => await spawn('git', ['checkout', '.'], { cwd }));
 
   test(
-    `generates .d.ts `,
+    `effect to both schema and documents`,
     async () => {
       await rimraf(rel('__generated__'));
 
@@ -69,21 +69,17 @@ describe('"graphql-let" command', () => {
       const result1 = await ensureOutputDts();
       assert.ok(
         result1.schema.includes(`
-  export declare type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-      id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-      name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-      status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-      __isTypeOf?: isTypeOfResolverFn<ParentType>;
-  };
-  export declare type Resolvers<ContextType = any> = {
-      Query?: QueryResolvers<ContextType>;
-      User?: UserResolvers<ContextType>;
+  export type User = {
+      __typename?: 'User';
+      id: Scalars['ID'];
+      name: Scalars['String'];
+      status: Scalars['String'];
   };
 `),
       );
       assert.ok(
         result1.document.includes(`
-  export declare type ViewerQuery = ({
+  export type ViewerQuery = ({
       __typename?: 'Query';
   } & {
       viewer: Maybe<({
@@ -205,7 +201,7 @@ query Viewer {
       );
       assert.ok(
         result3.document.includes(`
-  export declare type ViewerQuery = ({
+  export type ViewerQuery = ({
       __typename?: 'Query';
   } & {
       viewer: Maybe<({
@@ -260,7 +256,7 @@ type Query {
       assert.ok(
         result4.schema.includes(
           `
-  export declare type User = {
+  export type User = {
       __typename?: 'User';
       id: Scalars['ID'];
       name: Scalars['String'];
@@ -272,7 +268,7 @@ type Query {
       );
       assert.ok(
         result4.document.includes(`
-  export declare type User = {
+  export type User = {
       __typename?: 'User';
       id: Scalars['ID'];
       name: Scalars['String'];

@@ -21,8 +21,7 @@ export function wrapAsModule(filePath: string, content: string) {
   return `declare module '${moduleName}' {
   ${content
     .trim()
-    // Not sure if it's necessary, is it?
-    // .replace(/\nexport declare /g, '\nexport ')
+    .replace(/\nexport declare /g, '\nexport ')
     .replace(/\n/g, '\n  ')}
 }`;
 }
