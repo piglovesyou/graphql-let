@@ -51,17 +51,21 @@ describe('HMR', () => {
       const d = '^__generated__/types';
       const h = '[a-z\\d]+';
 
-      const ensureOutputDts = async () => {
+      const ensureOutputDts = async (message: string) => {
         const globResults = await glob('__generated__/types/**', { cwd });
-        assert.deepStrictEqual(globResults.length, 2);
+        assert.deepStrictEqual(
+          globResults.length,
+          2,
+          `"${JSON.stringify(globResults)}" is something wrong. ${message}`,
+        );
         const [schemaDtsPath, documentDtsPath] = globResults.sort();
         assert.ok(
           new RegExp(`${d}/__concatedschema__-${h}.d.ts$`).test(schemaDtsPath),
-          `${schemaDtsPath} is something wrong.`,
+          `${schemaDtsPath} is something wrong. ${message}`,
         );
         assert.ok(
           new RegExp(`${d}/viewer.graphql-${h}.d.ts$`).test(documentDtsPath),
-          `${documentDtsPath} is something wrong.`,
+          `${documentDtsPath} is something wrong. ${message}`,
         );
         return {
           schemaDtsPath,
@@ -74,7 +78,7 @@ describe('HMR', () => {
       /************************************************************************
        * Ensure the initial state
        */
-      const result1 = await ensureOutputDts();
+      const result1 = await ensureOutputDts('Ensure the initial state');
       assert.ok(
         result1.schema.n.includes(
           `
@@ -112,7 +116,7 @@ describe('HMR', () => {
       /************************************************************************
        * Verify initial loader behavior
        */
-      const result2 = await ensureOutputDts();
+      const result2 = await ensureOutputDts('Verify initial loader behavior');
       assert.deepStrictEqual(
         result2.schemaDtsPath,
         result1.schemaDtsPath,
@@ -192,7 +196,9 @@ query Viewer {
         'utf-8',
       );
       await timeout(30 * 1000);
-      const result3 = await ensureOutputDts();
+      const result3 = await ensureOutputDts(
+        'Verify HMR on document modification',
+      );
       assert.deepStrictEqual(
         result3.schemaDtsPath,
         result1.schemaDtsPath,
@@ -248,7 +254,9 @@ type Query {
         'utf-8',
       );
       await timeout(30 * 1000);
-      const result4 = await ensureOutputDts();
+      const result4 = await ensureOutputDts(
+        'Verify HMR on schema modification - add "age" field',
+      );
       assert.notEqual(
         result4.schemaDtsPath,
         result3.schemaDtsPath,
