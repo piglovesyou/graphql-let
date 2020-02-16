@@ -24,7 +24,7 @@ const read = (relPath: string) => readFile(rel(relPath), 'utf-8');
 
 Object.defineProperty(String.prototype, 'n', {
   get(): string {
-    return this.trim().replace(/\r?\n */g, '\n');
+    return this.replace(/\r\n/g, '\n').trim();
   },
 });
 
