@@ -102,7 +102,7 @@
     "compile": "tsc --project tsconfig.compile.json",
     "test": "rimraf \"**/__generated__\" && yarn compile --noEmit && jest",
     "build": "rimraf dist && yarn compile",
-    "prepare": "yarn lint && yarn test && yarn build"
+    "prepare": "yarn lint && yarn build && yarn test"
   },
   "husky": {
     "hooks": {
