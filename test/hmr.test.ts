@@ -181,7 +181,7 @@ query Viewer {
 `,
         'utf-8',
       );
-      await timeout(10 * 1000);
+      await timeout(30 * 1000);
       const result3 = await ensureOutputDts();
       assert.deepStrictEqual(
         result3.schemaDtsPath,
@@ -235,7 +235,7 @@ type Query {
 `.trim(),
         'utf-8',
       );
-      await timeout(10 * 1000);
+      await timeout(30 * 1000);
       const result4 = await ensureOutputDts();
       assert.notDeepStrictEqual(
         result4.schemaDtsPath,
