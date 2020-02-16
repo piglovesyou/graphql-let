@@ -8,6 +8,13 @@ import _rimraf from 'rimraf';
 import { promises } from 'fs';
 import execa, { Options } from 'execa';
 import { killApp, timeout, waitApp } from './lib/child-process';
+import normalizeNewline from 'normalize-newline';
+
+// TODO: Test loader value
+// const loadModule = () => {
+//   jest.resetModules();
+//   return require('./fixtures/hmr/dist/main.js');
+// };
 
 const rimraf = promisify(_rimraf);
 const { readFile, writeFile } = promises;
@@ -16,11 +23,11 @@ const cwd = pathJoin(__dirname, 'fixtures/hmr');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
 const read = (relPath: string) => readFile(rel(relPath), 'utf-8');
 
-// TODO: Test loader value
-// const loadModule = () => {
-//   jest.resetModules();
-//   return require('./fixtures/hmr/dist/main.js');
-// };
+Object.defineProperty(String.prototype, 'n', {
+  get(): string {
+    return normalizeNewline(this);
+  },
+});
 
 const spawn = (command: string, args: string[], options?: Options) =>
   execa(command, args, {
@@ -78,7 +85,7 @@ describe('HMR', () => {
       name: Scalars['String'];
       status: Scalars['String'];
   };
-`.trim(),
+`.n,
         ),
         `"${result1.schema}" is something wrong`,
       );
