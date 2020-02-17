@@ -7,13 +7,20 @@ import { promisify } from 'util';
 import _rimraf from 'rimraf';
 import { promises } from 'fs';
 import execa, { Options } from 'execa';
-import { killApp, timeout, waitApp } from './lib/child-process';
+import { killApp, waitApp } from './lib/child-process';
+import retryable from './lib/retryable';
 
 // TODO: Test loader value
 // const loadModule = () => {
 //   jest.resetModules();
 //   return require('./fixtures/hmr/dist/main.js');
 // };
+type ResultType = {
+  schemaDtsPath: string;
+  schema: string;
+  documentDtsPath: string;
+  document: string;
+};
 
 const rimraf = promisify(_rimraf);
 const { readFile, writeFile } = promises;
@@ -30,7 +37,7 @@ Object.defineProperty(String.prototype, 'n', {
 });
 
 // TODO: Stop using timeout and build some retryable logic
-const TIMEOUT_FOR_HMR = 20 * 1000;
+const WAIT_FOR_HMR = 30 * 1000;
 
 const spawn = (command: string, args: string[], options?: Options) =>
   execa(command, args, {
@@ -61,7 +68,7 @@ describe('HMR', () => {
       const d = '^__generated__/types';
       const h = '[a-z\\d]+';
 
-      const ensureOutputDts = async (message: string) => {
+      const ensureOutputDts = async (message: string): Promise<ResultType> => {
         const globResults = await glob('__generated__/types/**', { cwd });
         assert.equal(
           globResults.length,
@@ -148,46 +155,6 @@ describe('HMR', () => {
         'Initially Loader should respect cache.',
       );
 
-      // const built1 = loadModule();
-      //       assert.ok(
-      //         built1.schema.includes(
-      //           `
-      // type User {
-      //     id: ID!
-      //     name: String!
-      //     status: String!
-      // }
-      // `.trim(),
-      //         ),
-      //       );
-      //       assert.ok(
-      //         built1.document.includes(
-      //           `
-      // export type User = {
-      //    __typename?: 'User',
-      //   id: Scalars['ID'],
-      //   name: Scalars['String'],
-      //   status: Scalars['String'],
-      // };
-      // `.trim(),
-      //         ),
-      //         '"User" type should contain "id", "name" and "status" first.',
-      //       );
-      //       assert.ok(
-      //         built1.document.includes(
-      //           `
-      // export type ViewerQuery = (
-      //   { __typename?: 'Query' }
-      //   & { viewer: Maybe<(
-      //     { __typename?: 'User' }
-      //     & Pick<User, 'id' | 'name'>
-      //   )> }
-      // );
-      // `.trim(),
-      //         ),
-      //         '"ViewerQuery" should only contain "id" and "name" first.',
-      //       );
-
       /************************************************************************
        * Verify HMR on document modification
        */
@@ -205,33 +172,36 @@ query Viewer {
 `,
         'utf-8',
       );
-      await timeout(TIMEOUT_FOR_HMR);
-      const result3 = await ensureOutputDts(
-        'Verify HMR on document modification',
-      );
-      assert.equal(
-        result3.schemaDtsPath,
-        result1.schemaDtsPath,
-        'Schema should not be effected by document modification.',
-      );
-      assert.equal(
-        result3.schema,
-        result1.schema,
-        'Schema should not be effected by document modification.',
-      );
-      assert.notEqual(
-        result3.documentDtsPath,
-        result1.documentDtsPath,
-        'Document should be renewed.',
-      );
-      assert.notEqual(
-        result3.document,
-        result1.document,
-        'Document should be renewed.',
-      );
-      assert.ok(
-        result3.document.n.includes(
-          `
+
+      let result3: ResultType;
+      await retryable(
+        async () => {
+          result3 = await ensureOutputDts(
+            'Verify HMR on document modification',
+          );
+          assert.equal(
+            result3.schemaDtsPath,
+            result1.schemaDtsPath,
+            'Schema should not be effected by document modification.',
+          );
+          assert.equal(
+            result3.schema,
+            result1.schema,
+            'Schema should not be effected by document modification.',
+          );
+          assert.notEqual(
+            result3.documentDtsPath,
+            result1.documentDtsPath,
+            'Document should be renewed.',
+          );
+          assert.notEqual(
+            result3.document,
+            result1.document,
+            'Document should be renewed.',
+          );
+          assert.ok(
+            result3.document.n.includes(
+              `
   export type ViewerQuery = ({
       __typename?: 'Query';
   } & {
@@ -240,7 +210,11 @@ query Viewer {
       } & Pick<User, 'id' | 'name' | 'status'>)>;
   });
 `.n,
-        ),
+            ),
+          );
+        },
+        1000,
+        WAIT_FOR_HMR,
       );
 
       /************************************************************************
@@ -263,33 +237,34 @@ type Query {
 `.trim(),
         'utf-8',
       );
-      await timeout(TIMEOUT_FOR_HMR);
-      const result4 = await ensureOutputDts(
-        'Verify HMR on schema modification - add "age" field',
-      );
-      assert.notEqual(
-        result4.schemaDtsPath,
-        result3.schemaDtsPath,
-        'Schema should be renewed.',
-      );
-      assert.notEqual(
-        result4.schema,
-        result3.schema,
-        'Schema should be renewed.',
-      );
-      assert.notEqual(
-        result4.documentDtsPath,
-        result3.documentDtsPath,
-        'Document should be renewed.',
-      );
-      assert.notEqual(
-        result4.document,
-        result3.document,
-        'Document should be renewed.',
-      );
-      assert.ok(
-        result4.schema.n.includes(
-          `
+      await retryable(
+        async () => {
+          const result4 = await ensureOutputDts(
+            'Verify HMR on schema modification - add "age" field',
+          );
+          assert.notEqual(
+            result4.schemaDtsPath,
+            result3.schemaDtsPath,
+            'Schema should be renewed.',
+          );
+          assert.notEqual(
+            result4.schema,
+            result3.schema,
+            'Schema should be renewed.',
+          );
+          assert.notEqual(
+            result4.documentDtsPath,
+            result3.documentDtsPath,
+            'Document should be renewed.',
+          );
+          assert.notEqual(
+            result4.document,
+            result3.document,
+            'Document should be renewed.',
+          );
+          assert.ok(
+            result4.schema.n.includes(
+              `
   export type User = {
       __typename?: 'User';
       id: Scalars['ID'];
@@ -298,11 +273,11 @@ type Query {
       age: Scalars['Int'];
   };
 `.n,
-        ),
-      );
-      assert.ok(
-        result4.document.n.includes(
-          `
+            ),
+          );
+          assert.ok(
+            result4.document.n.includes(
+              `
   export type User = {
       __typename?: 'User';
       id: Scalars['ID'];
@@ -311,7 +286,11 @@ type Query {
       age: Scalars['Int'];
   };
 `.n,
-        ),
+            ),
+          );
+        },
+        1000,
+        WAIT_FOR_HMR,
       );
     },
     60 * 1000 * 100,
