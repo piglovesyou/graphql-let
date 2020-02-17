@@ -29,6 +29,8 @@ Object.defineProperty(String.prototype, 'n', {
   },
 });
 
+const TIMEOUT_FOR_HMR = 10 * 1000;
+
 const spawn = (command: string, args: string[], options?: Options) =>
   execa(command, args, {
     stdio: ['ignore', 'inherit', 'inherit'],
@@ -202,7 +204,7 @@ query Viewer {
 `,
         'utf-8',
       );
-      await timeout(60 * 1000);
+      await timeout(TIMEOUT_FOR_HMR);
       const result3 = await ensureOutputDts(
         'Verify HMR on document modification',
       );
@@ -260,7 +262,7 @@ type Query {
 `.trim(),
         'utf-8',
       );
-      await timeout(60 * 1000);
+      await timeout(TIMEOUT_FOR_HMR);
       const result4 = await ensureOutputDts(
         'Verify HMR on schema modification - add "age" field',
       );
