@@ -1,5 +1,3 @@
-const {join: pathJoin} = require('path');
-
 module.exports = {
   context: __dirname,
   entry: './src/main',
@@ -28,5 +26,7 @@ module.exports = {
       }
     ]
   },
+  stats: { colors: false },
+  devtool: 'eval',
   devServer:  { writeToDisk: true }
 };
