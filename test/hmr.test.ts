@@ -29,7 +29,8 @@ Object.defineProperty(String.prototype, 'n', {
   },
 });
 
-const TIMEOUT_FOR_HMR = 10 * 1000;
+// TODO: Stop using timeout and build some retryable logic
+const TIMEOUT_FOR_HMR = 20 * 1000;
 
 const spawn = (command: string, args: string[], options?: Options) =>
   execa(command, args, {
