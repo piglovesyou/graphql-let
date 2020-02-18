@@ -15,6 +15,7 @@ import retryable from './lib/retryable';
 //   jest.resetModules();
 //   return require('./fixtures/hmr/dist/main.js');
 // };
+
 type ResultType = {
   schemaDtsPath: string;
   schema: string;
@@ -37,7 +38,7 @@ Object.defineProperty(String.prototype, 'n', {
 });
 
 // TODO: Stop using timeout and build some retryable logic
-const WAIT_FOR_HMR = 30 * 1000;
+const WAIT_FOR_HMR = 90 * 1000;
 
 const spawn = (command: string, args: string[], options?: Options) =>
   execa(command, args, {
@@ -293,6 +294,6 @@ type Query {
         WAIT_FOR_HMR,
       );
     },
-    60 * 1000 * 100,
+    5 * 60 * 1000,
   );
 });

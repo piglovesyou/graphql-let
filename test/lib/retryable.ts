@@ -10,12 +10,13 @@ export default async function retryable(
   if (maxTimeout < 0) throw new Error('never');
   const end = Date.now() + maxTimeout;
   let lastError: Error = new Error('never');
+  let n = 0;
   while (Date.now() < end) {
     try {
       await fn();
       return;
     } catch (e) {
-      console.info('Retrying...');
+      console.info(`${++n} times tried. Retrying...`);
       lastError = e;
       await timeout(interval);
     }
