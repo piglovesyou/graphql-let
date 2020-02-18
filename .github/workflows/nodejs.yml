@@ -11,9 +11,9 @@ jobs:
           windows-latest
         ]
         node-version:
-          - 13.x
+#          - 13.x
 #          - 12.x
-#          - 10.x
+          - 10.x
     runs-on: ${{ matrix.platform }}
 
     steps:
