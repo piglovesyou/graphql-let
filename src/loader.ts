@@ -4,7 +4,7 @@ import { loader } from 'webpack';
 import { join as pathJoin, relative as pathRelative } from 'path';
 import { parse as parseYaml } from 'yaml';
 import { processGenDts } from './lib/dts';
-import { removeOldCache } from './lib/file';
+import { removeByPatterns } from './lib/file';
 import { processGraphQLCodegenFromConfig } from './lib/graphql-codegen';
 import getHash from './lib/hash';
 import memoize from './lib/memoize';
@@ -59,12 +59,18 @@ const processGraphQLCodegenLoader = memoize(
       hash,
     );
 
+    await removeByPatterns(
+      cwd,
+      tsxRelRegex,
+      dtsRelRegex,
+      '!' + tsxFullPath,
+      '!' + dtsFullPath,
+    );
+
     let tsxContent: string;
     if (existsSync(tsxFullPath)) {
       tsxContent = await readFile(tsxFullPath, 'utf-8');
     } else {
-      await removeOldCache(cwd, tsxRelRegex, dtsRelRegex);
-
       logUpdate(`${PRINT_PREFIX}Running graphql-codegen...`);
       tsxContent = await processGraphQLCodegenFromConfig(
         config,

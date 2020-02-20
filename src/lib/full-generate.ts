@@ -16,7 +16,7 @@ import {
 } from './resolver-types';
 import { ConfigTypes } from './types';
 import { processGraphQLCodegen } from './graphql-codegen';
-import { readFile, writeFile, removeOldCache } from './file';
+import { readFile, writeFile, removeByPatterns } from './file';
 
 export type CodegenContext = {
   tsxFullPath: string;
@@ -46,16 +46,18 @@ export async function processResolverTypesIfNeeded(
       schemaHash,
     );
 
+    await removeByPatterns(
+      cwd,
+      createdPaths.tsxRelRegex,
+      createdPaths.dtsRelRegex,
+      '!' + createdPaths.tsxFullPath,
+      '!' + createdPaths.dtsFullPath,
+    );
+
     if (!existsSync(createdPaths.tsxFullPath)) {
       logUpdate(
         PRINT_PREFIX +
           `Local schema files are detected. Generating resolver types...`,
-      );
-
-      await removeOldCache(
-        cwd,
-        createdPaths.tsxRelRegex,
-        createdPaths.dtsRelRegex,
       );
 
       const {
@@ -100,9 +102,15 @@ export async function processDocuments(
       getHash(gqlContent + schemaHash),
     );
 
-    if (!existsSync(tsxFullPath)) {
-      await removeOldCache(cwd, tsxRelRegex, dtsRelRegex);
+    await removeByPatterns(
+      cwd,
+      tsxRelRegex,
+      dtsRelRegex,
+      '!' + tsxFullPath,
+      '!' + dtsFullPath,
+    );
 
+    if (!existsSync(tsxFullPath)) {
       await processGraphQLCodegen(
         codegenOpts,
         tsxFullPath,

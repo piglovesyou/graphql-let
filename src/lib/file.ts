@@ -7,14 +7,10 @@ export const rimraf = promisify(_rimraf);
 
 export const { readFile, writeFile } = fsPromises;
 
-export async function removeOldCache(
-  cwd: string,
-  tsxRelRegex: string,
-  dtsRelRegex: string,
-) {
-  // Erasing old cache in __generated__ on HMR.
-  // Otherwise the multiple `declare module "*/x.graphql"` are exposed.
-  const oldFiles = await glob([tsxRelRegex, dtsRelRegex], {
+// Erasing old cache in __generated__ on HMR.
+// Otherwise the multiple `declare module "*/x.graphql"` are exposed.
+export async function removeByPatterns(cwd: string, ...patterns: string[]) {
+  const oldFiles = await glob(patterns, {
     cwd,
     absolute: true,
   });
