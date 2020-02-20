@@ -84,7 +84,7 @@ describe('HMR', () => {
       await spawn('node', ['../../../bin/graphql-let.js']);
 
       /************************************************************************
-       * Ensure the initial state
+       * Ensure the command result
        */
       const result1 = await ensureOutputDts('Ensure the initial state');
       assert.ok(

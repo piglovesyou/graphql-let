@@ -100,8 +100,9 @@
     "lint": "eslint --ext .ts,.tsx --ignore-path .gitignore .",
     "fix": "yarn lint --fix",
     "compile": "tsc --project tsconfig.compile.json",
-    "test": "rimraf \"**/__generated__\" && yarn compile --noEmit && jest",
-    "build": "rimraf dist && yarn compile",
+    "clean": "rimraf \"**/__generated__\" dist",
+    "test": "jest",
+    "build": "yarn clean && yarn compile",
     "prepare": "yarn lint && yarn build && yarn test"
   },
   "husky": {
