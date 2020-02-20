@@ -158,9 +158,11 @@ If you:
 
 ```bash
 yarn add -D @graphql-codegen/typescript-resolvers
+
+yarn graphql-let
 ```
 
-then you can import `Resolver` type from any GraphQL schema files you have.
+then you will get `Resolver` type from any GraphQL schema files you have.
 
 ```typescript
 import { Resolvers } from "./type-defs.graphqls";
@@ -175,6 +177,24 @@ const resolvers: Resolvers = {
 };
 
 export default resolvers;
+```
+
+`graphql-let/schema/loader` is also available. It just pass GraphQL Content to the next loader but it generates resolver types. Set it up like this:
+
+```diff
+ const config: Configuration = {
+   module: {
+     rules: [
++      {
++        test: /\.graphqls$/,
++        use: [
++          { loader: 'graphql-tag/loader' },
++          { loader: 'graphql-let/schema/loader' },
++        ]
++      }
+     ]
+   }
+ }
 ```
 
 ## FAQ
