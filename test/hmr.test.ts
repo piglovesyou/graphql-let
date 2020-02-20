@@ -38,10 +38,9 @@ const spawn = (command: string, args: string[]) =>
   execa(command, args, { stdio: ['ignore', 'inherit', 'inherit'], cwd });
 const restoreFixtures = () => spawn('git', ['checkout', '.']);
 
+const d = '^__generated__/types';
+const h = '[a-z\\d]+';
 const ensureOutputDts = async (message: string): Promise<ResultType> => {
-  const d = '^__generated__/types';
-  const h = '[a-z\\d]+';
-
   const globResults = await glob('__generated__/types/**', { cwd });
   assert.equal(
     globResults.length,
