@@ -6,8 +6,10 @@ import glob from 'globby';
 import { promisify } from 'util';
 import _rimraf from 'rimraf';
 import { promises } from 'fs';
-import execa, { Options } from 'execa';
-import { killApp, waitApp } from './lib/child-process';
+import execa from 'execa';
+import waitOn from 'wait-on';
+import { killApp } from './lib/child-process';
+import { normalizeNewLine } from './lib/normalize-new-line';
 import retryable from './lib/retryable';
 
 // TODO: Test loader value
@@ -26,34 +28,49 @@ type ResultType = {
 const rimraf = promisify(_rimraf);
 const { readFile, writeFile } = promises;
 
-const cwd = pathJoin(__dirname, 'fixtures/hmr');
-const rel = (relPath: string) => pathJoin(cwd, relPath);
-const read = (relPath: string) => readFile(rel(relPath), 'utf-8');
-
-// Normalize file content for Windows
-Object.defineProperty(String.prototype, 'n', {
-  get(): string {
-    return this.replace(/\r\n/g, '\n').trim();
-  },
-});
-
-// TODO: Stop using timeout and build some retryable logic
 const WAIT_FOR_HMR = 90 * 1000;
 
-const spawn = (command: string, args: string[], options?: Options) =>
-  execa(command, args, {
-    stdio: ['ignore', 'inherit', 'inherit'],
-    cwd,
-    ...(options ? options : {}),
-  });
+const cwd = pathJoin(__dirname, 'fixtures/hmr');
+const rel = (relPath: string) => pathJoin(cwd, relPath);
+const read = (relPath: string) =>
+  readFile(rel(relPath), 'utf-8').then(normalizeNewLine);
+const spawn = (command: string, args: string[]) =>
+  execa(command, args, { stdio: ['ignore', 'inherit', 'inherit'], cwd });
+const restoreFixtures = () => spawn('git', ['checkout', '.']);
+
+const ensureOutputDts = async (message: string): Promise<ResultType> => {
+  const d = '^__generated__/types';
+  const h = '[a-z\\d]+';
+
+  const globResults = await glob('__generated__/types/**', { cwd });
+  assert.equal(
+    globResults.length,
+    2,
+    `"${JSON.stringify(globResults)}" is something wrong. ${message}`,
+  );
+  const [schemaDtsPath, documentDtsPath] = globResults.sort();
+  assert.ok(
+    new RegExp(`${d}/__concatedschema__-${h}.d.ts$`).test(schemaDtsPath),
+    `${schemaDtsPath} is something wrong. ${message}`,
+  );
+  assert.ok(
+    new RegExp(`${d}/viewer.graphql-${h}.d.ts$`).test(documentDtsPath),
+    `${documentDtsPath} is something wrong. ${message}`,
+  );
+  return {
+    schemaDtsPath: schemaDtsPath,
+    schema: await read(schemaDtsPath),
+    documentDtsPath: documentDtsPath,
+    document: await read(documentDtsPath),
+  };
+};
 
 describe('HMR', () => {
   let app: any;
 
-  beforeAll(async () => await spawn('git', ['checkout', '.'], { cwd }));
+  beforeAll(async () => await restoreFixtures());
   afterAll(async () => {
-    await spawn('git', ['checkout', '.'], { cwd });
-
+    await restoreFixtures();
     await killApp(app);
   });
 
@@ -66,39 +83,12 @@ describe('HMR', () => {
 
       await spawn('node', ['../../../bin/graphql-let.js']);
 
-      const d = '^__generated__/types';
-      const h = '[a-z\\d]+';
-
-      const ensureOutputDts = async (message: string): Promise<ResultType> => {
-        const globResults = await glob('__generated__/types/**', { cwd });
-        assert.equal(
-          globResults.length,
-          2,
-          `"${JSON.stringify(globResults)}" is something wrong. ${message}`,
-        );
-        const [schemaDtsPath, documentDtsPath] = globResults.sort();
-        assert.ok(
-          new RegExp(`${d}/__concatedschema__-${h}.d.ts$`).test(schemaDtsPath),
-          `${schemaDtsPath} is something wrong. ${message}`,
-        );
-        assert.ok(
-          new RegExp(`${d}/viewer.graphql-${h}.d.ts$`).test(documentDtsPath),
-          `${documentDtsPath} is something wrong. ${message}`,
-        );
-        return {
-          schemaDtsPath: schemaDtsPath.n,
-          schema: await read(schemaDtsPath),
-          documentDtsPath: documentDtsPath.n,
-          document: await read(documentDtsPath),
-        };
-      };
-
       /************************************************************************
        * Ensure the initial state
        */
       const result1 = await ensureOutputDts('Ensure the initial state');
       assert.ok(
-        result1.schema.n.includes(
+        result1.schema.includes(
           `
   export type User = {
       __typename?: 'User';
@@ -106,12 +96,12 @@ describe('HMR', () => {
       name: Scalars['String'];
       status: Scalars['String'];
   };
-`.n,
+`,
         ),
         `"${result1.schema}" is something wrong`,
       );
       assert.ok(
-        result1.document.n.includes(
+        result1.document.includes(
           `
   export type ViewerQuery = ({
       __typename?: 'Query';
@@ -120,7 +110,7 @@ describe('HMR', () => {
           __typename?: 'User';
       } & Pick<User, 'id' | 'name'>)>;
   });
-`.n,
+`,
         ),
         `${result1.document} is something wrong`,
       );
@@ -129,7 +119,10 @@ describe('HMR', () => {
        * Start dev server
        */
       app = spawn('yarn', ['webpack-dev-server']);
-      await waitApp(8080);
+      await waitOn({
+        resources: ['http://localhost:3000/main.js'],
+        timeout: 60 * 1000,
+      });
 
       /************************************************************************
        * Verify initial loader behavior
@@ -201,7 +194,7 @@ query Viewer {
             'Document should be renewed.',
           );
           assert.ok(
-            result3.document.n.includes(
+            result3.document.includes(
               `
   export type ViewerQuery = ({
       __typename?: 'Query';
@@ -210,7 +203,7 @@ query Viewer {
           __typename?: 'User';
       } & Pick<User, 'id' | 'name' | 'status'>)>;
   });
-`.n,
+`,
             ),
           );
         },
@@ -264,7 +257,7 @@ type Query {
             'Document should be renewed.',
           );
           assert.ok(
-            result4.schema.n.includes(
+            result4.schema.includes(
               `
   export type User = {
       __typename?: 'User';
@@ -273,11 +266,11 @@ type Query {
       status: Scalars['String'];
       age: Scalars['Int'];
   };
-`.n,
+`,
             ),
           );
           assert.ok(
-            result4.document.n.includes(
+            result4.document.includes(
               `
   export type User = {
       __typename?: 'User';
@@ -286,7 +279,7 @@ type Query {
       status: Scalars['String'];
       age: Scalars['Int'];
   };
-`.n,
+`,
             ),
           );
         },

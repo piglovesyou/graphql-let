@@ -28,5 +28,9 @@ module.exports = {
   },
   stats: { colors: false },
   devtool: 'eval',
-  devServer:  { writeToDisk: true }
+  devServer:  {
+    writeToDisk: true,
+    port: 3000,
+    hot: true,
+  }
 };
