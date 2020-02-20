@@ -299,7 +299,7 @@ type Query {
   );
 
   test(
-    'should resume after GraphQL Error properly',
+    'should recover after GraphQL Error properly',
     async () => {
       let stderrContent = '';
 
@@ -333,66 +333,75 @@ type Query {
         'utf-8',
       );
 
-      //     await retryable(async () => {
-      //       assert.ok(stderrContent.includes('GraphQLDocumentError: Cannot query field "name" on type "User".'))
-      //       const globResults = await glob('__generated__/types/**', { cwd });
-      //       assert.strictEqual(globResults.length, 0);
-      //     }, 1000, 60 * 1000)
-      //     stderrContent = '';
-      //
-      //     /************************************************************************
-      //      * Correcting GraphQL schema should generate d.ts properly
-      //      */
-      //
-      //     await writeFile(
-      //         rel('src/type-defs.graphqls'),
-      //         `
-      // type User {
-      //     id: ID!
-      //     name: String!
-      //     status: String!
-      // }
-      //
-      // type Query {
-      //     viewer: User
-      // }
-      // `.trim(),
-      //         'utf-8',
-      //     );
-      //
-      //     /************************************************************************
-      //      * Ensure the command result
-      //      */
-      //     await retryable(async () => {
-      //       const result1 = await ensureOutputDts('Ensure the initial state');
-      //       assert.ok(
-      //           result1.schema.includes(
-      //               `
-      //   export type User = {
-      //       __typename?: 'User';
-      //       id: Scalars['ID'];
-      //       name: Scalars['String'];
-      //       status: Scalars['String'];
-      //   };
-      // `,
-      //           ),
-      //           `"${result1.schema}" is something wrong`,
-      //       );
-      //       assert.ok(
-      //           result1.document.includes(
-      //               `
-      //   export type ViewerQuery = ({
-      //       __typename?: 'Query';
-      //   } & {
-      //       viewer: Maybe<({
-      //           __typename?: 'User';
-      //       } & Pick<User, 'id' | 'name'>)>;
-      //   });
-      // `,
-      //           ),
-      //           `${result1.document} is something wrong`,
-      //       );
-      //     }, 1000, 60 * 1000);
+      await retryable(
+        async () => {
+          assert.ok(
+            stderrContent.includes(
+              'GraphQLDocumentError: Cannot query field "name" on type "User".',
+            ),
+          );
+          const globResults = await glob('__generated__/types/**', { cwd });
+          assert.strictEqual(globResults.length, 0);
+        },
+        1000,
+        60 * 1000,
+      );
+      stderrContent = '';
+
+      /************************************************************************
+       * Correcting GraphQL schema should re-generate d.ts properly
+       */
+
+      await writeFile(
+        rel('src/type-defs.graphqls'),
+        `
+type User {
+    id: ID!
+    name: String!
+    status: String!
+}
+
+type Query {
+    viewer: User
+}
+      `.trim(),
+        'utf-8',
+      );
+
+      await retryable(
+        async () => {
+          const result = await ensureOutputDts('');
+          assert.ok(
+            result.schema.includes(
+              `
+  export type User = {
+      __typename?: 'User';
+      id: Scalars['ID'];
+      name: Scalars['String'];
+      status: Scalars['String'];
+  };
+`,
+            ),
+            `"${result.schema}" is something wrong`,
+          );
+          assert.ok(
+            result.document.includes(
+              `
+  export type ViewerQuery = ({
+      __typename?: 'Query';
+  } & {
+      viewer: Maybe<({
+          __typename?: 'User';
+      } & Pick<User, 'id' | 'name'>)>;
+  });
+`,
+            ),
+            `${result.document} is something wrong`,
+          );
+        },
+        1000,
+        30 * 1000,
+      );
     },
     5 * 60 * 1000,
   );

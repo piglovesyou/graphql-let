@@ -16,7 +16,7 @@ import { PRINT_PREFIX } from './lib/print';
 import { readFile } from './lib/file';
 
 const processGraphQLCodegenSchemaLoader = memoize(
-  async (addDependency: (path: string) => void, cwd: string) => {
+  async (cwd: string) => {
     const configPath = pathJoin(cwd, DEFAULT_CONFIG_FILENAME);
     const config = parseYaml(
       await readFile(configPath, 'utf-8'),
@@ -26,16 +26,12 @@ const processGraphQLCodegenSchemaLoader = memoize(
 
     const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(config, cwd);
 
-    const { schemaHash, schemaPaths } = await processResolverTypesIfNeeded(
+    const { schemaHash } = await processResolverTypesIfNeeded(
       config,
       cwd,
       codegenOpts,
       codegenContext,
     );
-
-    // All documents and schema are dependencies, which change should invalidate caches.
-    gqlRelPaths.forEach(p => addDependency(p));
-    schemaPaths.forEach(p => addDependency(p));
 
     // Only if schema was changed, documents are also handled for quick startup of webpack dev.
     if (codegenContext.length) {
@@ -58,7 +54,7 @@ const graphlqCodegenSchemaLoader: loader.Loader = function(gqlContent) {
   const callback = this.async()!;
   const { rootContext: cwd } = this;
 
-  processGraphQLCodegenSchemaLoader(this.addDependency.bind(this), cwd)
+  processGraphQLCodegenSchemaLoader(cwd)
     .then(() => {
       callback(undefined, gqlContent);
     })
