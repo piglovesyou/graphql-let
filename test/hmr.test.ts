@@ -67,8 +67,13 @@ const ensureOutputDts = async (message: string): Promise<ResultType> => {
 describe('HMR', () => {
   let app: any;
 
-  beforeAll(async () => await restoreFixtures());
-  afterAll(async () => {
+  beforeAll(async () => await spawn('yarn', ['install']), 60 * 1000);
+  beforeEach(async () => {
+    await restoreFixtures();
+    await rimraf(rel('__generated__'));
+    await spawn('node', ['../../../bin/graphql-let.js']);
+  }, 60 * 1000);
+  afterEach(async () => {
     await restoreFixtures();
     await killApp(app);
   });
@@ -76,12 +81,6 @@ describe('HMR', () => {
   test(
     `should effect to both schema and documents properly`,
     async () => {
-      await rimraf(rel('__generated__'));
-
-      await spawn('yarn', ['install']);
-
-      await spawn('node', ['../../../bin/graphql-let.js']);
-
       /************************************************************************
        * Ensure the command result
        */
