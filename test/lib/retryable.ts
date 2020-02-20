@@ -14,6 +14,7 @@ export default async function retryable(
   while (Date.now() < end) {
     try {
       await fn();
+      console.info(`Succeeded on the ${++n} time.`);
       return;
     } catch (e) {
       console.info(`${++n} times tried. Retrying...`);

@@ -24,9 +24,14 @@ export default function memoize<T extends AsyncFn>(
     }
     const promise = fn(...args) as ReturnType<T>;
     processingTasks.set(key, promise);
-    const resolvedValue = await promise;
-    processingTasks.delete(key);
-    return resolvedValue;
+    try {
+      const resolvedValue = await promise;
+      processingTasks.delete(key);
+      return resolvedValue;
+    } catch (e) {
+      processingTasks.delete(key);
+      throw e;
+    }
   };
 
   return memoized;

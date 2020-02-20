@@ -34,8 +34,18 @@ const cwd = pathJoin(__dirname, 'fixtures/hmr');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
 const read = (relPath: string) =>
   readFile(rel(relPath), 'utf-8').then(normalizeNewLine);
-const spawn = (command: string, args: string[]) =>
-  execa(command, args, { stdio: ['ignore', 'inherit', 'inherit'], cwd });
+const spawn = (
+  command: string,
+  args: string[],
+  opts?: execa.CommonOptions<'utf-8'>,
+) =>
+  execa(command, args, {
+    cwd,
+    stdin: 'ignore',
+    stdout: 'inherit',
+    stderr: 'inherit',
+    ...opts,
+  });
 const restoreFixtures = () => spawn('git', ['checkout', '.']);
 
 const d = '^__generated__/types';
@@ -65,7 +75,7 @@ const ensureOutputDts = async (message: string): Promise<ResultType> => {
 };
 
 describe('HMR', () => {
-  let app: any;
+  let app: execa.ExecaChildProcess;
 
   beforeAll(async () => await spawn('yarn', ['install']), 60 * 1000);
   beforeEach(async () => {
@@ -74,8 +84,8 @@ describe('HMR', () => {
     await spawn('node', ['../../../bin/graphql-let.js']);
   }, 60 * 1000);
   afterEach(async () => {
-    await restoreFixtures();
     await killApp(app);
+    await restoreFixtures();
   });
 
   test(
@@ -284,6 +294,105 @@ type Query {
         1000,
         WAIT_FOR_HMR,
       );
+    },
+    5 * 60 * 1000,
+  );
+
+  test(
+    'should resume after GraphQL Error properly',
+    async () => {
+      let stderrContent = '';
+
+      /************************************************************************
+       * Start dev server
+       */
+      app = spawn('yarn', ['webpack-dev-server'], { stderr: undefined });
+      app.stderr!.on('data', err => (stderrContent += String(err)));
+      await waitOn({
+        resources: ['http://localhost:3000/main.js'],
+        timeout: 60 * 1000,
+      });
+
+      /************************************************************************
+       * Make an error to write wrong GraphQL schema
+       */
+
+      await writeFile(
+        rel('src/type-defs.graphqls'),
+        `
+type User {
+    id: ID!
+#    name: String!
+#    status: String!
+}
+
+type Query {
+    viewer: User
+}
+`.trim(),
+        'utf-8',
+      );
+
+      //     await retryable(async () => {
+      //       assert.ok(stderrContent.includes('GraphQLDocumentError: Cannot query field "name" on type "User".'))
+      //       const globResults = await glob('__generated__/types/**', { cwd });
+      //       assert.strictEqual(globResults.length, 0);
+      //     }, 1000, 60 * 1000)
+      //     stderrContent = '';
+      //
+      //     /************************************************************************
+      //      * Correcting GraphQL schema should generate d.ts properly
+      //      */
+      //
+      //     await writeFile(
+      //         rel('src/type-defs.graphqls'),
+      //         `
+      // type User {
+      //     id: ID!
+      //     name: String!
+      //     status: String!
+      // }
+      //
+      // type Query {
+      //     viewer: User
+      // }
+      // `.trim(),
+      //         'utf-8',
+      //     );
+      //
+      //     /************************************************************************
+      //      * Ensure the command result
+      //      */
+      //     await retryable(async () => {
+      //       const result1 = await ensureOutputDts('Ensure the initial state');
+      //       assert.ok(
+      //           result1.schema.includes(
+      //               `
+      //   export type User = {
+      //       __typename?: 'User';
+      //       id: Scalars['ID'];
+      //       name: Scalars['String'];
+      //       status: Scalars['String'];
+      //   };
+      // `,
+      //           ),
+      //           `"${result1.schema}" is something wrong`,
+      //       );
+      //       assert.ok(
+      //           result1.document.includes(
+      //               `
+      //   export type ViewerQuery = ({
+      //       __typename?: 'Query';
+      //   } & {
+      //       viewer: Maybe<({
+      //           __typename?: 'User';
+      //       } & Pick<User, 'id' | 'name'>)>;
+      //   });
+      // `,
+      //           ),
+      //           `${result1.document} is something wrong`,
+      //       );
+      //     }, 1000, 60 * 1000);
     },
     5 * 60 * 1000,
   );
