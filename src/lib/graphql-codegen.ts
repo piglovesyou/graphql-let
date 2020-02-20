@@ -1,12 +1,10 @@
 import { codegen } from '@graphql-codegen/core';
-import { promises as fsPromises } from 'fs';
 import gql from 'graphql-tag';
 import makeDir from 'make-dir';
 import path from 'path';
 import createCodegenOpts, { PartialCodegenOpts } from './create-codegen-opts';
 import { ConfigTypes } from './types';
-
-const { writeFile } = fsPromises;
+import { writeFile } from './file';
 
 export async function processGraphQLCodegen(
   codegenOpts: PartialCodegenOpts,

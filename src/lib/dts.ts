@@ -1,9 +1,7 @@
-import { promises as fsPromises } from 'fs';
 import makeDir from 'make-dir';
 import path from 'path';
 import { createCompilerHost, createProgram, CompilerOptions } from 'typescript';
-
-const { writeFile } = fsPromises;
+import { writeFile } from './file';
 
 const options: CompilerOptions = {
   declaration: true,
