@@ -1,1 +1,1 @@
-declare module 'unixify';
+declare module 'terminate';

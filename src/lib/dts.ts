@@ -1,9 +1,7 @@
-import { promises as fsPromises } from 'fs';
 import makeDir from 'make-dir';
 import path from 'path';
 import { createCompilerHost, createProgram, CompilerOptions } from 'typescript';
-
-const { writeFile } = fsPromises;
+import { writeFile } from './file';
 
 const options: CompilerOptions = {
   declaration: true,
@@ -21,8 +19,7 @@ export function wrapAsModule(filePath: string, content: string) {
   return `declare module '${moduleName}' {
   ${content
     .trim()
-    // Not sure if it's necessary, is it?
-    // .replace(/\nexport declare /g, '\nexport ')
+    .replace(/\nexport declare /g, '\nexport ')
     .replace(/\n/g, '\n  ')}
 }`;
 }
@@ -43,8 +40,7 @@ export function genDts(tsxFullPaths: string[]): string[] {
         'TypeScript API was not expected as graphql-let developer, it needs to be fixed',
       );
     }
-    // TODO: It's more preferable to consuming dtsCnotent here
-    // instead of pile them up on memory. Any idea?
+    // XXX: How to improve memory usage?
     dtsContents.push(dtsContent);
   };
 

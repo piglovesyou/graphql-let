@@ -1,0 +1,8 @@
+generateDir: __generated__
+schema: 'src/**/*.graphqls'
+documents: 'src/**/*.graphql'
+plugins:
+  - typescript
+  - typescript-operations
+  - typescript-react-apollo
+respectGitIgnore: true

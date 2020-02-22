@@ -1,8 +1,13 @@
 type AsyncFn = (...args: any) => Promise<any>;
 
 /**
- * Memoizatin for async functions, which releases the cache right after the promise is resolved.
- * Intermediate calls will wait for the first one. This prevents simultaneous executions for writing the same files for an example.
+ * Short time memoization for async function to prevent simultaneous calls
+ * between the first call and its promise resolution. In the below example,
+ * 2nd and 3rd call returns the value that the 1st call resolves.
+ *
+ *    |------.------.------|----------->
+ *   1st    2nd    3rd    1st
+ *  call   call   call   call resolved
  */
 export default function memoize<T extends AsyncFn>(
   fn: T,
@@ -19,9 +24,14 @@ export default function memoize<T extends AsyncFn>(
     }
     const promise = fn(...args) as ReturnType<T>;
     processingTasks.set(key, promise);
-    const resolvedValue = await promise;
-    processingTasks.delete(key);
-    return resolvedValue;
+    try {
+      const resolvedValue = await promise;
+      processingTasks.delete(key);
+      return resolvedValue;
+    } catch (e) {
+      processingTasks.delete(key);
+      throw e;
+    }
   };
 
   return memoized;

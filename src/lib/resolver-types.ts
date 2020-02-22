@@ -1,15 +1,13 @@
 import { extname } from 'path';
 import glob from 'globby';
 import slash from 'slash';
-import { promises } from 'fs';
 import { PartialCodegenOpts } from './create-codegen-opts';
 import getHash from './hash';
-import { createPaths, isURL } from './paths';
+import { CreatedPaths, isURL } from './paths';
 import { PRINT_PREFIX } from './print';
-import { CommandOpts, ConfigTypes } from './types';
+import { ConfigTypes } from './types';
 import { processGraphQLCodegen } from './graphql-codegen';
-
-const { readFile } = promises;
+import { readFile } from './file';
 
 // If it's ['!node_modules', '**/*.graphqls']
 // then we want to pick '**/*.graphqls'.
@@ -23,10 +21,7 @@ function getSchemaPointerWithExtension(
   return s.find(e => require('path').extname(e).length);
 }
 
-export function shouldGenResolverTypes(
-  commandOpts: CommandOpts,
-  config: ConfigTypes,
-): boolean {
+export function shouldGenResolverTypes(config: ConfigTypes): boolean {
   if (typeof config.schema === 'string' && isURL(config.schema)) return false;
 
   try {
@@ -45,19 +40,23 @@ export function shouldGenResolverTypes(
   }
 }
 
-async function getHashOfSchema(
+export async function getSchemaPaths(
   cwd: string,
   schemaPattern: string | string[],
   respectGitIgnore: boolean,
 ) {
-  // Instead of concatenating all the schema content,
-  // concatenating hashes for the contents to save memory.
-  const hashes: string[] = [];
-  for (const schemaFullPath of await glob(schemaPattern, {
+  return glob(schemaPattern, {
     cwd: slash(cwd),
     gitignore: respectGitIgnore,
     absolute: true,
-  })) {
+  });
+}
+
+export async function getHashOfSchema(schemaPaths: string[]) {
+  // Instead of concatenating all the schema content,
+  // concatenating hashes for the contents to save memory.
+  const hashes: string[] = [];
+  for (const schemaFullPath of schemaPaths) {
     const content = await readFile(schemaFullPath);
     hashes.push(getHash(content));
   }
@@ -65,22 +64,12 @@ async function getHashOfSchema(
 }
 
 export async function processGenerateResolverTypes(
-  cwd: string,
+  schemaHash: string,
+  schemaPaths: string[],
   config: ConfigTypes,
   codegenOpts: PartialCodegenOpts,
+  { dtsFullPath, dtsRelPath, gqlRelPath, tsxFullPath }: CreatedPaths,
 ) {
-  const hash = await getHashOfSchema(
-    cwd,
-    config.schema,
-    config.respectGitIgnore,
-  );
-  const { tsxFullPath, dtsFullPath, gqlRelPath } = createPaths(
-    cwd,
-    config.generateDir,
-    '__concatedschema__',
-    hash,
-  );
-
   await processGraphQLCodegen(
     {
       ...codegenOpts,
@@ -101,5 +90,12 @@ export async function processGenerateResolverTypes(
   const schemaPathWithExtension = getSchemaPointerWithExtension(config.schema);
   if (!schemaPathWithExtension) throw new Error('never');
 
-  return { tsxFullPath, dtsFullPath, gqlRelPath: schemaPathWithExtension };
+  return {
+    schemaHash,
+    tsxFullPath,
+    dtsFullPath,
+    dtsRelPath,
+    gqlRelPath: schemaPathWithExtension,
+    schemaPaths,
+  };
 }

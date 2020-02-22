@@ -1,10 +1,10 @@
 generateDir: __generated__
 schema:
-  - schema/**/*.graphqls
-  - "!xx"
+  - '**/*.graphqls'
+  - '!shouldBeIgnored1'
 documents:
-  - "**/*.graphql"
-  - "!xx"
+  - '**/*.graphql'
+  - '!shouldBeIgnored1'
 plugins:
   - typescript
   - typescript-operations

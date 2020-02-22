@@ -10,7 +10,10 @@ jobs:
           ubuntu-latest,
           windows-latest
         ]
-        node-version: [13.x, 12.x, 10.x]
+        node-version:
+          - 13.x
+          - 12.x
+          - 10.x
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -20,15 +23,16 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Get yarn cache
-      id: yarn-cache
-      run: echo "::set-output name=dir::$(yarn cache dir)"
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.yarn-cache.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('package.json') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
+# Pulling caches itself it expensive. Which one is faster?
+#    - name: Get yarn cache
+#      id: yarn-cache
+#      run: echo "::set-output name=dir::$(yarn cache dir)"
+#    - uses: actions/cache@v1
+#      with:
+#        path: ${{ steps.yarn-cache.outputs.dir }}
+#        key: ${{ runner.os }}-yarn-${{ hashFiles('package.json') }}
+#        restore-keys: |
+#          ${{ runner.os }}-yarn-
 
     - name: yarn install, lint, and test
       run: |
