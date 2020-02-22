@@ -40,8 +40,7 @@ export function genDts(tsxFullPaths: string[]): string[] {
         'TypeScript API was not expected as graphql-let developer, it needs to be fixed',
       );
     }
-    // TODO: It's more preferable to consuming dtsCnotent here
-    // instead of pile them up on memory. Any idea?
+    // XXX: How to improve memory usage?
     dtsContents.push(dtsContent);
   };
 

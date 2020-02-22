@@ -8,6 +8,7 @@ yarn-error.log*
 
 # Editors and IDEs
 .idea
+graphql-let.iml
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
