@@ -1,6 +1,6 @@
 {
   "name": "graphql-let",
-  "version": "0.8.0-beta.3",
+  "version": "0.8.0",
   "repository": {
     "type": "git",
     "url": "git@github.com:piglovesyou/graphql-let.git"
