@@ -42,7 +42,7 @@ This is an example of **TypeScript + React + Apollo Client**. Help yourself to r
 ### 1. Install dependencies
 
 ```
-npm install -D graphql-let @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo
+npm install -D graphql-let @graphql-codegen/cli @graphql-codegen/plugin-helpers @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo
 npm install @apollo/react-common @apollo/react-components @apollo/react-hooks
 ```
 
