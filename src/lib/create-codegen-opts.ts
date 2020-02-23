@@ -60,10 +60,7 @@ export default async function createCodegenOpts(
   cwd: string,
 ): Promise<PartialCodegenOpts> {
   return {
-    config: {
-      withHOC: false, // True by default
-      withHooks: true, // False by default
-    },
+    config: config.config,
     schema: await generateSchema(config.schema, config.respectGitIgnore, cwd),
     plugins: config.plugins.map(name => ({ [name]: {} })),
     pluginMap: config.plugins.reduce((acc, name) => {
