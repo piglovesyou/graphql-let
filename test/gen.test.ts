@@ -1,22 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { promises } from 'fs';
 import { join as pathJoin } from 'path';
 import assert from 'assert';
-import _rimraf from 'rimraf';
-import { promisify } from 'util';
 import gen from '../src/gen';
 import glob from 'globby';
-import { normalizeNewLine } from './lib/normalize-new-line';
 
-const rimraf = promisify(_rimraf);
-const { readFile: _readFile, rename } = promises;
+import { readFile, rename, rimraf } from './lib/file';
 const cwd = pathJoin(__dirname, 'fixtures/gen');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
-
-export function readFile(file: string) {
-  return _readFile(file, 'utf-8').then(normalizeNewLine);
-}
 
 describe('"graphql-let" command', () => {
   beforeAll(async () => {

@@ -3,11 +3,8 @@
 import assert from 'assert';
 import glob from 'globby';
 import compiler from './lib/compile';
-import { promisify } from 'util';
 import { join as pathJoin } from 'path';
-import _rimraf from 'rimraf';
-
-const rimraf = promisify(_rimraf);
+import { rimraf } from './lib/file';
 
 const cwd = pathJoin(__dirname, 'fixtures/loader');
 
