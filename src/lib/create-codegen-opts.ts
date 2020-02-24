@@ -63,6 +63,7 @@ export default async function createCodegenOpts(
     config: {
       withHOC: false, // True by default
       withHooks: true, // False by default
+      ...config.config,
     },
     schema: await generateSchema(config.schema, config.respectGitIgnore, cwd),
     plugins: config.plugins.map(name => ({ [name]: {} })),

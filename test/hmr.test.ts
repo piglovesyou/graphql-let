@@ -3,14 +3,11 @@
 import { join as pathJoin } from 'path';
 import assert from 'assert';
 import glob from 'globby';
-import { promisify } from 'util';
-import _rimraf from 'rimraf';
-import { promises } from 'fs';
 import execa from 'execa';
 import waitOn from 'wait-on';
 import { killApp } from './lib/child-process';
-import { normalizeNewLine } from './lib/normalize-new-line';
 import retryable from './lib/retryable';
+import { readFile, writeFile, rimraf } from './lib/file';
 
 // TODO: Test loader value
 // const loadModule = () => {
@@ -25,15 +22,11 @@ type ResultType = {
   document: string;
 };
 
-const rimraf = promisify(_rimraf);
-const { readFile, writeFile } = promises;
-
 const WAIT_FOR_HMR = 90 * 1000;
 
 const cwd = pathJoin(__dirname, 'fixtures/hmr');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
-const read = (relPath: string) =>
-  readFile(rel(relPath), 'utf-8').then(normalizeNewLine);
+const read = (relPath: string) => readFile(rel(relPath));
 const spawn = (
   command: string,
   args: string[],

@@ -10,3 +10,5 @@ plugins:
   - typescript-operations
   - typescript-react-apollo
 respectGitIgnore: true
+config:
+  useIndexSignature: true
