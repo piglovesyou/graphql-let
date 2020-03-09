@@ -42,7 +42,7 @@ export async function processResolverTypesIfNeeded(
       config.schema,
       config.respectGitIgnore,
     );
-    schemaHash = await getHashOfSchema(schemaPaths);
+    schemaHash = schemaHash + (await getHashOfSchema(schemaPaths));
     const createdPaths = createPaths(
       cwd,
       config.generateDir,

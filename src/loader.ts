@@ -36,7 +36,7 @@ const processGraphQLCodegenLoader = memoize(
         config.schema,
         config.respectGitIgnore,
       );
-      schemaHash = await getHashOfSchema(schemaPaths);
+      schemaHash = schemaHash + (await getHashOfSchema(schemaPaths));
 
       // If using resolver types, all documents should depend on all schema files.
       schemaPaths.forEach(p => addDependency(p));
