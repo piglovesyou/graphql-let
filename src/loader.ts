@@ -25,9 +25,12 @@ const processGraphQLCodegenLoader = memoize(
     addDependency: (path: string) => void,
     cwd: string,
   ): Promise<string> => {
-    const [config] = await loadConfig(cwd);
+    const [config, configHash] = await loadConfig(cwd);
 
-    let schemaHash = '';
+    // To pass config change on subsequent generation,
+    // configHash should be primary hash seed.
+    let schemaHash = configHash;
+
     if (shouldGenResolverTypes(config)) {
       const schemaPaths = await getSchemaPaths(
         cwd,

@@ -25,13 +25,17 @@ export type CodegenContext = {
 }[];
 
 export async function processResolverTypesIfNeeded(
-  config: ConfigTypes,
   cwd: string,
+  config: ConfigTypes,
+  configHash: string,
   codegenOpts: PartialCodegenOpts,
   codegenContext: CodegenContext,
 ) {
+  // To pass config change on subsequent generation,
+  // configHash should be primary hash seed.
+  let schemaHash = configHash;
+
   let schemaPaths: string[] = [];
-  let schemaHash = '';
   if (shouldGenResolverTypes(config)) {
     schemaPaths = await getSchemaPaths(
       cwd,
@@ -123,7 +127,7 @@ export async function processDocuments(
   }
 }
 
-export async function prepareFullGenerate(config: ConfigTypes, cwd: string) {
+export async function prepareFullGenerate(cwd: string, config: ConfigTypes) {
   const codegenOpts = await createCodegenOpts(config, cwd);
   const gqlRelPaths = await glob(config.documents, {
     cwd,
@@ -153,14 +157,19 @@ export async function processDtsForCodegenContext(
   }
 }
 
-async function fullGenerate(config: ConfigTypes, cwd: string): Promise<number> {
+async function fullGenerate(
+  cwd: string,
+  config: ConfigTypes,
+  configHash: string,
+): Promise<number> {
   const codegenContext: CodegenContext = [];
 
-  const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(config, cwd);
+  const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(cwd, config);
 
   const { schemaHash } = await processResolverTypesIfNeeded(
-    config,
     cwd,
+    config,
+    configHash,
     codegenOpts,
     codegenContext,
   );

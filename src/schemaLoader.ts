@@ -13,15 +13,16 @@ import { PRINT_PREFIX } from './lib/print';
 
 const processGraphQLCodegenSchemaLoader = memoize(
   async (cwd: string) => {
-    const [config] = await loadConfig(cwd);
+    const [config, configHash] = await loadConfig(cwd);
 
     const codegenContext: CodegenContext = [];
 
-    const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(config, cwd);
+    const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(cwd, config);
 
     const { schemaHash } = await processResolverTypesIfNeeded(
-      config,
       cwd,
+      config,
+      configHash,
       codegenOpts,
       codegenContext,
     );

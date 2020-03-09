@@ -9,9 +9,9 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
   logUpdate(PRINT_PREFIX + 'Running graphql-codegen...');
 
   const { cwd } = commandOpts;
-  const [config] = await loadConfig(cwd);
+  const [config, configHash] = await loadConfig(cwd);
 
-  const numberAffected = await fullGenerate(config, cwd);
+  const numberAffected = await fullGenerate(cwd, config, configHash);
 
   if (numberAffected) {
     logUpdate(
