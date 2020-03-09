@@ -33,11 +33,7 @@ switch (argv._[0]) {
 
 function createOpts(): CommandOpts {
   const cwd = process.cwd();
-  const configPath = pathJoin(
-    cwd,
-    argv.config || argv.c || DEFAULT_CONFIG_FILENAME,
-  );
-  return { cwd, configPath };
+  return { cwd };
 }
 
 function command(command: string) {

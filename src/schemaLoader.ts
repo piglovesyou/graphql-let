@@ -1,7 +1,5 @@
 import logUpdate from 'log-update';
 import { loader } from 'webpack';
-import { join as pathJoin } from 'path';
-import { parse as parseYaml } from 'yaml';
 import {
   processDtsForCodegenContext,
   prepareFullGenerate,
@@ -9,18 +7,13 @@ import {
   processResolverTypesIfNeeded,
   CodegenContext,
 } from './lib/full-generate';
+import loadConfig from './lib/load-config';
 import memoize from './lib/memoize';
-import { ConfigTypes } from './lib/types';
-import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 import { PRINT_PREFIX } from './lib/print';
-import { readFile } from './lib/file';
 
 const processGraphQLCodegenSchemaLoader = memoize(
   async (cwd: string) => {
-    const configPath = pathJoin(cwd, DEFAULT_CONFIG_FILENAME);
-    const config = parseYaml(
-      await readFile(configPath, 'utf-8'),
-    ) as ConfigTypes;
+    const [config] = await loadConfig(cwd);
 
     const codegenContext: CodegenContext = [];
 
