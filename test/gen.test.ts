@@ -14,10 +14,7 @@ describe('"graphql-let" command', () => {
     await rename(rel('_gitignore'), rel('.gitignore'));
     await rimraf(rel('__generated__'));
 
-    await gen({
-      cwd,
-      configPath: rel('.graphql-let.yml'),
-    });
+    await gen({ cwd });
   }, 60 * 1000);
   afterAll(async () => {
     await rename(rel('.gitignore'), rel('_gitignore'));
