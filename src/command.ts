@@ -1,8 +1,6 @@
 import minimist from 'minimist';
-import { join as pathJoin } from 'path';
 import { printError } from './lib/print';
 import { CommandOpts } from './lib/types';
-import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 
 const argv = minimist(process.argv.slice(2));
 const HELP_TEXT = `Usage: graphql-let [command]

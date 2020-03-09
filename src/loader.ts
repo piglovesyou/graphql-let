@@ -1,7 +1,7 @@
 import { existsSync } from 'fs';
 import logUpdate from 'log-update';
 import { loader } from 'webpack';
-import { join as pathJoin, relative as pathRelative } from 'path';
+import { relative as pathRelative } from 'path';
 import { processGenDts } from './lib/dts';
 import { removeByPatterns } from './lib/file';
 import { processGraphQLCodegenFromConfig } from './lib/graphql-codegen';
@@ -14,7 +14,6 @@ import {
   getSchemaPaths,
   shouldGenResolverTypes,
 } from './lib/resolver-types';
-import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 import { PRINT_PREFIX } from './lib/print';
 import { readFile } from './lib/file';
 
