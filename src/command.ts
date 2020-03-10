@@ -1,8 +1,6 @@
 import minimist from 'minimist';
-import { join as pathJoin } from 'path';
 import { printError } from './lib/print';
 import { CommandOpts } from './lib/types';
-import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 
 const argv = minimist(process.argv.slice(2));
 const HELP_TEXT = `Usage: graphql-let [command]
@@ -33,11 +31,7 @@ switch (argv._[0]) {
 
 function createOpts(): CommandOpts {
   const cwd = process.cwd();
-  const configPath = pathJoin(
-    cwd,
-    argv.config || argv.c || DEFAULT_CONFIG_FILENAME,
-  );
-  return { cwd, configPath };
+  return { cwd };
 }
 
 function command(command: string) {
