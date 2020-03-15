@@ -18,13 +18,13 @@
     "loader.js"
   ],
   "dependencies": {
-    "globby": "*",
+    "globby": "^11.0.0",
     "loader-utils": "^1.4.0",
     "log-update": "^4.0.0",
     "make-dir": "^3.0.2",
     "minimist": "^1.2.0",
     "rimraf": "^3.0.2",
-    "slash": "*",
+    "slash": "^3.0.0",
     "yaml": "^1.7.2"
   },
   "devDependencies": {
