@@ -22,7 +22,7 @@ const News: React.FC = () => {
 }
 ```
 
-## What it does behind
+## How it works
 
 Two things:
 
@@ -35,7 +35,7 @@ You may also want only `.d.ts` before a webpack build to check types. Run `graph
 
 <p align="center"><img src="./resource/graphql-let.png" /></p>
 
-## How to get started
+## Get started
 
 This is an example of **TypeScript + React + Apollo Client**. Help yourself to replace the corresponding lines depending on your needs.
 
@@ -214,6 +214,14 @@ Afraid not. You need to have separate files to execute the webpack loader. Besid
 #### What's the extension `.graphqls`? Should I use it for schema and `.graphql` for documents?
 
 Not exactly, but I'd recommend them. I think using different extensions for schema/documents leads to a more understandable configuration for webpack loaders with fewer pitfalls. Another reason for `.graphqls` is that it's one of [the supported extensions in the internal library](https://github.com/ardatan/graphql-toolkit/blob/d29e518a655c02e3e14377c8c7d3de61f08e6200/packages/loaders/graphql-file/src/index.ts#L9).
+
+#### How to integrate Apollo refetchQueries?
+
+[Query document exports `DocumentNode` named `${QueryName}Document` that you can make use of it.](https://github.com/piglovesyou/graphql-let/issues/66#issuecomment-596276493)
+
+#### How to import another file for GraphQL Fragment?
+
+You can't yet. [Please watch the progress.](https://github.com/piglovesyou/graphql-let/issues/65)
 
 ## License
 
