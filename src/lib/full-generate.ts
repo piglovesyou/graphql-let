@@ -58,7 +58,10 @@ export async function processResolverTypesIfNeeded(
       '!' + createdPaths.dtsFullPath,
     );
 
-    if (!existsSync(createdPaths.tsxFullPath)) {
+    if (
+      !existsSync(createdPaths.tsxFullPath) ||
+      !existsSync(createdPaths.dtsFullPath)
+    ) {
       logUpdate(
         PRINT_PREFIX +
           `Local schema files are detected. Generating resolver types...`,
