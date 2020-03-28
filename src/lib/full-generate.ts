@@ -117,7 +117,7 @@ export async function processDocuments(
       '!' + dtsFullPath,
     );
 
-    if (!existsSync(tsxFullPath)) {
+    if (!existsSync(tsxFullPath) || !existsSync(dtsFullPath)) {
       await processGraphQLCodegen(
         codegenOpts,
         tsxFullPath,
