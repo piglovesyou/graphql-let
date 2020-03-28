@@ -150,7 +150,7 @@ export async function processDtsForCodegenContext(
   codegenContext: CodegenContext,
 ) {
   logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
-  const dtsContents = genDts(codegenContext.map(s => s.tsxFullPath));
+  const dtsContents = genDts(codegenContext.map((s) => s.tsxFullPath));
 
   await makeDir(dirname(codegenContext[0].dtsFullPath));
   for (const [i, dtsContent] of dtsContents.entries()) {

@@ -300,7 +300,7 @@ type Query {
        * Start dev server
        */
       app = spawn('yarn', ['webpack-dev-server'], { stderr: undefined });
-      app.stderr!.on('data', err => (stderrContent += String(err)));
+      app.stderr!.on('data', (err) => (stderrContent += String(err)));
       await waitOn({
         resources: ['http://localhost:3000/main.js'],
         timeout: 60 * 1000,

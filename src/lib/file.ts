@@ -14,5 +14,5 @@ export async function removeByPatterns(cwd: string, ...patterns: string[]) {
     cwd,
     absolute: true,
   });
-  await Promise.all(oldFiles.map(f => rimraf(f)));
+  await Promise.all(oldFiles.map((f) => rimraf(f)));
 }

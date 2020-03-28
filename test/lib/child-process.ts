@@ -13,5 +13,5 @@ export async function killApp(app: ExecaChildProcess) {
 }
 
 export function timeout(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

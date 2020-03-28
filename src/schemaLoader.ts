@@ -44,7 +44,7 @@ const processGraphQLCodegenSchemaLoader = memoize(
   () => 'schemaLoader',
 );
 
-const graphlqCodegenSchemaLoader: loader.Loader = function(gqlContent) {
+const graphlqCodegenSchemaLoader: loader.Loader = function (gqlContent) {
   const callback = this.async()!;
   const { rootContext: cwd } = this;
 
@@ -52,7 +52,7 @@ const graphlqCodegenSchemaLoader: loader.Loader = function(gqlContent) {
     .then(() => {
       callback(undefined, gqlContent);
     })
-    .catch(e => {
+    .catch((e) => {
       logUpdate.stderr(PRINT_PREFIX + e.message);
       logUpdate.stderr.done();
       callback(e);

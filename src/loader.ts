@@ -39,7 +39,7 @@ const processGraphQLCodegenLoader = memoize(
       schemaHash = schemaHash + (await getHashOfSchema(schemaPaths));
 
       // If using resolver types, all documents should depend on all schema files.
-      schemaPaths.forEach(p => addDependency(p));
+      schemaPaths.forEach((p) => addDependency(p));
     }
 
     const hash = getHash(gqlContent + schemaHash);
@@ -84,7 +84,7 @@ const processGraphQLCodegenLoader = memoize(
       await processGenDts(dtsFullPath, tsxFullPath, gqlRelPath);
       logUpdate(PRINT_PREFIX + `${dtsRelPath} was generated.`);
       // Hack to prevent duplicated logs for simultaneous build, in SSR app for an example.
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
       logUpdate.done();
     }
 
@@ -93,7 +93,7 @@ const processGraphQLCodegenLoader = memoize(
   (gqlFullPath: string) => gqlFullPath,
 );
 
-const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
+const graphlqCodegenLoader: loader.Loader = function (gqlContent) {
   const callback = this.async()!;
   const { resourcePath: gqlFullPath, rootContext: cwd } = this;
 
@@ -110,7 +110,7 @@ const graphlqCodegenLoader: loader.Loader = function(gqlContent) {
 
       callback(undefined, tsxContent);
     })
-    .catch(e => {
+    .catch((e) => {
       logUpdate.stderr(PRINT_PREFIX + e.message);
       logUpdate.stderr.done();
       callback(e);
