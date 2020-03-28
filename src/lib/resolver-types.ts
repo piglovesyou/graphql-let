@@ -18,7 +18,7 @@ function getSchemaPointerWithExtension(
     if (extname(s).length) return s;
     return undefined;
   }
-  return s.find(e => require('path').extname(e).length);
+  return s.find((e) => require('path').extname(e).length);
 }
 
 export function shouldGenResolverTypes(config: ConfigTypes): boolean {

@@ -66,7 +66,7 @@ export default async function createCodegenOpts(
       ...config.config,
     },
     schema: await generateSchema(config.schema, config.respectGitIgnore, cwd),
-    plugins: config.plugins.map(name => ({ [name]: {} })),
+    plugins: config.plugins.map((name) => ({ [name]: {} })),
     pluginMap: config.plugins.reduce((acc, name) => {
       return { ...acc, [name]: require(`@graphql-codegen/${name}`) };
     }, {}),
