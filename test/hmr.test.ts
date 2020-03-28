@@ -107,7 +107,7 @@ describe('HMR', () => {
   export type ViewerQuery = ({
       __typename?: 'Query';
   } & {
-      viewer: Maybe<({
+      viewer?: Maybe<({
           __typename?: 'User';
       } & Pick<User, 'id' | 'name'>)>;
   });
@@ -200,7 +200,7 @@ query Viewer {
   export type ViewerQuery = ({
       __typename?: 'Query';
   } & {
-      viewer: Maybe<({
+      viewer?: Maybe<({
           __typename?: 'User';
       } & Pick<User, 'id' | 'name' | 'status'>)>;
   });
@@ -383,7 +383,7 @@ type Query {
   export type ViewerQuery = ({
       __typename?: 'Query';
   } & {
-      viewer: Maybe<({
+      viewer?: Maybe<({
           __typename?: 'User';
       } & Pick<User, 'id' | 'name'>)>;
   });
