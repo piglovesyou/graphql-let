@@ -20,7 +20,7 @@ describe('graphql-let/loader', () => {
       const stats = await compiler(cwd, fixture, 'node');
       const { 0: actual, length } = stats
         .toJson()
-        .modules!.map(m => m.source)
+        .modules!.map((m) => m.source)
         .filter(Boolean);
 
       assert.deepStrictEqual(length, 1);
@@ -45,7 +45,7 @@ describe('graphql-let/loader', () => {
         const [file] = expectedTargets[i];
         const { 0: actual, length } = stats
           .toJson()
-          .modules!.map(m => m.source)
+          .modules!.map((m) => m.source)
           .filter(Boolean);
 
         assert.deepStrictEqual(length, 1);
