@@ -49,7 +49,7 @@
     "@types/memory-fs": "^0.3.2",
     "@types/minimist": "^1.2.0",
     "@types/node": "^13.7.4",
-    "@types/prettier": "^1.19.0",
+    "@types/prettier": "^2.0.0",
     "@types/react": "^16.9.22",
     "@types/rimraf": "^3.0.0",
     "@types/wait-on": "^4.0.0",
