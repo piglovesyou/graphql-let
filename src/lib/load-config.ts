@@ -7,8 +7,9 @@ import getHash from './hash';
 
 export default async function loadConfig(
   cwd: string,
+  configFilePath?: string,
 ): Promise<[ConfigTypes, string]> {
-  const configPath = pathJoin(cwd, DEFAULT_CONFIG_FILENAME);
+  const configPath = pathJoin(cwd, configFilePath || DEFAULT_CONFIG_FILENAME);
   const content = await readFile(configPath, 'utf-8');
   const configHash = await getHash(content);
   const config: ConfigTypes = parseYaml(content);

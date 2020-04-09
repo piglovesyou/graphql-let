@@ -1,5 +1,6 @@
 export type CommandOpts = {
   cwd: string;
+  configFilePath?: string;
 };
 
 export type ConfigTypes = {

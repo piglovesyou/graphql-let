@@ -8,8 +8,8 @@ import logUpdate from 'log-update';
 export default async function gen(commandOpts: CommandOpts): Promise<void> {
   logUpdate(PRINT_PREFIX + 'Running graphql-codegen...');
 
-  const { cwd } = commandOpts;
-  const [config, configHash] = await loadConfig(cwd);
+  const { cwd, configFilePath } = commandOpts;
+  const [config, configHash] = await loadConfig(cwd, configFilePath);
 
   const numberAffected = await fullGenerate(cwd, config, configHash);
 
