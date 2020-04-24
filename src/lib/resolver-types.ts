@@ -2,7 +2,7 @@ import { extname } from 'path';
 import glob from 'globby';
 import slash from 'slash';
 import { PartialCodegenOpts } from './create-codegen-opts';
-import getHash from './hash';
+import { createHash } from './hash';
 import { CreatedPaths, isURL } from './paths';
 import { PRINT_PREFIX } from './print';
 import { ConfigTypes } from './types';
@@ -58,14 +58,13 @@ export async function getHashOfSchema(schemaPaths: string[]) {
   const hashes: string[] = [];
   for (const schemaFullPath of schemaPaths) {
     const content = await readFile(schemaFullPath);
-    hashes.push(getHash(content));
+    hashes.push(createHash(content));
   }
-  return getHash(hashes.join(''));
+  return createHash(hashes.join(''));
 }
 
 export async function processGenerateResolverTypes(
   schemaHash: string,
-  schemaPaths: string[],
   config: ConfigTypes,
   codegenOpts: PartialCodegenOpts,
   { dtsFullPath, dtsRelPath, gqlRelPath, tsxFullPath }: CreatedPaths,
@@ -85,6 +84,7 @@ export async function processGenerateResolverTypes(
     tsxFullPath,
     gqlRelPath,
     '',
+    schemaHash,
   );
 
   const schemaPathWithExtension = getSchemaPointerWithExtension(config.schema);
@@ -96,6 +96,5 @@ export async function processGenerateResolverTypes(
     dtsFullPath,
     dtsRelPath,
     gqlRelPath: schemaPathWithExtension,
-    schemaPaths,
   };
 }

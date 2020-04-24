@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion,  @typescript-eslint/no-var-requires */
 
 import { join as pathJoin } from 'path';
-import assert from 'assert';
+import { ok, strictEqual, notStrictEqual } from 'assert';
 import glob from 'globby';
 import execa from 'execa';
 import waitOn from 'wait-on';
-import { killApp } from './lib/child-process';
-import retryable from './lib/retryable';
-import { readFile, writeFile, rimraf } from './lib/file';
+import { killApp } from './__tools/child-process';
+import retryable from './__tools/retryable';
+import { readFile, writeFile, rimraf } from './__tools/file';
 
 // TODO: Test loader value
 // const loadModule = () => {
@@ -24,7 +24,7 @@ type ResultType = {
 
 const WAIT_FOR_HMR = 90 * 1000;
 
-const cwd = pathJoin(__dirname, 'fixtures/hmr');
+const cwd = pathJoin(__dirname, '__fixtures/hmr');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
 const read = (relPath: string) => readFile(rel(relPath));
 const spawn = (
@@ -41,22 +41,24 @@ const spawn = (
   });
 const restoreFixtures = () => spawn('git', ['checkout', '.']);
 
-const d = '^__generated__/types';
-const h = '[a-z\\d]+';
 const ensureOutputDts = async (message: string): Promise<ResultType> => {
-  const globResults = await glob('__generated__/types/**', { cwd });
-  assert.equal(
+  const globResults = await glob(['**/*.graphql.d.ts', '**/*.graphqls.d.ts'], {
+    cwd,
+  });
+  strictEqual(
     globResults.length,
     2,
     `"${JSON.stringify(globResults)}" is something wrong. ${message}`,
   );
   const [schemaDtsPath, documentDtsPath] = globResults.sort();
-  assert.ok(
-    new RegExp(`${d}/__concatedschema__-${h}.d.ts$`).test(schemaDtsPath),
+  strictEqual(
+    schemaDtsPath,
+    'src/type-defs.graphqls.d.ts',
     `${schemaDtsPath} is something wrong. ${message}`,
   );
-  assert.ok(
-    new RegExp(`${d}/viewer.graphql-${h}.d.ts$`).test(documentDtsPath),
+  strictEqual(
+    documentDtsPath,
+    'src/viewer.graphql.d.ts',
     `${documentDtsPath} is something wrong. ${message}`,
   );
   return {
@@ -88,29 +90,28 @@ describe('HMR', () => {
        * Ensure the command result
        */
       const result1 = await ensureOutputDts('Ensure the initial state');
-      assert.ok(
+      ok(
         result1.schema.includes(
           `
-  export type User = {
-      __typename?: 'User';
-      id: Scalars['ID'];
-      name: Scalars['String'];
-      status: Scalars['String'];
-  };
+export declare type User = {
+    __typename?: 'User';
+    id: Scalars['ID'];
+    name: Scalars['String'];
+    status: Scalars['String'];
+};
 `,
         ),
         `"${result1.schema}" is something wrong`,
       );
-      assert.ok(
+      ok(
         result1.document.includes(
           `
-  export type ViewerQuery = ({
-      __typename?: 'Query';
-  } & {
-      viewer?: Maybe<({
-          __typename?: 'User';
-      } & Pick<User, 'id' | 'name'>)>;
-  });
+export declare type User = {
+    __typename?: 'User';
+    id: Scalars['ID'];
+    name: Scalars['String'];
+    status: Scalars['String'];
+};
 `,
         ),
         `${result1.document} is something wrong`,
@@ -129,22 +130,22 @@ describe('HMR', () => {
        * Verify initial loader behavior
        */
       const result2 = await ensureOutputDts('Verify initial loader behavior');
-      assert.equal(
+      strictEqual(
         result2.schemaDtsPath,
         result1.schemaDtsPath,
         'Initially Loader should respect cache.',
       );
-      assert.equal(
+      strictEqual(
         result2.schema,
         result1.schema,
         'Initially Loader should respect cache.',
       );
-      assert.equal(
+      strictEqual(
         result2.documentDtsPath,
         result1.documentDtsPath,
         'Initially Loader should respect cache.',
       );
-      assert.equal(
+      strictEqual(
         result2.document,
         result1.document,
         'Initially Loader should respect cache.',
@@ -174,36 +175,31 @@ query Viewer {
           result3 = await ensureOutputDts(
             'Verify HMR on document modification',
           );
-          assert.equal(
+          strictEqual(
             result3.schemaDtsPath,
             result1.schemaDtsPath,
             'Schema should not be effected by document modification.',
           );
-          assert.equal(
+          strictEqual(
             result3.schema,
             result1.schema,
             'Schema should not be effected by document modification.',
           );
-          assert.notEqual(
-            result3.documentDtsPath,
-            result1.documentDtsPath,
-            'Document should be renewed.',
-          );
-          assert.notEqual(
+          notStrictEqual(
             result3.document,
             result1.document,
             'Document should be renewed.',
           );
-          assert.ok(
+          ok(
             result3.document.includes(
               `
-  export type ViewerQuery = ({
-      __typename?: 'Query';
-  } & {
-      viewer?: Maybe<({
-          __typename?: 'User';
-      } & Pick<User, 'id' | 'name' | 'status'>)>;
-  });
+export declare type ViewerQuery = ({
+    __typename?: 'Query';
+} & {
+    viewer?: Maybe<({
+        __typename?: 'User';
+    } & Pick<User, 'id' | 'name' | 'status'>)>;
+});
 `,
             ),
           );
@@ -237,49 +233,39 @@ type Query {
           const result4 = await ensureOutputDts(
             'Verify HMR on schema modification - add "age" field',
           );
-          assert.notEqual(
-            result4.schemaDtsPath,
-            result3.schemaDtsPath,
-            'Schema should be renewed.',
-          );
-          assert.notEqual(
+          notStrictEqual(
             result4.schema,
             result3.schema,
             'Schema should be renewed.',
           );
-          assert.notEqual(
-            result4.documentDtsPath,
-            result3.documentDtsPath,
-            'Document should be renewed.',
-          );
-          assert.notEqual(
+          notStrictEqual(
             result4.document,
             result3.document,
             'Document should be renewed.',
           );
-          assert.ok(
+          ok(
             result4.schema.includes(
               `
-  export type User = {
-      __typename?: 'User';
-      id: Scalars['ID'];
-      name: Scalars['String'];
-      status: Scalars['String'];
-      age: Scalars['Int'];
-  };
+export declare type User = {
+    __typename?: 'User';
+    id: Scalars['ID'];
+    name: Scalars['String'];
+    status: Scalars['String'];
+    age: Scalars['Int'];
+};
 `,
             ),
           );
-          assert.ok(
+          ok(
             result4.document.includes(
               `
-  export type User = {
-      __typename?: 'User';
-      id: Scalars['ID'];
-      name: Scalars['String'];
-      status: Scalars['String'];
-      age: Scalars['Int'];
-  };
+export declare type User = {
+    __typename?: 'User';
+    id: Scalars['ID'];
+    name: Scalars['String'];
+    status: Scalars['String'];
+    age: Scalars['Int'];
+};
 `,
             ),
           );
@@ -328,13 +314,13 @@ type Query {
 
       await retryable(
         async () => {
-          assert.ok(
+          ok(
             stderrContent.includes(
               'GraphQLDocumentError: Cannot query field "name" on type "User".',
             ),
           );
           const globResults = await glob('__generated__/types/**', { cwd });
-          assert.strictEqual(globResults.length, 0);
+          strictEqual(globResults.length, 0);
         },
         1000,
         60 * 1000,
@@ -364,29 +350,29 @@ type Query {
       await retryable(
         async () => {
           const result = await ensureOutputDts('');
-          assert.ok(
+          ok(
             result.schema.includes(
               `
-  export type User = {
-      __typename?: 'User';
-      id: Scalars['ID'];
-      name: Scalars['String'];
-      status: Scalars['String'];
-  };
+export declare type User = {
+    __typename?: 'User';
+    id: Scalars['ID'];
+    name: Scalars['String'];
+    status: Scalars['String'];
+};
 `,
             ),
             `"${result.schema}" is something wrong`,
           );
-          assert.ok(
+          ok(
             result.document.includes(
               `
-  export type ViewerQuery = ({
-      __typename?: 'Query';
-  } & {
-      viewer?: Maybe<({
-          __typename?: 'User';
-      } & Pick<User, 'id' | 'name'>)>;
-  });
+export declare type ViewerQuery = ({
+    __typename?: 'Query';
+} & {
+    viewer?: Maybe<({
+        __typename?: 'User';
+    } & Pick<User, 'id' | 'name'>)>;
+});
 `,
             ),
             `${result.document} is something wrong`,

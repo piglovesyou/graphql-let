@@ -1,6 +1,6 @@
 # graphql-let ![](https://github.com/piglovesyou/graphql-let/workflows/Node%20CI/badge.svg) [![npm version](https://badge.fury.io/js/graphql-let.svg)](https://badge.fury.io/js/graphql-let)
 
-A webpack loader to import type-protected codegen results directly from GraphQL documents. 
+A webpack loader to import type-protected codegen results directly from GraphQL documents.
 
 Try [the Next.js example](https://github.com/zeit/next.js/blob/canary/examples/with-typescript-graphql/README.md#readme) that integrates graphql-let.
 
@@ -31,13 +31,13 @@ Two things:
 
 <p align="center"><img src="./resource/graphql-let-loader.png" /></p>
 
-You may also want only `.d.ts` before a webpack build to check types. Run `graphql-let` command to get `.d.ts` without running webpack. 
+You may also want only `.d.ts` before a webpack build to check types. Run `graphql-let` command to get `.d.ts` without running webpack.
 
 <p align="center"><img src="./resource/graphql-let.png" /></p>
 
 ## Get started
 
-This is an example of **TypeScript + React + Apollo Client**. Help yourself to replace the corresponding lines depending on your needs.
+This is an example of **TypeScript + React + Apollo Client**. Please replace the corresponding lines depending on your needs.
 
 ### 1. Install dependencies
 
@@ -62,7 +62,6 @@ Next add [graphql-codegen plugins](https://graphql-code-generator.com/docs/plugi
 Edit it like this:
 
 ```diff
- generateDir: __generated__
  schema: **/*.graphqls
  documents: **/*.graphql
  plugins:
@@ -75,33 +74,19 @@ Available options:
 
 | property | required | type | meaning | examples |
 | --- | :---: | --- | --- | --- |
-| `generateDir` | ✔︎ | `string` | The directory that graphql-let puts generated files. You may want to ignore the directory by `.gitignore`. | `__generated__` |
 | `schema` | ✔︎ | `string` | The GraphQL schema info that graphql-let requests introspection to. | <ul><li>`http://localhost:3000/graphql`</li><li>`schema.json`</li><li>`schema.graphqls`</li><li>`graphql/**/*.graphqls`</li></ul>[All available formats](https://graphql-code-generator.com/docs/getting-started/schema-field#available-formats) |
 | `documents` | ✔︎ | `string \| string[]` | The GraphQL documents info of quereis and mutations etc. All the documents have to be separate files. | `./queries-and-mutations/**/*.graphql` |
 | `plugins` | ✔︎ | `string[]` | The plugin names of graphql-codegen. | <ul><li>`typescript-operations`</li><li>`typescript-react-apollo`</li></ul>[All available plugins](https://graphql-code-generator.com/docs/plugins/) |
 | `respectGitIgnore` | ✔︎ | `boolean` | Whether to use `.gitignore` to ignore like `node_modules`. It's passed to [globby](https://www.npmjs.com/package/globby#gitignore) internally. | `true` |
 | `config` |  | `Record<string, boolean \| string>` | The configuration for the plugins. [more info](https://graphql-code-generator.com/docs/getting-started/config-field)  | These are configured by default. <ul><li>`withHOC: false`</li><li>`withHooks: true`</li></ul> |
 
-#### tsconfig.json
-
-graphql-let will generate `.d.ts` files in `__generated__/types`. Mark the directory as one of `typeRoots` in your tsconfig.json.
-
-```diff
- {
-   "compilerOptions": {
-+    "typeRoots": [
-+      "node_modules/@types",
-+      "__generated__/types"
-+    ]
-   },
-```
-
 #### .gitignore
 
 You may want to exclude auto-generated files by graphql-let. Add this line in your .gitignore.
 
 ```diff
-+__generated__
++*.graphql.d.ts
++*.graphqls.d.ts
 ```
 
 #### webpack.config.ts
@@ -124,7 +109,7 @@ The webpack loader also needs to be configured. Note that the content `graphql-l
  }
 ```
 
-### 3. Prepare types 
+### 3. Prepare types
 
 Run this command to generate `.d.ts` for `.graphql`. You may want to run it every time before running `tsc`. Please check your npm scripts in `package.json`.
 
@@ -151,10 +136,10 @@ const News: React.FC = () => {
 
 If you:
 
-* have local GraphQL schema files (`.graphqls`)
+* have a single local GraphQL schema file (`.graphqls`)
 * have installed [`@graphql-codegen/typescript-resolvers`](https://graphql-code-generator.com/docs/plugins/typescript-resolvers) in dependencies
 
-, graphql-let command will generate `__concatedschema__-*.d.ts` to help you write GraphQL resolvers. Run: 
+, graphql-let will generate `.graphqls.d.ts` to help you type GraphQL resolvers. Run:
 
 ```bash
 yarn add -D @graphql-codegen/typescript-resolvers
@@ -167,7 +152,7 @@ then you will get `Resolver` type from any GraphQL schema files you have.
 ```typescript
 import { Resolvers } from "./type-defs.graphqls";
 
-const resolvers: Resolvers = {
+const resolvers: Resolvers = { 
   Query: {
     // All typed⚡️
     viewer(parent, args, context, info) {
@@ -179,7 +164,7 @@ const resolvers: Resolvers = {
 export default resolvers;
 ```
 
-`graphql-let/schema/loader` is also available. It just pass GraphQL Content to the next loader but it generates resolver types. Set it up like this:
+`graphql-let/schema/loader` is also available. It just pass GraphQL Content to the next loader but it generates resolver types in HMR. Set it up like this:
 
 ```diff
  const config: Configuration = {
