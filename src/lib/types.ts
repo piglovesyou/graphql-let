@@ -4,9 +4,8 @@ export type CommandOpts = {
 };
 
 export type ConfigTypes = {
-  generateDir: string;
   config?: Record<string, boolean | string>;
-  schema: string | string[];
+  schema: string;
   documents: string | string[];
   respectGitIgnore: boolean;
   plugins: string[];

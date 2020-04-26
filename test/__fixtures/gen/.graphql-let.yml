@@ -1,7 +1,4 @@
-generateDir: __generated__
-schema:
-  - '**/*.graphqls'
-  - '!shouldBeIgnored1'
+schema: 'schema/type-defs.graphqls'
 documents:
   - '**/*.graphql'
   - '!shouldBeIgnored1'

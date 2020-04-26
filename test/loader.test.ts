@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import assert from 'assert';
+import { deepStrictEqual, ok, strictEqual } from 'assert';
 import glob from 'globby';
-import compiler from './lib/compile';
+import compiler from './__tools/compile';
 import { join as pathJoin } from 'path';
-import { rimraf } from './lib/file';
+import { rimraf } from './__tools/file';
 
-const cwd = pathJoin(__dirname, 'fixtures/loader');
+const cwd = pathJoin(__dirname, '__fixtures/loader');
 
 describe('graphql-let/loader', () => {
   beforeEach(async () => {
@@ -23,8 +23,8 @@ describe('graphql-let/loader', () => {
         .modules!.map((m) => m.source)
         .filter(Boolean);
 
-      assert.deepStrictEqual(length, 1);
-      assert(actual!.includes('export function useViewerQuery('));
+      deepStrictEqual(length, 1);
+      ok(actual!.includes('export function useViewerQuery('));
     },
     60 * 1000,
   );
@@ -48,24 +48,18 @@ describe('graphql-let/loader', () => {
           .modules!.map((m) => m.source)
           .filter(Boolean);
 
-        assert.deepStrictEqual(length, 1);
+        deepStrictEqual(length, 1);
         switch (file) {
           case 'pages/viewer.graphql':
-            assert(actual!.includes('export function useViewerQuery('));
+            ok(actual!.includes('export function useViewerQuery('));
             break;
           case 'pages/viewer2.graphql':
-            assert(actual!.includes('export function useViewer2Query('));
+            ok(actual!.includes('export function useViewer2Query('));
             break;
         }
       }
-      const globResults = await glob('__generated__/types/**', { cwd });
-      const d = '^__generated__/types';
-      const h = '[a-z\\d]+';
-      assert.strictEqual(globResults.length, 2);
-      assert(new RegExp(`${d}/viewer.graphql-${h}.d.ts$`).test(globResults[0]));
-      assert(
-        new RegExp(`${d}/viewer2.graphql-${h}.d.ts$`).test(globResults[1]),
-      );
+      const globResults = await glob('**/*.graphql.d.ts', { cwd });
+      strictEqual(globResults.length, 2);
     },
     60 * 1000,
   );

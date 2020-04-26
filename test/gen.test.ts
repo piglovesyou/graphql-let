@@ -1,53 +1,54 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { join as pathJoin } from 'path';
-import assert from 'assert';
+import { strictEqual, ok } from 'assert';
 import gen from '../src/gen';
 import glob from 'globby';
 
-import { readFile, rename, rimraf } from './lib/file';
-const cwd = pathJoin(__dirname, 'fixtures/gen');
+import { readFile, rename, rimraf } from './__tools/file';
+const cwd = pathJoin(__dirname, '__fixtures/gen');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
 
 describe('"graphql-let" command', () => {
   beforeAll(async () => {
     await rename(rel('_gitignore'), rel('.gitignore'));
-    await rimraf(rel('__generated__'));
+    await rimraf(pathJoin(__dirname, '../__generated__'));
+    await rimraf(rel('**/*.graphql.d.ts'));
+    await rimraf(rel('**/*.graphqls.d.ts'));
 
     await gen({ cwd });
   }, 60 * 1000);
+
   afterAll(async () => {
     await rename(rel('.gitignore'), rel('_gitignore'));
+    // await rimraf(rel('**/*.graphql.d.ts'));
+    // await rimraf(rel('**/*.graphqls.d.ts'));
   });
 
   test(`generates number of .d.ts ignoring specified files as expected
 * ignoring "!" paths in "schema" and "documents" of graphql-let.yml
 * ignoring files specified in .gitignore
 `, async () => {
-    const expectDtsLength = 3; // 2 documents and 1 schema
+    const docDtsGlobResults = await glob('**/*.graphql.d.ts', { cwd });
+    strictEqual(docDtsGlobResults.length, 2);
 
-    const globResults = await glob('__generated__/types/**', { cwd });
-    assert.strictEqual(globResults.length, expectDtsLength);
+    const schemaDtsGlobResults = await glob('**/*.graphqls.d.ts', { cwd });
+    strictEqual(schemaDtsGlobResults.length, 1);
 
-    const [schema, doc1, doc2] = globResults.sort();
-    const d = '^__generated__/types';
-    const h = '[a-z\\d]+';
-    assert(new RegExp(`${d}/viewer.graphql-${h}.d.ts$`).test(doc1));
-    assert(new RegExp(`${d}/viewer2.graphql-${h}.d.ts$`).test(doc2));
-    assert(new RegExp(`${d}/__concatedschema__-${h}.d.ts$`).test(schema));
+    const tsxResults = await glob('../__generated__/**/*.tsx', {
+      cwd: __dirname,
+    });
+    strictEqual(tsxResults.length, 3);
   });
 
   test(`passes config to graphql-codegen as expected
 * "useIndexSignature: true" in config effect to result having "WithIndex<TObject>" type
 `, async () => {
-    const [
-      generatedSchemaTypesPath,
-    ] = await glob('__generated__/types/__concatedschema__*', { cwd });
-    const actual = await readFile(rel(generatedSchemaTypesPath));
-    assert.ok(
+    const actual = await readFile(rel('schema/type-defs.graphqls.d.ts'));
+    ok(
       actual.includes(`
-  export type WithIndex<TObject> = TObject & Record<string, any>;
-  export type ResolversObject<TObject> = WithIndex<TObject>;
+export declare type WithIndex<TObject> = TObject & Record<string, any>;
+export declare type ResolversObject<TObject> = WithIndex<TObject>;
 `),
     );
   });
