@@ -5,7 +5,7 @@ import { ok, strictEqual, notStrictEqual } from 'assert';
 import glob from 'globby';
 import execa from 'execa';
 import waitOn from 'wait-on';
-import { killApp } from './__tools/child-process';
+import { killApp, timeout } from './__tools/child-process';
 import retryable from './__tools/retryable';
 import { readFile, writeFile, rimraf } from './__tools/file';
 
@@ -154,6 +154,7 @@ export declare type User = {
       /************************************************************************
        * Verify HMR on document modification
        */
+      await timeout(3 * 1000);
       await writeFile(
         rel('src/viewer.graphql'),
         `
@@ -168,6 +169,7 @@ query Viewer {
 `,
         'utf-8',
       );
+      await timeout(3 * 1000);
 
       let result3: ResultType;
       await retryable(
@@ -211,6 +213,7 @@ export declare type ViewerQuery = ({
       /************************************************************************
        * Verify HMR on schema modification - add "age" field
        */
+      await timeout(3 * 1000);
       await writeFile(
         rel('src/type-defs.graphqls'),
         `
@@ -228,6 +231,8 @@ type Query {
 `.trim(),
         'utf-8',
       );
+      await timeout(3 * 1000);
+
       await retryable(
         async () => {
           const result4 = await ensureOutputDts(
@@ -296,6 +301,7 @@ export declare type User = {
        * Make an error to write wrong GraphQL schema
        */
 
+      await timeout(3 * 1000);
       await writeFile(
         rel('src/type-defs.graphqls'),
         `
@@ -311,6 +317,7 @@ type Query {
 `.trim(),
         'utf-8',
       );
+      await timeout(3 * 1000);
 
       await retryable(
         async () => {
@@ -331,6 +338,7 @@ type Query {
        * Correcting GraphQL schema should re-generate d.ts properly
        */
 
+      await timeout(3 * 1000);
       await writeFile(
         rel('src/type-defs.graphqls'),
         `
@@ -346,6 +354,7 @@ type Query {
       `.trim(),
         'utf-8',
       );
+      await timeout(3 * 1000);
 
       await retryable(
         async () => {
