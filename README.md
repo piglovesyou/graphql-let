@@ -102,8 +102,8 @@ Available options:
 
 #### .gitignore
 
-graphql-let will generate `.d.ts` files in the same folder of `.graphql`  
-and `.graphqls`. Add these line in your .gitignore.
+graphql-let will generate `.d.ts` files in the same folder of `.graphql`.
+Add these lines in your .gitignore.
 
 ```diff
 +*.graphql.d.ts
@@ -112,7 +112,7 @@ and `.graphqls`. Add these line in your .gitignore.
 
 #### webpack.config.ts
 
-The webpack loader also needs to be configured. Note that the content
+The webpack loader also needs to be configured. Note that the content that
 `graphql-let/loader` generates is JSX-TypeScript. You have to compile it to
 JavaScript with an additional loader such as `babel-loader`.
 
@@ -144,8 +144,8 @@ npx graphql-let
 #   - src/schema.graphqls.d.ts
 ```
 
-You may want to run it everytime calling `tsc`. Please check your `package.json`
-and modify like this.
+You may want to run it everytime before calling `tsc`. Please check your `package.json`
+and modify it like this.
 
 ```diff
    "scripts": {
@@ -171,14 +171,14 @@ const News: React.FC = () => {
 
 ## Experimental feature: Resolver Types
 
-If you:
+If:
 
--   have a single local GraphQL schema file (`.graphqls`)
--   have installed
+-   your `schema` in .graphql-let.yml points to a single local GraphQL schema file (`.graphqls`)
+-   you have installed
     [`@graphql-codegen/typescript-resolvers`](https://graphql-code-generator.com/docs/plugins/typescript-resolvers)
     in dependencies
 
-, graphql-let will generate `.graphqls.d.ts` to help you type GraphQL resolvers.
+, graphql-let will generate `.graphqls.d.ts` to help you type your GraphQL resolvers.
 Run:
 
 ```bash
@@ -187,7 +187,7 @@ yarn add -D @graphql-codegen/typescript-resolvers
 yarn graphql-let
 ```
 
-then you will get `Resolver` type from any GraphQL schema files you have.
+then you will get `Resolver` type from the schema file.
 
 ```typescript
 import { Resolvers } from "./type-defs.graphqls";
@@ -205,7 +205,7 @@ export default resolvers;
 ```
 
 `graphql-let/schema/loader` is also available. It just pass GraphQL Content to
-the next loader but it generates resolver types in HMR. Set it up like this:
+the next loader but it updates resolver types in HMR. Set it up as below:
 
 ```diff
  const config: Configuration = {
@@ -250,7 +250,7 @@ loaders with fewer pitfalls. Another reason for `.graphqls` is that it's one of
 
 [Query document exports `DocumentNode` named `${QueryName}Document` that you can make use of it.](https://github.com/piglovesyou/graphql-let/issues/66#issuecomment-596276493)
 
-#### How to import another file for GraphQL Fragment?
+#### How to import `.graphql` from another, to import GraphQL Fragment for example?
 
 You can't yet.
 [Please watch the progress.](https://github.com/piglovesyou/graphql-let/issues/65)
