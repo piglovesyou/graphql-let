@@ -5,7 +5,7 @@ import assert from 'assert';
 import glob from 'globby';
 import execa from 'execa';
 import waitOn from 'wait-on';
-import { killApp } from './lib/child-process';
+import { killApp, timeout } from './lib/child-process';
 import retryable from './lib/retryable';
 import { readFile, writeFile, rimraf } from './lib/file';
 
@@ -153,6 +153,7 @@ describe('HMR', () => {
       /************************************************************************
        * Verify HMR on document modification
        */
+      await timeout(3 * 1000);
       await writeFile(
         rel('src/viewer.graphql'),
         `
@@ -167,6 +168,7 @@ query Viewer {
 `,
         'utf-8',
       );
+      await timeout(3 * 1000);
 
       let result3: ResultType;
       await retryable(
@@ -215,6 +217,7 @@ query Viewer {
       /************************************************************************
        * Verify HMR on schema modification - add "age" field
        */
+      await timeout(3 * 1000);
       await writeFile(
         rel('src/type-defs.graphqls'),
         `
@@ -232,6 +235,8 @@ type Query {
 `.trim(),
         'utf-8',
       );
+      await timeout(3 * 1000);
+
       await retryable(
         async () => {
           const result4 = await ensureOutputDts(
@@ -310,6 +315,7 @@ type Query {
        * Make an error to write wrong GraphQL schema
        */
 
+      await timeout(3 * 1000);
       await writeFile(
         rel('src/type-defs.graphqls'),
         `
@@ -325,6 +331,7 @@ type Query {
 `.trim(),
         'utf-8',
       );
+      await timeout(3 * 1000);
 
       await retryable(
         async () => {
@@ -345,6 +352,7 @@ type Query {
        * Correcting GraphQL schema should re-generate d.ts properly
        */
 
+      await timeout(3 * 1000);
       await writeFile(
         rel('src/type-defs.graphqls'),
         `
@@ -360,6 +368,7 @@ type Query {
       `.trim(),
         'utf-8',
       );
+      await timeout(3 * 1000);
 
       await retryable(
         async () => {
