@@ -6,7 +6,7 @@ import { writeFile } from './file';
 const options: CompilerOptions = {
   declaration: true,
   emitDeclarationOnly: true,
-  skipLibCheck: false,
+  skipLibCheck: true,
 };
 
 function getModuleNameForPath(p: string): string {
