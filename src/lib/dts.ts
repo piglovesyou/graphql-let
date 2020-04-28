@@ -1,7 +1,7 @@
 import makeDir from 'make-dir';
 import path from 'path';
 import { createCompilerHost, createProgram, CompilerOptions } from 'typescript';
-import { writeFile } from './file';
+import { withHash, writeFile } from './file';
 
 const options: CompilerOptions = {
   declaration: true,
@@ -58,10 +58,11 @@ export async function processGenDts(
   dtsFullPath: string,
   tsxFullPath: string,
   gqlRelPath: string,
+  sourceHash: string,
 ) {
   await makeDir(path.dirname(dtsFullPath));
   const [dtsContent] = await genDts([tsxFullPath]);
   if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
-  await writeFile(dtsFullPath, wrapAsModule(gqlRelPath, dtsContent));
+  await writeFile(dtsFullPath, withHash(sourceHash, dtsContent));
   return dtsContent;
 }

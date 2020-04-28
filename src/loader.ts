@@ -1,19 +1,14 @@
-import { existsSync } from 'fs';
 import logUpdate from 'log-update';
 import { loader } from 'webpack';
-import { relative as pathRelative } from 'path';
+import { join as pathJoin, relative as pathRelative } from 'path';
 import { processGenDts } from './lib/dts';
-import { removeByPatterns } from './lib/file';
+import { readHash } from './lib/file';
 import { processGraphQLCodegenFromConfig } from './lib/graphql-codegen';
-import getHash from './lib/hash';
+import { createHash } from './lib/hash';
 import loadConfig from './lib/load-config';
 import memoize from './lib/memoize';
 import { createPaths } from './lib/paths';
-import {
-  getHashOfSchema,
-  getSchemaPaths,
-  shouldGenResolverTypes,
-} from './lib/resolver-types';
+import { shouldGenResolverTypes } from './lib/resolver-types';
 import { PRINT_PREFIX } from './lib/print';
 import { readFile } from './lib/file';
 
@@ -31,61 +26,47 @@ const processGraphQLCodegenLoader = memoize(
     let schemaHash = configHash;
 
     if (shouldGenResolverTypes(config)) {
-      const schemaPaths = await getSchemaPaths(
-        cwd,
-        config.schema,
-        config.respectGitIgnore,
-      );
-      schemaHash = schemaHash + (await getHashOfSchema(schemaPaths));
+      const schemaFullPath = pathJoin(cwd, config.schema);
+      const content = await readFile(schemaFullPath);
+      schemaHash = createHash(schemaHash + content);
 
       // If using resolver types, all documents should depend on all schema files.
-      schemaPaths.forEach((p) => addDependency(p));
+      addDependency(schemaFullPath);
     }
 
-    const hash = getHash(gqlContent + schemaHash);
-    const {
-      tsxFullPath,
-      dtsFullPath,
-      dtsRelPath,
-      gqlRelPath,
-      tsxRelRegex,
-      dtsRelRegex,
-    } = createPaths(
+    const { tsxFullPath, dtsFullPath, dtsRelPath, gqlRelPath } = createPaths(
       cwd,
-      config.generateDir,
       pathRelative(cwd, gqlFullPath),
-      hash,
     );
+    const gqlHash = createHash(schemaHash + gqlContent);
 
-    await removeByPatterns(
-      cwd,
-      tsxRelRegex,
-      dtsRelRegex,
-      '!' + tsxFullPath,
-      '!' + dtsFullPath,
-    );
-
+    const shouldUpdate =
+      gqlHash !== (await readHash(tsxFullPath)) ||
+      gqlHash !== (await readHash(dtsFullPath));
     let tsxContent: string;
-    if (existsSync(tsxFullPath)) {
-      tsxContent = await readFile(tsxFullPath, 'utf-8');
-    } else {
-      logUpdate(`${PRINT_PREFIX}Running graphql-codegen...`);
+    if (shouldUpdate) {
+      logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
+
+      // We don't delete tsxFullPath and dtsFullPath here because:
+      // 1. We'll overwrite them so deleting is not necessary
+      // 2. Windows throws EPERM error for the deleting and creating file process.
+
       tsxContent = await processGraphQLCodegenFromConfig(
         config,
         cwd,
         tsxFullPath,
         gqlRelPath,
         String(gqlContent),
+        gqlHash,
       );
-    }
 
-    if (!existsSync(dtsFullPath)) {
-      logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
-      await processGenDts(dtsFullPath, tsxFullPath, gqlRelPath);
+      await processGenDts(dtsFullPath, tsxFullPath, gqlRelPath, gqlHash);
       logUpdate(PRINT_PREFIX + `${dtsRelPath} was generated.`);
       // Hack to prevent duplicated logs for simultaneous build, in SSR app for an example.
       await new Promise((resolve) => setTimeout(resolve, 0));
       logUpdate.done();
+    } else {
+      tsxContent = await readFile(tsxFullPath, 'utf-8');
     }
 
     return tsxContent;

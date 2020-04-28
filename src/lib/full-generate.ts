@@ -1,27 +1,26 @@
-import { existsSync } from 'fs';
 import glob from 'globby';
 import logUpdate from 'log-update';
 import makeDir from 'make-dir';
 import { join as pathJoin, dirname } from 'path';
 import createCodegenOpts, { PartialCodegenOpts } from './create-codegen-opts';
-import { genDts, wrapAsModule } from './dts';
-import getHash from './hash';
+import { genDts } from './dts';
+import { createHash } from './hash';
 import { createPaths } from './paths';
 import { PRINT_PREFIX } from './print';
 import {
-  getHashOfSchema,
-  getSchemaPaths,
   processGenerateResolverTypes,
   shouldGenResolverTypes,
 } from './resolver-types';
 import { ConfigTypes } from './types';
 import { processGraphQLCodegen } from './graphql-codegen';
-import { readFile, writeFile, removeByPatterns } from './file';
+import { readFile, writeFile, withHash, readHash } from './file';
 
 export type CodegenContext = {
   tsxFullPath: string;
   dtsFullPath: string;
   gqlRelPath: string;
+  gqlHash: string;
+  dtsContentDecorator: (content: string) => string;
 }[];
 
 export async function processResolverTypesIfNeeded(
@@ -35,33 +34,20 @@ export async function processResolverTypesIfNeeded(
   // configHash should be primary hash seed.
   let schemaHash = configHash;
 
-  let schemaPaths: string[] = [];
   if (shouldGenResolverTypes(config)) {
-    schemaPaths = await getSchemaPaths(
-      cwd,
-      config.schema,
-      config.respectGitIgnore,
-    );
-    schemaHash = schemaHash + (await getHashOfSchema(schemaPaths));
-    const createdPaths = createPaths(
-      cwd,
-      config.generateDir,
-      '__concatedschema__',
-      schemaHash,
-    );
+    const schemaFullPath = pathJoin(cwd, config.schema);
+    const content = await readFile(schemaFullPath);
+    schemaHash = createHash(schemaHash + content);
+    const createdPaths = createPaths(cwd, config.schema);
 
-    await removeByPatterns(
-      cwd,
-      createdPaths.tsxRelRegex,
-      createdPaths.dtsRelRegex,
-      '!' + createdPaths.tsxFullPath,
-      '!' + createdPaths.dtsFullPath,
-    );
+    const shouldUpdate =
+      schemaHash !== (await readHash(createdPaths.tsxFullPath)) ||
+      schemaHash !== (await readHash(createdPaths.dtsFullPath));
+    if (shouldUpdate) {
+      // We don't delete tsxFullPath and dtsFullPath here because:
+      // 1. We'll overwrite them so deleting is not necessary
+      // 2. Windows throws EPERM error for the deleting and creating file process.
 
-    if (
-      !existsSync(createdPaths.tsxFullPath) ||
-      !existsSync(createdPaths.dtsFullPath)
-    ) {
       logUpdate(
         PRINT_PREFIX +
           `Local schema files are detected. Generating resolver types...`,
@@ -73,7 +59,6 @@ export async function processResolverTypesIfNeeded(
         gqlRelPath,
       } = await processGenerateResolverTypes(
         schemaHash,
-        schemaPaths,
         config,
         codegenOpts,
         createdPaths,
@@ -83,10 +68,21 @@ export async function processResolverTypesIfNeeded(
         tsxFullPath,
         dtsFullPath,
         gqlRelPath,
+        gqlHash: schemaHash,
+        dtsContentDecorator: (s) => {
+          return `${s}
+          
+// This is an extra code in addition to what graphql-codegen makes.
+// Users are likely to use 'graphql-tag/loader' with 'graphql-tag/schema/loader'
+// in webpack. This code enables the result to be typed.
+import { DocumentNode } from 'graphql'
+export default typeof DocumentNode
+`;
+        },
       });
     }
   }
-  return { schemaHash, schemaPaths };
+  return { schemaHash };
 }
 
 export async function processDocuments(
@@ -100,32 +96,35 @@ export async function processDocuments(
   for (const gqlRelPath of gqlRelPaths) {
     const gqlContent = await readFile(pathJoin(cwd, gqlRelPath), 'utf-8');
 
-    const { tsxFullPath, dtsFullPath, tsxRelRegex, dtsRelRegex } = createPaths(
-      cwd,
-      config.generateDir,
-      gqlRelPath,
-      // Here I add "schemaHash" as a hash seed. Types of GraphQL documents
-      // basically depends on schema, which change should effect to document results.
-      getHash(gqlContent + schemaHash),
-    );
+    const { tsxFullPath, dtsFullPath } = createPaths(cwd, gqlRelPath);
 
-    await removeByPatterns(
-      cwd,
-      tsxRelRegex,
-      dtsRelRegex,
-      '!' + tsxFullPath,
-      '!' + dtsFullPath,
-    );
+    // Here I add "schemaHash" as a hash seed. Types of GraphQL documents
+    // basically depends on schema, which change should effect to document results.
+    const gqlHash = createHash(schemaHash + gqlContent);
 
-    if (!existsSync(tsxFullPath) || !existsSync(dtsFullPath)) {
+    const shouldUpdate =
+      gqlHash !== (await readHash(tsxFullPath)) ||
+      gqlHash !== (await readHash(dtsFullPath));
+    if (shouldUpdate) {
+      // We don't delete tsxFullPath and dtsFullPath here because:
+      // 1. We'll overwrite them so deleting is not necessary
+      // 2. Windows throws EPERM error for the deleting and creating file process.
+
       await processGraphQLCodegen(
         codegenOpts,
         tsxFullPath,
         gqlRelPath,
         gqlContent,
+        gqlHash,
       );
 
-      codegenContext.push({ tsxFullPath, dtsFullPath, gqlRelPath });
+      codegenContext.push({
+        tsxFullPath,
+        dtsFullPath,
+        gqlRelPath,
+        gqlHash,
+        dtsContentDecorator: (s) => s,
+      });
     }
   }
 }
@@ -154,9 +153,9 @@ export async function processDtsForCodegenContext(
 
   await makeDir(dirname(codegenContext[0].dtsFullPath));
   for (const [i, dtsContent] of dtsContents.entries()) {
-    const { dtsFullPath, gqlRelPath } = codegenContext[i]!;
-
-    await writeFile(dtsFullPath, wrapAsModule(gqlRelPath, dtsContent));
+    const { dtsFullPath, gqlHash, dtsContentDecorator } = codegenContext[i]!;
+    const content = withHash(gqlHash, dtsContentDecorator(dtsContent));
+    await writeFile(dtsFullPath, content);
   }
 }
 

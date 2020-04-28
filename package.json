@@ -1,6 +1,6 @@
 {
   "name": "graphql-let",
-  "version": "0.9.6",
+  "version": "0.10.0-canary.1",
   "repository": {
     "type": "git",
     "url": "git@github.com:piglovesyou/graphql-let.git"
@@ -102,9 +102,15 @@
       "git add --force"
     ]
   },
+  "*.{md,graphql}": [
+    "yarn _fix-nonjs",
+    "git add --force"
+  ],
   "scripts": {
     "lint": "eslint --ext .ts,.tsx --ignore-path .gitignore .",
-    "fix": "yarn lint --fix",
+    "_fix-nonjs": "prettier --no-config --write --tab-width 4 --print-width 80 --prose-wrap always --ignore-path .gitignore",
+    "fix-nonjs": "yarn _fix-nonjs '**/*.{md,graphql}'",
+    "fix": "yarn lint --fix && prettier --write",
     "compile": "tsc --project tsconfig.compile.json",
     "clean": "rimraf \"**/__generated__\" dist",
     "test": "jest",

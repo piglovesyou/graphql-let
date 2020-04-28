@@ -4,13 +4,14 @@ import makeDir from 'make-dir';
 import path from 'path';
 import createCodegenOpts, { PartialCodegenOpts } from './create-codegen-opts';
 import { ConfigTypes } from './types';
-import { writeFile } from './file';
+import { withHash, writeFile } from './file';
 
 export async function processGraphQLCodegen(
   codegenOpts: PartialCodegenOpts,
   tsxFullPath: string,
   gqlRelPath: string,
   gqlContent: string,
+  gqlHash: string,
 ): Promise<string> {
   const documents = gqlContent
     ? [
@@ -27,7 +28,7 @@ export async function processGraphQLCodegen(
     documents,
   });
   await makeDir(path.dirname(tsxFullPath));
-  await writeFile(tsxFullPath, tsxContent);
+  await writeFile(tsxFullPath, withHash(gqlHash, tsxContent));
   return tsxContent;
 }
 
@@ -40,6 +41,7 @@ export async function processGraphQLCodegenFromConfig(
   tsxFullPath: string,
   gqlRelPath: string,
   gqlContent: string,
+  gqlHash: string,
 ) {
   const codegenOpts = await createCodegenOpts(config, userDir);
   return await processGraphQLCodegen(
@@ -47,5 +49,6 @@ export async function processGraphQLCodegenFromConfig(
     tsxFullPath,
     gqlRelPath,
     gqlContent,
+    gqlHash,
   );
 }
