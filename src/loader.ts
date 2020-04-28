@@ -2,7 +2,7 @@ import logUpdate from 'log-update';
 import { loader } from 'webpack';
 import { join as pathJoin, relative as pathRelative } from 'path';
 import { processGenDts } from './lib/dts';
-import { readHash, rimraf } from './lib/file';
+import { readHash } from './lib/file';
 import { processGraphQLCodegenFromConfig } from './lib/graphql-codegen';
 import { createHash } from './lib/hash';
 import loadConfig from './lib/load-config';
