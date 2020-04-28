@@ -44,8 +44,9 @@ export async function processResolverTypesIfNeeded(
       schemaHash !== (await readHash(createdPaths.tsxFullPath)) ||
       schemaHash !== (await readHash(createdPaths.dtsFullPath));
     if (shouldUpdate) {
-      await rimraf(createdPaths.tsxFullPath);
-      await rimraf(createdPaths.dtsFullPath);
+      // We don't delete tsxFullPath and dtsFullPath here because:
+      // 1. We'll overwrite them so deleting is not necessary
+      // 2. Windows throws EPERM error for the deleting and creating file process.
 
       logUpdate(
         PRINT_PREFIX +
@@ -105,8 +106,9 @@ export async function processDocuments(
       gqlHash !== (await readHash(tsxFullPath)) ||
       gqlHash !== (await readHash(dtsFullPath));
     if (shouldUpdate) {
-      await rimraf(tsxFullPath);
-      await rimraf(dtsFullPath);
+      // We don't delete tsxFullPath and dtsFullPath here because:
+      // 1. We'll overwrite them so deleting is not necessary
+      // 2. Windows throws EPERM error for the deleting and creating file process.
 
       await processGraphQLCodegen(
         codegenOpts,

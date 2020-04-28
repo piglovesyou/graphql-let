@@ -47,8 +47,9 @@ const processGraphQLCodegenLoader = memoize(
     if (shouldUpdate) {
       logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
 
-      await rimraf(tsxFullPath);
-      await rimraf(dtsFullPath);
+      // We don't delete tsxFullPath and dtsFullPath here because:
+      // 1. We'll overwrite them so deleting is not necessary
+      // 2. Windows throws EPERM error for the deleting and creating file process.
 
       tsxContent = await processGraphQLCodegenFromConfig(
         config,
