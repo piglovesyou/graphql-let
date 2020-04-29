@@ -144,8 +144,23 @@ npx graphql-let
 #   - src/schema.graphqls.d.ts
 ```
 
-You may want to run it everytime before calling `tsc`. Please check your `package.json`
-and modify it like this.
+By `--config` option you can specify the custom path to the `.graphql-let.yml`.
+The directory .graphql-let.yml is located at  
+is the basepath of the relative paths in .grpahql-let.yml. Also, the basepath
+should be identical to **webpack's `config.context`** so the loader can find the
+config file.
+
+```
+pwd # "/app"
+npx graphql-let --config custom/path/.graphql-let.yml
+
+# This will point paths such as:
+# /app/custom/path/src/query.graphql.d.ts
+# /app/custom/path/src/schema.graphqls.d.ts
+```
+
+You may want to run it everytime calling `tsc`. Please check your `package.json`
+and modify like this.
 
 ```diff
    "scripts": {

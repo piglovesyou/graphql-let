@@ -100,12 +100,12 @@
     "*.ts": [
       "yarn fix",
       "git add --force"
+    ],
+    "*.{md,graphql}": [
+      "yarn _fix-nonjs",
+      "git add --force"
     ]
   },
-  "*.{md,graphql}": [
-    "yarn _fix-nonjs",
-    "git add --force"
-  ],
   "scripts": {
     "lint": "eslint --ext .ts,.tsx --ignore-path .gitignore .",
     "_fix-nonjs": "prettier --no-config --write --tab-width 4 --print-width 80 --prose-wrap always --ignore-path .gitignore",
