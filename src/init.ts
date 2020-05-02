@@ -6,7 +6,7 @@ import { printInfo } from './lib/print';
 import { CommandOpts, ConfigTypes } from './lib/types';
 
 const DEFAULT_CONFIG: ConfigTypes = {
-  schema: '**/*.graphqls',
+  schema: 'lib/type-defs.graphqls',
   documents: '**/*.graphql',
   plugins: ['typescript'],
   respectGitIgnore: true,

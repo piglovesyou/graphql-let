@@ -82,8 +82,8 @@ plugins.
 Edit it like this:
 
 ```diff
- schema: **/*.graphqls
- documents: **/*.graphql
+ schema: lib/type-defs.graphqls
+ documents: '**/*.graphql'
  plugins:
    - typescript
 +  - typescript-operations
@@ -92,18 +92,18 @@ Edit it like this:
 
 Available options:
 
-| property           | required | type                                | meaning                                                                                                                                        | examples                                                                                                                                                                                                                                         |
-| ------------------ | :------: | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `schema`           |    ✔︎    | `string`                            | The GraphQL schema info that graphql-let requests introspection to.                                                                            | <ul><li>`http://localhost:3000/graphql`</li><li>`schema.json`</li><li>`schema.graphqls`</li><li>`graphql/**/*.graphqls`</li></ul>[All available formats](https://graphql-code-generator.com/docs/getting-started/schema-field#available-formats) |
-| `documents`        |    ✔︎    | `string \| string[]`                | The GraphQL documents info of quereis and mutations etc. All the documents have to be separate files.                                          | `./queries-and-mutations/**/*.graphql`                                                                                                                                                                                                           |
-| `plugins`          |    ✔︎    | `string[]`                          | The plugin names of graphql-codegen.                                                                                                           | <ul><li>`typescript-operations`</li><li>`typescript-react-apollo`</li></ul>[All available plugins](https://graphql-code-generator.com/docs/plugins/)                                                                                             |
-| `respectGitIgnore` |    ✔︎    | `boolean`                           | Whether to use `.gitignore` to ignore like `node_modules`. It's passed to [globby](https://www.npmjs.com/package/globby#gitignore) internally. | `true`                                                                                                                                                                                                                                           |
-| `config`           |          | `Record<string, boolean \| string>` | The configuration for the plugins. [more info](https://graphql-code-generator.com/docs/getting-started/config-field)                           | These are configured by default. <ul><li>`withHOC: false`</li><li>`withHooks: true`</li></ul>                                                                                                                                                    |
+| property           | required | type                                | meaning                                                                                                                                        | examples                                                                                                                                                                                                                                      |
+| ------------------ | :------: | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `schema`           |    ✔︎    | `string`                            | The GraphQL schema info that graphql-let requests introspection to.                                                                            | <ul><li>`http://localhost:3000/graphql`</li><li>`schema.json`</li><li>`schema.graphqls` (Note glob is not supported)</li></ul>[All available formats](https://graphql-code-generator.com/docs/getting-started/schema-field#available-formats) |
+| `documents`        |    ✔︎    | `string \| string[]`                | The GraphQL documents info of quereis and mutations etc. All the documents have to be separate files.                                          | `./queries-and-mutations/**/*.graphql`                                                                                                                                                                                                        |
+| `plugins`          |    ✔︎    | `string[]`                          | The plugin names of graphql-codegen.                                                                                                           | <ul><li>`typescript-operations`</li><li>`typescript-react-apollo`</li></ul>[All available plugins](https://graphql-code-generator.com/docs/plugins/)                                                                                          |
+| `respectGitIgnore` |    ✔︎    | `boolean`                           | Whether to use `.gitignore` to ignore like `node_modules`. It's passed to [globby](https://www.npmjs.com/package/globby#gitignore) internally. | `true`                                                                                                                                                                                                                                        |
+| `config`           |          | `Record<string, boolean \| string>` | The configuration for the plugins. [more info](https://graphql-code-generator.com/docs/getting-started/config-field)                           | These are configured by default. <ul><li>`withHOC: false`</li><li>`withHooks: true`</li></ul>                                                                                                                                                 |
 
 #### .gitignore
 
-graphql-let will generate `.d.ts` files in the same folder of `.graphql`.
-Add these lines in your .gitignore.
+graphql-let will generate `.d.ts` files in the same folder of `.graphql`. Add
+these lines in your .gitignore.
 
 ```diff
 +*.graphql.d.ts
@@ -188,13 +188,14 @@ const News: React.FC = () => {
 
 If:
 
--   your `schema` in .graphql-let.yml points to a single local GraphQL schema file (`.graphqls`)
+-   your `schema` in .graphql-let.yml points to a single local GraphQL schema
+    file (`.graphqls`)
 -   you have installed
     [`@graphql-codegen/typescript-resolvers`](https://graphql-code-generator.com/docs/plugins/typescript-resolvers)
     in dependencies
 
-, graphql-let will generate `.graphqls.d.ts` to help you type your GraphQL resolvers.
-Run:
+, graphql-let will generate `.graphqls.d.ts` to help you type your GraphQL
+resolvers. Run:
 
 ```bash
 yarn add -D @graphql-codegen/typescript-resolvers
