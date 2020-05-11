@@ -82,7 +82,7 @@
     "terminate": "^2.1.2",
     "ts-jest": "^25.2.1",
     "typescript": "^3.7.5",
-    "wait-on": "^4.0.0",
+    "wait-on": "^5.0.0",
     "webpack": "^4.41.6",
     "webpack-node-externals": "^1.7.2"
   },
