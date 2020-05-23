@@ -29,15 +29,20 @@ export function genDts(tsxFullPaths: string[]): string[] {
 
   const dtsContents: string[] = [];
   compilerHost.writeFile = (name, dtsContent) => {
-    // To make sure the order of input files and call of "writeFile" consistent
     const pathFragment = path.join(
       path.dirname(name),
       path.basename(name, '.d.ts'),
     );
     const tsxFullPath = tsxFullPaths[dtsContents.length];
-    if (!tsxFullPath.startsWith(pathFragment)) {
+    // If the compiler generates all .d.ts files successfully,
+    // the order of .tsx array and corresponding .d.ts array is identical.
+    // If it's out of order, it means the compilation failed.
+    const isCorrectOrder = tsxFullPath.startsWith(pathFragment);
+    if (!isCorrectOrder) {
       throw new Error(
-        'TypeScript API was not expected as graphql-let developer, it needs to be fixed',
+        `Failed to generate .d.ts from .tsx:
+\t${tsxFullPath}
+Take a look at the .tsx file and check what went wrong.`,
       );
     }
     // XXX: How to improve memory usage?
@@ -47,6 +52,7 @@ export function genDts(tsxFullPaths: string[]): string[] {
   const program = createProgram(tsxFullPaths, options, compilerHost);
   program.emit();
 
+  // Make sure the lengths are same, just in case
   if (dtsContents.length !== tsxFullPaths.length) {
     throw new Error('Fails to generate .d.ts.');
   }
