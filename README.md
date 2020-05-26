@@ -75,7 +75,7 @@ npx graphql-let init
 ```
 
 Next add
-[graphql-codegen plugins](https://graphql-code-generator.com/docs/plugins/#available-plugins)
+[graphql-codegen plugins](https://graphql-code-generator.com/docs/plugins/index)
 in it. **Please note that you have to generate TypeScript source** by the
 plugins.
 
