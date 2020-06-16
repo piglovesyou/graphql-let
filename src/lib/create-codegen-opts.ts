@@ -1,5 +1,4 @@
 import { join as pathJoin, isAbsolute } from 'path';
-import slash from 'slash';
 import { GraphQLSchema, parse, printSchema, DocumentNode } from 'graphql';
 import { CodegenContext } from '@graphql-codegen/cli';
 import { Types } from '@graphql-codegen/plugin-helpers';
@@ -13,18 +12,14 @@ export type PartialCodegenOpts = Pick<
 
 type MultipleSchemaPointer = { [pointer: string]: {} };
 
-function loadSchema(
-  pointer: MultipleSchemaPointer,
-  respectGitIgnore: boolean,
-  cwd: string,
-) {
-  const config: Types.Config = { cwd: slash(cwd), generates: {} };
+function loadSchema(pointer: MultipleSchemaPointer, respectGitIgnore: boolean) {
+  const config: Types.Config = { generates: {} };
   const extendedConfig: any = {
     ...config,
     gitignore: respectGitIgnore,
   };
 
-  // Do shit as they do
+  // Untighten type as they do
   // https://github.com/dotansimha/graphql-code-generator/blob/d3438740d96c8c716c3af65b73f2b7f7a9e70c3d/packages/graphql-codegen-cli/src/codegen.ts#L170
   const pointerAny = pointer as any;
 
@@ -49,7 +44,6 @@ async function generateSchema(
   const loadedSchema: GraphQLSchema = await loadSchema(
     schemaPointer,
     respectGitIgnore,
-    cwd,
   );
 
   return parse(printSchema(loadedSchema));
