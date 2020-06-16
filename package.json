@@ -98,19 +98,21 @@
   },
   "lint-staged": {
     "*.ts": [
-      "yarn fix",
+      "yarn fix-js",
       "git add --force"
     ],
-    "*.{md,graphql}": [
-      "yarn _fix-nonjs",
+    "*.{md,yml,graphql,graphqls}": [
+      "yarn fix-nonjs",
       "git add --force"
     ]
   },
   "scripts": {
+    "lint-js": "eslint --ext .ts,.tsx --ignore-path .gitignore .",
+    "lint-nonjs": "prettier --config .prettierrc.nonjs.js",
     "lint": "eslint --ext .ts,.tsx --ignore-path .gitignore .",
-    "_fix-nonjs": "prettier --no-config --write --tab-width 4 --print-width 80 --prose-wrap always --ignore-path .gitignore",
-    "fix-nonjs": "yarn _fix-nonjs '**/*.{md,graphql}'",
-    "fix": "yarn lint --fix && prettier --write",
+    "fix-js": "yarn lint-js --fix",
+    "fix-nonjs": "yarn lint-nonjs --write",
+    "fix": "yarn fix-js && yarn fix-nonjs '**/*.{md,yml,graphql,graphqls}'",
     "compile": "tsc --project tsconfig.compile.json",
     "clean": "rimraf \"**/__generated__\" dist",
     "test": "jest",
