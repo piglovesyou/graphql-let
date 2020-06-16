@@ -1,11 +1,11 @@
-schema: 'schema/type-defs.graphqls'
+schema: "schema/type-defs.graphqls"
 documents:
-  - '**/*.graphql'
-  - '!shouldBeIgnored1'
+    - "**/*.graphql"
+    - "!shouldBeIgnored1"
 plugins:
-  - typescript
-  - typescript-operations
-  - typescript-react-apollo
+    - typescript
+    - typescript-operations
+    - typescript-react-apollo
 respectGitIgnore: true
 config:
-  useIndexSignature: true
+    useIndexSignature: true

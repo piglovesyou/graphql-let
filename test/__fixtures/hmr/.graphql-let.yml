@@ -1,7 +1,7 @@
-schema: 'src/type-defs.graphqls'
-documents: 'src/**/*.graphql'
+schema: "src/type-defs.graphqls"
+documents: "src/**/*.graphql"
 plugins:
-  - typescript
-  - typescript-operations
-  - typescript-react-apollo
+    - typescript
+    - typescript-operations
+    - typescript-react-apollo
 respectGitIgnore: true
