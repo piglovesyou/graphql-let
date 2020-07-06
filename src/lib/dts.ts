@@ -29,31 +29,20 @@ export function genDts(tsxFullPaths: string[]): string[] {
 
   const dtsContents: string[] = [];
   compilerHost.writeFile = (name, dtsContent) => {
-    const pathFragment = path.join(
-      path.dirname(name),
-      path.basename(name, '.d.ts'),
-    );
-    const tsxFullPath = tsxFullPaths[dtsContents.length];
-    // If the compiler generates all .d.ts files successfully,
-    // the order of .tsx array and corresponding .d.ts array is identical.
-    // If it's out of order, it means the compilation failed.
-    const isCorrectOrder = tsxFullPath.startsWith(pathFragment);
-    if (!isCorrectOrder) {
-      throw new Error(
-        `Failed to generate .d.ts from .tsx:
-\t${tsxFullPath}
-Take a look at the .tsx file and check what went wrong.`,
-      );
-    }
     // XXX: How to improve memory usage?
     dtsContents.push(dtsContent);
   };
 
   const program = createProgram(tsxFullPaths, options, compilerHost);
-  program.emit();
+  const result = program.emit();
 
-  // Make sure the lengths are same, just in case
-  if (dtsContents.length !== tsxFullPaths.length) {
+  // Make sure that the compilation is successful
+  if (result.emitSkipped) {
+    result.diagnostics.forEach(diagnostic => {
+      const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start!);
+      // log diagnostic message
+      console.error(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
+    });
     throw new Error('Fails to generate .d.ts.');
   }
 
