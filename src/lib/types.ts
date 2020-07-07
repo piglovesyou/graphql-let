@@ -8,5 +8,5 @@ export type ConfigTypes = {
   schema: string;
   documents: string | string[];
   respectGitIgnore: boolean;
-  plugins: string[];
+  plugins: Array<string | { [name: string]: any }>;
 };
