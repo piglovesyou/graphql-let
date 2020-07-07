@@ -1,7 +1,7 @@
 import { join as pathJoin, isAbsolute } from 'path';
 import { GraphQLSchema, parse, printSchema, DocumentNode } from 'graphql';
 import { CodegenContext } from '@graphql-codegen/cli';
-import { Types } from '@graphql-codegen/plugin-helpers';
+import { Types, CodegenPlugin } from '@graphql-codegen/plugin-helpers';
 import { ConfigTypes } from './types';
 import { isURL } from './paths';
 
@@ -60,13 +60,18 @@ export default async function createCodegenOpts(
       ...config.config,
     },
     schema: await generateSchema(config.schema, config.respectGitIgnore, cwd),
-    plugins: config.plugins.map((name) => (typeof name === 'string' ? { [name]: {} } : name)),
-    pluginMap: config.plugins.reduce((acc, name) => {
-      if (typeof name === 'string') {
-        return { ...acc, [name]: require(`@graphql-codegen/${name}`) };
-      }
-      const [key] = Object.keys(name);
-      return { ...acc, [key]: require(`@graphql-codegen/${key}`) };
-    }, {}),
+    plugins: config.plugins.map<Types.ConfiguredPlugin>((name) =>
+      typeof name === 'string' ? { [name]: {} } : name,
+    ),
+    pluginMap: config.plugins.reduce<{ [name: string]: CodegenPlugin<any> }>(
+      (acc, name) => {
+        if (typeof name === 'string') {
+          return { ...acc, [name]: require(`@graphql-codegen/${name}`) };
+        }
+        const [key] = Object.keys(name);
+        return { ...acc, [key]: require(`@graphql-codegen/${key}`) };
+      },
+      {},
+    ),
   };
 }
