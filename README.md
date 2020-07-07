@@ -271,6 +271,13 @@ loaders with fewer pitfalls. Another reason for `.graphqls` is that it's one of
 You can't yet.
 [Please watch the progress.](https://github.com/piglovesyou/graphql-let/issues/65)
 
+## Contribution
+
+* **[Create an issue](https://github.com/piglovesyou/graphql-let/issues/new)** if you have ideas, found a bug or anything.
+* **Creating a PR** is always welcome!
+    * Please make sure that `yarn prepare` passes, including linting, build and tests.
+    * Adding test is preferrable. But don't hesitate without it, maybe someone else will fill it.
+
 ## License
 
 MIT
