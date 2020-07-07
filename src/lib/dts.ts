@@ -1,6 +1,11 @@
 import makeDir from 'make-dir';
 import path from 'path';
-import { createCompilerHost, createProgram, CompilerOptions } from 'typescript';
+import {
+  createCompilerHost,
+  createProgram,
+  CompilerOptions,
+  flattenDiagnosticMessageText,
+} from 'typescript';
 import { withHash, writeFile } from './file';
 
 const options: CompilerOptions = {
@@ -38,12 +43,29 @@ export function genDts(tsxFullPaths: string[]): string[] {
 
   // Make sure that the compilation is successful
   if (result.emitSkipped) {
-    result.diagnostics.forEach(diagnostic => {
-      const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start!);
-      // log diagnostic message
-      console.error(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
+    result.diagnostics.forEach((diagnostic) => {
+      if (diagnostic.file) {
+        const {
+          line,
+          character,
+        } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start!);
+        // log diagnostic message
+        const message = flattenDiagnosticMessageText(
+          diagnostic.messageText,
+          '\n',
+        );
+        console.error(
+          `${diagnostic.file.fileName} (${line + 1},${
+            character + 1
+          }): ${message}`,
+        );
+      } else {
+        console.error(
+          `${flattenDiagnosticMessageText(diagnostic.messageText, '\n')}`,
+        );
+      }
     });
-    throw new Error('Fails to generate .d.ts.');
+    throw new Error('Failed to generate .d.ts.');
   }
 
   return dtsContents;
