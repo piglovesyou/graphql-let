@@ -8,13 +8,27 @@ export type CreatedPaths = {
   dtsRelPath: string;
 };
 
-export const TSX_OUTPUT_DIR = '__generated__';
+export const defaultCacheRelDir = '__generated__';
 const libDir = path.resolve(__dirname, '../..');
-const tsxFullDir = path.join(libDir, TSX_OUTPUT_DIR);
+const defaultCacheFullDir = path.join(libDir, defaultCacheRelDir);
 
-export function createPaths(cwd: string, gqlRelPath: string): CreatedPaths {
+export const getCacheFullDir = (cwd: string, cacheDir?: string) => {
+  return !cacheDir
+    ? defaultCacheFullDir
+    : path.isAbsolute(cacheDir)
+    ? cacheDir
+    : path.join(cwd, cacheDir);
+};
+
+export function createPaths(
+  cwd: string,
+  gqlRelPath: string,
+  customCacheDir?: string,
+): CreatedPaths {
+  const cacheFullDir = getCacheFullDir(cwd, customCacheDir);
+
   const tsxRelPath = `${gqlRelPath}.tsx`;
-  const tsxFullPath = path.join(tsxFullDir, tsxRelPath);
+  const tsxFullPath = path.join(cacheFullDir, tsxRelPath);
   const dtsRelPath = `${gqlRelPath}.d.ts`;
   const dtsFullPath = path.join(cwd, dtsRelPath);
 

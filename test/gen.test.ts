@@ -21,8 +21,8 @@ describe('"graphql-let" command', () => {
 
   afterAll(async () => {
     await rename(rel('.gitignore'), rel('_gitignore'));
-    // await rimraf(rel('**/*.graphql.d.ts'));
-    // await rimraf(rel('**/*.graphqls.d.ts'));
+    await rimraf(rel('**/*.graphql.d.ts'));
+    await rimraf(rel('**/*.graphqls.d.ts'));
   });
 
   test(`generates number of .d.ts ignoring specified files as expected
