@@ -38,7 +38,7 @@ const processGraphQLCodegenSchemaLoader = memoize(
         codegenContext,
       );
 
-      await processDtsForCodegenContext(codegenContext);
+      await processDtsForCodegenContext(codegenContext, config);
     }
   },
   () => 'schemaLoader',

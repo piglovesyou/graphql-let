@@ -1,0 +1,11 @@
+schema: "schema/type-defs.graphqls"
+documents:
+    - "**/*.graphql"
+plugins:
+    - typescript
+    - typescript-operations
+    - typescript-react-apollo
+config:
+    withHOC: false
+    withHocks: true
+TSConfigFile: "test/__fixtures/tsconfig/esnextconfig.json"

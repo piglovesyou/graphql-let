@@ -9,4 +9,5 @@ export type ConfigTypes = {
   documents: string | string[];
   respectGitIgnore: boolean;
   plugins: Array<string | { [name: string]: any }>;
+  TSConfigFile?: string;
 };

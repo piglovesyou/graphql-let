@@ -1,0 +1,10 @@
+schema: "schema/type-defs.graphqls"
+documents:
+    - "**/*.graphql"
+plugins:
+    - typescript
+    - typescript-operations
+    - typescript-react-apollo
+config:
+    useIndexSignature: true
+TSConfigFile: "test/__fixtures/tsconfig/es3config.json"

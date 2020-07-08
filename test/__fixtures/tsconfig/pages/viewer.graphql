@@ -1,0 +1,10 @@
+query Viewer {
+    viewer {
+        id
+        name
+        status
+    }
+}
+subscription Sub {
+    sub
+}
