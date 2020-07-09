@@ -37,6 +37,7 @@ const processGraphQLCodegenLoader = memoize(
     const { tsxFullPath, dtsFullPath, dtsRelPath, gqlRelPath } = createPaths(
       cwd,
       pathRelative(cwd, gqlFullPath),
+      config.cacheDir,
     );
     const gqlHash = createHash(schemaHash + gqlContent);
 

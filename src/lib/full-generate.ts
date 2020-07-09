@@ -38,7 +38,7 @@ export async function processResolverTypesIfNeeded(
     const schemaFullPath = pathJoin(cwd, config.schema);
     const content = await readFile(schemaFullPath);
     schemaHash = createHash(schemaHash + content);
-    const createdPaths = createPaths(cwd, config.schema);
+    const createdPaths = createPaths(cwd, config.schema, config.cacheDir);
 
     const shouldUpdate =
       schemaHash !== (await readHash(createdPaths.tsxFullPath)) ||
@@ -96,7 +96,11 @@ export async function processDocuments(
   for (const gqlRelPath of gqlRelPaths) {
     const gqlContent = await readFile(pathJoin(cwd, gqlRelPath), 'utf-8');
 
-    const { tsxFullPath, dtsFullPath } = createPaths(cwd, gqlRelPath);
+    const { tsxFullPath, dtsFullPath } = createPaths(
+      cwd,
+      gqlRelPath,
+      config.cacheDir,
+    );
 
     // Here I add "schemaHash" as a hash seed. Types of GraphQL documents
     // basically depends on schema, which change should effect to document results.
@@ -167,7 +171,7 @@ async function fullGenerate(
   cwd: string,
   config: ConfigTypes,
   configHash: string,
-): Promise<number> {
+): Promise<CodegenContext> {
   const codegenContext: CodegenContext = [];
 
   const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(cwd, config);
@@ -189,10 +193,9 @@ async function fullGenerate(
     codegenContext,
   );
 
-  if (codegenContext.length)
-    await processDtsForCodegenContext(codegenContext, config);
+  if (codegenContext) await processDtsForCodegenContext(codegenContext, config);
 
-  return codegenContext.length;
+  return codegenContext;
 }
 
 export default fullGenerate;
