@@ -92,13 +92,14 @@ Edit it like this:
 
 Available options:
 
-| property           | required | type                                  | meaning                                                                                                                                        | examples                                                                                                                                                                                                                                      |
-| ------------------ | :------: | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `schema`           |    ✔︎    | `string`                              | The GraphQL schema info that graphql-let requests introspection to.                                                                            | <ul><li>`http://localhost:3000/graphql`</li><li>`schema.json`</li><li>`schema.graphqls` (Note glob is not supported)</li></ul>[All available formats](https://graphql-code-generator.com/docs/getting-started/schema-field#available-formats) |
-| `documents`        |    ✔︎    | `string \| string[]`                  | The GraphQL documents info of quereis and mutations etc. All the documents have to be separate files.                                          | `./queries-and-mutations/**/*.graphql`                                                                                                                                                                                                        |
+| property           | required | type                                    | meaning                                                                                                                                        | examples                                                                                                                                                                                                                                      |
+| ------------------ | :------: | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `schema`           |    ✔︎    | `string`                                | The GraphQL schema info that graphql-let requests introspection to.                                                                            | <ul><li>`http://localhost:3000/graphql`</li><li>`schema.json`</li><li>`schema.graphqls` (Note glob is not supported)</li></ul>[All available formats](https://graphql-code-generator.com/docs/getting-started/schema-field#available-formats) |
+| `documents`        |    ✔︎    | `string \| string[]`                    | The GraphQL documents info of quereis and mutations etc. All the documents have to be separate files.                                          | `./queries-and-mutations/**/*.graphql`                                                                                                                                                                                                        |
 | `plugins`          |    ✔︎    | `string[] \| { [name: string]: any }[]` | The plugins of graphql-codegen.                                                                                                                | <ul><li>`typescript-operations`</li><li>`typescript-react-apollo`</li><li>`add: "/* eslint-disable */"`</li></ul>[All available plugins](https://graphql-code-generator.com/docs/plugins/)                                                    |
-| `respectGitIgnore` |    ✔︎    | `boolean`                             | Whether to use `.gitignore` to ignore like `node_modules`. It's passed to [globby](https://www.npmjs.com/package/globby#gitignore) internally. | `true`                                                                                                                                                                                                                                        |
-| `config`           |          | `Record<string, boolean \| string>`   | The configuration for the plugins. [more info](https://graphql-code-generator.com/docs/getting-started/config-field)                           | These are configured by default. <ul><li>`withHOC: false`</li><li>`withHooks: true`</li></ul>                                                                                                                                                 |
+| `respectGitIgnore` |    ✔︎    | `boolean`                               | Whether to use `.gitignore` to ignore like `node_modules`. It's passed to [globby](https://www.npmjs.com/package/globby#gitignore) internally. | `true`                                                                                                                                                                                                                                        |
+| `config`           |          | `Record<string, boolean \| string>`     | The configuration for the plugins. [more info](https://graphql-code-generator.com/docs/getting-started/config-field)                           | These are configured by default. <ul><li>`withHOC: false`</li><li>`withHooks: true`</li></ul>                                                                                                                                                 |
+| `TSConfigFile`     |          | `string`                                | Custom path to a TypeScript configuraiton. It's `tsconfig.json` by default, which you can overwrite by this option.                            | `tsconfig.custom.json`                                                                                                                                                                                                                        |
 
 #### .gitignore
 
@@ -145,10 +146,9 @@ npx graphql-let
 ```
 
 By `--config` option you can specify the custom path to the `.graphql-let.yml`.
-The directory .graphql-let.yml is located at  
-is the basepath of the relative paths in .grpahql-let.yml. Also, the basepath
-should be identical to **webpack's `config.context`** so the loader can find the
-config file.
+The directory .graphql-let.yml is located at is the basepath of the relative
+paths in .grpahql-let.yml. Also, the basepath should be identical to **webpack's
+`config.context`** so the loader can find the config file.
 
 ```
 pwd # "/app"
@@ -171,8 +171,8 @@ and modify like this.
 
 ### 4. Code more
 
-Enjoy HMR (Hot Module Replacement) of webpack with the generated  
-react-apollo hooks and IDE code assists.
+Enjoy HMR (Hot Module Replacement) of webpack with the generated react-apollo
+hooks and IDE code assists.
 
 ```typescript jsx
 import { useNewsQuery } from './news.graphql'
@@ -273,10 +273,13 @@ You can't yet.
 
 ## Contribution
 
-* **[Create an issue](https://github.com/piglovesyou/graphql-let/issues/new)** if you have ideas, found a bug or anything.
-* **Creating a PR** is always welcome!
-    * Please make sure that `yarn prepare` passes, including linting, build and tests.
-    * Adding test is preferrable. But don't hesitate without it, maybe someone else will fill it.
+-   **[Create an issue](https://github.com/piglovesyou/graphql-let/issues/new)**
+    if you have ideas, found a bug or anything.
+-   **Creating a PR** is always welcome!
+    -   Please make sure that `yarn prepare` passes, including linting, build
+        and tests.
+    -   Adding test is preferrable. But don't hesitate without it, maybe someone
+        else will fill it.
 
 ## License
 

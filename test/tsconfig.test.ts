@@ -7,7 +7,7 @@ import {
 } from '@typescript/vfs';
 import fs from 'fs';
 import ts from 'typescript';
-import { strictEqual, ok } from 'assert';
+import { ok } from 'assert';
 import { join as pathJoin, dirname } from 'path';
 import gen from '../src/gen';
 
