@@ -60,7 +60,13 @@ const processGraphQLCodegenLoader = memoize(
         gqlHash,
       );
 
-      await processGenDts(dtsFullPath, tsxFullPath, gqlRelPath, gqlHash);
+      await processGenDts(
+        dtsFullPath,
+        tsxFullPath,
+        gqlRelPath,
+        gqlHash,
+        config,
+      );
       logUpdate(PRINT_PREFIX + `${dtsRelPath} was generated.`);
       // Hack to prevent duplicated logs for simultaneous build, in SSR app for an example.
       await new Promise((resolve) => setTimeout(resolve, 0));

@@ -5,8 +5,13 @@ import {
   createProgram,
   CompilerOptions,
   flattenDiagnosticMessageText,
+  sys,
+  convertCompilerOptionsFromJson,
+  findConfigFile,
+  readConfigFile,
 } from 'typescript';
 import { withHash, writeFile } from './file';
+import { ConfigTypes } from './types';
 
 const options: CompilerOptions = {
   declaration: true,
@@ -29,8 +34,36 @@ export function wrapAsModule(filePath: string, content: string) {
 }`;
 }
 
-export function genDts(tsxFullPaths: string[]): string[] {
-  const compilerHost = createCompilerHost({});
+export function genDts(
+  tsxFullPaths: string[],
+  configObj: ConfigTypes,
+): string[] {
+  const fileName = configObj.TSConfigFile || 'tsconfig.json';
+  const configPath = findConfigFile(process.cwd(), sys.fileExists, fileName);
+  let compilerOptions = options;
+  if (configPath != null) {
+    const { config, error } = readConfigFile(configPath, (name) =>
+      sys.readFile(name),
+    );
+    if (config != null) {
+      const settings = convertCompilerOptionsFromJson(
+        { ...config['compilerOptions'], ...options },
+        process.cwd(),
+      );
+      if (settings.errors.length > 0) {
+        console.log(settings.errors);
+      }
+      compilerOptions = settings.options;
+    } else if (error) {
+      console.error(
+        `${error.file && error.file.fileName}: ${error.messageText}`,
+      );
+    }
+  } else {
+    console.error(`Could not find a valid tsconfig file ('${fileName}').`);
+  }
+
+  const compilerHost = createCompilerHost(compilerOptions);
 
   const dtsContents: string[] = [];
   compilerHost.writeFile = (name, dtsContent) => {
@@ -38,9 +71,8 @@ export function genDts(tsxFullPaths: string[]): string[] {
     dtsContents.push(dtsContent);
   };
 
-  const program = createProgram(tsxFullPaths, options, compilerHost);
+  const program = createProgram(tsxFullPaths, compilerOptions, compilerHost);
   const result = program.emit();
-
   // Make sure that the compilation is successful
   if (result.emitSkipped) {
     result.diagnostics.forEach((diagnostic) => {
@@ -67,7 +99,6 @@ export function genDts(tsxFullPaths: string[]): string[] {
     });
     throw new Error('Failed to generate .d.ts.');
   }
-
   return dtsContents;
 }
 
@@ -76,9 +107,10 @@ export async function processGenDts(
   tsxFullPath: string,
   gqlRelPath: string,
   sourceHash: string,
+  config: ConfigTypes,
 ) {
   await makeDir(path.dirname(dtsFullPath));
-  const [dtsContent] = await genDts([tsxFullPath]);
+  const [dtsContent] = await genDts([tsxFullPath], config);
   if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
   await writeFile(dtsFullPath, withHash(sourceHash, dtsContent));
   return dtsContent;

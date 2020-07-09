@@ -30,7 +30,10 @@ describe('"graphql-let" command', () => {
 * ignoring files specified in .gitignore
 `, async () => {
     const docDtsGlobResults = await glob('**/*.graphql.d.ts', { cwd });
-    strictEqual(docDtsGlobResults.length, 2);
+    strictEqual(
+      docDtsGlobResults.find((r) => r.includes('shouldBeIgnored1')),
+      undefined,
+    );
 
     const schemaDtsGlobResults = await glob('**/*.graphqls.d.ts', { cwd });
     strictEqual(schemaDtsGlobResults.length, 1);
@@ -38,7 +41,10 @@ describe('"graphql-let" command', () => {
     const tsxResults = await glob('../__generated__/**/*.tsx', {
       cwd: __dirname,
     });
-    strictEqual(tsxResults.length, 3);
+    strictEqual(
+      tsxResults.find((r) => r.includes('shouldBeIgnored1')),
+      undefined,
+    );
   });
 
   test(`passes config to graphql-codegen as expected

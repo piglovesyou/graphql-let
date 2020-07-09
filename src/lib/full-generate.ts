@@ -147,9 +147,13 @@ export async function prepareFullGenerate(cwd: string, config: ConfigTypes) {
 
 export async function processDtsForCodegenContext(
   codegenContext: CodegenContext,
+  config: ConfigTypes,
 ) {
   logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
-  const dtsContents = genDts(codegenContext.map((s) => s.tsxFullPath));
+  const dtsContents = genDts(
+    codegenContext.map((s) => s.tsxFullPath),
+    config,
+  );
 
   await makeDir(dirname(codegenContext[0].dtsFullPath));
   for (const [i, dtsContent] of dtsContents.entries()) {
@@ -185,7 +189,8 @@ async function fullGenerate(
     codegenContext,
   );
 
-  if (codegenContext.length) await processDtsForCodegenContext(codegenContext);
+  if (codegenContext.length)
+    await processDtsForCodegenContext(codegenContext, config);
 
   return codegenContext.length;
 }
