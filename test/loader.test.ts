@@ -24,7 +24,7 @@ describe('graphql-let/loader', () => {
         .filter(Boolean);
 
       deepStrictEqual(length, 1);
-      ok(actual!.includes('export function useViewerQuery('));
+      expect(actual).toMatchSnapshot();
     },
     60 * 1000,
   );

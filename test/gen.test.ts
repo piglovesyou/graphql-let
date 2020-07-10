@@ -34,9 +34,17 @@ describe('"graphql-let" command', () => {
       docDtsGlobResults.find((r) => r.includes('shouldBeIgnored1')),
       undefined,
     );
-
+    const docDtsGlobContents = await Promise.all(
+      docDtsGlobResults.map((file) => readFile(rel(file))),
+    );
+    expect(docDtsGlobContents).toMatchSnapshot('docDtsGlobContents');
     const schemaDtsGlobResults = await glob('**/*.graphqls.d.ts', { cwd });
     strictEqual(schemaDtsGlobResults.length, 1);
+
+    const schemaDtsGlobContents = await Promise.all(
+      schemaDtsGlobResults.map((file) => readFile(rel(file))),
+    );
+    expect(schemaDtsGlobContents).toMatchSnapshot('schemaDtsGlobContents');
 
     const tsxResults = await glob('../__generated__/**/*.tsx', {
       cwd: __dirname,
@@ -45,17 +53,16 @@ describe('"graphql-let" command', () => {
       tsxResults.find((r) => r.includes('shouldBeIgnored1')),
       undefined,
     );
+    const tsxContents = await Promise.all(
+      tsxResults.map((file) => readFile(pathJoin(__dirname, file))),
+    );
+    expect(tsxContents).toMatchSnapshot('tsxContents');
   });
 
   test(`passes config to graphql-codegen as expected
 * "useIndexSignature: true" in config effect to result having "WithIndex<TObject>" type
 `, async () => {
     const actual = await readFile(rel('schema/type-defs.graphqls.d.ts'));
-    ok(
-      actual.includes(`
-export declare type WithIndex<TObject> = TObject & Record<string, any>;
-export declare type ResolversObject<TObject> = WithIndex<TObject>;
-`),
-    );
+    expect(actual).toMatchSnapshot();
   });
 });
