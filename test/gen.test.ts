@@ -35,16 +35,25 @@ describe('"graphql-let" command', () => {
       undefined,
     );
     const docDtsGlobContents = await Promise.all(
-      docDtsGlobResults.map((file) => readFile(rel(file))),
+      docDtsGlobResults.map((filename) =>
+        readFile(rel(filename)).then((content) => ({ filename, content })),
+      ),
     );
-    expect(docDtsGlobContents).toMatchSnapshot('docDtsGlobContents');
+    docDtsGlobContents.forEach(({ filename, content }) => {
+      expect(content).toMatchSnapshot(filename);
+    });
+
     const schemaDtsGlobResults = await glob('**/*.graphqls.d.ts', { cwd });
     strictEqual(schemaDtsGlobResults.length, 1);
 
     const schemaDtsGlobContents = await Promise.all(
-      schemaDtsGlobResults.map((file) => readFile(rel(file))),
+      schemaDtsGlobResults.map((filename) =>
+        readFile(rel(filename)).then((content) => ({ filename, content })),
+      ),
     );
-    expect(schemaDtsGlobContents).toMatchSnapshot('schemaDtsGlobContents');
+    schemaDtsGlobContents.forEach(({ filename, content }) => {
+      expect(content).toMatchSnapshot(filename);
+    });
 
     const tsxResults = await glob('../__generated__/**/*.tsx', {
       cwd: __dirname,
@@ -54,9 +63,16 @@ describe('"graphql-let" command', () => {
       undefined,
     );
     const tsxContents = await Promise.all(
-      tsxResults.map((file) => readFile(pathJoin(__dirname, file))),
+      tsxResults.map((filename) =>
+        readFile(pathJoin(__dirname, filename)).then((content) => ({
+          filename,
+          content,
+        })),
+      ),
     );
-    expect(tsxContents).toMatchSnapshot('tsxContents');
+    tsxContents.forEach(({ filename, content }) => {
+      expect(content).toMatchSnapshot(filename);
+    });
   });
 
   test(`passes config to graphql-codegen as expected
