@@ -67,25 +67,18 @@ export async function processGenerateResolverTypes(
   schemaHash: string,
   config: ConfigTypes,
   codegenOpts: PartialCodegenOpts,
-  { dtsFullPath, dtsRelPath, gqlRelPath, tsxFullPath }: CreatedPaths,
+  { dtsFullPath, dtsRelPath, gqlFullPath, tsxFullPath }: CreatedPaths,
+  cwd: string,
 ) {
-  await processGraphQLCodegen(
-    {
-      ...codegenOpts,
-      pluginMap: {
-        '@graphql-codegen/typescript': require('@graphql-codegen/typescript'),
-        '@graphql-codegen/typescript-resolvers': require('@graphql-codegen/typescript-resolvers'),
-      },
-      plugins: [
-        { '@graphql-codegen/typescript': {} },
-        { '@graphql-codegen/typescript-resolvers': {} },
-      ],
-    },
-    tsxFullPath,
-    gqlRelPath,
-    '',
-    schemaHash,
-  );
+  await processGraphQLCodegen({
+    cwd,
+    schema: gqlFullPath,
+    filename: tsxFullPath,
+    documents: config.documents,
+    plugins: ['typescript', 'typescript-resolvers'],
+    config: codegenOpts.config,
+    gqlHash: schemaHash,
+  });
 
   const schemaPathWithExtension = getSchemaPointerWithExtension(config.schema);
   if (!schemaPathWithExtension) throw new Error('never');
