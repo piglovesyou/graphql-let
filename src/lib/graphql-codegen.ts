@@ -54,9 +54,7 @@ export async function processGraphQLCodegen(
     return (files[0] && files[0].content) as string;
   } catch (e) {
     if (e.name === 'ListrError' && e.errors != null) {
-      e.errors.forEach((detailError: any) => {
-        console.log(detailError.details);
-      });
+      throw e.errors[0];
     } else {
       console.log('Error:', e);
     }

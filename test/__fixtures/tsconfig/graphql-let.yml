@@ -8,3 +8,4 @@ plugins:
 config:
     useIndexSignature: true
 TSConfigFile: "test/__fixtures/tsconfig/es3config.json"
+cacheDir: "test/__fixtures/tsconfig/__generated__"

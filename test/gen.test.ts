@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { join as pathJoin } from 'path';
-import { strictEqual, ok } from 'assert';
+import { strictEqual } from 'assert';
 import gen from '../src/gen';
 import glob from 'globby';
 
@@ -55,16 +55,20 @@ describe('"graphql-let" command', () => {
       expect(content).toMatchSnapshot(filename);
     });
 
-    const tsxResults = await glob('../__generated__/**/*.tsx', {
-      cwd: __dirname,
-    });
+    const tsxResults = await glob(
+      'test/__fixtures/gen/__generated__/**/*.tsx',
+      {
+        cwd,
+      },
+    );
+    strictEqual(tsxResults.length, 3);
     strictEqual(
       tsxResults.find((r) => r.includes('shouldBeIgnored1')),
       undefined,
     );
     const tsxContents = await Promise.all(
       tsxResults.map((filename) =>
-        readFile(pathJoin(__dirname, filename)).then((content) => ({
+        readFile(pathJoin(cwd, filename)).then((content) => ({
           filename,
           content,
         })),
