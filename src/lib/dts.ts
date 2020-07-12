@@ -13,41 +13,25 @@ import {
 import { withHash, writeFile } from './file';
 import { ConfigTypes } from './types';
 
-const options: CompilerOptions = {
+const essentialCompilerOptions: CompilerOptions = {
   declaration: true,
   emitDeclarationOnly: true,
   skipLibCheck: true,
+  noEmit: false,
 };
 
-function getModuleNameForPath(p: string): string {
-  const baseName = path.basename(p);
-  return baseName.startsWith('*') ? baseName : '*/' + baseName;
-}
-
-export function wrapAsModule(filePath: string, content: string) {
-  const moduleName = getModuleNameForPath(filePath);
-  return `declare module '${moduleName}' {
-  ${content
-    .trim()
-    .replace(/\nexport declare /g, '\nexport ')
-    .replace(/\n/g, '\n  ')}
-}`;
-}
-
-export function genDts(
-  tsxFullPaths: string[],
-  configObj: ConfigTypes,
-): string[] {
+function resolveCompilerOptions(configObj: ConfigTypes) {
   const fileName = configObj.TSConfigFile || 'tsconfig.json';
   const configPath = findConfigFile(process.cwd(), sys.fileExists, fileName);
-  let compilerOptions = options;
+  let compilerOptions = essentialCompilerOptions;
+
   if (configPath != null) {
     const { config, error } = readConfigFile(configPath, (name) =>
       sys.readFile(name),
     );
     if (config != null) {
       const settings = convertCompilerOptionsFromJson(
-        { ...config['compilerOptions'], ...options },
+        { ...config['compilerOptions'], ...essentialCompilerOptions },
         process.cwd(),
       );
       if (settings.errors.length > 0) {
@@ -63,6 +47,15 @@ export function genDts(
     console.error(`Could not find a valid tsconfig file ('${fileName}').`);
   }
 
+  return compilerOptions;
+}
+
+export function genDts(
+  tsxFullPaths: string[],
+  configObj: ConfigTypes,
+): string[] {
+  const compilerOptions = resolveCompilerOptions(configObj);
+
   const compilerHost = createCompilerHost(compilerOptions);
 
   const dtsContents: string[] = [];
@@ -73,6 +66,7 @@ export function genDts(
 
   const program = createProgram(tsxFullPaths, compilerOptions, compilerHost);
   const result = program.emit();
+
   // Make sure that the compilation is successful
   if (result.emitSkipped) {
     result.diagnostics.forEach((diagnostic) => {
@@ -99,6 +93,7 @@ export function genDts(
     });
     throw new Error('Failed to generate .d.ts.');
   }
+
   return dtsContents;
 }
 
