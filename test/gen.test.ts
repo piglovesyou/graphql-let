@@ -15,8 +15,6 @@ describe('"graphql-let" command', () => {
     await rimraf(pathJoin(__dirname, '../__generated__'));
     await rimraf(rel('**/*.graphql.d.ts'));
     await rimraf(rel('**/*.graphqls.d.ts'));
-
-    await gen({ cwd });
   }, 60 * 1000);
 
   afterAll(async () => {
@@ -29,6 +27,8 @@ describe('"graphql-let" command', () => {
 * ignoring "!" paths in "schema" and "documents" of graphql-let.yml
 * ignoring files specified in .gitignore
 `, async () => {
+    await gen({ cwd });
+
     const docDtsGlobResults = await glob('**/*.graphql.d.ts', { cwd });
     strictEqual(
       docDtsGlobResults.find((r) => r.includes('shouldBeIgnored1')),
@@ -47,9 +47,16 @@ describe('"graphql-let" command', () => {
     );
   });
 
+  test(`runs twice without an error`, async () => {
+    await gen({ cwd });
+    await gen({ cwd });
+  });
+
   test(`passes config to graphql-codegen as expected
 * "useIndexSignature: true" in config effect to result having "WithIndex<TObject>" type
 `, async () => {
+    await gen({ cwd });
+
     const actual = await readFile(rel('schema/type-defs.graphqls.d.ts'));
     ok(
       actual.includes(`
