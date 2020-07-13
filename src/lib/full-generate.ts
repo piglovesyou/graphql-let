@@ -193,7 +193,8 @@ async function fullGenerate(
     codegenContext,
   );
 
-  if (codegenContext) await processDtsForCodegenContext(codegenContext, config);
+  if (codegenContext.length)
+    await processDtsForCodegenContext(codegenContext, config);
 
   return codegenContext;
 }
