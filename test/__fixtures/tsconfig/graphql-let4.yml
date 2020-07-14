@@ -1,0 +1,13 @@
+schema:
+    - http://localhost:3000/graphql:
+          headers:
+              Authorization: GRAPHQL-LET
+documents:
+    - "**/*.graphql"
+plugins:
+    - typescript
+    - typescript-operations
+    - typescript-react-apollo
+config:
+    useIndexSignature: true
+cacheDir: "test/__fixtures/tsconfig/__generated__"
