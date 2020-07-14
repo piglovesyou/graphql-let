@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { join as pathJoin } from 'path';
-import { strictEqual, ok } from 'assert';
+import { strictEqual } from 'assert';
 import gen from '../src/gen';
 import glob from 'globby';
 
@@ -34,17 +34,49 @@ describe('"graphql-let" command', () => {
       docDtsGlobResults.find((r) => r.includes('shouldBeIgnored1')),
       undefined,
     );
+    const docDtsGlobContents = await Promise.all(
+      docDtsGlobResults.map((filename) =>
+        readFile(rel(filename)).then((content) => ({ filename, content })),
+      ),
+    );
+    docDtsGlobContents.forEach(({ filename, content }) => {
+      expect(content).toMatchSnapshot(filename);
+    });
 
     const schemaDtsGlobResults = await glob('**/*.graphqls.d.ts', { cwd });
     strictEqual(schemaDtsGlobResults.length, 1);
 
-    const tsxResults = await glob('../__generated__/**/*.tsx', {
-      cwd: __dirname,
+    const schemaDtsGlobContents = await Promise.all(
+      schemaDtsGlobResults.map((filename) =>
+        readFile(rel(filename)).then((content) => ({ filename, content })),
+      ),
+    );
+    schemaDtsGlobContents.forEach(({ filename, content }) => {
+      expect(content).toMatchSnapshot(filename);
     });
+
+    const tsxResults = await glob(
+      'test/__fixtures/gen/__generated__/**/*.tsx',
+      {
+        cwd,
+      },
+    );
+    strictEqual(tsxResults.length, 3);
     strictEqual(
       tsxResults.find((r) => r.includes('shouldBeIgnored1')),
       undefined,
     );
+    const tsxContents = await Promise.all(
+      tsxResults.map((filename) =>
+        readFile(pathJoin(cwd, filename)).then((content) => ({
+          filename,
+          content,
+        })),
+      ),
+    );
+    tsxContents.forEach(({ filename, content }) => {
+      expect(content).toMatchSnapshot(filename);
+    });
   });
 
   test(`runs twice without an error`, async () => {
@@ -58,11 +90,6 @@ describe('"graphql-let" command', () => {
     await gen({ cwd });
 
     const actual = await readFile(rel('schema/type-defs.graphqls.d.ts'));
-    ok(
-      actual.includes(`
-export declare type WithIndex<TObject> = TObject & Record<string, any>;
-export declare type ResolversObject<TObject> = WithIndex<TObject>;
-`),
-    );
+    expect(actual).toMatchSnapshot();
   });
 });

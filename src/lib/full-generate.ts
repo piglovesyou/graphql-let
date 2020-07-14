@@ -62,6 +62,7 @@ export async function processResolverTypesIfNeeded(
         config,
         codegenOpts,
         createdPaths,
+        cwd,
       );
 
       codegenContext.push({
@@ -113,15 +114,15 @@ export async function processDocuments(
       // We don't delete tsxFullPath and dtsFullPath here because:
       // 1. We'll overwrite them so deleting is not necessary
       // 2. Windows throws EPERM error for the deleting and creating file process.
-
-      await processGraphQLCodegen(
-        codegenOpts,
-        tsxFullPath,
-        gqlRelPath,
-        gqlContent,
+      await processGraphQLCodegen({
+        cwd,
+        schema: config.schema,
+        plugins: config.plugins,
+        config: codegenOpts.config,
+        filename: tsxFullPath,
         gqlHash,
-      );
-
+        documents: gqlRelPath,
+      });
       codegenContext.push({
         tsxFullPath,
         dtsFullPath,
@@ -134,7 +135,7 @@ export async function processDocuments(
 }
 
 export async function prepareFullGenerate(cwd: string, config: ConfigTypes) {
-  const codegenOpts = await createCodegenOpts(config, cwd);
+  const codegenOpts = await createCodegenOpts(config);
   const gqlRelPaths = await glob(config.documents, {
     cwd,
     gitignore: config.respectGitIgnore,

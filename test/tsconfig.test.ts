@@ -11,6 +11,10 @@ import { ok } from 'assert';
 import { join as pathJoin, dirname } from 'path';
 import gen from '../src/gen';
 
+jest.mock('cross-fetch');
+
+import { fetch } from 'cross-fetch';
+
 import { rimraf } from './__tools/file';
 const cwd = pathJoin(__dirname, '__fixtures/tsconfig');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
@@ -115,6 +119,39 @@ describe('"graphql-let" command', () => {
         expect.any(String),
         expect.any(Function),
         'tsconfig.json',
+      );
+    },
+    60 * 1000,
+  );
+  test(
+    'handles schema objects',
+    async () => {
+      // eslint-disable-next-line
+      const schemaJson = require('./__fixtures/tsconfig/schema.json');
+      (fetch as any).mockReturnValue({
+        json() {
+          return { data: schemaJson };
+        },
+      });
+      let error = null;
+      try {
+        await gen({
+          cwd,
+          configFilePath: 'graphql-let4.yml',
+        });
+      } catch (e) {
+        console.log(e);
+        error = e;
+      }
+      ok(error === null);
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(fetch).toHaveBeenCalledWith(
+        'http://localhost:3000/graphql',
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'GRAPHQL-LET',
+          }),
+        }),
       );
     },
     60 * 1000,

@@ -1,4 +1,7 @@
-schema: "schema/type-defs.graphqls"
+schema:
+    - http://localhost:3000/graphql:
+          headers:
+              Authorization: GRAPHQL-LET
 documents:
     - "**/*.graphql"
 plugins:
@@ -7,5 +10,4 @@ plugins:
     - typescript-react-apollo
 config:
     useIndexSignature: true
-TSConfigFile: "test/__fixtures/tsconfig/es3config.json"
 cacheDir: "test/__fixtures/tsconfig/__generated__"

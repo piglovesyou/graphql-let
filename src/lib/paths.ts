@@ -6,6 +6,7 @@ export type CreatedPaths = {
   tsxFullPath: string;
   dtsFullPath: string;
   dtsRelPath: string;
+  gqlFullPath: string;
 };
 
 export const defaultCacheRelDir = '__generated__';
@@ -31,6 +32,7 @@ export function createPaths(
   const tsxFullPath = path.join(cacheFullDir, tsxRelPath);
   const dtsRelPath = `${gqlRelPath}.d.ts`;
   const dtsFullPath = path.join(cwd, dtsRelPath);
+  const gqlFullPath = path.join(cwd, gqlRelPath);
 
   return {
     gqlRelPath,
@@ -38,6 +40,7 @@ export function createPaths(
     tsxFullPath,
     dtsFullPath,
     dtsRelPath,
+    gqlFullPath,
   };
 }
 

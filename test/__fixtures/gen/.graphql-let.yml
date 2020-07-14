@@ -9,3 +9,4 @@ plugins:
 respectGitIgnore: true
 config:
     useIndexSignature: true
+cacheDir: "test/__fixtures/gen/__generated__"
