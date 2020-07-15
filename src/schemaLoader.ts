@@ -6,6 +6,7 @@ import {
   processDocuments,
   processResolverTypesIfNeeded,
   CodegenContext,
+  SkippedContext,
 } from './lib/full-generate';
 import loadConfig from './lib/load-config';
 import memoize from './lib/memoize';
@@ -16,6 +17,7 @@ const processGraphQLCodegenSchemaLoader = memoize(
     const [config, configHash] = await loadConfig(cwd);
 
     const codegenContext: CodegenContext = [];
+    const skippedContext: SkippedContext = [];
 
     const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(cwd, config);
 
@@ -25,6 +27,7 @@ const processGraphQLCodegenSchemaLoader = memoize(
       configHash,
       codegenOpts,
       codegenContext,
+      skippedContext,
     );
 
     // Only if schema was changed, documents are also handled for quick startup of webpack dev.
@@ -36,6 +39,7 @@ const processGraphQLCodegenSchemaLoader = memoize(
         schemaHash,
         codegenOpts,
         codegenContext,
+        skippedContext,
       );
 
       await processDtsForCodegenContext(codegenContext, config);
