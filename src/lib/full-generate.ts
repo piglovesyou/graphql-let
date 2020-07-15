@@ -23,12 +23,18 @@ export type CodegenContext = {
   dtsContentDecorator: (content: string) => string;
 }[];
 
+export type SkippedContext = {
+  tsxFullPath: string;
+  dtsFullPath: string;
+}[];
+
 export async function processResolverTypesIfNeeded(
   cwd: string,
   config: ConfigTypes,
   configHash: string,
   codegenOpts: PartialCodegenOpts,
   codegenContext: CodegenContext,
+  skippedContext: SkippedContext,
 ) {
   // To pass config change on subsequent generation,
   // configHash should be primary hash seed.
@@ -82,6 +88,11 @@ export default typeof DocumentNode
 `;
         },
       });
+    } else {
+      skippedContext.push({
+        tsxFullPath: createdPaths.tsxFullPath,
+        dtsFullPath: createdPaths.dtsFullPath,
+      });
     }
   }
   return { schemaHash };
@@ -94,6 +105,7 @@ export async function processDocuments(
   schemaHash: string,
   codegenOpts: PartialCodegenOpts,
   codegenContext: CodegenContext,
+  skippedContext: SkippedContext,
 ) {
   for (const gqlRelPath of gqlRelPaths) {
     const gqlContent = await readFile(pathJoin(cwd, gqlRelPath), 'utf-8');
@@ -131,6 +143,8 @@ export async function processDocuments(
         gqlHash,
         dtsContentDecorator: (s) => s,
       });
+    } else {
+      skippedContext.push({ tsxFullPath, dtsFullPath });
     }
   }
 }
@@ -173,8 +187,9 @@ async function fullGenerate(
   cwd: string,
   config: ConfigTypes,
   configHash: string,
-): Promise<CodegenContext> {
+): Promise<[CodegenContext, SkippedContext]> {
   const codegenContext: CodegenContext = [];
+  const skippedContext: SkippedContext = [];
 
   const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(cwd, config);
 
@@ -184,6 +199,7 @@ async function fullGenerate(
     configHash,
     codegenOpts,
     codegenContext,
+    skippedContext,
   );
 
   await processDocuments(
@@ -193,12 +209,13 @@ async function fullGenerate(
     schemaHash,
     codegenOpts,
     codegenContext,
+    skippedContext,
   );
 
   if (codegenContext.length)
     await processDtsForCodegenContext(codegenContext, config);
 
-  return codegenContext;
+  return [codegenContext, skippedContext];
 }
 
 export default fullGenerate;

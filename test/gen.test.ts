@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { join as pathJoin } from 'path';
-import { strictEqual } from 'assert';
+import { deepStrictEqual, strictEqual } from 'assert';
 import gen from '../src/gen';
 import glob from 'globby';
-
 import { readFile, rename, rimraf } from './__tools/file';
+
 const cwd = pathJoin(__dirname, '__fixtures/gen');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
 
@@ -79,9 +79,17 @@ describe('"graphql-let" command', () => {
     });
   });
 
-  test(`runs twice without an error`, async () => {
+  test(`runs twice and keeps valid caches`, async () => {
     await gen({ cwd });
     await gen({ cwd });
+    const actual = await glob('test/__fixtures/gen/__generated__/**/*.tsx', {
+      cwd,
+    });
+    deepStrictEqual(actual, [
+      'test/__fixtures/gen/__generated__/pages/viewer.graphql.tsx',
+      'test/__fixtures/gen/__generated__/pages/viewer2.graphql.tsx',
+      'test/__fixtures/gen/__generated__/schema/type-defs.graphqls.tsx',
+    ]);
   });
 
   test(`passes config to graphql-codegen as expected
