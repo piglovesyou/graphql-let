@@ -6,9 +6,9 @@ export type CommandOpts = {
 export type ConfigTypes = {
   cacheDir?: string;
   config?: Record<string, boolean | string>;
-  schema: string;
+  schema: string | Record<string, any>;
   documents: string | string[];
   respectGitIgnore: boolean;
-  plugins: Array<string | { [name: string]: any }>;
+  plugins: Array<string | Record<string, any>>;
   TSConfigFile?: string;
 };

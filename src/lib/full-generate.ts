@@ -35,10 +35,11 @@ export async function processResolverTypesIfNeeded(
   let schemaHash = configHash;
 
   if (shouldGenResolverTypes(config)) {
-    const schemaFullPath = pathJoin(cwd, config.schema);
+    const fileSchema = config.schema as string;
+    const schemaFullPath = pathJoin(cwd, fileSchema);
     const content = await readFile(schemaFullPath);
     schemaHash = createHash(schemaHash + content);
-    const createdPaths = createPaths(cwd, config.schema, config.cacheDir);
+    const createdPaths = createPaths(cwd, fileSchema, config.cacheDir);
 
     const shouldUpdate =
       schemaHash !== (await readHash(createdPaths.tsxFullPath)) ||

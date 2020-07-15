@@ -5,16 +5,13 @@ import { PRINT_PREFIX } from './print';
 import { ConfigTypes } from './types';
 import { processGraphQLCodegen } from './graphql-codegen';
 
-// If it's ['!node_modules', '**/*.graphqls']
-// then we want to pick '**/*.graphqls'.
+// Currently glob for schema is not allowed.
 function getSchemaPointerWithExtension(
-  s: string | string[],
+  s: string | Record<string, any>,
 ): string | undefined {
-  if (typeof s === 'string') {
-    if (extname(s).length) return s;
-    return undefined;
-  }
-  return s.find((e) => require('path').extname(e).length);
+  if (typeof s !== 'string') return undefined;
+  if (extname(s).length) return s;
+  return undefined;
 }
 
 export function shouldGenResolverTypes(config: ConfigTypes): boolean {

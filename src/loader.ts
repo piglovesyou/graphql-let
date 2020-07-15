@@ -26,7 +26,8 @@ const processGraphQLCodegenLoader = memoize(
     let schemaHash = configHash;
 
     if (shouldGenResolverTypes(config)) {
-      const schemaFullPath = pathJoin(cwd, config.schema);
+      const fileSchema = config.schema as string;
+      const schemaFullPath = pathJoin(cwd, fileSchema);
       const content = await readFile(schemaFullPath);
       schemaHash = createHash(schemaHash + content);
 
