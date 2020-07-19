@@ -11,4 +11,5 @@ export type ConfigTypes = {
   respectGitIgnore: boolean;
   plugins: Array<string | Record<string, any>>;
   TSConfigFile?: string;
+  gqlDtsEntrypoint?: string;
 };

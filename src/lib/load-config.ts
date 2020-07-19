@@ -12,6 +12,10 @@ const getConfigFromContent = (content: string): [ConfigTypes, string] => [
   createHash(content),
 ];
 
+// TODO:
+// function validate(config: ConfigTypes) { }
+// function fillDefaultValues(config: ConfigTypes) { }
+
 export default async function loadConfig(
   cwd: string,
   configFilePath?: string,
