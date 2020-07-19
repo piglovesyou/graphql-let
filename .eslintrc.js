@@ -12,6 +12,11 @@ module.exports = {
     'plugin:prettier/recommended',
   ],
 
+  ignorePatterns: [
+    'test/__fixtures/babel/**/input.tsx',
+    'test/__fixtures/babel/**/output.mjs',
+  ],
+
   env: {
     jest: true,
   },

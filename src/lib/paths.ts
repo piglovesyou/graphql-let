@@ -11,7 +11,7 @@ export type CreatedPaths = {
 };
 
 export const defaultCacheRelDir = '__generated__';
-const libDir = path.resolve(__dirname, '../..');
+export const libDir = path.resolve(__dirname, '../..');
 const defaultCacheFullDir = path.join(libDir, defaultCacheRelDir);
 
 export const getCacheFullDir = (cwd: string, cacheDir?: string) => {

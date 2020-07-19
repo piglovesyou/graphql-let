@@ -34,6 +34,6 @@ jobs:
             - name: yarn install, lint, and test
               run: |
                   yarn install --ignore-scripts
-                  yarn prepare
+                  yarn prepublishOnly
               env:
                   CI: true
