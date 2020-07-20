@@ -4,12 +4,19 @@ import compiler from './__tools/compile';
 import { join as pathJoin } from 'path';
 import { rimraf } from './__tools/file';
 import { readFileSync } from 'fs';
+import prettyFormat from 'pretty-format';
+import eol from 'eol';
 
 const cwd = pathJoin(__dirname, '__fixtures/jestTransformer');
 const jestConfig = { rootDir: cwd } as Config.ProjectConfig;
 
+expect.addSnapshotSerializer({
+  serialize: (val) => eol.lf(prettyFormat(val)),
+  test: (val) => val,
+});
+
 describe('graphql-let/jestTransformer', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     await rimraf(pathJoin(cwd, '__generated__'));
   });
 
@@ -36,7 +43,7 @@ describe('graphql-let/jestTransformer', () => {
 
   test(
     'transforms .graphqls',
-    async () => {
+    () => {
       jest.requireActual('jest-transform-graphql');
       const fileName = 'schema/type-defs.graphqls';
 

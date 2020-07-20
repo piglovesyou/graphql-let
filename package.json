@@ -19,7 +19,6 @@
   ],
   "dependencies": {
     "globby": "^11.0.0",
-    "jest-transform-graphql": "^2.1.0",
     "loader-utils": "^2.0.0",
     "log-update": "^4.0.0",
     "make-dir": "^3.0.2",
@@ -66,6 +65,7 @@
     "babel-jest": "^26.0.1",
     "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.7.0",
+    "eol": "^0.9.1",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-jest": "^23.7.0",
@@ -75,6 +75,7 @@
     "graphql-tag": "^2.10.1",
     "husky": "^4.2.3",
     "jest": "^25.1.0",
+    "jest-transform-graphql": "^2.1.0",
     "lint-staged": "^10.0.7",
     "memory-fs": "^0.5.0",
     "prettier": "^2.0.2",

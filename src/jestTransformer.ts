@@ -2,12 +2,10 @@ import { createHash } from 'crypto';
 import { Transformer } from '@jest/transform';
 import { createTransformer, getCacheKey as getBabelCacheKey } from 'babel-jest';
 import graphQLTransformer from 'jest-transform-graphql';
-import { relative as pathRelative } from 'path';
+import { join as pathJoin, relative as pathRelative } from 'path';
 import { readFileSync } from 'fs';
-import loadConfig from './lib/load-config';
+import { loadConfigSync } from './lib/load-config';
 import { createPaths } from './lib/paths';
-
-const isSchemaFile = (filePath: string) => filePath.endsWith('.graphqls');
 
 const jestTransformer: Transformer = {
   getCacheKey(fileData, filename, configString, cacheKeyOptions) {
@@ -24,7 +22,12 @@ const jestTransformer: Transformer = {
       .digest('hex');
   },
   process(input, filePath, jestConfig, transformOptions) {
-    if (isSchemaFile(filePath)) {
+    const { rootDir } = jestConfig;
+    const [config] = loadConfigSync(rootDir);
+    const fileSchema = config.schema as string;
+    const schemaFullPath = pathJoin(rootDir, fileSchema);
+
+    if (schemaFullPath === filePath) {
       return graphQLTransformer.process(
         input,
         filePath,
@@ -32,9 +35,6 @@ const jestTransformer: Transformer = {
         transformOptions,
       );
     }
-
-    const { rootDir } = jestConfig;
-    const [config] = loadConfig(rootDir);
 
     const { tsxFullPath } = createPaths(
       rootDir,
@@ -44,13 +44,7 @@ const jestTransformer: Transformer = {
 
     const tsxContent = readFileSync(tsxFullPath, 'utf-8');
 
-    const babelTransformer = createTransformer({
-      presets: [
-        '@babel/preset-env',
-        '@babel/preset-typescript',
-        '@babel/preset-react',
-      ],
-    });
+    const babelTransformer = createTransformer({ cwd: rootDir });
 
     return babelTransformer.process(
       tsxContent,

@@ -14,7 +14,7 @@ import { PRINT_PREFIX } from './lib/print';
 
 const processGraphQLCodegenSchemaLoader = memoize(
   async (cwd: string) => {
-    const [config, configHash] = loadConfig(cwd);
+    const [config, configHash] = await loadConfig(cwd);
 
     const codegenContext: CodegenContext = [];
     const skippedContext: SkippedContext = [];
