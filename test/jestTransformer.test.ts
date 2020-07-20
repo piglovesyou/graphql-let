@@ -4,7 +4,6 @@ import compiler from './__tools/compile';
 import { join as pathJoin } from 'path';
 import { rimraf } from './__tools/file';
 import { readFileSync } from 'fs';
-import prettyFormat from 'pretty-format';
 
 const cwd = pathJoin(__dirname, '__fixtures/jestTransformer');
 const jestConfig = { rootDir: cwd } as Config.ProjectConfig;
