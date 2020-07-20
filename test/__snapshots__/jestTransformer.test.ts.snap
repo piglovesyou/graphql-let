@@ -185,29 +185,15 @@ export type ViewerQueryResult = ApolloReactCommon.QueryResult<ViewerQuery, Viewe
 `;
 
 exports[`graphql-let/jestTransformer transforms .graphqls 1`] = `
-"
-    var doc = {\\"kind\\":\\"Document\\",\\"definitions\\":[{\\"kind\\":\\"ObjectTypeDefinition\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"User\\"},\\"interfaces\\":[],\\"directives\\":[],\\"fields\\":[{\\"kind\\":\\"FieldDefinition\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"id\\"},\\"arguments\\":[],\\"type\\":{\\"kind\\":\\"NonNullType\\",\\"type\\":{\\"kind\\":\\"NamedType\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"ID\\"}}},\\"directives\\":[]},{\\"kind\\":\\"FieldDefinition\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"name\\"},\\"arguments\\":[],\\"type\\":{\\"kind\\":\\"NonNullType\\",\\"type\\":{\\"kind\\":\\"NamedType\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"String\\"}}},\\"directives\\":[]},{\\"kind\\":\\"FieldDefinition\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"status\\"},\\"arguments\\":[],\\"type\\":{\\"kind\\":\\"NonNullType\\",\\"type\\":{\\"kind\\":\\"NamedType\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"String\\"}}},\\"directives\\":[]}]},{\\"kind\\":\\"ObjectTypeDefinition\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Query\\"},\\"interfaces\\":[],\\"directives\\":[],\\"fields\\":[{\\"kind\\":\\"FieldDefinition\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"viewer\\"},\\"arguments\\":[],\\"type\\":{\\"kind\\":\\"NamedType\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"User\\"}},\\"directives\\":[]}]}],\\"loc\\":{\\"start\\":0,\\"end\\":97}};
-    doc.loc.source = {\\"body\\":\\"type User {\\\\n    id: ID!\\\\n    name: String!\\\\n    status: String!\\\\n}\\\\n\\\\ntype Query {\\\\n    viewer: User\\\\n}\\\\n\\",\\"name\\":\\"GraphQL request\\",\\"locationOffset\\":{\\"line\\":1,\\"column\\":1}};
-  
+"\\"\\"\\" jest-transform-graphql mock \\"\\"\\"
+type User {
+    id: ID!
+    name: String!
+    status: String!
+}
 
-    var names = {};
-    function unique(defs) {
-      return defs.filter(
-        function(def) {
-          if (def.kind !== 'FragmentDefinition') return true;
-          var name = def.name.value
-          if (names[name]) {
-            return false;
-          } else {
-            names[name] = true;
-            return true;
-          }
-        }
-      )
-    }
-  
-
-      module.exports = doc;
-    
+type Query {
+    viewer: User
+}
 "
 `;

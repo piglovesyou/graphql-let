@@ -5,15 +5,9 @@ import { join as pathJoin } from 'path';
 import { rimraf } from './__tools/file';
 import { readFileSync } from 'fs';
 import prettyFormat from 'pretty-format';
-import eol from 'eol';
 
 const cwd = pathJoin(__dirname, '__fixtures/jestTransformer');
 const jestConfig = { rootDir: cwd } as Config.ProjectConfig;
-
-expect.addSnapshotSerializer({
-  serialize: (val) => eol.lf(prettyFormat(val)),
-  test: (val) => val,
-});
 
 describe('graphql-let/jestTransformer', () => {
   beforeAll(async () => {
@@ -44,9 +38,7 @@ describe('graphql-let/jestTransformer', () => {
   test(
     'transforms .graphqls',
     () => {
-      jest.requireActual('jest-transform-graphql');
       const fileName = 'schema/type-defs.graphqls';
-
       const fullPath = pathJoin(cwd, fileName);
       const fileData = readFileSync(fullPath, 'utf-8');
       const transformedContent = jestTransformer.process(
