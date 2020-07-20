@@ -1,17 +1,17 @@
 import { join as pathJoin } from 'path';
 import { parse as parseYaml } from 'yaml';
+import { readFileSync } from 'fs';
 import { DEFAULT_CONFIG_FILENAME } from './consts';
-import { readFile } from './file';
 import { ConfigTypes } from './types';
 import { createHash } from './hash';
 
-export default async function loadConfig(
+export default function loadConfig(
   cwd: string,
   configFilePath?: string,
-): Promise<[ConfigTypes, string]> {
+): [ConfigTypes, string] {
   const configPath = pathJoin(cwd, configFilePath || DEFAULT_CONFIG_FILENAME);
-  const content = await readFile(configPath, 'utf-8');
-  const configHash = await createHash(content);
+  const content = readFileSync(configPath, 'utf-8');
+  const configHash = createHash(content);
   const config: ConfigTypes = parseYaml(content);
   return [config, configHash];
 }

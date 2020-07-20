@@ -32,7 +32,7 @@ export default async function gen(commandOpts: CommandOpts): Promise<void> {
   logUpdate(PRINT_PREFIX + 'Running graphql-codegen...');
 
   const { cwd, configFilePath } = commandOpts;
-  const [config, configHash] = await loadConfig(cwd, configFilePath);
+  const [config, configHash] = loadConfig(cwd, configFilePath);
 
   const [generated, skipped] = await fullGenerate(cwd, config, configHash);
 

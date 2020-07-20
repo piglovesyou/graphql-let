@@ -1,0 +1,213 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`graphql-let/jestTransformer transforms .graphql 1`] = `
+Object {
+  "code": "\\"use strict\\";
+
+function _typeof(obj) { \\"@babel/helpers - typeof\\"; if (typeof Symbol === \\"function\\" && typeof Symbol.iterator === \\"symbol\\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \\"function\\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \\"symbol\\" : typeof obj; }; } return _typeof(obj); }
+
+Object.defineProperty(exports, \\"__esModule\\", {
+  value: true
+});
+exports.useViewerQuery = useViewerQuery;
+exports.useViewerLazyQuery = useViewerLazyQuery;
+exports.ViewerComponent = exports.ViewerDocument = void 0;
+
+var _graphqlTag = _interopRequireDefault(require(\\"graphql-tag\\"));
+
+var React = _interopRequireWildcard(require(\\"react\\"));
+
+var ApolloReactComponents = _interopRequireWildcard(require(\\"@apollo/react-components\\"));
+
+var ApolloReactHooks = _interopRequireWildcard(require(\\"@apollo/react-hooks\\"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== \\"function\\") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== \\"object\\" && typeof obj !== \\"function\\") { return { \\"default\\": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj[\\"default\\"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { \\"default\\": obj }; }
+
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+function _templateObject() {
+  var data = _taggedTemplateLiteral([\\"\\\\n    query Viewer {\\\\n  viewer {\\\\n    id\\\\n    name\\\\n    status\\\\n  }\\\\n}\\\\n    \\"]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+var ViewerDocument = (0, _graphqlTag[\\"default\\"])(_templateObject());
+exports.ViewerDocument = ViewerDocument;
+
+var ViewerComponent = function ViewerComponent(props) {
+  return /*#__PURE__*/React.createElement(ApolloReactComponents.Query, _extends({
+    query: ViewerDocument
+  }, props));
+};
+/**
+ * __useViewerQuery__
+ *
+ * To run a query within a React component, call \`useViewerQuery\` and pass it any options that fit your needs.
+ * When your component renders, \`useViewerQuery\` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useViewerQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+
+
+exports.ViewerComponent = ViewerComponent;
+
+function useViewerQuery(baseOptions) {
+  return ApolloReactHooks.useQuery(ViewerDocument, baseOptions);
+}
+
+function useViewerLazyQuery(baseOptions) {
+  return ApolloReactHooks.useLazyQuery(ViewerDocument, baseOptions);
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInZpZXdlci5ncmFwaHFsLnRzeCJdLCJuYW1lcyI6WyJWaWV3ZXJEb2N1bWVudCIsImdxbCIsIlZpZXdlckNvbXBvbmVudCIsInByb3BzIiwidXNlVmlld2VyUXVlcnkiLCJiYXNlT3B0aW9ucyIsIkFwb2xsb1JlYWN0SG9va3MiLCJ1c2VRdWVyeSIsInVzZVZpZXdlckxhenlRdWVyeSIsInVzZUxhenlRdWVyeSJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7QUFHQTs7QUFDQTs7QUFFQTs7QUFDQTs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQXFDTyxJQUFNQSxjQUFjLE9BQUdDLHNCQUFILG9CQUFwQjs7O0FBV0ksSUFBTUMsZUFBZSxHQUFHLFNBQWxCQSxlQUFrQixDQUFDQyxLQUFEO0FBQUEsc0JBQzdCLG9CQUFDLHFCQUFELENBQXVCLEtBQXZCO0FBQWdFLElBQUEsS0FBSyxFQUFFSDtBQUF2RSxLQUEyRkcsS0FBM0YsRUFENkI7QUFBQSxDQUF4QjtBQUtYOzs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBZU8sU0FBU0MsY0FBVCxDQUF3QkMsV0FBeEIsRUFBNEc7QUFDM0csU0FBT0MsZ0JBQWdCLENBQUNDLFFBQWpCLENBQTZEUCxjQUE3RCxFQUE2RUssV0FBN0UsQ0FBUDtBQUNEOztBQUNBLFNBQVNHLGtCQUFULENBQTRCSCxXQUE1QixFQUFvSDtBQUNqSCxTQUFPQyxnQkFBZ0IsQ0FBQ0csWUFBakIsQ0FBaUVULGNBQWpFLEVBQWlGSyxXQUFqRixDQUFQO0FBQ0QiLCJzb3VyY2VzQ29udGVudCI6WyIvKiBkNmE2NDAxZWRlMWRmYmMxZTU4MWQ3MjZiYTkyMmIwMWZiOTk5MDI0XG4gKiBUaGlzIGZpbGUgaXMgYXV0b21hdGljYWxseSBnZW5lcmF0ZWQgYnkgZ3JhcGhxbC1sZXQuICovXG5cbmltcG9ydCBncWwgZnJvbSAnZ3JhcGhxbC10YWcnO1xuaW1wb3J0ICogYXMgUmVhY3QgZnJvbSAncmVhY3QnO1xuaW1wb3J0ICogYXMgQXBvbGxvUmVhY3RDb21tb24gZnJvbSAnQGFwb2xsby9yZWFjdC1jb21tb24nO1xuaW1wb3J0ICogYXMgQXBvbGxvUmVhY3RDb21wb25lbnRzIGZyb20gJ0BhcG9sbG8vcmVhY3QtY29tcG9uZW50cyc7XG5pbXBvcnQgKiBhcyBBcG9sbG9SZWFjdEhvb2tzIGZyb20gJ0BhcG9sbG8vcmVhY3QtaG9va3MnO1xuZXhwb3J0IHR5cGUgTWF5YmU8VD4gPSBUIHwgbnVsbDtcbmV4cG9ydCB0eXBlIEV4YWN0PFQgZXh0ZW5kcyB7IFtrZXk6IHN0cmluZ106IGFueSB9PiA9IHsgW0sgaW4ga2V5b2YgVF06IFRbS10gfTtcbmV4cG9ydCB0eXBlIE9taXQ8VCwgSyBleHRlbmRzIGtleW9mIFQ+ID0gUGljazxULCBFeGNsdWRlPGtleW9mIFQsIEs+Pjtcbi8qKiBBbGwgYnVpbHQtaW4gYW5kIGN1c3RvbSBzY2FsYXJzLCBtYXBwZWQgdG8gdGhlaXIgYWN0dWFsIHZhbHVlcyAqL1xuZXhwb3J0IHR5cGUgU2NhbGFycyA9IHtcbiAgSUQ6IHN0cmluZztcbiAgU3RyaW5nOiBzdHJpbmc7XG4gIEJvb2xlYW46IGJvb2xlYW47XG4gIEludDogbnVtYmVyO1xuICBGbG9hdDogbnVtYmVyO1xufTtcblxuZXhwb3J0IHR5cGUgUXVlcnkgPSB7XG4gIF9fdHlwZW5hbWU/OiAnUXVlcnknO1xuICB2aWV3ZXI/OiBNYXliZTxVc2VyPjtcbn07XG5cbmV4cG9ydCB0eXBlIFVzZXIgPSB7XG4gIF9fdHlwZW5hbWU/OiAnVXNlcic7XG4gIGlkOiBTY2FsYXJzWydJRCddO1xuICBuYW1lOiBTY2FsYXJzWydTdHJpbmcnXTtcbiAgc3RhdHVzOiBTY2FsYXJzWydTdHJpbmcnXTtcbn07XG5cbmV4cG9ydCB0eXBlIFZpZXdlclF1ZXJ5VmFyaWFibGVzID0gRXhhY3Q8eyBba2V5OiBzdHJpbmddOiBuZXZlcjsgfT47XG5cblxuZXhwb3J0IHR5cGUgVmlld2VyUXVlcnkgPSAoXG4gIHsgX190eXBlbmFtZT86ICdRdWVyeScgfVxuICAmIHsgdmlld2VyPzogTWF5YmU8KFxuICAgIHsgX190eXBlbmFtZT86ICdVc2VyJyB9XG4gICAgJiBQaWNrPFVzZXIsICdpZCcgfCAnbmFtZScgfCAnc3RhdHVzJz5cbiAgKT4gfVxuKTtcblxuXG5leHBvcnQgY29uc3QgVmlld2VyRG9jdW1lbnQgPSBncWxgXG4gICAgcXVlcnkgVmlld2VyIHtcbiAgdmlld2VyIHtcbiAgICBpZFxuICAgIG5hbWVcbiAgICBzdGF0dXNcbiAgfVxufVxuICAgIGA7XG5leHBvcnQgdHlwZSBWaWV3ZXJDb21wb25lbnRQcm9wcyA9IE9taXQ8QXBvbGxvUmVhY3RDb21wb25lbnRzLlF1ZXJ5Q29tcG9uZW50T3B0aW9uczxWaWV3ZXJRdWVyeSwgVmlld2VyUXVlcnlWYXJpYWJsZXM+LCAncXVlcnknPjtcblxuICAgIGV4cG9ydCBjb25zdCBWaWV3ZXJDb21wb25lbnQgPSAocHJvcHM6IFZpZXdlckNvbXBvbmVudFByb3BzKSA9PiAoXG4gICAgICA8QXBvbGxvUmVhY3RDb21wb25lbnRzLlF1ZXJ5PFZpZXdlclF1ZXJ5LCBWaWV3ZXJRdWVyeVZhcmlhYmxlcz4gcXVlcnk9e1ZpZXdlckRvY3VtZW50fSB7Li4ucHJvcHN9IC8+XG4gICAgKTtcbiAgICBcblxuLyoqXG4gKiBfX3VzZVZpZXdlclF1ZXJ5X19cbiAqXG4gKiBUbyBydW4gYSBxdWVyeSB3aXRoaW4gYSBSZWFjdCBjb21wb25lbnQsIGNhbGwgYHVzZVZpZXdlclF1ZXJ5YCBhbmQgcGFzcyBpdCBhbnkgb3B0aW9ucyB0aGF0IGZpdCB5b3VyIG5lZWRzLlxuICogV2hlbiB5b3VyIGNvbXBvbmVudCByZW5kZXJzLCBgdXNlVmlld2VyUXVlcnlgIHJldHVybnMgYW4gb2JqZWN0IGZyb20gQXBvbGxvIENsaWVudCB0aGF0IGNvbnRhaW5zIGxvYWRpbmcsIGVycm9yLCBhbmQgZGF0YSBwcm9wZXJ0aWVzXG4gKiB5b3UgY2FuIHVzZSB0byByZW5kZXIgeW91ciBVSS5cbiAqXG4gKiBAcGFyYW0gYmFzZU9wdGlvbnMgb3B0aW9ucyB0aGF0IHdpbGwgYmUgcGFzc2VkIGludG8gdGhlIHF1ZXJ5LCBzdXBwb3J0ZWQgb3B0aW9ucyBhcmUgbGlzdGVkIG9uOiBodHRwczovL3d3dy5hcG9sbG9ncmFwaHFsLmNvbS9kb2NzL3JlYWN0L2FwaS9yZWFjdC1ob29rcy8jb3B0aW9ucztcbiAqXG4gKiBAZXhhbXBsZVxuICogY29uc3QgeyBkYXRhLCBsb2FkaW5nLCBlcnJvciB9ID0gdXNlVmlld2VyUXVlcnkoe1xuICogICB2YXJpYWJsZXM6IHtcbiAqICAgfSxcbiAqIH0pO1xuICovXG5leHBvcnQgZnVuY3Rpb24gdXNlVmlld2VyUXVlcnkoYmFzZU9wdGlvbnM/OiBBcG9sbG9SZWFjdEhvb2tzLlF1ZXJ5SG9va09wdGlvbnM8Vmlld2VyUXVlcnksIFZpZXdlclF1ZXJ5VmFyaWFibGVzPikge1xuICAgICAgICByZXR1cm4gQXBvbGxvUmVhY3RIb29rcy51c2VRdWVyeTxWaWV3ZXJRdWVyeSwgVmlld2VyUXVlcnlWYXJpYWJsZXM+KFZpZXdlckRvY3VtZW50LCBiYXNlT3B0aW9ucyk7XG4gICAgICB9XG5leHBvcnQgZnVuY3Rpb24gdXNlVmlld2VyTGF6eVF1ZXJ5KGJhc2VPcHRpb25zPzogQXBvbGxvUmVhY3RIb29rcy5MYXp5UXVlcnlIb29rT3B0aW9uczxWaWV3ZXJRdWVyeSwgVmlld2VyUXVlcnlWYXJpYWJsZXM+KSB7XG4gICAgICAgICAgcmV0dXJuIEFwb2xsb1JlYWN0SG9va3MudXNlTGF6eVF1ZXJ5PFZpZXdlclF1ZXJ5LCBWaWV3ZXJRdWVyeVZhcmlhYmxlcz4oVmlld2VyRG9jdW1lbnQsIGJhc2VPcHRpb25zKTtcbiAgICAgICAgfVxuZXhwb3J0IHR5cGUgVmlld2VyUXVlcnlIb29rUmVzdWx0ID0gUmV0dXJuVHlwZTx0eXBlb2YgdXNlVmlld2VyUXVlcnk+O1xuZXhwb3J0IHR5cGUgVmlld2VyTGF6eVF1ZXJ5SG9va1Jlc3VsdCA9IFJldHVyblR5cGU8dHlwZW9mIHVzZVZpZXdlckxhenlRdWVyeT47XG5leHBvcnQgdHlwZSBWaWV3ZXJRdWVyeVJlc3VsdCA9IEFwb2xsb1JlYWN0Q29tbW9uLlF1ZXJ5UmVzdWx0PFZpZXdlclF1ZXJ5LCBWaWV3ZXJRdWVyeVZhcmlhYmxlcz47Il19",
+  "map": Object {
+    "mappings": ";;;;;;;;;;;AAGA;;AACA;;AAEA;;AACA;;;;;;;;;;;;;;;;;;;;;;AAqCO,IAAMA,cAAc,OAAGC,sBAAH,oBAApB;;;AAWI,IAAMC,eAAe,GAAG,SAAlBA,eAAkB,CAACC,KAAD;AAAA,sBAC7B,oBAAC,qBAAD,CAAuB,KAAvB;AAAgE,IAAA,KAAK,EAAEH;AAAvE,KAA2FG,KAA3F,EAD6B;AAAA,CAAxB;AAKX;;;;;;;;;;;;;;;;;;;AAeO,SAASC,cAAT,CAAwBC,WAAxB,EAA4G;AAC3G,SAAOC,gBAAgB,CAACC,QAAjB,CAA6DP,cAA7D,EAA6EK,WAA7E,CAAP;AACD;;AACA,SAASG,kBAAT,CAA4BH,WAA5B,EAAoH;AACjH,SAAOC,gBAAgB,CAACG,YAAjB,CAAiET,cAAjE,EAAiFK,WAAjF,CAAP;AACD",
+    "names": Array [
+      "ViewerDocument",
+      "gql",
+      "ViewerComponent",
+      "props",
+      "useViewerQuery",
+      "baseOptions",
+      "ApolloReactHooks",
+      "useQuery",
+      "useViewerLazyQuery",
+      "useLazyQuery",
+    ],
+    "sources": Array [
+      "viewer.graphql.tsx",
+    ],
+    "sourcesContent": Array [
+      "/* d6a6401ede1dfbc1e581d726ba922b01fb999024
+ * This file is automatically generated by graphql-let. */
+
+import gql from 'graphql-tag';
+import * as React from 'react';
+import * as ApolloReactCommon from '@apollo/react-common';
+import * as ApolloReactComponents from '@apollo/react-components';
+import * as ApolloReactHooks from '@apollo/react-hooks';
+export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+/** All built-in and custom scalars, mapped to their actual values */
+export type Scalars = {
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  viewer?: Maybe<User>;
+};
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  status: Scalars['String'];
+};
+
+export type ViewerQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ViewerQuery = (
+  { __typename?: 'Query' }
+  & { viewer?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name' | 'status'>
+  )> }
+);
+
+
+export const ViewerDocument = gql\`
+    query Viewer {
+  viewer {
+    id
+    name
+    status
+  }
+}
+    \`;
+export type ViewerComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<ViewerQuery, ViewerQueryVariables>, 'query'>;
+
+    export const ViewerComponent = (props: ViewerComponentProps) => (
+      <ApolloReactComponents.Query<ViewerQuery, ViewerQueryVariables> query={ViewerDocument} {...props} />
+    );
+    
+
+/**
+ * __useViewerQuery__
+ *
+ * To run a query within a React component, call \`useViewerQuery\` and pass it any options that fit your needs.
+ * When your component renders, \`useViewerQuery\` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useViewerQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useViewerQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
+        return ApolloReactHooks.useQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, baseOptions);
+      }
+export function useViewerLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, baseOptions);
+        }
+export type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
+export type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
+export type ViewerQueryResult = ApolloReactCommon.QueryResult<ViewerQuery, ViewerQueryVariables>;",
+    ],
+    "version": 3,
+  },
+}
+`;
+
+exports[`graphql-let/jestTransformer transforms .graphqls 1`] = `
+"
+    var doc = {\\"kind\\":\\"Document\\",\\"definitions\\":[{\\"kind\\":\\"ObjectTypeDefinition\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"User\\"},\\"interfaces\\":[],\\"directives\\":[],\\"fields\\":[{\\"kind\\":\\"FieldDefinition\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"id\\"},\\"arguments\\":[],\\"type\\":{\\"kind\\":\\"NonNullType\\",\\"type\\":{\\"kind\\":\\"NamedType\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"ID\\"}}},\\"directives\\":[]},{\\"kind\\":\\"FieldDefinition\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"name\\"},\\"arguments\\":[],\\"type\\":{\\"kind\\":\\"NonNullType\\",\\"type\\":{\\"kind\\":\\"NamedType\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"String\\"}}},\\"directives\\":[]},{\\"kind\\":\\"FieldDefinition\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"status\\"},\\"arguments\\":[],\\"type\\":{\\"kind\\":\\"NonNullType\\",\\"type\\":{\\"kind\\":\\"NamedType\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"String\\"}}},\\"directives\\":[]}]},{\\"kind\\":\\"ObjectTypeDefinition\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Query\\"},\\"interfaces\\":[],\\"directives\\":[],\\"fields\\":[{\\"kind\\":\\"FieldDefinition\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"viewer\\"},\\"arguments\\":[],\\"type\\":{\\"kind\\":\\"NamedType\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"User\\"}},\\"directives\\":[]}]}],\\"loc\\":{\\"start\\":0,\\"end\\":97}};
+    doc.loc.source = {\\"body\\":\\"type User {\\\\n    id: ID!\\\\n    name: String!\\\\n    status: String!\\\\n}\\\\n\\\\ntype Query {\\\\n    viewer: User\\\\n}\\\\n\\",\\"name\\":\\"GraphQL request\\",\\"locationOffset\\":{\\"line\\":1,\\"column\\":1}};
+  
+
+    var names = {};
+    function unique(defs) {
+      return defs.filter(
+        function(def) {
+          if (def.kind !== 'FragmentDefinition') return true;
+          var name = def.name.value
+          if (names[name]) {
+            return false;
+          } else {
+            names[name] = true;
+            return true;
+          }
+        }
+      )
+    }
+  
+
+      module.exports = doc;
+    
+"
+`;

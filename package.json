@@ -19,6 +19,7 @@
   ],
   "dependencies": {
     "globby": "^11.0.0",
+    "jest-transform-graphql": "^2.1.0",
     "loader-utils": "^2.0.0",
     "log-update": "^4.0.0",
     "make-dir": "^3.0.2",
