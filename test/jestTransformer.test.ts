@@ -13,34 +13,42 @@ describe('graphql-let/jestTransformer', () => {
     await rimraf(pathJoin(cwd, '__generated__'));
   });
 
-  test('transforms .graphql', async () => {
-    const fileName = 'pages/viewer.graphql';
-    const stats = await compiler(cwd, fileName, 'node');
-    const { 0: fileData } = stats
-      .toJson()
-      .modules!.map((m) => m.source)
-      .filter(Boolean);
+  test(
+    'transforms .graphql',
+    async () => {
+      const fileName = 'pages/viewer.graphql';
+      const stats = await compiler(cwd, fileName, 'node');
+      const { 0: fileData } = stats
+        .toJson()
+        .modules!.map((m) => m.source)
+        .filter(Boolean);
 
-    const fullPath = pathJoin(cwd, fileName);
-    const transformedContent = jestTransformer.process(
-      fileData!,
-      fullPath,
-      jestConfig,
-    );
-    expect(transformedContent).toMatchSnapshot();
-  });
+      const fullPath = pathJoin(cwd, fileName);
+      const transformedContent = jestTransformer.process(
+        fileData!,
+        fullPath,
+        jestConfig,
+      );
+      expect(transformedContent).toMatchSnapshot();
+    },
+    60 * 1000,
+  );
 
-  test('transforms .graphqls', async () => {
-    jest.requireActual('jest-transform-graphql');
-    const fileName = 'schema/type-defs.graphqls';
+  test(
+    'transforms .graphqls',
+    async () => {
+      jest.requireActual('jest-transform-graphql');
+      const fileName = 'schema/type-defs.graphqls';
 
-    const fullPath = pathJoin(cwd, fileName);
-    const fileData = readFileSync(fullPath, 'utf-8');
-    const transformedContent = jestTransformer.process(
-      fileData,
-      fullPath,
-      jestConfig,
-    );
-    expect(transformedContent).toMatchSnapshot();
-  });
+      const fullPath = pathJoin(cwd, fileName);
+      const fileData = readFileSync(fullPath, 'utf-8');
+      const transformedContent = jestTransformer.process(
+        fileData,
+        fullPath,
+        jestConfig,
+      );
+      expect(transformedContent).toMatchSnapshot();
+    },
+    60 * 1000,
+  );
 });
