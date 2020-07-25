@@ -2,11 +2,9 @@ import { types, ConfigAPI, PluginObj, NodePath } from '@babel/core';
 import * as t from '@babel/types';
 import { relative, dirname, join as pathJoin } from 'path';
 import { declare } from '@babel/helper-plugin-utils';
-// import { parseExpression } from '@babel/parser';
 import doSync from 'do-sync';
 import createDebug from 'debug';
-import createCodegenOpts from './lib/create-codegen-opts';
-import { readFile, readFileSync } from './lib/file';
+import { readFileSync } from './lib/file';
 import { GqlCodegenContext, GqlCompileArgs } from './lib/gql-compile';
 import { createHash } from './lib/hash';
 import { loadConfigSync } from './lib/load-config';
@@ -14,7 +12,9 @@ import { shouldGenResolverTypes } from './lib/resolver-types';
 import { ConfigTypes } from './lib/types';
 import { libDir as libFullDir } from './lib/paths';
 
+// TODO: Utilize it
 const debug = createDebug('graphql-let/babel');
+
 const {
   // cloneDeep,
   isIdentifier,

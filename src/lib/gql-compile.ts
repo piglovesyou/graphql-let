@@ -1,5 +1,4 @@
 import { generate } from '@graphql-codegen/cli';
-// import { Types } from "@graphql-codegen/plugin-helpers";
 import traverse, { NodePath } from '@babel/traverse';
 import makeDir from 'make-dir';
 import { join as pathJoin, extname, basename, dirname } from 'path';
@@ -13,11 +12,9 @@ import { stripIgnoredCharacters } from 'graphql';
 import { parse, ParserOptions } from '@babel/parser';
 import { readFile } from './file';
 import { join } from 'path';
-// import createCodegenOpts from "../../src/lib/create-codegen-opts";
 import { writeFile } from './file';
 import { createHash } from './hash';
 import memoize from './memoize';
-// import loadConfig from "../../src/lib/load-config";
 import { ConfigTypes } from './types';
 import * as t from '@babel/types';
 
