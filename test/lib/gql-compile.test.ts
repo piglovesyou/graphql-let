@@ -5,8 +5,7 @@ import {
   GqlCodegenContext,
   processGqlCompile,
 } from '../../src/lib/gql-compile';
-import { buildConfig } from '../../src/lib/load-config';
-import { ConfigTypes } from '../../src/lib/types';
+import { buildConfig, ConfigTypes } from '../../src/lib/config';
 
 const dtsRelDir = 'node_modules/@types/graphql-let';
 const libRelDir = 'node_modules/graphql-let';

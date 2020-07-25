@@ -4,7 +4,7 @@ import { createTransformer, getCacheKey as getBabelCacheKey } from 'babel-jest';
 import graphQLTransformer from 'jest-transform-graphql';
 import { join as pathJoin, relative as pathRelative } from 'path';
 import { readFileSync } from 'fs';
-import { loadConfigSync } from './lib/load-config';
+import { loadConfigSync } from './lib/config';
 import { createPaths } from './lib/paths';
 
 const jestTransformer: Transformer = {

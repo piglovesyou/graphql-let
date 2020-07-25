@@ -5,13 +5,13 @@ import { join as pathJoin, dirname } from 'path';
 import createCodegenOpts, { PartialCodegenOpts } from './create-codegen-opts';
 import { genDts } from './dts';
 import { createHash } from './hash';
+import { ConfigTypes } from './config';
 import { createPaths } from './paths';
 import { PRINT_PREFIX } from './print';
 import {
   processGenerateResolverTypes,
   shouldGenResolverTypes,
 } from './resolver-types';
-import { ConfigTypes } from './types';
 import { processGraphQLCodegen } from './graphql-codegen';
 import { readFile, writeFile, withHash, readHash } from './file';
 

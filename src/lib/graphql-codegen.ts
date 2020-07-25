@@ -3,8 +3,8 @@ import { generate } from '@graphql-codegen/cli';
 import makeDir from 'make-dir';
 import path from 'path';
 import createCodegenOpts from './create-codegen-opts';
-import { ConfigTypes } from './types';
 import { withHash, writeFile } from './file';
+import { ConfigTypes } from './config';
 
 export async function processGraphQLCodegen(
   options: Pick<Types.Config, 'schema' | 'documents'> & {

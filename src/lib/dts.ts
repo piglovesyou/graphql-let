@@ -11,7 +11,7 @@ import {
   readConfigFile,
 } from 'typescript';
 import { withHash, writeFile } from './file';
-import { ConfigTypes } from './types';
+import { ConfigTypes } from './config';
 
 const essentialCompilerOptions: CompilerOptions = {
   declaration: true,
