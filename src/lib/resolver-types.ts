@@ -1,8 +1,8 @@
 import { extname } from 'path';
 import { PartialCodegenOpts } from './create-codegen-opts';
+import { ConfigTypes } from './config';
 import { CreatedPaths, isURL } from './paths';
 import { PRINT_PREFIX } from './print';
-import { ConfigTypes } from './types';
 import { processGraphQLCodegen } from './graphql-codegen';
 
 // Currently glob for schema is not allowed.

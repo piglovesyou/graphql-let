@@ -9,7 +9,7 @@ import {
   CodegenContext,
   SkippedContext,
 } from './lib/full-generate';
-import loadConfig from './lib/load-config';
+import loadConfig from './lib/config';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX } from './lib/print';
 

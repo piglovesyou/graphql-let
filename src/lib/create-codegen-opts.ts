@@ -1,5 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { ConfigTypes } from './types';
+import { ConfigTypes } from './config';
 
 export type PartialCodegenOpts = Pick<Types.GenerateOptions, 'config'>;
 

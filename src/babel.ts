@@ -3,16 +3,15 @@ import * as t from '@babel/types';
 import { relative, dirname, join as pathJoin } from 'path';
 import { declare } from '@babel/helper-plugin-utils';
 import doSync from 'do-sync';
-import createDebug from 'debug';
+// import createDebug from 'debug';
 import { readFileSync } from './lib/file';
 import { GqlCodegenContext, GqlCompileArgs } from './lib/gql-compile';
 import { createHash } from './lib/hash';
-import { loadConfigSync } from './lib/load-config';
+import { ConfigTypes, loadConfigSync } from './lib/config';
 import { shouldGenResolverTypes } from './lib/resolver-types';
-import { ConfigTypes } from './lib/types';
 
-// TODO: Utilize it
-const debug = createDebug('graphql-let/babel');
+// // TODO: Utilize it
+// const debug = createDebug('graphql-let/babel');
 
 const {
   // cloneDeep,
@@ -188,7 +187,7 @@ const configFunction = (
           hostDirname: __dirname,
           cwd,
           sourceRelPath,
-          gqlContents: gqlCallExpressionPaths.map(([_, value]) => value),
+          gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
           cacheRelDir, // TODO: Include in config
           schemaHash,
           config: graphqlLetConfig,

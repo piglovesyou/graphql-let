@@ -14,8 +14,8 @@ import { readFile } from './file';
 import { join } from 'path';
 import { writeFile } from './file';
 import { createHash } from './hash';
+import { ConfigTypes } from './config';
 import memoize from './memoize';
-import { ConfigTypes } from './types';
 import * as t from '@babel/types';
 
 // const packageJsonContent = JSON.stringify({ types: 'index' }, null, 2);
@@ -211,7 +211,7 @@ export async function processGqlCompile(
 
   // Dts only for newly created `.tsx`s
   const dtsContents = genDts(
-    newGqlCodegenContext.map(({ tsxFullPath }) => tsxFullPath),
+    newGqlCodegenContext,
     config,
   );
   await makeDir(dirname(newGqlCodegenContext[0].dtsFullPath));

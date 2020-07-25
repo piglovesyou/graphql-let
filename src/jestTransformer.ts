@@ -5,9 +5,8 @@ import graphQLTransformer from 'jest-transform-graphql';
 import { join as pathJoin, relative as pathRelative } from 'path';
 import { readFileSync } from 'fs';
 import createExecContext from './lib/exec-context';
-import { loadConfigSync } from './lib/load-config';
+import { loadConfigSync } from './lib/config';
 import { createPaths } from './lib/paths';
-
 import { createHash } from './lib/hash';
 
 type JestTransformerOptions = {

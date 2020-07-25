@@ -14,7 +14,7 @@ import {
 import { ExecContext } from './exec-context';
 import { withHash, writeFile } from './file';
 import { CodegenContext } from './full-generate';
-import { ConfigTypes } from './types';
+import { ConfigTypes } from './config';
 
 const essentialCompilerOptions: CompilerOptions = {
   declaration: true,
