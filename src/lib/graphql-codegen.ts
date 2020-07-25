@@ -16,7 +16,7 @@ export async function processGraphQLCodegen(
   },
 ): Promise<string> {
   try {
-    const files = await generate(
+    const results: Types.FileOutput[] = await generate(
       {
         cwd: options.cwd,
         schema: options.schema,
@@ -37,21 +37,20 @@ export async function processGraphQLCodegen(
       },
       false,
     );
+    const resultsWithHash = results.map(({ filename, content }) => {
+      // Embed hash for caching
+      return {
+        filename,
+        content: withHash(options.gqlHash, content),
+      };
+    });
     await Promise.all(
-      files.map(
-        async ({
-          filename,
-          content,
-        }: {
-          filename: string;
-          content: string;
-        }) => {
-          await makeDir(path.dirname(filename));
-          await writeFile(filename, withHash(options.gqlHash, content));
-        },
-      ),
+      resultsWithHash.map(async ({ filename, content }) => {
+        await makeDir(path.dirname(filename));
+        await writeFile(filename, content);
+      }),
     );
-    return (files[0] && files[0].content) as string;
+    return (resultsWithHash[0] && resultsWithHash[0].content) as string;
   } catch (e) {
     if (e.name === 'ListrError' && e.errors != null) {
       throw e.errors[0];
