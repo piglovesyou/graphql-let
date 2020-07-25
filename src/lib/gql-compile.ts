@@ -6,7 +6,6 @@ import { existsSync } from 'fs';
 import slash from 'slash';
 import { genDts } from './dts';
 import { rimraf } from './file';
-import mkdirp from 'mkdirp';
 // TODO
 import { createWriteStream } from 'fs';
 import { stripIgnoredCharacters } from 'graphql';
@@ -206,7 +205,7 @@ export async function processGqlCompile(
       },
       false,
     );
-    await mkdirp(dirname(tsxFullPath));
+    await makeDir(dirname(tsxFullPath));
     await writeFile(tsxFullPath, content);
   }
 
@@ -269,8 +268,8 @@ export async function gqlCompile(
 
   // Prepare
   await Promise.all([
-    await mkdirp(join(cwd, dtsRelDir)),
-    await mkdirp(join(cwd, cacheRelDir)),
+    await makeDir(join(cwd, dtsRelDir)),
+    await makeDir(join(cwd, cacheRelDir)),
   ]);
 
   await memoizedProcessGqlCompile(
@@ -316,12 +315,4 @@ export default function gql(gql: \`${gqlContent}\`): T${gqlContentHash}.__AllExp
   await writeFile(storeFullPath, JSON.stringify(store, null, 2));
 
   return codegenContext;
-}
-
-export function timeout(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ yeah: 'yeah ohhhh xxxx' });
-    }, ms);
-  });
 }
