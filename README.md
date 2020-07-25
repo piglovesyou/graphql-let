@@ -303,19 +303,9 @@ const { useViewerQuery } = V07138c;
 with type declarations like:
 
 ```typescript
-export declare function useViewerQuery(
-    baseOptions?: ApolloReactHooks.QueryHookOptions<
-        ViewerQuery,
-        ViewerQueryVariables
-    >
-): ApolloReactCommon.QueryResult<
-    ViewerQuery,
-    Exact<{
-        [key: string]: never;
-    }>
->;
+declare function useViewerQuery(...): ...;
 
-export default function gql(
+default function gql(
     gql: `
     query Viewer {
         viewer { name }

@@ -9,4 +9,5 @@ plugins:
 respectGitIgnore: true
 config:
     useIndexSignature: true
-cacheDir: "node_modules/graphql-let/__generated__"
+gqlDtsEntrypoint: node_modules/@types/graphql-let/index.d.ts
+cacheDir: node_modules/graphql-let/__generated__

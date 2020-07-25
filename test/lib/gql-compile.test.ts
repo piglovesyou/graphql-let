@@ -5,6 +5,7 @@ import {
   GqlCodegenContext,
   processGqlCompile,
 } from '../../src/lib/gql-compile';
+import { buildConfig } from '../../src/lib/load-config';
 import { ConfigTypes } from '../../src/lib/types';
 
 const dtsRelDir = 'node_modules/@types/graphql-let';
@@ -12,7 +13,7 @@ const libRelDir = 'node_modules/graphql-let';
 
 const cwd = pathJoin(__dirname, '../__fixtures/gql-compile');
 
-const config: ConfigTypes = {
+const config: ConfigTypes = buildConfig({
   schema: 'schema/type-defs.graphqls',
   plugins: ['typescript', 'typescript-operations', 'typescript-react-apollo'],
   documents: [],
@@ -22,7 +23,7 @@ const config: ConfigTypes = {
     withHOC: false,
     withHooks: true,
   },
-};
+});
 
 describe('gql-compile', () => {
   beforeAll(async () => {
@@ -68,23 +69,32 @@ describe('gql-compile', () => {
         codegenContext[0].strippedGqlContent,
         'query Viewer{viewer{id name status}}',
       );
-      deepStrictEqual(codegenContext[0].gqlContentHash, 'dd28f9');
+      deepStrictEqual(
+        codegenContext[0].gqlContentHash,
+        'dd28f9c0ad11900a2654540e86de9cf9fc16f8b4',
+      );
       deepStrictEqual(codegenContext[0].sourceRelPath, 'pages/index.tsx');
       ok(
         codegenContext[0].sourceFullPath.endsWith(
           'graphql-let/test/__fixtures/gql-compile/pages/index.tsx',
         ),
       );
-      deepStrictEqual(codegenContext[0].tsxRelPath, 'pages/index-dd28f9.tsx');
+      deepStrictEqual(
+        codegenContext[0].tsxRelPath,
+        'pages/index-dd28f9c0ad11900a2654540e86de9cf9fc16f8b4.tsx',
+      );
       ok(
         codegenContext[0].tsxFullPath.endsWith(
-          'graphql-let/test/__fixtures/gql-compile/node_modules/graphql-let/__generated__/pages/index-dd28f9.tsx',
+          'graphql-let/test/__fixtures/gql-compile/node_modules/graphql-let/__generated__/pages/index-dd28f9c0ad11900a2654540e86de9cf9fc16f8b4.tsx',
         ),
       );
-      deepStrictEqual(codegenContext[0].dtsRelPath, 'pages/index-dd28f9.d.ts');
+      deepStrictEqual(
+        codegenContext[0].dtsRelPath,
+        'pages/index-dd28f9c0ad11900a2654540e86de9cf9fc16f8b4.d.ts',
+      );
       ok(
         codegenContext[0].dtsFullPath.endsWith(
-          'graphql-let/test/__fixtures/gql-compile/node_modules/@types/graphql-let/pages/index-dd28f9.d.ts',
+          'graphql-let/test/__fixtures/gql-compile/node_modules/@types/graphql-let/pages/index-dd28f9c0ad11900a2654540e86de9cf9fc16f8b4.d.ts',
         ),
       );
       deepStrictEqual(oldGqlContentHashes.size, 0);

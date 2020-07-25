@@ -10,7 +10,6 @@ import { createHash } from './lib/hash';
 import { loadConfigSync } from './lib/load-config';
 import { shouldGenResolverTypes } from './lib/resolver-types';
 import { ConfigTypes } from './lib/types';
-import { libDir as libFullDir } from './lib/paths';
 
 // TODO: Utilize it
 const debug = createDebug('graphql-let/babel');
@@ -104,8 +103,7 @@ const configFunction = (
           cwd,
           configFilePath,
         );
-        const cacheRelDir =
-          graphqlLetConfig.cacheDir || 'node_modules/graphql-let/__generated__'; // TODO: refactor
+        const cacheRelDir = graphqlLetConfig.cacheDir;
 
         const tagNames: string[] = [];
         const pendingDeletion: {
@@ -192,7 +190,6 @@ const configFunction = (
           sourceRelPath,
           gqlContents: gqlCallExpressionPaths.map(([_, value]) => value),
           cacheRelDir, // TODO: Include in config
-          dtsRelDir: 'node_modules/@types/graphql-let', // TODO
           schemaHash,
           config: graphqlLetConfig,
         });
