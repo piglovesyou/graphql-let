@@ -280,7 +280,8 @@ the next loader but it updates resolver types in HMR. Set it up as below:
 
 ## Experimental feature: Babel Plugin for inline GraphQL documents
 
-It lets you to convert a source as:
+A Babel Plugin support allows you to get typed graphql-codegen results from
+"graphql-tag"-like syntax as the below.
 
 ```typescript jsx
 import gql from "graphql-let";
@@ -293,14 +294,14 @@ const { useViewerQuery } = gql(`
 `);
 ```
 
-into the output as:
+The above source will be compiled to:
 
 ```typescript jsx
-import * as V07138c from "../__generated__/input-07138c.tsx";
+import * as V07138c from "../__generated__/input-07138c.tsx"; // ← codegen results
 const { useViewerQuery } = V07138c;
 ```
 
-with type declarations like:
+with type declarations such as:
 
 ```typescript
 declare function useViewerQuery(...): ...;
