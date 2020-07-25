@@ -3,6 +3,7 @@ import * as t from '@babel/types';
 import { relative, dirname, join as pathJoin } from 'path';
 import { declare } from '@babel/helper-plugin-utils';
 import doSync from 'do-sync';
+import slash from 'slash';
 // import createDebug from 'debug';
 import { readFileSync } from './lib/file';
 import { GqlCodegenContext, GqlCompileArgs } from './lib/gql-compile';
@@ -201,7 +202,7 @@ const configFunction = (
         ] of gqlCallExpressionPaths.entries()) {
           const { gqlContentHash, tsxFullPath } = rv[i]!;
           const tsxRelPathFromSource =
-            './' + relative(dirname(sourceFullPath), tsxFullPath);
+            './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
 
           const localVarName = `V${gqlContentHash}`;
 

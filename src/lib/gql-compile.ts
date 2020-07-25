@@ -3,6 +3,7 @@ import traverse, { NodePath } from '@babel/traverse';
 import makeDir from 'make-dir';
 import { join as pathJoin, extname, basename, dirname } from 'path';
 import { existsSync } from 'fs';
+import slash from 'slash';
 import { genDts } from './dts';
 import { rimraf } from './file';
 import mkdirp from 'mkdirp';
@@ -305,7 +306,7 @@ export async function gqlCompile(
   const dtsEntryFullPath = pathJoin(cwd, config.gqlDtsEntrypoint);
   const writeStream = createWriteStream(dtsEntryFullPath);
   for (const { gqlContent, gqlContentHash, dtsRelPath } of codegenContext) {
-    const chunk = `import T${gqlContentHash} from './${dtsRelPath}';
+    const chunk = `import T${gqlContentHash} from './${slash(dtsRelPath)}';
 export default function gql(gql: \`${gqlContent}\`): T${gqlContentHash}.__AllExports;
 `;
     await new Promise((resolve) => writeStream.write(chunk, resolve));

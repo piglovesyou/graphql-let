@@ -290,7 +290,7 @@ default function gql(
 Install these dependencies:
 
 ```
-yarn add -D graphql-let @babel/core @babel/parser @babel/traverse @babel/helper-plugin-utils
+yarn add -D graphql-let slash do-sync @babel/core @babel/parser @babel/traverse @babel/helper-plugin-utils
 ```
 
 with the plugin configuration in such as `babel.config.json`:
