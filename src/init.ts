@@ -3,9 +3,9 @@ import { stringify as yamlStringify } from 'yaml';
 import { writeFileSync } from 'fs';
 import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 import { printInfo } from './lib/print';
-import { CommandOpts, ConfigTypes } from './lib/types';
+import { CommandOpts, RawConfigTypes } from './lib/types';
 
-const DEFAULT_CONFIG: ConfigTypes = {
+const DEFAULT_CONFIG: RawConfigTypes = {
   schema: 'lib/type-defs.graphqls',
   documents: '**/*.graphql',
   plugins: ['typescript'],

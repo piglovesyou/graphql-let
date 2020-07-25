@@ -9,24 +9,18 @@ export type CreatedPaths = {
   gqlFullPath: string;
 };
 
-export const defaultCacheRelDir = '__generated__';
-export const libDir = path.resolve(__dirname, '../..');
-const defaultCacheFullDir = path.join(libDir, defaultCacheRelDir);
+// export const libFullDir = path.resolve(__dirname, '../..');
 
-export const getCacheFullDir = (cwd: string, cacheDir?: string) => {
-  return !cacheDir
-    ? defaultCacheFullDir
-    : path.isAbsolute(cacheDir)
-    ? cacheDir
-    : path.join(cwd, cacheDir);
+export const getCacheFullDir = (cwd: string, cacheDir: string) => {
+  return path.isAbsolute(cacheDir) ? cacheDir : path.join(cwd, cacheDir);
 };
 
 export function createPaths(
   cwd: string,
   gqlRelPath: string,
-  customCacheDir?: string,
+  cacheRelDir: string,
 ): CreatedPaths {
-  const cacheFullDir = getCacheFullDir(cwd, customCacheDir);
+  const cacheFullDir = getCacheFullDir(cwd, cacheRelDir);
 
   const tsxRelPath = `${gqlRelPath}.tsx`;
   const tsxFullPath = path.join(cacheFullDir, tsxRelPath);

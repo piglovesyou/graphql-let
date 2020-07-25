@@ -21,7 +21,7 @@ const essentialCompilerOptions: CompilerOptions = {
 };
 
 function resolveCompilerOptions(configObj: ConfigTypes) {
-  const fileName = configObj.TSConfigFile || 'tsconfig.json';
+  const fileName = configObj.TSConfigFile;
   const configPath = findConfigFile(process.cwd(), sys.fileExists, fileName);
   let compilerOptions = essentialCompilerOptions;
 

@@ -18,7 +18,7 @@ import memoize from './memoize';
 import { ConfigTypes } from './types';
 import * as t from '@babel/types';
 
-const packageJsonContent = JSON.stringify({ types: 'index' }, null, 2);
+// const packageJsonContent = JSON.stringify({ types: 'index' }, null, 2);
 
 export type GqlCodegenContext = {
   gqlContent: string;
@@ -229,7 +229,6 @@ export async function processGqlCompile(
 
 export type GqlCompileArgs = {
   cwd: string;
-  dtsRelDir: string;
   cacheRelDir: string;
   sourceRelPath: string;
   schemaHash: string;
@@ -250,12 +249,12 @@ export async function gqlCompile(
   const {
     cwd,
     config,
-    dtsRelDir,
     cacheRelDir,
     sourceRelPath,
     schemaHash,
     gqlContents,
   } = gqlCompileArgs;
+  const dtsRelDir = dirname(config.gqlDtsEntrypoint);
   const codegenContext: GqlCodegenContext = [];
   // const skippedContext: GqlCodegenContext = [];
 
@@ -272,8 +271,6 @@ export async function gqlCompile(
     await mkdirp(join(cwd, dtsRelDir)),
     await mkdirp(join(cwd, cacheRelDir)),
   ]);
-  // TODO: Need this? I think I don't
-  // await writeFile(join(cwd, dtsRelDir, "package.json"), packageJsonContent);
 
   await memoizedProcessGqlCompile(
     cwd,
@@ -305,7 +302,7 @@ export async function gqlCompile(
   }
 
   // Update index.d.ts
-  const dtsEntryFullPath = pathJoin(cwd, dtsRelDir, 'index.d.ts');
+  const dtsEntryFullPath = pathJoin(cwd, config.gqlDtsEntrypoint);
   const writeStream = createWriteStream(dtsEntryFullPath);
   for (const { gqlContent, gqlContentHash, dtsRelPath } of codegenContext) {
     const chunk = `import T${gqlContentHash} from './${dtsRelPath}';

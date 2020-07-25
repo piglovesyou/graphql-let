@@ -5,16 +5,31 @@ import { readFile, readFileSync } from './file';
 import { ConfigTypes } from './types';
 import { createHash } from './hash';
 
+const requiredFields = ['schema', 'documents', 'plugins'];
+
+export function buildConfig(raw: any): ConfigTypes {
+  if (typeof raw !== 'object')
+    throw new Error('A config file must shape an object');
+  for (const name of requiredFields)
+    if (!raw[name]) throw new Error(`A config requires a "${name}" field`);
+  // TODO: More verify
+  return {
+    ...raw,
+    config: raw.config || {},
+    cacheDir: raw.cacheDir || 'node_modules/graphql-let/__generated__',
+    TSConfigFile: raw.TSConfigFile || 'tsconfig.json',
+    gqlDtsEntrypoint:
+      raw.gqlDtsEntrypoint || 'node_modules/@types/graphql-let/index.d.ts',
+  };
+}
+
 const getConfigPath = (cwd: string, configFilePath?: string) =>
   pathJoin(cwd, configFilePath || DEFAULT_CONFIG_FILENAME);
+
 const getConfigFromContent = (content: string): [ConfigTypes, string] => [
-  parseYaml(content),
+  buildConfig(parseYaml(content)),
   createHash(content),
 ];
-
-// TODO:
-// function validate(config: ConfigTypes) { }
-// function fillDefaultValues(config: ConfigTypes) { }
 
 export default async function loadConfig(
   cwd: string,

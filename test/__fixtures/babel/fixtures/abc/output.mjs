@@ -1,8 +1,7 @@
-import * as V07138c from "./node_modules/graphql-let/__generated__/input-07138c.tsx";
-// @ts-ignore
+import * as Vdcfbe2c23b6ad8dfa8d9e2dc133c788c60c28ea8 from "./node_modules/graphql-let/__generated__/input-dcfbe2c23b6ad8dfa8d9e2dc133c788c60c28ea8.tsx";
 const {
   useViewerQuery
-} = V07138c;
+} = Vdcfbe2c23b6ad8dfa8d9e2dc133c788c60c28ea8;
 export default function Viewer() {
   const {
     data

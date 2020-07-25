@@ -1,6 +1,4 @@
-// @ts-ignore
 import gql from 'graphql-let';
-// @ts-ignore
 const { useViewerQuery } = gql('query Viewer { viewer { name } }');
 
 export default function Viewer() {
