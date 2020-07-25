@@ -1,6 +1,7 @@
 import { deepStrictEqual, ok } from 'assert';
 import { join as pathJoin } from 'path';
 import createExecContext from "../../src/lib/exec-context";
+import slash from 'slash';
 import { rimraf } from '../../src/lib/file';
 import {
   GqlCodegenContext,
@@ -61,45 +62,65 @@ describe('gql-compile', () => {
         {},
         codegenContext,
         oldGqlContentHashes,
-        // skippedContext,
       );
 
+      deepStrictEqual(codegenContext.length, 1);
+      const [
+        {
+          gqlContent,
+          strippedGqlContent,
+          gqlContentHash,
+          sourceFullPath,
+          tsxRelPath,
+          tsxFullPath,
+          dtsRelPath,
+          dtsFullPath,
+        },
+      ] = codegenContext;
       deepStrictEqual(
-        codegenContext[0].gqlContent,
+        gqlContent,
         'query Viewer {\n    viewer {\n        id\n        name\n        status\n    }\n}',
       );
       deepStrictEqual(
-        codegenContext[0].strippedGqlContent,
+        strippedGqlContent,
         'query Viewer{viewer{id name status}}',
       );
       deepStrictEqual(
-        codegenContext[0].gqlContentHash,
+        gqlContentHash,
         'dd28f9c0ad11900a2654540e86de9cf9fc16f8b4',
       );
-      deepStrictEqual(codegenContext[0].sourceRelPath, 'pages/index.tsx');
+      deepStrictEqual(sourceRelPath, 'pages/index.tsx');
+
       ok(
-        codegenContext[0].sourceFullPath.endsWith(
+        slash(sourceFullPath).endsWith(
           'graphql-let/test/__fixtures/gql-compile/pages/index.tsx',
         ),
+        sourceFullPath,
       );
+
+      // TODO: snapshot test
       deepStrictEqual(
-        codegenContext[0].tsxRelPath,
+        slash(tsxRelPath),
         'pages/index-dd28f9c0ad11900a2654540e86de9cf9fc16f8b4.tsx',
       );
       ok(
-        codegenContext[0].tsxFullPath.endsWith(
+        slash(tsxFullPath).endsWith(
           'graphql-let/test/__fixtures/gql-compile/node_modules/graphql-let/__generated__/pages/index-dd28f9c0ad11900a2654540e86de9cf9fc16f8b4.tsx',
         ),
+        tsxFullPath,
       );
+
       deepStrictEqual(
-        codegenContext[0].dtsRelPath,
+        slash(dtsRelPath),
         'pages/index-dd28f9c0ad11900a2654540e86de9cf9fc16f8b4.d.ts',
       );
       ok(
-        codegenContext[0].dtsFullPath.endsWith(
+        slash(dtsFullPath).endsWith(
           'graphql-let/test/__fixtures/gql-compile/node_modules/@types/graphql-let/pages/index-dd28f9c0ad11900a2654540e86de9cf9fc16f8b4.d.ts',
         ),
+        dtsFullPath,
       );
+
       deepStrictEqual(oldGqlContentHashes.size, 0);
     },
     1000 * 1000,
