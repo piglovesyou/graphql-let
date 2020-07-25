@@ -1,4 +1,4 @@
-import type { Config } from '@jest/types';
+import { Config } from '@jest/types';
 import jestTransformer from '../src/jestTransformer';
 import compiler from './__tools/compile';
 import { join as pathJoin } from 'path';

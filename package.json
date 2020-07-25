@@ -40,6 +40,8 @@
     "@graphql-codegen/typescript-operations": "^1.12.2",
     "@graphql-codegen/typescript-react-apollo": "^1.12.2",
     "@graphql-codegen/typescript-resolvers": "^1.12.2",
+    "@jest/transform": "^26.1.0",
+    "@jest/types": "^26.1.0",
     "@types/babel__core": "^7.1.5",
     "@types/eslint": "^7.2.0",
     "@types/eslint-plugin-prettier": "^3.1.0",
@@ -114,11 +116,12 @@
     "fix-js": "yarn lint-js --fix",
     "fix-nonjs": "yarn lint-nonjs --write",
     "fix": "yarn fix-js && yarn fix-nonjs '**/*.{md,yml,graphql,graphqls}'",
+    "typecheck": "tsc --noEmit",
     "compile": "tsc --project tsconfig.compile.json",
     "clean": "rimraf \"**/__generated__\" dist",
     "test": "jest",
     "build": "yarn clean && yarn compile",
-    "prepare": "yarn lint && yarn build && yarn test"
+    "prepare": "yarn lint && yarn typecheck && yarn build && yarn test"
   },
   "husky": {
     "hooks": {
