@@ -240,6 +240,77 @@ the next loader but it updates resolver types in HMR. Set it up as below:
  }
 ```
 
+## Experimental feature: Babel Plugin for inline GraphQL documents
+
+It lets you to convert a source as:
+
+```typescript jsx
+import gql from "graphql-let";
+
+// Typed️⚡️
+const { useViewerQuery } = gql(`
+    query Viewer {
+        viewer { name }
+    }
+`);
+```
+
+into the output as:
+
+```typescript jsx
+import * as V07138c from "../__generated__/input-07138c.tsx";
+const { useViewerQuery } = V07138c;
+```
+
+with type declarations like:
+
+```typescript
+export declare function useViewerQuery(
+    baseOptions?: ApolloReactHooks.QueryHookOptions<
+        ViewerQuery,
+        ViewerQueryVariables
+    >
+): ApolloReactCommon.QueryResult<
+    ViewerQuery,
+    Exact<{
+        [key: string]: never;
+    }>
+>;
+
+export default function gql(
+    gql: `
+    query Viewer {
+        viewer { name }
+    }
+`
+): { useViewerQuery: typeof useViewerQuery };
+```
+
+### Limitations
+
+-   **Sadly**, type injection can't be done with TaggedTemplateExpression such
+    as `` gql`query {}` ``. This is the limitation of TypeScript (from my
+    current understanding.
+    [Please answer me if you have ideas.](https://stackoverflow.com/questions/61917066/can-taggedtempalte-have-overload-signatures-with-a-certain-string-literal-argume))
+-   Fragments are still not available. Please watch
+    [the issue.](https://github.com/piglovesyou/graphql-let/issues/65)
+
+### Configuration
+
+Install these dependencies:
+
+```
+yarn add -D graphql-let @babel/core @babel/parser @babel/traverse @babel/helper-plugin-utils
+```
+
+with the plugin configuration in such as `babel.config.json`:
+
+```json
+{
+    "plugins": ["graphql-let/babel"]
+}
+```
+
 ## FAQ
 
 #### So, it's just a graphql-codegen wrapper generating `d.ts`...?
