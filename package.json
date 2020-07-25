@@ -111,6 +111,10 @@
     "typescript": "*"
   },
   "optionalDependencies": {
+    "@babel/core": ">=7.0.0",
+    "@babel/helper-plugin-utils": ">=7.0.0",
+    "@babel/parser": ">=7.0.0",
+    "@babel/traverse": ">=7.0.0",
     "@graphql-codegen/typescript-resolvers": "*"
   },
   "lint-staged": {
