@@ -1,7 +1,6 @@
 # graphql-let [![](https://github.com/piglovesyou/graphql-let/workflows/Node%20CI/badge.svg)](https://github.com/piglovesyou/graphql-let/actions) [![npm version](https://badge.fury.io/js/graphql-let.svg)](https://badge.fury.io/js/graphql-let)
 
-A webpack loader to import type-protected codegen results directly from GraphQL
-documents.
+A wrapper delivering typed graphql-codegen results closer to you
 
 Try
 [the Next.js example](https://github.com/zeit/next.js/blob/canary/examples/with-typescript-graphql/README.md#readme)
