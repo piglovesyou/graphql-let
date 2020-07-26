@@ -358,8 +358,7 @@ No. There are
 
 #### Can I write GraphQL documents in my `.tsx` as `` const query = gql`query News{ ... }`; ``?
 
-Afraid not. You need to have separate files to execute the webpack loader.
-Besides, typing the value of `` gql`...` `` would be impossible.
+Please try the Babel Plugin, that'd prvide the close experience.
 
 #### What's the extension `.graphqls`? Should I use it for schema and `.graphql` for documents?
 
@@ -370,11 +369,11 @@ loaders with fewer pitfalls. Another reason for `.graphqls` is that it's one of
 
 #### How to integrate Apollo refetchQueries?
 
-[Query document exports `DocumentNode` named `${QueryName}Document` that you can make use of it.](https://github.com/piglovesyou/graphql-let/issues/66#issuecomment-596276493)
+[Query document exports `DocumentNode` named `${QueryName}Document` that you can make use of.](https://github.com/piglovesyou/graphql-let/issues/66#issuecomment-596276493)
 
 #### How to import `.graphql` from another, to import GraphQL Fragment for example?
 
-You can't yet.
+You can't, yet.
 [Please watch the progress.](https://github.com/piglovesyou/graphql-let/issues/65)
 
 ## Contribution
