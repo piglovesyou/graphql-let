@@ -57,7 +57,7 @@ corresponding lines depending on your needs.
 
 Note graphql-let is `devDependencies`.
 
-```
+```bash
 npm install -D graphql-let @graphql-codegen/cli @graphql-codegen/plugin-helpers @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo
 npm install @apollo/react-common @apollo/react-components @apollo/react-hooks
 ```
@@ -68,7 +68,7 @@ npm install @apollo/react-common @apollo/react-components @apollo/react-hooks
 
 Run this command to have a configuration template.
 
-```
+```bash
 npx graphql-let init
 # This will generate .graphql-let.yml
 ```
@@ -138,7 +138,7 @@ JavaScript with an additional loader such as `babel-loader`.
 
 Run this to generate `.d.ts`.
 
-```
+```bash
 npx graphql-let
 
 # This will generate files such as:
@@ -151,7 +151,7 @@ The directory .graphql-let.yml is located at is the basepath of the relative
 paths in .grpahql-let.yml. Also, the basepath should be identical to **webpack's
 `config.context`** so the loader can find the config file.
 
-```
+```bash
 pwd # "/app"
 npx graphql-let --config custom/path/.graphql-let.yml
 
@@ -328,7 +328,7 @@ default function gql(
 
 Install these dependencies:
 
-```
+```bash
 yarn add -D graphql-let slash do-sync @babel/core @babel/parser @babel/traverse @babel/helper-plugin-utils
 ```
 
