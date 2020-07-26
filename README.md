@@ -6,6 +6,17 @@ Try
 [the Next.js example](https://github.com/zeit/next.js/blob/canary/examples/with-typescript-graphql/README.md#readme)
 that integrates graphql-let.
 
+## Table of Contents
+
+-   [Why it exists](#why-it-exists)
+-   [How it works](#how-it-works)
+-   [Get started](#get-started)
+-   [Experimental feature: Resolver Types](#experimental-feature-resolver-types)
+-   [Experimental feature: Babel Plugin for inline GraphQL documents](#experimental-feature-babel-plugin-for-inline-graphql-documents)
+-   [FAQ](#faq)
+-   [Contribution](#contribution)
+-   [License](#license)
+
 ## Why it exists
 
 One of the strengths of GraphQL is
