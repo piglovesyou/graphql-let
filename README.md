@@ -39,9 +39,9 @@ generator per GraphQL documents with TypeScript type definitions.
 import { useNewsQuery } from './news.graphql'
 
 const News: React.FC = () => {
-	// Typed already️⚡️
-	const { data: { news } } = useNewsQuery()
-	if (news) return <div>{news.map(...)}</div>
+    // Typed already️⚡️
+    const { data: { news } } = useNewsQuery()
+    if (news) return <div>{news.map(...)}</div>
 }
 ```
 
@@ -227,46 +227,46 @@ module.exports = {
 
 ## Configuration options
 
-graphql-let expects your `.graphql-let.yml` to look like this.
+graphql-let expects your `.graphql-let.yml` to look like this.
 
 ```yaml
 schema: lib/type-defs.graphqls
 # Required. The GraphQL schema info that graphql-let requests introspection to.
 # Examples:
-# 		schema: http://localhost:3000/graphql
-# 		schema: schema.json
-# 		schema: schema.graphqls  # Note: glob is not supported yet
-# 		schema:
-#				https://api.github.com/graphql
-#					headers:
-#						Authorization: "YOUR-TOKEN"
+#       schema: http://localhost:3000/graphql
+#       schema: schema.json
+#       schema: schema.graphqls  # Note: glob is not supported yet
+#       schema:
+#           https://api.github.com/graphql
+#               headers:
+#                   Authorization: "YOUR-TOKEN"
 # Please see here for more information: https://graphql-code-generator.com/docs/getting-started/schema-field#available-formats
 
-documents: **/*.graphql
+documents: "**/*.graphql"
 # Necessary if you use a webpack loader "graphql-let/loader".
 # The GraphQL documents info of quereis and mutations etc.
 # Examples:
-#			documents: 'queries/**/*.graphql'
-#			documents:
-#				- 'queries/**/*.graphql'
-#				- '!queries/exeption.graphql'
+#            documents: 'queries/**/*.graphql'
+#            documents:
+#                - 'queries/**/*.graphql'
+#                - '!queries/exeption.graphql'
 
 plugins:
-   - typescript
-   - typescript-operations
-   - typescript-react-apollo
+    - typescript
+    - typescript-operations
+    - typescript-react-apollo
 # Required. The plugins for GraphQL documents to run GraphQL code generator with.
 # It's identical to "documentPlugins" field. Please note you need to generate TypeScript source here.
 # Examples:
-#			plugins:
-#				- typescript
-#				- typescript-react-apollo
-#				- add: "/* eslint-disable */"
+#            plugins:
+#                - typescript
+#                - typescript-react-apollo
+#                - add: "/* eslint-disable */"
 # See here for more information. https://graphql-code-generator.com/docs/plugins/index
 
 config:
-	- withHOC: false
-	- withHooks: true
+    - withHOC: false
+    - withHooks: true
 # Optional. Shared options for document plugins.
 # See here for more information. https://graphql-code-generator.com/docs/getting-started/config-field
 
@@ -279,12 +279,12 @@ cacheDir: node_modules/graphql-let/__generated__
 # graphql-let takes care of intermediate outpus `.ts(x)`s of GraphQL code generator but still need to
 # store them somewhere for caching and TypeScript API purposes. This is the directory these files go to.
 # Examples:
-#			cacheDir: __generated__
+#            cacheDir: __generated__
 
 TSConfigFile: tsconfig.json
 # Optional. `tsconfig.json` by default. You can specify a custom config for generating `.d.ts`s.
 # Examples:
-#			TSConfigFile: tsconfig.compile.json
+#            TSConfigFile: tsconfig.compile.json
 
 gqlDtsEntrypoint: node_modules/@types/graphql-let/index.d.ts
 # Optional. `node_modules/@types/graphql-let/index.d.ts` by default. Needs to be end with ".d.ts".
