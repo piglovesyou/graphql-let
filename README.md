@@ -1,6 +1,6 @@
 # graphql-let [![](https://github.com/piglovesyou/graphql-let/workflows/Node%20CI/badge.svg)](https://github.com/piglovesyou/graphql-let/actions) [![npm version](https://badge.fury.io/js/graphql-let.svg)](https://badge.fury.io/js/graphql-let)
 
-A wrapper delivering typed graphql-codegen results closer to you
+A wrapper delivering typed graphql-codegen results closer to you.
 
 Try
 [the Next.js example](https://github.com/zeit/next.js/blob/canary/examples/with-typescript-graphql/README.md#readme)
@@ -26,13 +26,13 @@ Further, TypeScript and
 make it safer by typing data statically, so you can write truly type-protected
 code with rich IDE assists.
 
-To enhance the development pattern, it's necessary to focus on a more specific
-use-case than what graphql-codegen allows; binding TypeScript (and assuming the
-use of Apollo-Client and React). In the way, graphql-let behaves as a subset of
-graphql-codegen.
+To enhance that development pattern, we should move on to the more specific
+use-case than what GraphQL code generator allows. Let's consider TypeScript as a
+first-class citizen and forget intermediate artifacts to get the GraphQL closer
+to your application code ever.
 
-graphql-let lets you import graphql-codegen results directly per GraphQL
-documents with TypeScript type definitions by webpack Loader power.
+graphql-let lets you `import` and call `gql` to get results of GraphQL code
+generator per GraphQL documents with TypeScript type definitions.
 
 ```typescript jsx
 import { useNewsQuery } from './news.graphql'
