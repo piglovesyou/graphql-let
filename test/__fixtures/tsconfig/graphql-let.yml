@@ -1,4 +1,4 @@
-schema: "schema/type-defs.graphqls"
+schema: schema/type-defs.graphqls
 documents:
     - "**/*.graphql"
 plugins:
@@ -7,5 +7,5 @@ plugins:
     - typescript-react-apollo
 config:
     useIndexSignature: true
-TSConfigFile: "test/__fixtures/tsconfig/es3config.json"
-cacheDir: "test/__fixtures/tsconfig/__generated__"
+TSConfigFile: es3config.json
+cacheDir: __generated__

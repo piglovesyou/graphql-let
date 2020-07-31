@@ -1,4 +1,4 @@
-schema: "schema/type-defs.graphqls"
+schema: schema/type-defs.graphqls
 documents:
     - "**/*.graphql"
 plugins:
@@ -8,5 +8,5 @@ plugins:
 config:
     withHOC: false
     withHocks: true
-TSConfigFile: "test/__fixtures/tsconfig/esnextconfig.json"
-cacheDir: "test/__fixtures/tsconfig/__generated__"
+TSConfigFile: esnextconfig.json
+cacheDir: __generated__

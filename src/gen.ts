@@ -1,4 +1,5 @@
 import globby from 'globby';
+import createExecContext from './lib/exec-context';
 import fullGenerate, {
   CodegenContext,
   SkippedContext,
@@ -13,8 +14,8 @@ import { rimraf } from './lib/file';
 async function removeOldTsxCaches(
   cwd: string,
   config: ConfigTypes,
-  codegenContext: CodegenContext,
-  skippedContext: SkippedContext,
+  codegenContext: CodegenContext[],
+  skippedContext: SkippedContext[],
 ) {
   const cacheDir = getCacheFullDir(cwd, config.cacheDir);
   const validTsxCaches = [
@@ -28,13 +29,16 @@ async function removeOldTsxCaches(
   for (const tsx of oldTsxPaths) await rimraf(tsx);
 }
 
-export default async function gen(commandOpts: CommandOpts): Promise<void> {
+export default async function gen({
+  cwd,
+  configFilePath,
+}: CommandOpts): Promise<void> {
   logUpdate(PRINT_PREFIX + 'Running graphql-codegen...');
 
-  const { cwd, configFilePath } = commandOpts;
   const [config, configHash] = await loadConfig(cwd, configFilePath);
+  const execContext = createExecContext(cwd, config, configHash);
 
-  const [generated, skipped] = await fullGenerate(cwd, config, configHash);
+  const [generated, skipped] = await fullGenerate(execContext);
 
   await removeOldTsxCaches(cwd, config, generated, skipped);
 

@@ -4,6 +4,7 @@ import { createTransformer, getCacheKey as getBabelCacheKey } from 'babel-jest';
 import graphQLTransformer from 'jest-transform-graphql';
 import { join as pathJoin, relative as pathRelative } from 'path';
 import { readFileSync } from 'fs';
+import createExecContext from './lib/exec-context';
 import { loadConfigSync } from './lib/load-config';
 import { createPaths } from './lib/paths';
 
@@ -23,7 +24,8 @@ const jestTransformer: Transformer = {
   },
   process(input, filePath, jestConfig, transformOptions) {
     const { rootDir } = jestConfig;
-    const [config] = loadConfigSync(rootDir);
+    const [config, configHash] = loadConfigSync(rootDir);
+    const execContext = createExecContext(rootDir, config, configHash);
     const fileSchema = config.schema as string;
     const schemaFullPath = pathJoin(rootDir, fileSchema);
 
@@ -37,9 +39,8 @@ const jestTransformer: Transformer = {
     }
 
     const { tsxFullPath } = createPaths(
-      rootDir,
+      execContext,
       pathRelative(rootDir, filePath),
-      config.cacheDir,
     );
 
     const tsxContent = readFileSync(tsxFullPath, 'utf-8');

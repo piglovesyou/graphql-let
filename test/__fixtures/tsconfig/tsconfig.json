@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es3",
+    "target": "esnext",
     "module": "commonjs",
     "jsx": "preserve",
     "outDir": "./dist",

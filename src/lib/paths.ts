@@ -1,4 +1,5 @@
 import path from 'path';
+import { ExecContext } from './exec-context';
 
 export type CreatedPaths = {
   gqlRelPath: string;
@@ -22,12 +23,9 @@ export const getCacheFullDir = (cwd: string, cacheDir?: string) => {
 };
 
 export function createPaths(
-  cwd: string,
+  { cwd, cacheFullDir }: ExecContext,
   gqlRelPath: string,
-  customCacheDir?: string,
 ): CreatedPaths {
-  const cacheFullDir = getCacheFullDir(cwd, customCacheDir);
-
   const tsxRelPath = `${gqlRelPath}.tsx`;
   const tsxFullPath = path.join(cacheFullDir, tsxRelPath);
   const dtsRelPath = `${gqlRelPath}.d.ts`;

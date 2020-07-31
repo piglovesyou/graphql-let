@@ -1,5 +1,6 @@
 import makeDir from 'make-dir';
 import path from 'path';
+import slash from 'slash';
 import {
   createCompilerHost,
   createProgram,
@@ -10,7 +11,9 @@ import {
   findConfigFile,
   readConfigFile,
 } from 'typescript';
+import { ExecContext } from './exec-context';
 import { withHash, writeFile } from './file';
+import { CodegenContext } from './full-generate';
 import { ConfigTypes } from './types';
 
 const essentialCompilerOptions: CompilerOptions = {
@@ -20,9 +23,9 @@ const essentialCompilerOptions: CompilerOptions = {
   noEmit: false,
 };
 
-function resolveCompilerOptions(configObj: ConfigTypes) {
-  const fileName = configObj.TSConfigFile || 'tsconfig.json';
-  const configPath = findConfigFile(process.cwd(), sys.fileExists, fileName);
+function resolveCompilerOptions(cwd: string, { TSConfigFile }: ConfigTypes) {
+  const fileName = TSConfigFile || 'tsconfig.json';
+  const configPath = findConfigFile(cwd, sys.fileExists, fileName);
   let compilerOptions = essentialCompilerOptions;
 
   if (configPath != null) {
@@ -32,7 +35,7 @@ function resolveCompilerOptions(configObj: ConfigTypes) {
     if (config != null) {
       const settings = convertCompilerOptionsFromJson(
         { ...config['compilerOptions'], ...essentialCompilerOptions },
-        process.cwd(),
+        cwd,
       );
       if (settings.errors.length > 0) {
         console.log(settings.errors);
@@ -51,16 +54,29 @@ function resolveCompilerOptions(configObj: ConfigTypes) {
 }
 
 export function genDts(
-  tsxFullPaths: string[],
-  configObj: ConfigTypes,
+  { cwd, config }: ExecContext,
+  codegenContext: CodegenContext[],
 ): string[] {
-  const compilerOptions = resolveCompilerOptions(configObj);
+  const compilerOptions = resolveCompilerOptions(cwd, config);
+  const tsxFullPaths = codegenContext.map(({ tsxFullPath }) =>
+    slash(tsxFullPath),
+  );
+  const tsxFullPathSet = new Set(tsxFullPaths);
 
   const compilerHost = createCompilerHost(compilerOptions);
 
   const dtsContents: string[] = [];
-  compilerHost.writeFile = (name, dtsContent) => {
-    // XXX: How to improve memory usage?
+  compilerHost.writeFile = (
+    name,
+    dtsContent,
+    writeByteOrderMark,
+    onError,
+    sourceFiles,
+  ) => {
+    // TypeScript can write `d.ts`s of submodules imported from `.tsx`s.
+    // We only pick up `.d.ts`s for `.tsx` entry points.
+    const [{ fileName }] = sourceFiles!;
+    if (!tsxFullPathSet.has(fileName)) return;
     dtsContents.push(dtsContent);
   };
 
@@ -94,19 +110,23 @@ export function genDts(
     throw new Error('Failed to generate .d.ts.');
   }
 
+  if (codegenContext.length !== dtsContents.length) {
+    throw new Error(
+      `Never supposed to be here. Please make an issue on GitHub.`,
+    );
+  }
+
   return dtsContents;
 }
 
 export async function processGenDts(
-  dtsFullPath: string,
-  tsxFullPath: string,
-  gqlRelPath: string,
-  sourceHash: string,
-  config: ConfigTypes,
+  execContext: ExecContext,
+  codegenContext: CodegenContext,
 ) {
+  const { dtsFullPath, gqlHash } = codegenContext;
   await makeDir(path.dirname(dtsFullPath));
-  const [dtsContent] = await genDts([tsxFullPath], config);
+  const [dtsContent] = await genDts(execContext, [codegenContext]);
   if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
-  await writeFile(dtsFullPath, withHash(sourceHash, dtsContent));
+  await writeFile(dtsFullPath, withHash(gqlHash, dtsContent));
   return dtsContent;
 }

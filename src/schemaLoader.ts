@@ -1,5 +1,6 @@
 import logUpdate from 'log-update';
 import { loader } from 'webpack';
+import createExecContext from './lib/exec-context';
 import {
   processDtsForCodegenContext,
   prepareFullGenerate,
@@ -15,17 +16,15 @@ import { PRINT_PREFIX } from './lib/print';
 const processGraphQLCodegenSchemaLoader = memoize(
   async (cwd: string) => {
     const [config, configHash] = await loadConfig(cwd);
+    const execContext = createExecContext(cwd, config, configHash);
 
-    const codegenContext: CodegenContext = [];
-    const skippedContext: SkippedContext = [];
+    const codegenContext: CodegenContext[] = [];
+    const skippedContext: SkippedContext[] = [];
 
-    const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(cwd, config);
+    const gqlRelPaths = await prepareFullGenerate(execContext);
 
     const { schemaHash } = await processResolverTypesIfNeeded(
-      cwd,
-      config,
-      configHash,
-      codegenOpts,
+      execContext,
       codegenContext,
       skippedContext,
     );
@@ -33,16 +32,14 @@ const processGraphQLCodegenSchemaLoader = memoize(
     // Only if schema was changed, documents are also handled for quick startup of webpack dev.
     if (codegenContext.length) {
       await processDocuments(
+        execContext,
         gqlRelPaths,
-        cwd,
-        config,
         schemaHash,
-        codegenOpts,
         codegenContext,
         skippedContext,
       );
 
-      await processDtsForCodegenContext(codegenContext, config);
+      await processDtsForCodegenContext(execContext, codegenContext);
     }
   },
   () => 'schemaLoader',
