@@ -119,6 +119,11 @@
     "do-sync": "*",
     "slash": ">=3.0.0"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "*.ts": [
       "yarn fix-js",
@@ -157,10 +162,5 @@
     "test": "jest",
     "build": "yarn clean && yarn compile",
     "prepublishOnly": "yarn lint && yarn typecheck && yarn build && yarn test"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   }
 }

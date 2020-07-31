@@ -1,6 +1,6 @@
 # graphql-let [![](https://github.com/piglovesyou/graphql-let/workflows/Node%20CI/badge.svg)](https://github.com/piglovesyou/graphql-let/actions) [![npm version](https://badge.fury.io/js/graphql-let.svg)](https://badge.fury.io/js/graphql-let)
 
-A tool delivering typed graphql-codegen results closer to you.
+A tool to get typed graphql-codegen results closer to you.
 
 Try
 [the Next.js example](https://github.com/zeit/next.js/blob/canary/examples/with-typescript-graphql/README.md#readme)
@@ -23,7 +23,7 @@ that integrates graphql-let.
 One of the strengths of GraphQL is
 [enforcing data types on runtime](https://graphql.github.io/graphql-spec/June2018/#sec-Value-Completion).
 Further, TypeScript and
-[GraphQL Code Generator](https://graphql-code-generator.com/) (graphql-codegen)
+[GraphQL code generator](https://graphql-code-generator.com/) (graphql-codegen)
 make it safer by typing data statically, so you can write truly type-protected
 code with rich IDE assists.
 
