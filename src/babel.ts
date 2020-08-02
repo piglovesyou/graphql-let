@@ -73,6 +73,138 @@ export const { ensureExecContext, clearExecContext } = (() => {
   return { ensureExecContext, clearExecContext };
 })();
 
+export function processProgramPathSync(
+  execContext: ExecContext,
+  schemaHash: string,
+  programPath: NodePath<t.Program>,
+  onlyMatchImportSuffix: boolean,
+  importName: string,
+  sourceRelPath: string,
+  sourceFullPath: string,
+) {
+  const tagNames: string[] = [];
+  const pendingDeletion: {
+    defaultSpecifier:
+      | t.ImportSpecifier
+      | t.ImportDefaultSpecifier
+      | t.ImportNamespaceSpecifier;
+    path: NodePath<t.ImportDeclaration>;
+  }[] = [];
+  const gqlCallExpressionPaths: [
+    NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
+    string,
+  ][] = [];
+  let hasError = false;
+
+  function processTargetCalls(
+    path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
+    nodeName: string,
+  ) {
+    if (
+      tagNames.some((name) => {
+        return isIdentifier((path.get(nodeName) as any).node, { name });
+      })
+    ) {
+      try {
+        let value = '';
+        path.traverse({
+          TemplateLiteral(path: NodePath<t.TemplateLiteral>) {
+            if (path.node.quasis.length !== 1)
+              printError(
+                new Error(
+                  `TemplateLiteral of the argument must not contain arguments.`,
+                ),
+              );
+            value = path.node.quasis[0].value.raw;
+          },
+          StringLiteral(path: NodePath<t.StringLiteral>) {
+            value = path.node.value;
+          },
+        });
+        if (!value) printError(new Error(`Check argument.`));
+        gqlCallExpressionPaths.push([path, value]);
+      } catch (error) {
+        printError(error);
+        hasError = true;
+      }
+    }
+  }
+
+  programPath.traverse({
+    ImportDeclaration(path: NodePath<t.ImportDeclaration>) {
+      const pathValue = path.node.source.value;
+      if (
+        onlyMatchImportSuffix
+          ? pathValue.endsWith(importName)
+          : pathValue === importName
+      ) {
+        const defaultSpecifier = path.node.specifiers.find((specifier) => {
+          return isImportDefaultSpecifier(specifier);
+        });
+
+        if (defaultSpecifier) {
+          tagNames.push(defaultSpecifier.local.name);
+          pendingDeletion.push({
+            defaultSpecifier,
+            path,
+          });
+        }
+      }
+    },
+    CallExpression(path: NodePath<t.CallExpression>) {
+      processTargetCalls(path, 'callee');
+    },
+    TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {
+      processTargetCalls(path, 'tag');
+    },
+  });
+
+  // TODO: Handle error
+
+  if (!gqlCallExpressionPaths.length) return;
+
+  const rv: GqlCodegenContext = gqlCompileSync({
+    hostDirname: __dirname,
+    execContext,
+    schemaHash,
+    sourceRelPath,
+    gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
+  });
+  if (gqlCallExpressionPaths.length !== rv.length) throw new Error('what');
+
+  for (const [i, [callExpressionPath]] of gqlCallExpressionPaths.entries()) {
+    const { gqlContentHash, tsxFullPath } = rv[i]!;
+    const tsxRelPathFromSource =
+      './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
+
+    const localVarName = `V${gqlContentHash}`;
+
+    const importNode = importDeclaration(
+      [importNamespaceSpecifier(identifier(localVarName))],
+      valueToNode(tsxRelPathFromSource),
+    );
+
+    programPath.unshiftContainer('body', importNode);
+    callExpressionPath.replaceWithSourceString(localVarName);
+  }
+
+  // Only delete import statement or specifier when there is no error
+  if (!hasError) {
+    for (const { defaultSpecifier, path: pathForDeletion } of pendingDeletion) {
+      if (pathForDeletion.node.specifiers.length === 1) {
+        pathForDeletion.remove();
+      } else {
+        // TODO what's going on
+        pathForDeletion.node.specifiers = pathForDeletion.node.specifiers.filter(
+          (specifier) => {
+            return specifier !== defaultSpecifier;
+          },
+        );
+      }
+    }
+  }
+}
+
 // With all my respect, I cloned the source from
 // https://github.com/gajus/babel-plugin-graphql-tag/blob/master/src/index.js
 const configFunction = (
@@ -98,139 +230,15 @@ const configFunction = (
           cwd,
           configFilePath,
         );
-
-        const tagNames: string[] = [];
-        const pendingDeletion: {
-          defaultSpecifier:
-            | t.ImportSpecifier
-            | t.ImportDefaultSpecifier
-            | t.ImportNamespaceSpecifier;
-          path: NodePath<t.ImportDeclaration>;
-        }[] = [];
-        const gqlCallExpressionPaths: [
-          NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
-          string,
-        ][] = [];
-        let hasError = false;
-
-        function processTargetCalls(
-          path:
-            | NodePath<t.TaggedTemplateExpression>
-            | NodePath<t.CallExpression>,
-          nodeName: string,
-        ) {
-          if (
-            tagNames.some((name) => {
-              return isIdentifier((path.get(nodeName) as any).node, { name });
-            })
-          ) {
-            try {
-              let value = '';
-              path.traverse({
-                TemplateLiteral(path: NodePath<t.TemplateLiteral>) {
-                  if (path.node.quasis.length !== 1)
-                    printError(
-                      new Error(
-                        `TemplateLiteral of the argument must not contain arguments.`,
-                      ),
-                    );
-                  value = path.node.quasis[0].value.raw;
-                },
-                StringLiteral(path: NodePath<t.StringLiteral>) {
-                  value = path.node.value;
-                },
-              });
-              if (!value) printError(new Error(`Check argument.`));
-              gqlCallExpressionPaths.push([path, value]);
-            } catch (error) {
-              printError(error);
-              hasError = true;
-            }
-          }
-        }
-
-        programPath.traverse({
-          ImportDeclaration(path: NodePath<t.ImportDeclaration>) {
-            const pathValue = path.node.source.value;
-            if (
-              onlyMatchImportSuffix
-                ? pathValue.endsWith(importName)
-                : pathValue === importName
-            ) {
-              const defaultSpecifier = path.node.specifiers.find(
-                (specifier) => {
-                  return isImportDefaultSpecifier(specifier);
-                },
-              );
-
-              if (defaultSpecifier) {
-                tagNames.push(defaultSpecifier.local.name);
-                pendingDeletion.push({
-                  defaultSpecifier,
-                  path,
-                });
-              }
-            }
-          },
-          CallExpression(path: NodePath<t.CallExpression>) {
-            processTargetCalls(path, 'callee');
-          },
-          TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {
-            processTargetCalls(path, 'tag');
-          },
-        });
-
-        // TODO: Handle error
-
-        if (!gqlCallExpressionPaths.length) return;
-
-        const rv: GqlCodegenContext = gqlCompileSync({
-          hostDirname: __dirname,
+        processProgramPathSync(
           execContext,
           schemaHash,
+          programPath,
+          onlyMatchImportSuffix,
+          importName,
           sourceRelPath,
-          gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
-        });
-        if (gqlCallExpressionPaths.length !== rv.length)
-          throw new Error('what');
-
-        for (const [
-          i,
-          [callExpressionPath],
-        ] of gqlCallExpressionPaths.entries()) {
-          const { gqlContentHash, tsxFullPath } = rv[i]!;
-          const tsxRelPathFromSource =
-            './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
-
-          const localVarName = `V${gqlContentHash}`;
-
-          const importNode = importDeclaration(
-            [importNamespaceSpecifier(identifier(localVarName))],
-            valueToNode(tsxRelPathFromSource),
-          );
-
-          programPath.unshiftContainer('body', importNode);
-          callExpressionPath.replaceWithSourceString(localVarName);
-        }
-
-        // Only delete import statement or specifier when there is no error
-        if (!hasError) {
-          for (const {
-            defaultSpecifier,
-            path: pathForDeletion,
-          } of pendingDeletion) {
-            if (pathForDeletion.node.specifiers.length === 1) {
-              pathForDeletion.remove();
-            } else {
-              // TODO what's going on
-              pathForDeletion.node.specifiers = pathForDeletion.node.specifiers.filter(
-                (specifier) => {
-                  return specifier !== defaultSpecifier;
-                },
-              );
-            }
-          }
-        }
+          sourceFullPath,
+        );
       },
     },
   };

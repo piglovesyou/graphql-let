@@ -81,7 +81,7 @@ const getPaths = (
     dtsFullPath,
   };
 };
-const parserOption: ParserOptions = {
+export const parserOption: ParserOptions = {
   sourceType: 'module',
   plugins: ['typescript', 'jsx'],
 };

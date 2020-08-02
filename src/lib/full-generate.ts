@@ -1,11 +1,14 @@
+import * as t from '@babel/types';
 import glob from 'globby';
 import logUpdate from 'log-update';
 import makeDir from 'make-dir';
 import { join as pathJoin, dirname } from 'path';
+import { BabelOptions, processProgramPathSync } from '../babel';
 import { genDts } from './dts';
 import { ExecContext } from './exec-context';
+import { parserOption } from './gql-compile';
 import { createHash } from './hash';
-import { CreatedPaths, createPaths } from './paths';
+import { CreatedPaths, createPaths, isTypeScriptPath } from './paths';
 import { PRINT_PREFIX } from './print';
 import {
   processGenerateResolverTypes,
@@ -13,6 +16,9 @@ import {
 } from './resolver-types';
 import { processGraphQLCodegen } from './graphql-codegen';
 import { readFile, writeFile, withHash, readHash } from './file';
+import traverse, { NodePath } from '@babel/traverse';
+import { parse } from '@babel/parser';
+import { loadOptions } from '@babel/core';
 
 export type CodegenContext = CreatedPaths & {
   gqlHash: string;
@@ -131,19 +137,27 @@ export async function processDocuments(
   }
 }
 
-export async function prepareFullGenerate({ cwd, config }: ExecContext) {
-  const gqlRelPaths = await glob(config.documents, {
+export async function prepareFullGenerate({
+  cwd,
+  config,
+}: ExecContext): Promise<{ gqlRelPaths: string[]; sourceRelPaths: string[] }> {
+  const documentPaths = await glob(config.documents, {
     cwd,
     gitignore: config.respectGitIgnore,
   });
-  if (gqlRelPaths.length === 0) {
+  if (documentPaths.length === 0) {
     throw new Error(
       `No GraphQL documents are found from the path ${JSON.stringify(
         config.documents,
       )}. Check "documents" in .graphql-let.yml.`,
     );
   }
-  return gqlRelPaths;
+  const gqlRelPaths: string[] = [];
+  const sourceRelPaths: string[] = [];
+  for (const p of documentPaths) {
+    isTypeScriptPath(p) ? sourceRelPaths.push(p) : gqlRelPaths.push(p);
+  }
+  return { gqlRelPaths, sourceRelPaths };
 }
 
 export async function processDtsForCodegenContext(
@@ -164,13 +178,57 @@ export async function processDtsForCodegenContext(
   }
 }
 
+function getGraphQLLetBabelOption(babelOptions: any): BabelOptions {
+  for (const { key, options } of babelOptions.plugins || []) {
+    if (key.includes('graphql-let/')) {
+      return options;
+    }
+  }
+  return {};
+}
+
+async function processSources(
+  execContext: ExecContext,
+  schemaHash: string,
+  sourceRelPaths: string[],
+) {
+  const { cwd, config, codegenOpts } = execContext;
+  const babelOptions = await loadOptions({ cwd });
+  const {
+    // configFilePath,
+    importName = 'graphql-let',
+    onlyMatchImportSuffix = false,
+    // strip = false,
+  } = getGraphQLLetBabelOption(babelOptions);
+  for (const sourceRelPath of sourceRelPaths) {
+    const sourceFullPath = pathJoin(cwd, sourceRelPath);
+    const sourceContent = await readFile(pathJoin(cwd, sourceRelPath), 'utf-8');
+    const sourceAST = parse(sourceContent, parserOption);
+    traverse(sourceAST, {
+      Program(programPath: NodePath<t.Program>) {
+        processProgramPathSync(
+          execContext,
+          schemaHash,
+          programPath,
+          onlyMatchImportSuffix,
+          importName,
+          sourceRelPath,
+          sourceFullPath,
+        );
+      },
+    });
+  }
+}
+
 async function fullGenerate(
   execContext: ExecContext,
 ): Promise<[CodegenContext[], SkippedContext[]]> {
   const codegenContext: CodegenContext[] = [];
   const skippedContext: SkippedContext[] = [];
 
-  const gqlRelPaths = await prepareFullGenerate(execContext);
+  const { gqlRelPaths, sourceRelPaths } = await prepareFullGenerate(
+    execContext,
+  );
 
   const { schemaHash } = await processResolverTypesIfNeeded(
     execContext,
@@ -185,6 +243,8 @@ async function fullGenerate(
     codegenContext,
     skippedContext,
   );
+
+  await processSources(execContext, schemaHash, sourceRelPaths);
 
   if (codegenContext.length)
     await processDtsForCodegenContext(execContext, codegenContext);

@@ -21,7 +21,7 @@ const processGraphQLCodegenSchemaLoader = memoize(
     const codegenContext: CodegenContext[] = [];
     const skippedContext: SkippedContext[] = [];
 
-    const gqlRelPaths = await prepareFullGenerate(execContext);
+    const { gqlRelPaths } = await prepareFullGenerate(execContext);
 
     const { schemaHash } = await processResolverTypesIfNeeded(
       execContext,
