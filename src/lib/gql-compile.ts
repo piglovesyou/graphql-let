@@ -7,7 +7,6 @@ import slash from 'slash';
 import { genDts } from './dts';
 import { ExecContext } from './exec-context';
 import { rimraf } from './file';
-// TODO
 import { createWriteStream } from 'fs';
 import { stripIgnoredCharacters } from 'graphql';
 import { parse, ParserOptions } from '@babel/parser';
@@ -17,8 +16,6 @@ import { writeFile } from './file';
 import { createHash } from './hash';
 import memoize from './memoize';
 import * as t from '@babel/types';
-
-// const packageJsonContent = JSON.stringify({ types: 'index' }, null, 2);
 
 export type GqlCodegenContext = {
   gqlContent: string;
