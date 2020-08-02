@@ -12,7 +12,7 @@ const rel = (relPath: string) => pathJoin(cwd, relPath);
 describe('"graphql-let" command', () => {
   beforeAll(async () => {
     await rename(rel('_gitignore'), rel('.gitignore'));
-    await rimraf(pathJoin(__dirname, '../__generated__'));
+    await rimraf(rel('__generated__'));
     await rimraf(rel('**/*.graphql.d.ts'));
     await rimraf(rel('**/*.graphqls.d.ts'));
   }, 60 * 1000);
@@ -55,12 +55,9 @@ describe('"graphql-let" command', () => {
       expect(content).toMatchSnapshot(filename);
     });
 
-    const tsxResults = await glob(
-      'test/__fixtures/gen/__generated__/**/*.tsx',
-      {
-        cwd,
-      },
-    );
+    const tsxResults = await glob('__generated__/**/*.tsx', {
+      cwd,
+    });
     strictEqual(tsxResults.length, 3);
     strictEqual(
       tsxResults.find((r) => r.includes('shouldBeIgnored1')),
@@ -82,13 +79,13 @@ describe('"graphql-let" command', () => {
   test(`runs twice and keeps valid caches`, async () => {
     await gen({ cwd });
     await gen({ cwd });
-    const actual = await glob('test/__fixtures/gen/__generated__/**/*.tsx', {
+    const actual = await glob('__generated__/**/*.tsx', {
       cwd,
     });
-    deepStrictEqual(actual, [
-      'test/__fixtures/gen/__generated__/pages/viewer.graphql.tsx',
-      'test/__fixtures/gen/__generated__/pages/viewer2.graphql.tsx',
-      'test/__fixtures/gen/__generated__/schema/type-defs.graphqls.tsx',
+    deepStrictEqual(actual.sort(), [
+      '__generated__/pages/viewer.graphql.tsx',
+      '__generated__/pages/viewer2.graphql.tsx',
+      '__generated__/schema/type-defs.graphqls.tsx',
     ]);
   });
 

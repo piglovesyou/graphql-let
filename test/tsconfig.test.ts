@@ -143,7 +143,7 @@ describe('"graphql-let" command', () => {
         console.log(e);
         error = e;
       }
-      ok(error === null);
+      ok(error === null, error);
       expect(fetch).toHaveBeenCalledTimes(1);
       expect(fetch).toHaveBeenCalledWith(
         'http://localhost:3000/graphql',

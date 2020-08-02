@@ -2,40 +2,34 @@ import glob from 'globby';
 import logUpdate from 'log-update';
 import makeDir from 'make-dir';
 import { join as pathJoin, dirname } from 'path';
-import createCodegenOpts, { PartialCodegenOpts } from './create-codegen-opts';
 import { genDts } from './dts';
+import { ExecContext } from './exec-context';
 import { createHash } from './hash';
-import { createPaths } from './paths';
+import { CreatedPaths, createPaths } from './paths';
 import { PRINT_PREFIX } from './print';
 import {
   processGenerateResolverTypes,
   shouldGenResolverTypes,
 } from './resolver-types';
-import { ConfigTypes } from './types';
 import { processGraphQLCodegen } from './graphql-codegen';
 import { readFile, writeFile, withHash, readHash } from './file';
 
-export type CodegenContext = {
-  tsxFullPath: string;
-  dtsFullPath: string;
-  gqlRelPath: string;
+export type CodegenContext = CreatedPaths & {
   gqlHash: string;
   dtsContentDecorator: (content: string) => string;
-}[];
+};
 
 export type SkippedContext = {
   tsxFullPath: string;
   dtsFullPath: string;
-}[];
+};
 
 export async function processResolverTypesIfNeeded(
-  cwd: string,
-  config: ConfigTypes,
-  configHash: string,
-  codegenOpts: PartialCodegenOpts,
-  codegenContext: CodegenContext,
-  skippedContext: SkippedContext,
+  execContext: ExecContext,
+  codegenContext: CodegenContext[],
+  skippedContext: SkippedContext[],
 ) {
+  const { cwd, config, configHash, codegenOpts } = execContext;
   // To pass config change on subsequent generation,
   // configHash should be primary hash seed.
   let schemaHash = configHash;
@@ -45,7 +39,7 @@ export async function processResolverTypesIfNeeded(
     const schemaFullPath = pathJoin(cwd, fileSchema);
     const content = await readFile(schemaFullPath);
     schemaHash = createHash(schemaHash + content);
-    const createdPaths = createPaths(cwd, fileSchema, config.cacheDir);
+    const createdPaths = createPaths(execContext, fileSchema);
 
     const shouldUpdate =
       schemaHash !== (await readHash(createdPaths.tsxFullPath)) ||
@@ -60,11 +54,7 @@ export async function processResolverTypesIfNeeded(
           `Local schema files are detected. Generating resolver types...`,
       );
 
-      const {
-        tsxFullPath,
-        dtsFullPath,
-        gqlRelPath,
-      } = await processGenerateResolverTypes(
+      await processGenerateResolverTypes(
         schemaHash,
         config,
         codegenOpts,
@@ -73,9 +63,7 @@ export async function processResolverTypesIfNeeded(
       );
 
       codegenContext.push({
-        tsxFullPath,
-        dtsFullPath,
-        gqlRelPath,
+        ...createdPaths,
         gqlHash: schemaHash,
         dtsContentDecorator: (s) => {
           return `${s}
@@ -99,22 +87,18 @@ export default typeof DocumentNode
 }
 
 export async function processDocuments(
+  execContext: ExecContext,
   gqlRelPaths: string[],
-  cwd: string,
-  config: ConfigTypes,
   schemaHash: string,
-  codegenOpts: PartialCodegenOpts,
-  codegenContext: CodegenContext,
-  skippedContext: SkippedContext,
+  codegenContext: CodegenContext[],
+  skippedContext: SkippedContext[],
 ) {
+  const { cwd, config, codegenOpts } = execContext;
   for (const gqlRelPath of gqlRelPaths) {
     const gqlContent = await readFile(pathJoin(cwd, gqlRelPath), 'utf-8');
 
-    const { tsxFullPath, dtsFullPath } = createPaths(
-      cwd,
-      gqlRelPath,
-      config.cacheDir,
-    );
+    const createdPaths = createPaths(execContext, gqlRelPath);
+    const { tsxFullPath, dtsFullPath } = createdPaths;
 
     // Here I add "schemaHash" as a hash seed. Types of GraphQL documents
     // basically depends on schema, which change should effect to document results.
@@ -137,9 +121,7 @@ export async function processDocuments(
         documents: gqlRelPath,
       });
       codegenContext.push({
-        tsxFullPath,
-        dtsFullPath,
-        gqlRelPath,
+        ...createdPaths,
         gqlHash,
         dtsContentDecorator: (s) => s,
       });
@@ -149,8 +131,7 @@ export async function processDocuments(
   }
 }
 
-export async function prepareFullGenerate(cwd: string, config: ConfigTypes) {
-  const codegenOpts = await createCodegenOpts(config);
+export async function prepareFullGenerate({ cwd, config }: ExecContext) {
   const gqlRelPaths = await glob(config.documents, {
     cwd,
     gitignore: config.respectGitIgnore,
@@ -162,18 +143,15 @@ export async function prepareFullGenerate(cwd: string, config: ConfigTypes) {
       )}. Check "documents" in .graphql-let.yml.`,
     );
   }
-  return { codegenOpts, gqlRelPaths };
+  return gqlRelPaths;
 }
 
 export async function processDtsForCodegenContext(
-  codegenContext: CodegenContext,
-  config: ConfigTypes,
+  execContext: ExecContext,
+  codegenContext: CodegenContext[],
 ) {
   logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
-  const dtsContents = genDts(
-    codegenContext.map((s) => s.tsxFullPath),
-    config,
-  );
+  const dtsContents = genDts(execContext, codegenContext);
 
   await makeDir(dirname(codegenContext[0].dtsFullPath));
   for (const [i, dtsContent] of dtsContents.entries()) {
@@ -184,36 +162,29 @@ export async function processDtsForCodegenContext(
 }
 
 async function fullGenerate(
-  cwd: string,
-  config: ConfigTypes,
-  configHash: string,
-): Promise<[CodegenContext, SkippedContext]> {
-  const codegenContext: CodegenContext = [];
-  const skippedContext: SkippedContext = [];
+  execContext: ExecContext,
+): Promise<[CodegenContext[], SkippedContext[]]> {
+  const codegenContext: CodegenContext[] = [];
+  const skippedContext: SkippedContext[] = [];
 
-  const { codegenOpts, gqlRelPaths } = await prepareFullGenerate(cwd, config);
+  const gqlRelPaths = await prepareFullGenerate(execContext);
 
   const { schemaHash } = await processResolverTypesIfNeeded(
-    cwd,
-    config,
-    configHash,
-    codegenOpts,
+    execContext,
     codegenContext,
     skippedContext,
   );
 
   await processDocuments(
+    execContext,
     gqlRelPaths,
-    cwd,
-    config,
     schemaHash,
-    codegenOpts,
     codegenContext,
     skippedContext,
   );
 
   if (codegenContext.length)
-    await processDtsForCodegenContext(codegenContext, config);
+    await processDtsForCodegenContext(execContext, codegenContext);
 
   return [codegenContext, skippedContext];
 }

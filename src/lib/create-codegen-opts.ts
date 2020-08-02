@@ -3,9 +3,9 @@ import { ConfigTypes } from './types';
 
 export type PartialCodegenOpts = Pick<Types.GenerateOptions, 'config'>;
 
-export default async function createCodegenOpts(
+export default function createCodegenOpts(
   config: ConfigTypes,
-): Promise<PartialCodegenOpts> {
+): PartialCodegenOpts {
   return {
     config: {
       withHOC: false, // True by default

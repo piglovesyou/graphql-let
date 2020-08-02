@@ -1,8 +1,9 @@
-schema: schema/type-defs.graphqls
+schema: lib/type-defs.graphqls
 documents: "**/*.graphql"
 plugins:
     - typescript
-    - typescript-operations
-    - typescript-react-apollo
 respectGitIgnore: true
+config:
+    mappers:
+        User: lib/user#User
 cacheDir: __generated__

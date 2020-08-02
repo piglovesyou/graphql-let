@@ -37,9 +37,10 @@ export async function processGenerateResolverTypes(
   schemaHash: string,
   config: ConfigTypes,
   codegenOpts: PartialCodegenOpts,
-  { dtsFullPath, dtsRelPath, gqlFullPath, tsxFullPath }: CreatedPaths,
+  createdPath: CreatedPaths,
   cwd: string,
-) {
+): Promise<void> {
+  const { gqlFullPath, tsxFullPath } = createdPath;
   await processGraphQLCodegen({
     cwd,
     schema: gqlFullPath,
@@ -50,14 +51,5 @@ export async function processGenerateResolverTypes(
     gqlHash: schemaHash,
   });
 
-  const schemaPathWithExtension = getSchemaPointerWithExtension(config.schema);
-  if (!schemaPathWithExtension) throw new Error('never');
-
-  return {
-    schemaHash,
-    tsxFullPath,
-    dtsFullPath,
-    dtsRelPath,
-    gqlRelPath: schemaPathWithExtension,
-  };
+  if (!getSchemaPointerWithExtension(config.schema)) throw new Error('never');
 }
