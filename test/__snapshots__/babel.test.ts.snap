@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Generated files are okay: fixtures/basic/node_modules/@types/graphql-let/index.d.ts 1`] = `
-"import Ta5b1d9187125652b08b1a55be5bf7de54696d6ee from './input-a5b1d9187125652b08b1a55be5bf7de54696d6ee.d.ts';
-export default function gql(gql: \`query Viewer { viewer { name } }\`): Ta5b1d9187125652b08b1a55be5bf7de54696d6ee.__AllExports;
+"import T3daf5b4311465bd8566d77d548e135871cc11646 from './input-3daf5b4311465bd8566d77d548e135871cc11646.d.ts';
+export default function gql(gql: \`query Viewer { viewer { name } }\`): T3daf5b4311465bd8566d77d548e135871cc11646.__AllExports;
 "
 `;
 
-exports[`Generated files are okay: fixtures/basic/node_modules/@types/graphql-let/input-a5b1d9187125652b08b1a55be5bf7de54696d6ee.d.ts 1`] = `
+exports[`Generated files are okay: fixtures/basic/node_modules/@types/graphql-let/input-3daf5b4311465bd8566d77d548e135871cc11646.d.ts 1`] = `
 "import * as ApolloReactCommon from '@apollo/client';
 import * as ApolloReactComponents from '@apollo/client/react/components';
 import * as ApolloReactHoc from '@apollo/client';
@@ -71,12 +71,12 @@ export declare type __AllExports = {
 exports[`Generated files are okay: fixtures/basic/node_modules/@types/graphql-let/store.json 1`] = `
 "{
   \\"input.tsx\\": {
-    \\"a5b1d9187125652b08b1a55be5bf7de54696d6ee\\": \\"query Viewer{viewer{name}}\\"
+    \\"3daf5b4311465bd8566d77d548e135871cc11646\\": \\"query Viewer{viewer{name}}\\"
   }
 }"
 `;
 
-exports[`Generated files are okay: fixtures/basic/node_modules/graphql-let/__generated__/input-a5b1d9187125652b08b1a55be5bf7de54696d6ee.tsx 1`] = `
+exports[`Generated files are okay: fixtures/basic/node_modules/graphql-let/__generated__/input-3daf5b4311465bd8566d77d548e135871cc11646.tsx 1`] = `
 "import gql from 'graphql-tag';
 import * as React from 'react';
 import * as ApolloReactCommon from '@apollo/client';
@@ -148,18 +148,18 @@ export type ViewerQueryResult = ApolloReactCommon.QueryResult<ViewerQuery, Viewe
 `;
 
 exports[`Generated files are okay: fixtures/tagged-template-call/node_modules/@types/graphql-let/index.d.ts 1`] = `
-"import Ta5b1d9187125652b08b1a55be5bf7de54696d6ee from './input-a5b1d9187125652b08b1a55be5bf7de54696d6ee.d.ts';
+"import T3daf5b4311465bd8566d77d548e135871cc11646 from './input-3daf5b4311465bd8566d77d548e135871cc11646.d.ts';
 export default function gql(gql: \`
     query Viewer {
         viewer {
             name
         }
     }
-\`): Ta5b1d9187125652b08b1a55be5bf7de54696d6ee.__AllExports;
+\`): T3daf5b4311465bd8566d77d548e135871cc11646.__AllExports;
 "
 `;
 
-exports[`Generated files are okay: fixtures/tagged-template-call/node_modules/@types/graphql-let/input-a5b1d9187125652b08b1a55be5bf7de54696d6ee.d.ts 1`] = `
+exports[`Generated files are okay: fixtures/tagged-template-call/node_modules/@types/graphql-let/input-3daf5b4311465bd8566d77d548e135871cc11646.d.ts 1`] = `
 "import * as ApolloReactCommon from '@apollo/client';
 import * as ApolloReactComponents from '@apollo/client/react/components';
 import * as ApolloReactHoc from '@apollo/client';
@@ -224,12 +224,12 @@ export declare type __AllExports = {
 exports[`Generated files are okay: fixtures/tagged-template-call/node_modules/@types/graphql-let/store.json 1`] = `
 "{
   \\"input.tsx\\": {
-    \\"a5b1d9187125652b08b1a55be5bf7de54696d6ee\\": \\"query Viewer{viewer{name}}\\"
+    \\"3daf5b4311465bd8566d77d548e135871cc11646\\": \\"query Viewer{viewer{name}}\\"
   }
 }"
 `;
 
-exports[`Generated files are okay: fixtures/tagged-template-call/node_modules/graphql-let/__generated__/input-a5b1d9187125652b08b1a55be5bf7de54696d6ee.tsx 1`] = `
+exports[`Generated files are okay: fixtures/tagged-template-call/node_modules/graphql-let/__generated__/input-3daf5b4311465bd8566d77d548e135871cc11646.tsx 1`] = `
 "import gql from 'graphql-tag';
 import * as React from 'react';
 import * as ApolloReactCommon from '@apollo/client';
