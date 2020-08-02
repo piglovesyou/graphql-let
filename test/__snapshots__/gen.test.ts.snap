@@ -13,7 +13,7 @@ import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactComponents from '@apollo/react-components';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -103,7 +103,7 @@ import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactComponents from '@apollo/react-components';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -189,7 +189,7 @@ exports[`"graphql-let" command generates number of .d.ts ignoring specified file
 
 import { GraphQLResolveInfo } from 'graphql';
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -344,7 +344,7 @@ import * as ApolloReactComponents from '@apollo/react-components';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export declare type Maybe<T> = T | null;
 export declare type Exact<T extends {
-    [key: string]: any;
+    [key: string]: unknown;
 }> = {
     [K in keyof T]: T[K];
 };
@@ -420,7 +420,7 @@ import * as ApolloReactComponents from '@apollo/react-components';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export declare type Maybe<T> = T | null;
 export declare type Exact<T extends {
-    [key: string]: any;
+    [key: string]: unknown;
 }> = {
     [K in keyof T]: T[K];
 };
@@ -493,7 +493,7 @@ exports[`"graphql-let" command generates number of .d.ts ignoring specified file
 import { GraphQLResolveInfo } from 'graphql';
 export declare type Maybe<T> = T | null;
 export declare type Exact<T extends {
-    [key: string]: any;
+    [key: string]: unknown;
 }> = {
     [K in keyof T]: T[K];
 };
@@ -602,7 +602,7 @@ exports[`"graphql-let" command passes config to graphql-codegen as expected
 import { GraphQLResolveInfo } from 'graphql';
 export declare type Maybe<T> = T | null;
 export declare type Exact<T extends {
-    [key: string]: any;
+    [key: string]: unknown;
 }> = {
     [K in keyof T]: T[K];
 };

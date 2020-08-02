@@ -3,7 +3,6 @@ import jestTransformer from '../src/jestTransformer';
 import compiler from './__tools/compile';
 import { join as pathJoin } from 'path';
 import { rimraf } from './__tools/file';
-import { readFileSync } from 'fs';
 
 const cwd = pathJoin(__dirname, '__fixtures/jestTransformer');
 const jestConfig = { rootDir: cwd } as Config.ProjectConfig;
@@ -26,22 +25,6 @@ describe('graphql-let/jestTransformer', () => {
       const fullPath = pathJoin(cwd, fileName);
       const transformedContent = jestTransformer.process(
         fileData!,
-        fullPath,
-        jestConfig,
-      );
-      expect(transformedContent).toMatchSnapshot();
-    },
-    60 * 1000,
-  );
-
-  test(
-    'transforms .graphqls',
-    () => {
-      const fileName = 'schema/type-defs.graphqls';
-      const fullPath = pathJoin(cwd, fileName);
-      const fileData = readFileSync(fullPath, 'utf-8');
-      const transformedContent = jestTransformer.process(
-        fileData,
         fullPath,
         jestConfig,
       );

@@ -1,27 +1,25 @@
 import { extname } from 'path';
 import { PartialCodegenOpts } from './create-codegen-opts';
 import { ConfigTypes } from './config';
-import { CreatedPaths, isURL } from './paths';
+import { CreatedPaths } from './paths';
 import { PRINT_PREFIX } from './print';
 import { processGraphQLCodegen } from './graphql-codegen';
 
 // Currently glob for schema is not allowed.
-function getSchemaPointerWithExtension(
+function isLocalFilePathWithExtension(
   s: string | Record<string, any>,
-): string | undefined {
-  if (typeof s !== 'string') return undefined;
-  if (extname(s).length) return s;
-  return undefined;
+): boolean {
+  if (typeof s !== 'string') return false;
+  if (extname(s).length) return true;
+  return false;
 }
 
 export function shouldGenResolverTypes(config: ConfigTypes): boolean {
-  if (typeof config.schema === 'string' && isURL(config.schema)) return false;
-
   try {
     require('@graphql-codegen/typescript');
     require('@graphql-codegen/typescript-resolvers');
 
-    if (getSchemaPointerWithExtension(config.schema)) return true;
+    if (isLocalFilePathWithExtension(config.schema)) return true;
     console.info(
       PRINT_PREFIX +
         'Failed to generate Resolver Types. You have to specify at least one schema (glob) path WITH an extension, such as "**/*.graphqls"',
@@ -51,5 +49,5 @@ export async function processGenerateResolverTypes(
     gqlHash: schemaHash,
   });
 
-  if (!getSchemaPointerWithExtension(config.schema)) throw new Error('never');
+  if (!isLocalFilePathWithExtension(config.schema)) throw new Error('never');
 }
