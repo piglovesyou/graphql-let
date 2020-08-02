@@ -4,6 +4,7 @@ import { relative, dirname, join as pathJoin } from 'path';
 import { declare } from '@babel/helper-plugin-utils';
 import doSync from 'do-sync';
 import slash from 'slash';
+import createExecContext, { ExecContext } from './lib/exec-context';
 // import createDebug from 'debug';
 import { readFileSync } from './lib/file';
 import { GqlCodegenContext, GqlCompileArgs } from './lib/gql-compile';
@@ -49,16 +50,18 @@ export type BabelOptions = {
   onlyMatchImportSuffix?: boolean;
 };
 
-const ensureConfig = (() => {
-  let config: ConfigTypes | null = null;
+const ensureExecContext = (() => {
+  let execContext: ExecContext | null = null;
+  // let config: ConfigTypes | null = null;
   let schemaHash: string | null = null;
-  return (cwd: string, configFilePath: string): [ConfigTypes, string] => {
-    if (config && schemaHash) {
-      return [config, schemaHash];
+
+  return (cwd: string, configFilePath: string): [ExecContext, string] => {
+    if (execContext && schemaHash) {
+      return [execContext, schemaHash];
     }
     const [_config, configHash] = loadConfigSync(cwd, configFilePath);
     // TODO: refactor with create-codegen-opts.ts
-    config = {
+    const config = {
       ..._config,
       config: {
         withHOC: false, // True by default
@@ -66,6 +69,7 @@ const ensureConfig = (() => {
         ..._config.config,
       },
     };
+    execContext = createExecContext(cwd, config, configHash);
 
     schemaHash = configHash;
     if (shouldGenResolverTypes(config)) {
@@ -74,7 +78,7 @@ const ensureConfig = (() => {
       const content = readFileSync(schemaFullPath);
       schemaHash = createHash(schemaHash + content);
     }
-    return [config, schemaHash];
+    return [execContext, schemaHash];
   };
 })();
 
@@ -99,11 +103,11 @@ const configFunction = (
         const sourceFullPath = state.file.opts.filename;
         const sourceRelPath = relative(cwd, sourceFullPath);
 
-        const [graphqlLetConfig, schemaHash] = ensureConfig(
+        const [execContext, schemaHash] = ensureExecContext(
           cwd,
           configFilePath,
         );
-        const cacheRelDir = graphqlLetConfig.cacheDir;
+        // const cacheRelDir = graphqlLetConfig.cacheDir;
 
         const tagNames: string[] = [];
         const pendingDeletion: {
@@ -186,12 +190,10 @@ const configFunction = (
 
         const rv: GqlCodegenContext = gqlCompileSync({
           hostDirname: __dirname,
-          cwd,
+          execContext,
+          schemaHash,
           sourceRelPath,
           gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
-          cacheRelDir, // TODO: Include in config
-          schemaHash,
-          config: graphqlLetConfig,
         });
         if (gqlCallExpressionPaths.length !== rv.length)
           throw new Error('what');

@@ -1,10 +1,11 @@
 import { generate } from '@graphql-codegen/cli';
 import traverse, { NodePath } from '@babel/traverse';
 import makeDir from 'make-dir';
-import { join as pathJoin, extname, basename, dirname } from 'path';
+import { join as pathJoin, extname, basename, dirname, relative } from 'path';
 import { existsSync } from 'fs';
 import slash from 'slash';
 import { genDts } from './dts';
+import { ExecContext } from './exec-context';
 import { rimraf } from './file';
 // TODO
 import { createWriteStream } from 'fs';
@@ -90,6 +91,7 @@ const parserOption: ParserOptions = {
 };
 
 import generator from '@babel/generator';
+import { CreatedPaths } from './paths';
 
 function appendExportAsObject(dtsContent: string) {
   // TODO: Build ast
@@ -136,8 +138,9 @@ function appendExportAsObject(dtsContent: string) {
 }
 
 export async function processGqlCompile(
-  cwd: string,
-  config: ConfigTypes,
+  execContext: ExecContext,
+  // cwd: string,
+  // config: ConfigTypes,
   dtsRelDir: string,
   cacheRelDir: string,
   sourceRelPath: string,
@@ -148,6 +151,8 @@ export async function processGqlCompile(
   // skippedContext: GqlCodegenContext,
   oldGqlContentHashes: Set<string>,
 ) {
+  const { cwd, config } = execContext;
+
   /**
    * 0. Shape of storage
    * {
@@ -211,8 +216,9 @@ export async function processGqlCompile(
 
   // Dts only for newly created `.tsx`s
   const dtsContents = genDts(
-    newGqlCodegenContext,
-    config,
+    execContext,
+    newGqlCodegenContext.map(({ tsxFullPath }) => tsxFullPath),
+    // config,
   );
   await makeDir(dirname(newGqlCodegenContext[0].dtsFullPath));
   for (const [i, dtsContent] of dtsContents.entries()) {
@@ -228,12 +234,13 @@ export async function processGqlCompile(
 }
 
 export type GqlCompileArgs = {
-  cwd: string;
-  cacheRelDir: string;
-  sourceRelPath: string;
+  execContext: ExecContext;
+  // cwd: string;
+  // cacheRelDir: string;
+  // config: ConfigTypes;
   schemaHash: string;
+  sourceRelPath: string;
   gqlContents: string[];
-  config: ConfigTypes;
 };
 
 // It's still troublesome even it's babel-plugin in SSR applicaiton like Next.js
@@ -247,13 +254,17 @@ export async function gqlCompile(
   gqlCompileArgs: GqlCompileArgs,
 ): Promise<GqlCodegenContext> {
   const {
-    cwd,
-    config,
-    cacheRelDir,
+    execContext,
+    // cwd,
+    // config,
+    // cacheRelDir,
     sourceRelPath,
     schemaHash,
     gqlContents,
   } = gqlCompileArgs;
+  const { cwd, config, cacheFullDir } = execContext;
+  const cacheRelDir = relative(cwd, cacheFullDir); // Want this?
+
   const dtsRelDir = dirname(config.gqlDtsEntrypoint);
   const codegenContext: GqlCodegenContext = [];
   // const skippedContext: GqlCodegenContext = [];
@@ -273,8 +284,9 @@ export async function gqlCompile(
   ]);
 
   await memoizedProcessGqlCompile(
-    cwd,
-    config,
+    execContext,
+    // cwd,
+    // config,
     dtsRelDir,
     cacheRelDir,
     sourceRelPath,

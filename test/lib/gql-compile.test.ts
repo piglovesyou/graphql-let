@@ -1,6 +1,6 @@
 import { deepStrictEqual, ok } from 'assert';
 import { join as pathJoin } from 'path';
-import createExecContext from "../../src/lib/exec-context";
+import createExecContext from '../../src/lib/exec-context';
 import slash from 'slash';
 import { rimraf } from '../../src/lib/file';
 import {
@@ -8,7 +8,7 @@ import {
   processGqlCompile,
 } from '../../src/lib/gql-compile';
 import { buildConfig, ConfigTypes } from '../../src/lib/config';
-import { createHash } from "../../src/lib/hash";
+import { createHash } from '../../src/lib/hash';
 
 const dtsRelDir = 'node_modules/@types/graphql-let';
 const libRelDir = 'node_modules/graphql-let';
@@ -48,12 +48,14 @@ describe('gql-compile', () => {
       const codegenContext: GqlCodegenContext = [];
       const oldGqlContentHashes = new Set<string>();
       // const skippedContext: GqlCodegenContext = [];
-      const execContext = createExecContext(cwd, config, createHash(JSON.stringify(config)))
+      const execContext = createExecContext(
+        cwd,
+        config,
+        createHash(JSON.stringify(config)),
+      );
 
       await processGqlCompile(
         execContext,
-        // cwd,
-        // config,
         dtsRelDir,
         pathJoin(libRelDir, '__generated__'),
         sourceRelPath,

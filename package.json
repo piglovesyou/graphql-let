@@ -51,6 +51,7 @@
     "@jest/types": "^26.1.0",
     "@types/babel__core": "^7.1.5",
     "@types/babel__preset-env": "^7.9.0",
+    "@types/babel__traverse": "7.0.13",
     "@types/debug": "^4.1.5",
     "@types/eslint": "^7.2.0",
     "@types/eslint-plugin-prettier": "^3.1.0",
