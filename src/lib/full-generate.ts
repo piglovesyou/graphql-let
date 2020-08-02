@@ -99,6 +99,8 @@ export async function processDocuments(
   codegenContext: CodegenContext[],
   skippedContext: SkippedContext[],
 ) {
+  if (!gqlRelPaths.length) return;
+
   const { cwd, config, codegenOpts } = execContext;
   for (const gqlRelPath of gqlRelPaths) {
     const gqlContent = await readFile(pathJoin(cwd, gqlRelPath), 'utf-8');
@@ -164,6 +166,8 @@ export async function processDtsForCodegenContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
 ) {
+  if (!codegenContext.length) return;
+
   logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
   const dtsContents = genDts(
     execContext,
@@ -192,6 +196,8 @@ async function processSources(
   schemaHash: string,
   sourceRelPaths: string[],
 ) {
+  if (!sourceRelPaths.length) return;
+
   const { cwd, config, codegenOpts } = execContext;
   const babelOptions = await loadOptions({ cwd });
   const {
@@ -246,8 +252,7 @@ async function fullGenerate(
 
   await processSources(execContext, schemaHash, sourceRelPaths);
 
-  if (codegenContext.length)
-    await processDtsForCodegenContext(execContext, codegenContext);
+  await processDtsForCodegenContext(execContext, codegenContext);
 
   return [codegenContext, skippedContext];
 }

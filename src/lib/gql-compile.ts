@@ -197,7 +197,7 @@ export async function processGqlCompile(
         generates: {
           [tsxFullPath]: {
             plugins: config.plugins,
-            config: config.config,
+            config: execContext.codegenOpts.config,
           },
         },
       },
