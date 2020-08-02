@@ -1,8 +1,6 @@
 import { ProjectConfig } from '@jest/types/build/Config';
 import { Transformer } from '@jest/transform';
-import { createTransformer, getCacheKey as getBabelCacheKey } from 'babel-jest';
-import graphQLTransformer from 'jest-transform-graphql';
-import { join as pathJoin, relative as pathRelative } from 'path';
+import { relative as pathRelative } from 'path';
 import { readFileSync } from 'fs';
 import createExecContext from './lib/exec-context';
 import { loadConfigSync } from './lib/config';
@@ -22,42 +20,24 @@ function getOption(jestConfig: ProjectConfig): JestTransformerOptions {
 }
 
 const jestTransformer: Transformer = {
-  getCacheKey(fileData, filename, configString, cacheKeyOptions) {
-    const babelCacheKey = getBabelCacheKey!(
-      fileData,
-      filename,
-      configString,
-      cacheKeyOptions,
-    );
-
-    return createHash(babelCacheKey + 'graphql-let');
+  getCacheKey(fileData, filename, configString) {
+    return createHash(fileData + filename + configString + 'graphql-let');
   },
   process(input, filePath, jestConfig, transformOptions) {
-    const { rootDir } = jestConfig;
-    const [config, configHash] = loadConfigSync(rootDir);
-    const execContext = createExecContext(rootDir, config, configHash);
-    // TODO: This will break when an object is passed to config.schema
-    const fileSchema = config.schema as string;
-    const schemaFullPath = pathJoin(rootDir, fileSchema);
-
-    if (schemaFullPath === filePath) {
-      return graphQLTransformer.process(
-        input,
-        filePath,
-        jestConfig,
-        transformOptions,
-      );
-    }
+    const { rootDir: cwd } = jestConfig;
+    const [config, configHash] = loadConfigSync(cwd);
+    const execContext = createExecContext(cwd, config, configHash);
 
     const { tsxFullPath } = createPaths(
       execContext,
-      pathRelative(rootDir, filePath),
+      pathRelative(cwd, filePath),
     );
     const tsxContent = readFileSync(tsxFullPath, 'utf-8');
 
     // Let users customize a subsequent transformer
     const { subsequentTransformer } = getOption(jestConfig);
     if (subsequentTransformer) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       return require(subsequentTransformer).process(
         tsxContent,
         tsxFullPath,
@@ -67,7 +47,9 @@ const jestTransformer: Transformer = {
     }
 
     // "babel-jest" by default
-    const babelTransformer = createTransformer({ cwd: rootDir });
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { createTransformer } = require('babel-jest');
+    const babelTransformer = createTransformer({ cwd: cwd });
     return babelTransformer.process(
       tsxContent,
       tsxFullPath,
