@@ -15,7 +15,8 @@
     "bin",
     "dist",
     "schema",
-    "loader.js"
+    "loader.js",
+    "jestTransformer.js"
   ],
   "dependencies": {
     "globby": "^11.0.0",
