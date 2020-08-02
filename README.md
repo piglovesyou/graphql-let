@@ -206,12 +206,13 @@ schema: lib/type-defs.graphqls
 # Please see here for more information: https://graphql-code-generator.com/docs/getting-started/schema-field#available-formats
 
 documents: "**/*.graphql"
-# Required to use a webpack loader "graphql-let/loader".
+# Required by both "graphql-let/loader" and "graphql-let/babel".
 # The GraphQL documents info of quereis and mutations etc.
 # Examples:
 #            documents: 'queries/**/*.graphql'
 #            documents:
 #                - 'queries/**/*.graphql'
+#                - 'pages/**/*.tsx'
 #                - '!queries/exeption.graphql'
 
 plugins:
@@ -297,7 +298,7 @@ module.exports = {
 };
 ```
 
-### Transform `.graphqls` in Jest
+### Transform `.graphqls` in Jest
 
 If you use `graphql-let/schema/loader`, you may want a corresponding
 transformer, but remember graphql-let does not transform the content of GraphQL
@@ -336,7 +337,17 @@ Install these additional dependencies:
 yarn add -D graphql-let do-sync @babel/core @babel/parser @babel/traverse @babel/helper-plugin-utils
 ```
 
-with the plugin configuration in such as `babel.config.json`:
+Add target `.ts(x)`s to `documents` that contains `gql()` calls. This is used
+for the CLI execution.
+
+```yaml
+documents:
+    - "pages/**/*.tsx"
+    - "**/*.graphql"
+```
+
+Put `graphql-let/babel` to plugins section in your babel configuration such as
+`babel.config.json`.
 
 ```json
 {
@@ -345,8 +356,9 @@ with the plugin configuration in such as `babel.config.json`:
 ```
 
 Note: The `.tsx`s are generated in `node_modules/graphql-let/__generated__` by
-default, but you may want them to be outside of `node_modules`.Please try
-`cacheDir: __generated__` in your .graphql-let.yml then.
+default, but you may want them to be outside of `node_modules` since it's often
+excluded to be TS compilation. Please try `cacheDir: __generated__` in your
+.graphql-let.yml then.
 
 ### Limitations of `graphql-let/babel`
 
@@ -425,7 +437,7 @@ documents.
 | features                                                     | webpack loader | Babel Plugin |
 | ------------------------------------------------------------ | -------------- | ------------ |
 | stability/speed                                              | ✅             |              |
-| generating `.d.ts`s by cli                                   | ✅             | Use `babel`  |
+| generating `.d.ts`s by cli                                   | ✅             | ✅           |
 | Importing GraphQL document file<br>as `import './a.graphql'` | ✅             |              |
 | Inline GraphQL<br>as `` gql(`query {}`) ``                   |                | ✅           |
 | Experimental: Resolver Types for<br>GraphQL schema           | ✅             |              |
