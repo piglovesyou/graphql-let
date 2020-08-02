@@ -12,7 +12,7 @@ that integrates graphql-let.
 -   [How it works](#how-it-works)
 -   [Get started](#get-started)
 -   [Configuration options](#configuration-options)
--   [JEST Transformer](#jest-transformer)
+-   [Jest Transformer](#jest-transformer)
 -   [Babel Plugin for inline GraphQL documents](#babel-plugin-for-inline-graphql-documents)
 -   [Experimental feature: Resolver Types](#experimental-feature-resolver-types)
 -   [FAQ](#faq)
@@ -254,7 +254,7 @@ gqlDtsEntrypoint: node_modules/@types/graphql-let/index.d.ts
 # It is used if you use a Babel plugin "graphql-let/babel" to inject types of a `gql` function.
 ```
 
-## JEST Transformer
+## Jest Transformer
 
 "graphql-let/jestTransformer" is available. Configure your `jest.config.js` as:
 
@@ -308,42 +308,12 @@ const { useViewerQuery } = gql(`
 `);
 ```
 
-The above source will be compiled to:
-
-```typescript jsx
-import * as V07138c from "../__generated__/input-07138c.tsx"; // ← codegen results
-const { useViewerQuery } = V07138c;
-```
-
-with type declarations such as:
-
-```typescript
-declare function useViewerQuery(...): ...;
-
-default function gql(
-    gql: `
-    query Viewer {
-        viewer { name }
-    }
-`
-): { useViewerQuery: typeof useViewerQuery };
-```
-
-### Limitations
-
--   **Sadly**, type injection can't be done with TaggedTemplateExpression such
-    as `` gql`query {}` ``. This is the limitation of TypeScript (from my
-    current understanding.
-    [Please answer me if you have ideas.](https://stackoverflow.com/questions/61917066/can-taggedtempalte-have-overload-signatures-with-a-certain-string-literal-argume))
--   Fragments are still not available. Please watch
-    [the issue.](https://github.com/piglovesyou/graphql-let/issues/65)
-
 ### Configuration
 
-Install these dependencies:
+Install these additional dependencies:
 
 ```bash
-yarn add -D graphql-let do-sync @babel/core @babel/parser @babel/traverse @babel/helper-plugin-utils
+npm install -D graphql-let do-sync @babel/core @babel/parser @babel/traverse @babel/helper-plugin-utils
 ```
 
 with the plugin configuration in such as `babel.config.json`:
@@ -354,9 +324,17 @@ with the plugin configuration in such as `babel.config.json`:
 }
 ```
 
-Note: The generated `.tsx`s are in `node_modules/graphql-let/__generated__` by
-default. If your babel config doesn't like `.tsx`x in `node_modules`, please try
-`cacheDir: __generated__` in your .graphql-let.yml.
+Note: The `.tsx`s are generated in `node_modules/graphql-let/__generated__` by
+default, but you may want them to be outside of `node_modules`.Please try
+`cacheDir: __generated__` in your .graphql-let.yml then.
+
+### Limitations
+
+-   **Sadly**, type injection can't be done with TaggedTemplateExpression such
+    as `` gql`query {}` ``. This is the limitation of TypeScript.
+    [Please answer me if you have ideas.](https://stackoverflow.com/questions/61917066/can-taggedtempalte-have-overload-signatures-with-a-certain-string-literal-argume)
+-   Fragments are still not available. Please watch
+    [the issue.](https://github.com/piglovesyou/graphql-let/issues/65)
 
 ## Experimental feature: Resolver Types
 
@@ -372,9 +350,9 @@ If:
 resolvers. Run:
 
 ```bash
-yarn add -D @graphql-codegen/typescript-resolvers
+npm install -D @graphql-codegen/typescript-resolvers
 
-yarn graphql-let
+npx graphql-let
 ```
 
 then you will get `Resolver` type from the schema file.
@@ -419,6 +397,18 @@ the next loader but it updates resolver types in HMR. Set it up as below:
 
 _Yes._
 
+#### What's the difference between cli, webpack loader and Babel Plugin?
+
+While webpack loader is more stable, the Babel Plagin can handle inline GraphQL
+documents.
+
+| features                                                     | cli | webpack loader | Babel Plugin |
+| ------------------------------------------------------------ | --- | -------------- | ------------ |
+| stability/speed                                              | ✅  | ✅             |              |
+| Importing GraphQL document file<br>as `import './a.graphql'` | ✅  | ✅             |              |
+| Inline GraphQL<br>as `` gql(`query {}`) ``                   |     |                | ✅           |
+| Experimental: Resolver Types for<br>GraphQL schema           | ✅  | ✅             |              |
+
 #### Is this a tool only for React?
 
 No. There are
@@ -444,26 +434,13 @@ loaders with fewer pitfalls. Another reason for `.graphqls` is that it's one of
 You can't, yet.
 [Please watch the progress.](https://github.com/piglovesyou/graphql-let/issues/65)
 
-#### What's the difference between webpack loader and Babel Plugin?
-
-While webpack loader is more stable, the Babel Plagin can handle inline GraphQL
-documents.
-
-| features                                                    | webpack loader | Babel Plugin |
-| ----------------------------------------------------------- | -------------- | ------------ |
-| GraphQL documents                                           | ✅             | ✅           |
-| stability/speed                                             | ✅             |              |
-| Importing GraphQL document file<br>(`import './a.graphql'`) | ✅             |              |
-| Inline GraphQL<br>(`` gql(`query {}`) ``)                   |                | ✅           |
-| GraphQL schema<br>(Resolver Types)                          | ✅             |              |
-
 ## Contribution
 
 -   **[Create an issue](https://github.com/piglovesyou/graphql-let/issues/new)**
     if you have ideas, found a bug or anything.
 -   **Creating a PR** is always welcome!
-    -   Please make sure that `yarn prepare` passes, including linting, build
-        and tests.
+    -   Running `npm run prepublishOnly` localy will get your local development
+        ready.
     -   Adding test is preferrable. But don't hesitate without it, maybe someone
         else will fill it.
 
