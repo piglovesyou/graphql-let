@@ -1,4 +1,4 @@
-import { ConfigTypes } from "./config";
+import { ConfigTypes } from './config';
 import createCodegenOpts, { PartialCodegenOpts } from './create-codegen-opts';
 import { getCacheFullDir } from './paths';
 

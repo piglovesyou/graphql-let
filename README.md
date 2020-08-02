@@ -12,6 +12,7 @@ that integrates graphql-let.
 -   [How it works](#how-it-works)
 -   [Get started](#get-started)
 -   [Configuration options](#configuration-options)
+-   [JEST Transformer](#jest-transformer)
 -   [Experimental feature: Resolver Types](#experimental-feature-resolver-types)
 -   [Experimental feature: Babel Plugin for inline GraphQL documents](#experimental-feature-babel-plugin-for-inline-graphql-documents)
 -   [FAQ](#faq)
@@ -187,44 +188,6 @@ const News: React.FC = () => {
 }
 ```
 
-## JEST Transformer
-
-"graphql-let/jestTransformer" is available. Configure your `jest.config.js` as:
-
-```javascript
-module.exports = {
-    transform: {
-        "\\.(graphql|graphqls)$": "graphql-let/jestTransformer",
-    },
-};
-```
-
-Please note:
-
--   You need to run the `graphql-let` command before calling `jest`.
-    `graphql-let/jestTransformer` will use generated intermediate files as
-    `.tsx`.
--   `babel-jest` is a default subsequent transformer. In this case, you'll want
-    `babel.config.js` to transform the TypeScript source.
--   Customize it by a `subsequentTransformer` option. This is useful when you
-    use `ts-jest` and don't want additional babel config. In that case, your
-    config will look like this:
-
-```javascript
-const { defaults: tsjPreset } = require("ts-jest/presets");
-
-module.exports = {
-    preset: "ts-jest",
-    transform: {
-        ...tsjPreset.transform,
-        "\\.(graphql|graphqls)$": [
-            "graphql-let/jestTransformer",
-            { subsequentTransformer: "ts-jest" },
-        ],
-    },
-};
-```
-
 ## Configuration options
 
 graphql-let expects your `.graphql-let.yml` to look like this.
@@ -289,6 +252,44 @@ TSConfigFile: tsconfig.json
 gqlDtsEntrypoint: node_modules/@types/graphql-let/index.d.ts
 # Optional. `node_modules/@types/graphql-let/index.d.ts` by default. Needs to be end with ".d.ts".
 # It is used if you use a Babel plugin "graphql-let/babel" to inject types of a `gql` function.
+```
+
+## JEST Transformer
+
+"graphql-let/jestTransformer" is available. Configure your `jest.config.js` as:
+
+```javascript
+module.exports = {
+    transform: {
+        "\\.(graphql|graphqls)$": "graphql-let/jestTransformer",
+    },
+};
+```
+
+Please note:
+
+-   You need to run the `graphql-let` command before calling `jest`.
+    `graphql-let/jestTransformer` will use generated intermediate files as
+    `.tsx`.
+-   `babel-jest` is a default subsequent transformer. In this case, you'll want
+    `babel.config.js` to transform the TypeScript source.
+-   Customize it by a `subsequentTransformer` option. This is useful when you
+    use `ts-jest` and don't want additional babel config. In that case, your
+    config will look like this:
+
+```javascript
+const { defaults: tsjPreset } = require("ts-jest/presets");
+
+module.exports = {
+    preset: "ts-jest",
+    transform: {
+        ...tsjPreset.transform,
+        "\\.(graphql|graphqls)$": [
+            "graphql-let/jestTransformer",
+            { subsequentTransformer: "ts-jest" },
+        ],
+    },
+};
 ```
 
 ## Experimental feature: Resolver Types
