@@ -451,7 +451,7 @@ loaders with fewer pitfalls. Another reason for `.graphqls` is that it's one of
 
 [Query document exports `DocumentNode` named `${QueryName}Document` that you can make use of.](https://github.com/piglovesyou/graphql-let/issues/66#issuecomment-596276493)
 
-#### How to import `.graphql` from another, to import GraphQL Fragment for example?
+#### How to import `.graphql` from another document, especially GraphQL Fragment?
 
 You can't, yet.
 [Please watch the progress.](https://github.com/piglovesyou/graphql-let/issues/65)
