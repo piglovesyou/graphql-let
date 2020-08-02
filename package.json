@@ -135,7 +135,7 @@
       "git add --force"
     ],
     "README.md": [
-      "yarn insert-toc",
+      "yarn update-toc",
       "yarn fix-nonjs",
       "git add --force"
     ]
@@ -149,7 +149,7 @@
     }
   },
   "scripts": {
-    "insert-toc": "remark README.md --output --",
+    "update-toc": "remark README.md --output --",
     "lint-js": "eslint --ext .ts,.tsx --ignore-path .gitignore .",
     "lint-nonjs": "prettier --config .prettierrc.nonjs.js",
     "lint": "eslint --ext .ts,.tsx --ignore-path .gitignore .",
