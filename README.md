@@ -437,7 +437,8 @@ No. There are
 
 #### Can I write GraphQL documents in my `.tsx` as `` const query = gql`query News{ ... }`; ``?
 
-Please try the Babel Plugin, that'd let you have a close experience.
+Please try the Babel Plugin `graphql-let/babel`, but you need parensesis
+(`` gql(`query {}`) ``).
 
 #### What's the extension `.graphqls`? Should I use it for schema and `.graphql` for documents?
 
