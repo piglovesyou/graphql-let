@@ -8,6 +8,8 @@ plugins:
     - typescript-react-apollo
 respectGitIgnore: true
 config:
+    reactApolloVersion: 3
+    apolloReactComponentsImportFrom: "@apollo/client/react/components"
     useIndexSignature: true
 gqlDtsEntrypoint: node_modules/@types/graphql-let/index.d.ts
 cacheDir: node_modules/graphql-let/__generated__

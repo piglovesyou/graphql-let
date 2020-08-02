@@ -43,26 +43,16 @@ export type BabelOptions = {
 
 export const { ensureExecContext, clearExecContext } = (() => {
   let execContext: ExecContext | null = null;
-  // let config: ConfigTypes | null = null;
   let schemaHash: string | null = null;
 
   function ensureExecContext(
     cwd: string,
-    configFilePath: string,
+    configFilePath?: string,
   ): [ExecContext, string] {
     if (execContext && schemaHash) {
       return [execContext, schemaHash];
     }
-    const [_config, configHash] = loadConfigSync(cwd, configFilePath);
-    // TODO: refactor with create-codegen-opts.ts
-    const config = {
-      ..._config,
-      config: {
-        withHOC: false, // True by default
-        withHooks: true, // False by default
-        ..._config.config,
-      },
-    };
+    const [config, configHash] = loadConfigSync(cwd, configFilePath);
     execContext = createExecContext(cwd, config, configHash);
 
     schemaHash = configHash;
@@ -91,7 +81,7 @@ const configFunction = (
 ): PluginObj<any> => {
   api.assertVersion(7);
   const {
-    configFilePath = '',
+    configFilePath,
     importName = 'graphql-let',
     onlyMatchImportSuffix = false,
     // strip = false,
