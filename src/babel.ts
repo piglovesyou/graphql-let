@@ -5,25 +5,16 @@ import { declare } from '@babel/helper-plugin-utils';
 import doSync from 'do-sync';
 import slash from 'slash';
 import createExecContext, { ExecContext } from './lib/exec-context';
-// import createDebug from 'debug';
 import { readFileSync } from './lib/file';
 import { GqlCodegenContext, GqlCompileArgs } from './lib/gql-compile';
 import { createHash } from './lib/hash';
 import { loadConfigSync } from './lib/config';
+import { printError } from './lib/print';
 import { shouldGenResolverTypes } from './lib/resolver-types';
 
-// // TODO: Utilize it
-// const debug = createDebug('graphql-let/babel');
-
 const {
-  // cloneDeep,
   isIdentifier,
-  // isMemberExpression,
   isImportDefaultSpecifier,
-  // variableDeclaration,
-  // variableDeclarator,
-  // memberExpression,
-  // callExpression,
   identifier,
   importDeclaration,
   importNamespaceSpecifier,
@@ -50,12 +41,15 @@ export type BabelOptions = {
   onlyMatchImportSuffix?: boolean;
 };
 
-const ensureExecContext = (() => {
+export const { ensureExecContext, clearExecContext } = (() => {
   let execContext: ExecContext | null = null;
   // let config: ConfigTypes | null = null;
   let schemaHash: string | null = null;
 
-  return (cwd: string, configFilePath: string): [ExecContext, string] => {
+  function ensureExecContext(
+    cwd: string,
+    configFilePath: string,
+  ): [ExecContext, string] {
     if (execContext && schemaHash) {
       return [execContext, schemaHash];
     }
@@ -79,7 +73,14 @@ const ensureExecContext = (() => {
       schemaHash = createHash(schemaHash + content);
     }
     return [execContext, schemaHash];
-  };
+  }
+
+  function clearExecContext() {
+    execContext = null;
+    schemaHash = null;
+  }
+
+  return { ensureExecContext, clearExecContext };
 })();
 
 // With all my respect, I cloned the source from
@@ -107,7 +108,6 @@ const configFunction = (
           cwd,
           configFilePath,
         );
-        // const cacheRelDir = graphqlLetConfig.cacheDir;
 
         const tagNames: string[] = [];
         const pendingDeletion: {
@@ -118,7 +118,7 @@ const configFunction = (
           path: NodePath<t.ImportDeclaration>;
         }[] = [];
         const gqlCallExpressionPaths: [
-          NodePath<t.CallExpression>,
+          NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
           string,
         ][] = [];
         let hasError = false;
@@ -146,8 +146,6 @@ const configFunction = (
               }
             }
           },
-          // TODO: Allow TemplateLiteralCall with warning:
-          // "transpile is ok, but it can't finish type injection"
           CallExpression(path: NodePath<t.CallExpression>) {
             if (
               tagNames.some((name) => {
@@ -155,11 +153,36 @@ const configFunction = (
               })
             ) {
               try {
-                const args = path.get('arguments');
-                if (args.length !== 1)
-                  throw new Error(
-                    `The argument must be a single string value.`,
-                  );
+                let value = '';
+                path.traverse({
+                  TemplateLiteral(path: NodePath<t.TemplateLiteral>) {
+                    if (path.node.quasis.length !== 1)
+                      printError(
+                        new Error(
+                          `TemplateLiteral of the argument must not contain arguments.`,
+                        ),
+                      );
+                    value = path.node.quasis[0].value.raw;
+                  },
+                  StringLiteral(path: NodePath<t.StringLiteral>) {
+                    value = path.node.value;
+                  },
+                });
+                if (!value) printError(new Error(`Check argument.`));
+                gqlCallExpressionPaths.push([path, value]);
+              } catch (error) {
+                printError(error);
+                hasError = true;
+              }
+            }
+          },
+          TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {
+            if (
+              tagNames.some((name) => {
+                return isIdentifier(path.node.tag, { name });
+              })
+            ) {
+              try {
                 let value = '';
                 path.traverse({
                   TemplateLiteral(path: NodePath<t.TemplateLiteral>) {
@@ -173,11 +196,10 @@ const configFunction = (
                     value = path.node.value;
                   },
                 });
-                if (!value) throw new Error('never');
+                if (!value) printError(new Error(`Check argument.`));
                 gqlCallExpressionPaths.push([path, value]);
               } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error('error', error);
+                printError(error);
                 hasError = true;
               }
             }

@@ -231,9 +231,6 @@ export async function processGqlCompile(
 
 export type GqlCompileArgs = {
   execContext: ExecContext;
-  // cwd: string;
-  // cacheRelDir: string;
-  // config: ConfigTypes;
   schemaHash: string;
   sourceRelPath: string;
   gqlContents: string[];
@@ -256,11 +253,12 @@ export async function gqlCompile(
     gqlContents,
   } = gqlCompileArgs;
   const { cwd, config, cacheFullDir } = execContext;
+
+  // TODO: do this in getPaths
   const cacheRelDir = relative(cwd, cacheFullDir); // Want this?
 
   const dtsRelDir = dirname(config.gqlDtsEntrypoint);
   const codegenContext: GqlCodegenContext = [];
-  // const skippedContext: GqlCodegenContext = [];
 
   // Processes inside a sub-process of babel-plugin
   const storeFullPath = pathJoin(cwd, dtsRelDir, 'store.json');
@@ -279,8 +277,6 @@ export async function gqlCompile(
 
   await memoizedProcessGqlCompile(
     execContext,
-    // cwd,
-    // config,
     dtsRelDir,
     cacheRelDir,
     sourceRelPath,
@@ -288,7 +284,6 @@ export async function gqlCompile(
     gqlContents,
     scopedStore,
     codegenContext,
-    // skippedContext,
     oldGqlContentHashes,
   );
 
