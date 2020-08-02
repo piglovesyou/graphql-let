@@ -9,7 +9,7 @@ import createExecContext, { ExecContext } from './lib/exec-context';
 import { readFileSync } from './lib/file';
 import { GqlCodegenContext, GqlCompileArgs } from './lib/gql-compile';
 import { createHash } from './lib/hash';
-import { ConfigTypes, loadConfigSync } from './lib/config';
+import { loadConfigSync } from './lib/config';
 import { shouldGenResolverTypes } from './lib/resolver-types';
 
 // // TODO: Utilize it

@@ -15,7 +15,6 @@ import { readFile } from './file';
 import { join } from 'path';
 import { writeFile } from './file';
 import { createHash } from './hash';
-import { ConfigTypes } from './config';
 import memoize from './memoize';
 import * as t from '@babel/types';
 
@@ -33,12 +32,12 @@ export type GqlCodegenContext = {
   dtsFullPath: string;
 }[];
 
-type CacheState = {
+type ScopedCacheStore = {
   [hash: string]: string;
 };
 
-type CacheStateStore = {
-  [tsxRelPath: string]: CacheState;
+type ProjectCacheStore = {
+  [tsxRelPath: string]: ScopedCacheStore;
 };
 
 const getPaths = (
@@ -91,7 +90,6 @@ const parserOption: ParserOptions = {
 };
 
 import generator from '@babel/generator';
-import { CreatedPaths } from './paths';
 
 function appendExportAsObject(dtsContent: string) {
   // TODO: Build ast
@@ -139,14 +137,12 @@ function appendExportAsObject(dtsContent: string) {
 
 export async function processGqlCompile(
   execContext: ExecContext,
-  // cwd: string,
-  // config: ConfigTypes,
   dtsRelDir: string,
   cacheRelDir: string,
   sourceRelPath: string,
   schemaHash: string,
   gqlContents: string[],
-  targetStore: CacheState,
+  targetStore: ScopedCacheStore,
   codegenContext: GqlCodegenContext,
   // skippedContext: GqlCodegenContext,
   oldGqlContentHashes: Set<string>,
@@ -255,9 +251,6 @@ export async function gqlCompile(
 ): Promise<GqlCodegenContext> {
   const {
     execContext,
-    // cwd,
-    // config,
-    // cacheRelDir,
     sourceRelPath,
     schemaHash,
     gqlContents,
@@ -271,11 +264,12 @@ export async function gqlCompile(
 
   // Processes inside a sub-process of babel-plugin
   const storeFullPath = pathJoin(cwd, dtsRelDir, 'store.json');
-  const store = existsSync(storeFullPath)
+  const projectStore: ProjectCacheStore = existsSync(storeFullPath)
     ? JSON.parse(await readFile(storeFullPath, 'utf-8'))
     : {};
-  const targetStore = store[sourceRelPath] || (store[sourceRelPath] = {});
-  const oldGqlContentHashes = new Set(Object.keys(targetStore));
+  const scopedStore =
+    projectStore[sourceRelPath] || (projectStore[sourceRelPath] = {});
+  const oldGqlContentHashes = new Set(Object.keys(scopedStore));
 
   // Prepare
   await Promise.all([
@@ -292,7 +286,7 @@ export async function gqlCompile(
     sourceRelPath,
     schemaHash,
     gqlContents,
-    targetStore,
+    scopedStore,
     codegenContext,
     // skippedContext,
     oldGqlContentHashes,
@@ -300,7 +294,7 @@ export async function gqlCompile(
 
   // Remove old caches
   for (const oldGqlContentHash of oldGqlContentHashes) {
-    delete targetStore[oldGqlContentHash];
+    delete scopedStore[oldGqlContentHash];
     const { dtsFullPath } = getPaths(
       sourceRelPath,
       oldGqlContentHash,
@@ -324,7 +318,7 @@ export default function gql(gql: \`${gqlContent}\`): T${gqlContentHash}.__AllExp
   }
 
   // Update storeJson
-  await writeFile(storeFullPath, JSON.stringify(store, null, 2));
+  await writeFile(storeFullPath, JSON.stringify(projectStore, null, 2));
 
   return codegenContext;
 }
