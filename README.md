@@ -256,7 +256,7 @@ gqlDtsEntrypoint: node_modules/@types/graphql-let/index.d.ts
 
 ## Jest Transformer
 
-"graphql-let/jestTransformer" is available. Configure your `jest.config.js` as:
+`graphql-let/jestTransformer` is available. Configure your `jest.config.js` as:
 
 ```javascript
 module.exports = {
