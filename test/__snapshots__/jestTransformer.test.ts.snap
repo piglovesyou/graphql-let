@@ -183,17 +183,3 @@ export type ViewerQueryResult = ApolloReactCommon.QueryResult<ViewerQuery, Viewe
   },
 }
 `;
-
-exports[`graphql-let/jestTransformer transforms .graphqls 1`] = `
-"\\"\\"\\" jest-transform-graphql mock \\"\\"\\"
-type User {
-    id: ID!
-    name: String!
-    status: String!
-}
-
-type Query {
-    viewer: User
-}
-"
-`;
