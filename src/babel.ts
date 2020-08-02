@@ -113,6 +113,42 @@ const configFunction = (
         ][] = [];
         let hasError = false;
 
+        function processTargetCalls(
+          path:
+            | NodePath<t.TaggedTemplateExpression>
+            | NodePath<t.CallExpression>,
+          nodeName: string,
+        ) {
+          if (
+            tagNames.some((name) => {
+              return isIdentifier((path.get(nodeName) as any).node, { name });
+            })
+          ) {
+            try {
+              let value = '';
+              path.traverse({
+                TemplateLiteral(path: NodePath<t.TemplateLiteral>) {
+                  if (path.node.quasis.length !== 1)
+                    printError(
+                      new Error(
+                        `TemplateLiteral of the argument must not contain arguments.`,
+                      ),
+                    );
+                  value = path.node.quasis[0].value.raw;
+                },
+                StringLiteral(path: NodePath<t.StringLiteral>) {
+                  value = path.node.value;
+                },
+              });
+              if (!value) printError(new Error(`Check argument.`));
+              gqlCallExpressionPaths.push([path, value]);
+            } catch (error) {
+              printError(error);
+              hasError = true;
+            }
+          }
+        }
+
         programPath.traverse({
           ImportDeclaration(path: NodePath<t.ImportDeclaration>) {
             const pathValue = path.node.source.value;
@@ -137,62 +173,10 @@ const configFunction = (
             }
           },
           CallExpression(path: NodePath<t.CallExpression>) {
-            if (
-              tagNames.some((name) => {
-                return isIdentifier(path.node.callee, { name });
-              })
-            ) {
-              try {
-                let value = '';
-                path.traverse({
-                  TemplateLiteral(path: NodePath<t.TemplateLiteral>) {
-                    if (path.node.quasis.length !== 1)
-                      printError(
-                        new Error(
-                          `TemplateLiteral of the argument must not contain arguments.`,
-                        ),
-                      );
-                    value = path.node.quasis[0].value.raw;
-                  },
-                  StringLiteral(path: NodePath<t.StringLiteral>) {
-                    value = path.node.value;
-                  },
-                });
-                if (!value) printError(new Error(`Check argument.`));
-                gqlCallExpressionPaths.push([path, value]);
-              } catch (error) {
-                printError(error);
-                hasError = true;
-              }
-            }
+            processTargetCalls(path, 'callee');
           },
           TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {
-            if (
-              tagNames.some((name) => {
-                return isIdentifier(path.node.tag, { name });
-              })
-            ) {
-              try {
-                let value = '';
-                path.traverse({
-                  TemplateLiteral(path: NodePath<t.TemplateLiteral>) {
-                    if (path.node.quasis.length !== 1)
-                      throw new Error(
-                        `TemplateLiteral of the argument must not contain arguments.`,
-                      );
-                    value = path.node.quasis[0].value.raw;
-                  },
-                  StringLiteral(path: NodePath<t.StringLiteral>) {
-                    value = path.node.value;
-                  },
-                });
-                if (!value) printError(new Error(`Check argument.`));
-                gqlCallExpressionPaths.push([path, value]);
-              } catch (error) {
-                printError(error);
-                hasError = true;
-              }
-            }
+            processTargetCalls(path, 'tag');
           },
         });
 
