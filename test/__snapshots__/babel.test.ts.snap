@@ -1,0 +1,301 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Generated files are okay: fixtures/basic/node_modules/@types/graphql-let/index.d.ts 1`] = `
+"import T3daf5b4311465bd8566d77d548e135871cc11646 from './input-3daf5b4311465bd8566d77d548e135871cc11646.d.ts';
+export default function gql(gql: \`query Viewer { viewer { name } }\`): T3daf5b4311465bd8566d77d548e135871cc11646.__AllExports;
+"
+`;
+
+exports[`Generated files are okay: fixtures/basic/node_modules/@types/graphql-let/input-3daf5b4311465bd8566d77d548e135871cc11646.d.ts 1`] = `
+"import * as ApolloReactCommon from '@apollo/client';
+import * as ApolloReactComponents from '@apollo/client/react/components';
+import * as ApolloReactHoc from '@apollo/client';
+export declare type Maybe<T> = T | null;
+export declare type Exact<T extends {
+  [key: string]: any;
+}> = { [K in keyof T]: T[K] };
+export declare type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+/** All built-in and custom scalars, mapped to their actual values */
+
+export declare type Scalars = {
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+};
+export declare type Query = {
+  __typename?: 'Query';
+  viewer?: Maybe<User>;
+};
+export declare type User = {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  status: Scalars['String'];
+};
+export declare type ViewerQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+export declare type ViewerQuery = ({
+  __typename?: 'Query';
+} & {
+  viewer?: Maybe<({
+    __typename?: 'User';
+  } & Pick<User, 'name'>)>;
+});
+export declare const ViewerDocument: import(\\"graphql\\").DocumentNode;
+export declare type ViewerComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<ViewerQuery, ViewerQueryVariables>, 'query'>;
+export declare const ViewerComponent: (props: ViewerComponentProps) => JSX.Element;
+export declare type ViewerProps<TChildProps = {}, TDataName extends string = 'data'> = { [key in TDataName]: ApolloReactHoc.DataValue<ViewerQuery, ViewerQueryVariables> } & TChildProps;
+export declare function withViewer<TProps, TChildProps = {}, TDataName extends string = 'data'>(operationOptions?: ApolloReactHoc.OperationOption<TProps, ViewerQuery, ViewerQueryVariables, ViewerProps<TChildProps, TDataName>>): any;
+export declare type ViewerQueryResult = ApolloReactCommon.QueryResult<ViewerQuery, ViewerQueryVariables>;
+export declare type __AllExports = {
+  Maybe: Maybe;
+  Exact: Exact;
+  Omit: Omit;
+  Scalars: Scalars;
+  Query: Query;
+  User: User;
+  ViewerQueryVariables: ViewerQueryVariables;
+  ViewerQuery: ViewerQuery;
+  ViewerDocument: ViewerDocument;
+  ViewerComponentProps: ViewerComponentProps;
+  ViewerComponent: ViewerComponent;
+  ViewerProps: ViewerProps;
+  withViewer: typeof withViewer;
+  ViewerQueryResult: ViewerQueryResult;
+};"
+`;
+
+exports[`Generated files are okay: fixtures/basic/node_modules/@types/graphql-let/store.json 1`] = `
+"{
+  \\"input.tsx\\": {
+    \\"3daf5b4311465bd8566d77d548e135871cc11646\\": \\"query Viewer{viewer{name}}\\"
+  }
+}"
+`;
+
+exports[`Generated files are okay: fixtures/basic/node_modules/graphql-let/__generated__/input-3daf5b4311465bd8566d77d548e135871cc11646.tsx 1`] = `
+"import gql from 'graphql-tag';
+import * as React from 'react';
+import * as ApolloReactCommon from '@apollo/client';
+import * as ApolloReactComponents from '@apollo/client/react/components';
+import * as ApolloReactHoc from '@apollo/client';
+export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+/** All built-in and custom scalars, mapped to their actual values */
+export type Scalars = {
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  viewer?: Maybe<User>;
+};
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  status: Scalars['String'];
+};
+
+export type ViewerQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ViewerQuery = (
+  { __typename?: 'Query' }
+  & { viewer?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'name'>
+  )> }
+);
+
+
+export const ViewerDocument = gql\`
+    query Viewer {
+  viewer {
+    name
+  }
+}
+    \`;
+export type ViewerComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<ViewerQuery, ViewerQueryVariables>, 'query'>;
+
+    export const ViewerComponent = (props: ViewerComponentProps) => (
+      <ApolloReactComponents.Query<ViewerQuery, ViewerQueryVariables> query={ViewerDocument} {...props} />
+    );
+    
+export type ViewerProps<TChildProps = {}, TDataName extends string = 'data'> = {
+      [key in TDataName]: ApolloReactHoc.DataValue<ViewerQuery, ViewerQueryVariables>
+    } & TChildProps;
+export function withViewer<TProps, TChildProps = {}, TDataName extends string = 'data'>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  ViewerQuery,
+  ViewerQueryVariables,
+  ViewerProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withQuery<TProps, ViewerQuery, ViewerQueryVariables, ViewerProps<TChildProps, TDataName>>(ViewerDocument, {
+      alias: 'viewer',
+      ...operationOptions
+    });
+};
+export type ViewerQueryResult = ApolloReactCommon.QueryResult<ViewerQuery, ViewerQueryVariables>;"
+`;
+
+exports[`Generated files are okay: fixtures/tagged-template-call/node_modules/@types/graphql-let/index.d.ts 1`] = `
+"import T3daf5b4311465bd8566d77d548e135871cc11646 from './input-3daf5b4311465bd8566d77d548e135871cc11646.d.ts';
+export default function gql(gql: \`
+    query Viewer {
+        viewer {
+            name
+        }
+    }
+\`): T3daf5b4311465bd8566d77d548e135871cc11646.__AllExports;
+"
+`;
+
+exports[`Generated files are okay: fixtures/tagged-template-call/node_modules/@types/graphql-let/input-3daf5b4311465bd8566d77d548e135871cc11646.d.ts 1`] = `
+"import * as ApolloReactCommon from '@apollo/client';
+import * as ApolloReactComponents from '@apollo/client/react/components';
+import * as ApolloReactHoc from '@apollo/client';
+export declare type Maybe<T> = T | null;
+export declare type Exact<T extends {
+  [key: string]: any;
+}> = { [K in keyof T]: T[K] };
+export declare type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+/** All built-in and custom scalars, mapped to their actual values */
+
+export declare type Scalars = {
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+};
+export declare type Query = {
+  __typename?: 'Query';
+  viewer?: Maybe<User>;
+};
+export declare type User = {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  status: Scalars['String'];
+};
+export declare type ViewerQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+export declare type ViewerQuery = ({
+  __typename?: 'Query';
+} & {
+  viewer?: Maybe<({
+    __typename?: 'User';
+  } & Pick<User, 'name'>)>;
+});
+export declare const ViewerDocument: import(\\"graphql\\").DocumentNode;
+export declare type ViewerComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<ViewerQuery, ViewerQueryVariables>, 'query'>;
+export declare const ViewerComponent: (props: ViewerComponentProps) => JSX.Element;
+export declare type ViewerProps<TChildProps = {}, TDataName extends string = 'data'> = { [key in TDataName]: ApolloReactHoc.DataValue<ViewerQuery, ViewerQueryVariables> } & TChildProps;
+export declare function withViewer<TProps, TChildProps = {}, TDataName extends string = 'data'>(operationOptions?: ApolloReactHoc.OperationOption<TProps, ViewerQuery, ViewerQueryVariables, ViewerProps<TChildProps, TDataName>>): any;
+export declare type ViewerQueryResult = ApolloReactCommon.QueryResult<ViewerQuery, ViewerQueryVariables>;
+export declare type __AllExports = {
+  Maybe: Maybe;
+  Exact: Exact;
+  Omit: Omit;
+  Scalars: Scalars;
+  Query: Query;
+  User: User;
+  ViewerQueryVariables: ViewerQueryVariables;
+  ViewerQuery: ViewerQuery;
+  ViewerDocument: ViewerDocument;
+  ViewerComponentProps: ViewerComponentProps;
+  ViewerComponent: ViewerComponent;
+  ViewerProps: ViewerProps;
+  withViewer: typeof withViewer;
+  ViewerQueryResult: ViewerQueryResult;
+};"
+`;
+
+exports[`Generated files are okay: fixtures/tagged-template-call/node_modules/@types/graphql-let/store.json 1`] = `
+"{
+  \\"input.tsx\\": {
+    \\"3daf5b4311465bd8566d77d548e135871cc11646\\": \\"query Viewer{viewer{name}}\\"
+  }
+}"
+`;
+
+exports[`Generated files are okay: fixtures/tagged-template-call/node_modules/graphql-let/__generated__/input-3daf5b4311465bd8566d77d548e135871cc11646.tsx 1`] = `
+"import gql from 'graphql-tag';
+import * as React from 'react';
+import * as ApolloReactCommon from '@apollo/client';
+import * as ApolloReactComponents from '@apollo/client/react/components';
+import * as ApolloReactHoc from '@apollo/client';
+export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+/** All built-in and custom scalars, mapped to their actual values */
+export type Scalars = {
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  viewer?: Maybe<User>;
+};
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  status: Scalars['String'];
+};
+
+export type ViewerQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ViewerQuery = (
+  { __typename?: 'Query' }
+  & { viewer?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'name'>
+  )> }
+);
+
+
+export const ViewerDocument = gql\`
+    query Viewer {
+  viewer {
+    name
+  }
+}
+    \`;
+export type ViewerComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<ViewerQuery, ViewerQueryVariables>, 'query'>;
+
+    export const ViewerComponent = (props: ViewerComponentProps) => (
+      <ApolloReactComponents.Query<ViewerQuery, ViewerQueryVariables> query={ViewerDocument} {...props} />
+    );
+    
+export type ViewerProps<TChildProps = {}, TDataName extends string = 'data'> = {
+      [key in TDataName]: ApolloReactHoc.DataValue<ViewerQuery, ViewerQueryVariables>
+    } & TChildProps;
+export function withViewer<TProps, TChildProps = {}, TDataName extends string = 'data'>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  ViewerQuery,
+  ViewerQueryVariables,
+  ViewerProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withQuery<TProps, ViewerQuery, ViewerQueryVariables, ViewerProps<TChildProps, TDataName>>(ViewerDocument, {
+      alias: 'viewer',
+      ...operationOptions
+    });
+};
+export type ViewerQueryResult = ApolloReactCommon.QueryResult<ViewerQuery, ViewerQueryVariables>;"
+`;

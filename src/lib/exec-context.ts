@@ -1,6 +1,6 @@
+import { ConfigTypes } from './config';
 import createCodegenOpts, { PartialCodegenOpts } from './create-codegen-opts';
 import { getCacheFullDir } from './paths';
-import { ConfigTypes } from './types';
 
 export type ExecContext = {
   cwd: string;

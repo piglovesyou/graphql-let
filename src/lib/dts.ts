@@ -14,7 +14,7 @@ import {
 import { ExecContext } from './exec-context';
 import { withHash, writeFile } from './file';
 import { CodegenContext } from './full-generate';
-import { ConfigTypes } from './types';
+import { ConfigTypes } from './config';
 
 const essentialCompilerOptions: CompilerOptions = {
   declaration: true,
@@ -55,12 +55,10 @@ function resolveCompilerOptions(cwd: string, { TSConfigFile }: ConfigTypes) {
 
 export function genDts(
   { cwd, config }: ExecContext,
-  codegenContext: CodegenContext[],
+  tsxFullPaths: string[],
 ): string[] {
   const compilerOptions = resolveCompilerOptions(cwd, config);
-  const tsxFullPaths = codegenContext.map(({ tsxFullPath }) =>
-    slash(tsxFullPath),
-  );
+  tsxFullPaths = tsxFullPaths.map((tsxFullPath) => slash(tsxFullPath));
   const tsxFullPathSet = new Set(tsxFullPaths);
 
   const compilerHost = createCompilerHost(compilerOptions);
@@ -110,7 +108,7 @@ export function genDts(
     throw new Error('Failed to generate .d.ts.');
   }
 
-  if (codegenContext.length !== dtsContents.length) {
+  if (tsxFullPaths.length !== dtsContents.length) {
     throw new Error(
       `Never supposed to be here. Please make an issue on GitHub.`,
     );
@@ -125,7 +123,7 @@ export async function processGenDts(
 ) {
   const { dtsFullPath, gqlHash } = codegenContext;
   await makeDir(path.dirname(dtsFullPath));
-  const [dtsContent] = await genDts(execContext, [codegenContext]);
+  const [dtsContent] = await genDts(execContext, [codegenContext.tsxFullPath]);
   if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
   await writeFile(dtsFullPath, withHash(gqlHash, dtsContent));
   return dtsContent;

@@ -10,16 +10,10 @@ export type CreatedPaths = {
   gqlFullPath: string;
 };
 
-export const defaultCacheRelDir = '__generated__';
-const libDir = path.resolve(__dirname, '../..');
-const defaultCacheFullDir = path.join(libDir, defaultCacheRelDir);
+// export const libFullDir = path.resolve(__dirname, '../..');
 
-export const getCacheFullDir = (cwd: string, cacheDir?: string) => {
-  return !cacheDir
-    ? defaultCacheFullDir
-    : path.isAbsolute(cacheDir)
-    ? cacheDir
-    : path.join(cwd, cacheDir);
+export const getCacheFullDir = (cwd: string, cacheDir: string) => {
+  return path.isAbsolute(cacheDir) ? cacheDir : path.join(cwd, cacheDir);
 };
 
 export function createPaths(

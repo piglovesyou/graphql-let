@@ -8,7 +8,7 @@ jobs:
             matrix:
                 platform: [ubuntu-latest, windows-latest]
                 node-version:
-                    - 13.x
+                    - 14.x
                     - 12.x
                     - 10.x
         runs-on: ${{ matrix.platform }}
@@ -34,6 +34,6 @@ jobs:
             - name: yarn install, lint, and test
               run: |
                   yarn install --ignore-scripts
-                  yarn prepare
+                  yarn prepublishOnly
               env:
                   CI: true

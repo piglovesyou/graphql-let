@@ -1,75 +1,90 @@
 # graphql-let [![](https://github.com/piglovesyou/graphql-let/workflows/Node%20CI/badge.svg)](https://github.com/piglovesyou/graphql-let/actions) [![npm version](https://badge.fury.io/js/graphql-let.svg)](https://badge.fury.io/js/graphql-let)
 
-A webpack loader to import type-protected codegen results directly from GraphQL
-documents.
+A tool to get typed graphql-codegen results closer to you.
 
 Try
 [the Next.js example](https://github.com/zeit/next.js/blob/canary/examples/with-typescript-graphql/README.md#readme)
 that integrates graphql-let.
+
+## Table of Contents
+
+-   [Why it exists](#why-it-exists)
+-   [How it works](#how-it-works)
+-   [Get started](#get-started)
+-   [Configuration options](#configuration-options)
+-   [Jest Transformer](#jest-transformer)
+-   [Babel Plugin for inline GraphQL documents](#babel-plugin-for-inline-graphql-documents)
+-   [Experimental feature: Resolver Types](#experimental-feature-resolver-types)
+-   [FAQ](#faq)
+-   [Contribution](#contribution)
+-   [License](#license)
 
 ## Why it exists
 
 One of the strengths of GraphQL is
 [enforcing data types on runtime](https://graphql.github.io/graphql-spec/June2018/#sec-Value-Completion).
 Further, TypeScript and
-[GraphQL Code Generator](https://graphql-code-generator.com/) (graphql-codegen)
+[GraphQL code generator](https://graphql-code-generator.com/) (graphql-codegen)
 make it safer by typing data statically, so you can write truly type-protected
 code with rich IDE assists.
 
-To enhance the development pattern, it's necessary to focus on a more specific
-use-case than what graphql-codegen allows; binding TypeScript (and assuming the
-use of Apollo-Client and React). In the way, graphql-let behaves as a subset of
-graphql-codegen.
+To enhance that development pattern, we should move on to the more specific
+use-case than what GraphQL code generator allows. Let's consider TypeScript as a
+first-class citizen and forget generating intermediate artifacts to achieve Hot
+Module Replacement (HMR).
 
-graphql-let lets you import graphql-codegen results directly per GraphQL
-documents with TypeScript type definitions by webpack Loader power.
+graphql-let lets you `import` and call `gql` to get results of GraphQL code
+generator per GraphQL documents with TypeScript type definitions.
 
 ```typescript jsx
 import { useNewsQuery } from './news.graphql'
 
 const News: React.FC = () => {
-	// Typed already️⚡️
-	const { data: { news } } = useNewsQuery()
-	if (news) return <div>{news.map(...)}</div>
+    // Typed already️⚡️
+    const { data: { news } } = useNewsQuery()
+    if (news) return <div>{news.map(...)}</div>
 }
 ```
 
 ## How it works
 
-Two things:
+There are three entrypoints to graphql-let: a CLI, a webpack loader and a Babel
+plugin. Mostly, all do the same.
 
--   It runs graphql-codegen inside according to the `.graphql-let.yml` and pass
-    the generated TypeScript source to the next loader.
--   It generates a file `.d.ts`.
+1.  It loads configurations from `.graphql-let.yml`
+2.  It passes them to GraphQL code generator to get `.ts(x)`s, which runtime
+    will use
+3.  It generates `.d.ts` for the `.ts(x)`s, which your IDE and `tsc` will use
 
-<p align="center"><img src="./resource/graphql-let-loader.png" /></p>
+There are a few things it works on to make it happen fast and stable.
 
-You may also want only `.d.ts` before a webpack build to check types. Run
-`graphql-let` command to get `.d.ts` without running webpack.
-
-<p align="center"><img src="./resource/graphql-let.png" /></p>
+-   Sharing the processes. Loading remote schema and generating `.d.ts`s are
+    heavy, so it runs them fewer times when it's possible.
+-   Caching. By embedding hashes of source states, it reduces number of
+    unnecessary compilation.
+-   Sharing the promises. The webpack compilation of the typical SSR
+    applications as Next.js runs `"node"` and `"web"` simultaniously. If sources
+    are the same, the compilation should run once.
 
 ## Get started
 
-This is an example of **TypeScript + React + Apollo Client**. Please replace the
-corresponding lines depending on your needs.
+This is an example of **TypeScript + React + Apollo Client on webpack**. Please
+replace the corresponding lines depending on your needs.
 
 ### 1. Install dependencies
 
 Note graphql-let is `devDependencies`.
 
-```
+```bash
 npm install -D graphql-let @graphql-codegen/cli @graphql-codegen/plugin-helpers @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo
 npm install @apollo/react-common @apollo/react-components @apollo/react-hooks
 ```
 
-### 2. Configure
+### 2. Configure .graphql-let.yml
 
-#### .graphql-let.yml
+Run this command to generate a configuration template.
 
-Run this command to have a configuration template.
-
-```
+```bash
 npx graphql-let init
 # This will generate .graphql-let.yml
 ```
@@ -90,19 +105,7 @@ Edit it like this:
 +  - typescript-react-apollo
 ```
 
-Available options:
-
-| property           | required | type                                    | meaning                                                                                                                                        | examples                                                                                                                                                                                                                                                                                                                                                               |
-| ------------------ | :------: | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `schema`           |    ✔︎    | `string \| { [url: string]: any }`      | The GraphQL schema info that graphql-let requests introspection to.                                                                            | <ul><li>`http://localhost:3000/graphql`</li><li>`schema.json`</li><li>`schema.graphqls` (Note: glob is not supported)</li><li>`{"https://api.github.com/graphql": {"headers": {"Authorization": "YOUR-TOKEN"}}}` (Please do the left in yaml)</li></ul>[All available formats](https://graphql-code-generator.com/docs/getting-started/schema-field#available-formats) |
-| `documents`        |    ✔︎    | `string \| string[]`                    | The GraphQL documents info of quereis and mutations etc. All the documents have to be separate files.                                          | `./queries-and-mutations/**/*.graphql`                                                                                                                                                                                                                                                                                                                                 |
-| `plugins`          |    ✔︎    | `string[] \| { [name: string]: any }[]` | The plugins of graphql-codegen.                                                                                                                | <ul><li>`typescript-operations`</li><li>`typescript-react-apollo`</li><li>`add: "/* eslint-disable */"`</li></ul>[All available plugins](https://graphql-code-generator.com/docs/plugins/)                                                                                                                                                                             |
-| `respectGitIgnore` |    ✔︎    | `boolean`                               | Whether to use `.gitignore` to ignore like `node_modules`. It's passed to [globby](https://www.npmjs.com/package/globby#gitignore) internally. | `true`                                                                                                                                                                                                                                                                                                                                                                 |
-| `config`           |          | `Record<string, boolean \| string>`     | The configuration for the plugins. [more info](https://graphql-code-generator.com/docs/getting-started/config-field)                           | These are configured by default. <ul><li>`withHOC: false`</li><li>`withHooks: true`</li></ul>                                                                                                                                                                                                                                                                          |
-| `cacheDir`         |          | `string`                                | Custom cache directory. It's `node_modules/graphql-let/__generated__` by default, which you can overwrite by this option.                      | `__generated__`                                                                                                                                                                                                                                                                                                                                                        |
-| `TSConfigFile`     |          | `string`                                | Custom path to a TypeScript configuraiton. It's `tsconfig.json` by default, which you can overwrite by this option.                            | `tsconfig.custom.json`                                                                                                                                                                                                                                                                                                                                                 |
-
-#### .gitignore
+### 3. Configure .gitignore
 
 graphql-let will generate `.d.ts` files in the same folder of `.graphql`. Add
 these lines in your .gitignore.
@@ -112,7 +115,7 @@ these lines in your .gitignore.
 +*.graphqls.d.ts
 ```
 
-#### webpack.config.ts
+### 4. Configure webpack.config.ts
 
 The webpack loader also needs to be configured. Note that the content that
 `graphql-let/loader` generates is JSX-TypeScript. You have to compile it to
@@ -134,11 +137,11 @@ JavaScript with an additional loader such as `babel-loader`.
  }
 ```
 
-### 3. Generate type declarations
+### 5. Generate type declarations
 
 Run this to generate `.d.ts`.
 
-```
+```bash
 npx graphql-let
 
 # This will generate files such as:
@@ -151,7 +154,7 @@ The directory .graphql-let.yml is located at is the basepath of the relative
 paths in .grpahql-let.yml. Also, the basepath should be identical to **webpack's
 `config.context`** so the loader can find the config file.
 
-```
+```bash
 pwd # "/app"
 npx graphql-let --config custom/path/.graphql-let.yml
 
@@ -185,7 +188,73 @@ const News: React.FC = () => {
 }
 ```
 
-## JEST Transformer
+## Configuration options
+
+graphql-let expects your `.graphql-let.yml` to look like this.
+
+```yaml
+schema: lib/type-defs.graphqls
+# Required. The GraphQL schema info that graphql-let requests introspection to.
+# Examples:
+#       schema: http://localhost:3000/graphql
+#       schema: schema.json
+#       schema: schema.graphqls  # Note: glob is not supported yet
+#       schema:
+#           https://api.github.com/graphql
+#               headers:
+#                   Authorization: "YOUR-TOKEN"
+# Please see here for more information: https://graphql-code-generator.com/docs/getting-started/schema-field#available-formats
+
+documents: "**/*.graphql"
+# Necessary if you use a webpack loader "graphql-let/loader".
+# The GraphQL documents info of quereis and mutations etc.
+# Examples:
+#            documents: 'queries/**/*.graphql'
+#            documents:
+#                - 'queries/**/*.graphql'
+#                - '!queries/exeption.graphql'
+
+plugins:
+    - typescript
+    - typescript-operations
+    - typescript-react-apollo
+# Required. The plugins for GraphQL documents to run GraphQL code generator with.
+# It's identical to "documentPlugins" field. Please note you need to generate TypeScript source here.
+# Examples:
+#            plugins:
+#                - typescript
+#                - typescript-react-apollo
+#                - add: "/* eslint-disable */"
+# See here for more information. https://graphql-code-generator.com/docs/plugins/index
+
+config:
+    - withHOC: false
+    - withHooks: true
+# Optional. Shared options for document plugins.
+# See here for more information. https://graphql-code-generator.com/docs/getting-started/config-field
+
+respectGitIgnore: true
+# Optional. `true` by default. If true, graphql-let will ignore files in .gitignore.
+# Useful to prevent parsing files in such as `node_modules`.
+
+cacheDir: node_modules/graphql-let/__generated__
+# Optional. `node_modules/graphql-let/__generated__` by default.
+# graphql-let takes care of intermediate outpus `.ts(x)`s of GraphQL code generator but still need to
+# store them somewhere for caching and TypeScript API purposes. This is the directory these files go to.
+# Examples:
+#            cacheDir: __generated__
+
+TSConfigFile: tsconfig.json
+# Optional. `tsconfig.json` by default. You can specify a custom config for generating `.d.ts`s.
+# Examples:
+#            TSConfigFile: tsconfig.compile.json
+
+gqlDtsEntrypoint: node_modules/@types/graphql-let/index.d.ts
+# Optional. `node_modules/@types/graphql-let/index.d.ts` by default. Needs to be end with ".d.ts".
+# It is used if you use a Babel plugin "graphql-let/babel" to inject types of a `gql` function.
+```
+
+## Jest Transformer
 
 "graphql-let/jestTransformer" is available. Configure your `jest.config.js` as:
 
@@ -223,6 +292,50 @@ module.exports = {
 };
 ```
 
+## Babel Plugin for inline GraphQL documents
+
+A Babel Plugin support allows you to get typed graphql-codegen results from
+"graphql-tag"-like syntax as the below.
+
+```typescript jsx
+import gql from "graphql-let";
+
+// Typed️⚡️
+const { useViewerQuery } = gql(`
+    query Viewer {
+        viewer { name }
+    }
+`);
+```
+
+### Configuration
+
+Install these additional dependencies:
+
+```bash
+npm install -D graphql-let do-sync @babel/core @babel/parser @babel/traverse @babel/helper-plugin-utils
+```
+
+with the plugin configuration in such as `babel.config.json`:
+
+```json
+{
+    "plugins": ["graphql-let/babel"]
+}
+```
+
+Note: The `.tsx`s are generated in `node_modules/graphql-let/__generated__` by
+default, but you may want them to be outside of `node_modules`.Please try
+`cacheDir: __generated__` in your .graphql-let.yml then.
+
+### Limitations
+
+-   **Sadly**, type injection can't be done with TaggedTemplateExpression such
+    as `` gql`query {}` ``. This is the limitation of TypeScript.
+    [Please answer me if you have ideas.](https://stackoverflow.com/questions/61917066/can-taggedtempalte-have-overload-signatures-with-a-certain-string-literal-argume)
+-   Fragments are still not available. Please watch
+    [the issue.](https://github.com/piglovesyou/graphql-let/issues/65)
+
 ## Experimental feature: Resolver Types
 
 If:
@@ -237,9 +350,9 @@ If:
 resolvers. Run:
 
 ```bash
-yarn add -D @graphql-codegen/typescript-resolvers
+npm install -D @graphql-codegen/typescript-resolvers
 
-yarn graphql-let
+npx graphql-let
 ```
 
 then you will get `Resolver` type from the schema file.
@@ -284,15 +397,27 @@ the next loader but it updates resolver types in HMR. Set it up as below:
 
 _Yes._
 
+#### What's the difference between webpack loader and Babel Plugin?
+
+The webpack loader is more stable, the Babel Plagin can handle inline GraphQL
+documents.
+
+| features                                                     | webpack loader | Babel Plugin |
+| ------------------------------------------------------------ | -------------- | ------------ |
+| stability/speed                                              | ✅             |              |
+| generating `.d.ts`s by cli                                   | ✅             | Use `babel`  |
+| Importing GraphQL document file<br>as `import './a.graphql'` | ✅             |              |
+| Inline GraphQL<br>as `` gql(`query {}`) ``                   |                | ✅           |
+| Experimental: Resolver Types for<br>GraphQL schema           | ✅             |              |
+
 #### Is this a tool only for React?
 
 No. There are
-[more plugins that also generates `.ts` from GraphQL documents](https://graphql-code-generator.com/docs/plugins/).
+[more plugins that also generates `.ts(x)`s from GraphQL documents](https://graphql-code-generator.com/docs/plugins/).
 
 #### Can I write GraphQL documents in my `.tsx` as `` const query = gql`query News{ ... }`; ``?
 
-Afraid not. You need to have separate files to execute the webpack loader.
-Besides, typing the value of `` gql`...` `` would be impossible.
+Please try the Babel Plugin, that'd let you have a close experience.
 
 #### What's the extension `.graphqls`? Should I use it for schema and `.graphql` for documents?
 
@@ -303,11 +428,11 @@ loaders with fewer pitfalls. Another reason for `.graphqls` is that it's one of
 
 #### How to integrate Apollo refetchQueries?
 
-[Query document exports `DocumentNode` named `${QueryName}Document` that you can make use of it.](https://github.com/piglovesyou/graphql-let/issues/66#issuecomment-596276493)
+[Query document exports `DocumentNode` named `${QueryName}Document` that you can make use of.](https://github.com/piglovesyou/graphql-let/issues/66#issuecomment-596276493)
 
 #### How to import `.graphql` from another, to import GraphQL Fragment for example?
 
-You can't yet.
+You can't, yet.
 [Please watch the progress.](https://github.com/piglovesyou/graphql-let/issues/65)
 
 ## Contribution
@@ -315,8 +440,8 @@ You can't yet.
 -   **[Create an issue](https://github.com/piglovesyou/graphql-let/issues/new)**
     if you have ideas, found a bug or anything.
 -   **Creating a PR** is always welcome!
-    -   Please make sure that `yarn prepare` passes, including linting, build
-        and tests.
+    -   Running `npm run prepublishOnly` localy will get your local development
+        ready.
     -   Adding test is preferrable. But don't hesitate without it, maybe someone
         else will fill it.
 

@@ -64,5 +64,5 @@
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
   },
-  "exclude": ["test/**/__generated__"]
+  "exclude": ["test/**/__generated__", "test/**/__fixtures"]
 }

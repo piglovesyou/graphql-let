@@ -6,7 +6,7 @@ import createExecContext from './lib/exec-context';
 import { readHash } from './lib/file';
 import { processGraphQLCodegenFromConfig } from './lib/graphql-codegen';
 import { createHash } from './lib/hash';
-import loadConfig from './lib/load-config';
+import loadConfig from './lib/config';
 import memoize from './lib/memoize';
 import { createPaths } from './lib/paths';
 import { shouldGenResolverTypes } from './lib/resolver-types';
