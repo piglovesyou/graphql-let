@@ -21,20 +21,16 @@ runner(cwd, 'gql', {}, { sourceType: 'unambiguous' });
 test(`Generated files are okay`, async () => {
   const files = await globby('fixtures/**/node_modules/**', { cwd });
 
-  deepStrictEqual(
-    files.sort(),
-
-    [
-      'fixtures/basic/node_modules/@types/graphql-let/index.d.ts',
-      'fixtures/basic/node_modules/@types/graphql-let/input-dcfbe2c23b6ad8dfa8d9e2dc133c788c60c28ea8.d.ts',
-      'fixtures/basic/node_modules/@types/graphql-let/store.json',
-      'fixtures/basic/node_modules/graphql-let/__generated__/input-dcfbe2c23b6ad8dfa8d9e2dc133c788c60c28ea8.tsx',
-      'fixtures/tagged-template-call/node_modules/@types/graphql-let/index.d.ts',
-      'fixtures/tagged-template-call/node_modules/@types/graphql-let/input-dcfbe2c23b6ad8dfa8d9e2dc133c788c60c28ea8.d.ts',
-      'fixtures/tagged-template-call/node_modules/@types/graphql-let/store.json',
-      'fixtures/tagged-template-call/node_modules/graphql-let/__generated__/input-dcfbe2c23b6ad8dfa8d9e2dc133c788c60c28ea8.tsx',
-    ],
-  );
+  deepStrictEqual(files.sort(), [
+    'fixtures/basic/node_modules/@types/graphql-let/index.d.ts',
+    'fixtures/basic/node_modules/@types/graphql-let/input-dcfbe2c23b6ad8dfa8d9e2dc133c788c60c28ea8.d.ts',
+    'fixtures/basic/node_modules/@types/graphql-let/store.json',
+    'fixtures/basic/node_modules/graphql-let/__generated__/input-dcfbe2c23b6ad8dfa8d9e2dc133c788c60c28ea8.tsx',
+    'fixtures/tagged-template-call/node_modules/@types/graphql-let/index.d.ts',
+    'fixtures/tagged-template-call/node_modules/@types/graphql-let/input-dcfbe2c23b6ad8dfa8d9e2dc133c788c60c28ea8.d.ts',
+    'fixtures/tagged-template-call/node_modules/@types/graphql-let/store.json',
+    'fixtures/tagged-template-call/node_modules/graphql-let/__generated__/input-dcfbe2c23b6ad8dfa8d9e2dc133c788c60c28ea8.tsx',
+  ]);
 
   const contents = await Promise.all(
     files.map((file) => {
