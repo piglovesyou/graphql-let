@@ -397,17 +397,18 @@ the next loader but it updates resolver types in HMR. Set it up as below:
 
 _Yes._
 
-#### What's the difference between cli, webpack loader and Babel Plugin?
+#### What's the difference between webpack loader and Babel Plugin?
 
-While webpack loader is more stable, the Babel Plagin can handle inline GraphQL
+The webpack loader is more stable, the Babel Plagin can handle inline GraphQL
 documents.
 
-| features                                                     | cli | webpack loader | Babel Plugin |
-| ------------------------------------------------------------ | --- | -------------- | ------------ |
-| stability/speed                                              | ✅  | ✅             |              |
-| Importing GraphQL document file<br>as `import './a.graphql'` | ✅  | ✅             |              |
-| Inline GraphQL<br>as `` gql(`query {}`) ``                   |     |                | ✅           |
-| Experimental: Resolver Types for<br>GraphQL schema           | ✅  | ✅             |              |
+| features                                                     | webpack loader | Babel Plugin |
+| ------------------------------------------------------------ | -------------- | ------------ |
+| stability/speed                                              | ✅             |              |
+| generating `.d.ts`s by cli                                   | ✅             | Use `babel`  |
+| Importing GraphQL document file<br>as `import './a.graphql'` | ✅             |              |
+| Inline GraphQL<br>as `` gql(`query {}`) ``                   |                | ✅           |
+| Experimental: Resolver Types for<br>GraphQL schema           | ✅             |              |
 
 #### Is this a tool only for React?
 
