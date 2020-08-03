@@ -240,8 +240,7 @@ export async function gqlCompile(
   } = gqlCompileArgs;
   const { cwd, config, cacheFullDir } = execContext;
 
-  // TODO: do this in getPaths
-  const cacheRelDir = relative(cwd, cacheFullDir); // Want this?
+  const cacheRelDir = relative(cwd, cacheFullDir);
 
   const dtsRelDir = dirname(config.gqlDtsEntrypoint);
   const codegenContext: GqlCodegenContext[] = [];
@@ -258,7 +257,7 @@ export async function gqlCompile(
   // Prepare
   await Promise.all([
     await makeDir(join(cwd, dtsRelDir)),
-    await makeDir(join(cwd, cacheRelDir)),
+    await makeDir(cacheFullDir),
   ]);
 
   await memoizedProcessGqlCompile(
