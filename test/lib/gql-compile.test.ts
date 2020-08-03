@@ -3,12 +3,10 @@ import { join as pathJoin } from 'path';
 import createExecContext from '../../src/lib/exec-context';
 import slash from 'slash';
 import { rimraf } from '../../src/lib/file';
-import {
-  GqlCodegenContext,
-  processGqlCompile,
-} from '../../src/lib/gql-compile';
+import { processGqlCompile } from '../../src/lib/gql-compile';
 import { buildConfig, ConfigTypes } from '../../src/lib/config';
 import { createHash } from '../../src/lib/hash';
+import { GqlCodegenContext } from '../../src/lib/types';
 
 const dtsRelDir = 'node_modules/@types/graphql-let';
 const libRelDir = 'node_modules/graphql-let';

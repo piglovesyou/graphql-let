@@ -17,18 +17,6 @@ import { createHash } from './hash';
 import memoize from './memoize';
 import * as t from '@babel/types';
 
-export type GqlCodegenContext = {
-  gqlContent: string;
-  strippedGqlContent: string;
-  gqlContentHash: string;
-  sourceRelPath: string;
-  sourceFullPath: string;
-  tsxRelPath: string;
-  tsxFullPath: string;
-  dtsRelPath: string;
-  dtsFullPath: string;
-};
-
 type ScopedCacheStore = {
   [hash: string]: string;
 };
@@ -87,6 +75,7 @@ export const parserOption: ParserOptions = {
 };
 
 import generator from '@babel/generator';
+import { GqlCodegenContext } from './types';
 
 function appendExportAsObject(dtsContent: string) {
   // TODO: Build ast

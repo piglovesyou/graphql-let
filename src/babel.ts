@@ -6,12 +6,13 @@ import doSync from 'do-sync';
 import slash from 'slash';
 import createExecContext, { ExecContext } from './lib/exec-context';
 import { readFileSync } from './lib/file';
-import { GqlCodegenContext, GqlCompileArgs } from './lib/gql-compile';
+import { GqlCompileArgs } from './lib/gql-compile';
 import { createHash } from './lib/hash';
 import { loadConfigSync } from './lib/config';
 import { printError } from './lib/print';
 import { shouldGenResolverTypes } from './lib/resolver-types';
 import { gqlCompile } from './lib/gql-compile';
+import { GqlCodegenContext } from './lib/types';
 
 const {
   isIdentifier,
