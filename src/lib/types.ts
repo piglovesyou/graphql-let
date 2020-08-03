@@ -12,6 +12,11 @@ export type CreatedPathsBase = {
   dtsFullPath: string;
 };
 
+export type CodegenContextBase = {
+  // If true, cache is fresh, so we don't need to generate new one.
+  skip: boolean;
+};
+
 /**
  * "gql" stands for `.graphql`s and `.graphqls`s as source files
  */
@@ -33,11 +38,12 @@ export type GqlCodegenContext = GqlCreatedPaths & {
   dtsContentDecorator: (content: string) => string;
 };
 
-export type SrcCodegenContext = SrcCreatedPaths & {
-  gqlHash: string;
-  gqlContent: string;
-  strippedGqlContent: string;
-};
+export type SrcCodegenContext = SrcCreatedPaths &
+  CodegenContextBase & {
+    gqlHash: string;
+    gqlContent: string;
+    strippedGqlContent: string;
+  };
 
 export type CodegenContext = GqlCodegenContext | SrcCodegenContext;
 

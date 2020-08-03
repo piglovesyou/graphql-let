@@ -173,7 +173,6 @@ export async function processGqlCompile(
   schemaHash: string,
   gqlContents: string[],
   codegenContext: SrcCodegenContext[],
-  skippedCodegenContext: SrcCodegenContext[],
 ) {
   const { cwd, config, cacheFullDir } = execContext;
   const dtsRelDir = dirname(config.gqlDtsEntrypoint);
@@ -218,23 +217,19 @@ export async function processGqlCompile(
   for (const gqlContent of gqlContents) {
     const strippedGqlContent = stripIgnoredCharacters(gqlContent);
     const gqlHash = createHash(schemaHash + strippedGqlContent);
-    const context = {
+
+    scopedStore[gqlHash] = strippedGqlContent;
+
+    codegenContext.push({
       ...createPaths(sourceRelPath, gqlHash, dtsRelDir, cacheFullDir, cwd),
       gqlContent,
       strippedGqlContent,
       gqlHash,
-    };
+      skip: Boolean(scopedStore[gqlHash]),
+    });
 
     // Old caches left will be removed
     oldGqlHashes.delete(gqlHash);
-
-    if (scopedStore[gqlHash]) {
-      skippedCodegenContext.push(context);
-    } else {
-      // newGqlCodegenContext.push(context);
-      codegenContext.push(context);
-      scopedStore[gqlHash] = strippedGqlContent;
-    }
   }
 
   // Remove old caches
@@ -255,9 +250,7 @@ export async function processGqlCompile(
   // Update index.d.ts
   const dtsEntryFullPath = pathJoin(cwd, config.gqlDtsEntrypoint);
   const writeStream = createWriteStream(dtsEntryFullPath);
-  for (const { gqlContent, gqlHash, dtsRelPath } of codegenContext.concat(
-    skippedCodegenContext,
-  )) {
+  for (const { gqlContent, gqlHash, dtsRelPath } of codegenContext) {
     const chunk = `import T${gqlHash} from './${slash(dtsRelPath)}';
 export default function gql(gql: \`${gqlContent}\`): T${gqlHash}.__AllExports;
 `;
@@ -293,7 +286,6 @@ export async function gqlCompile(
   } = gqlCompileArgs;
 
   const codegenContext: SrcCodegenContext[] = [];
-  const skippedCodegenContext: SrcCodegenContext[] = [];
 
   await memoizedProcessGqlCompile(
     execContext,
@@ -301,7 +293,6 @@ export async function gqlCompile(
     schemaHash,
     gqlContents,
     codegenContext,
-    skippedCodegenContext,
   );
 
   await generateTsx(execContext, codegenContext);

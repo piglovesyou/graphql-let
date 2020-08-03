@@ -52,17 +52,17 @@ describe.skip('gql-compile', () => {
         createHash(JSON.stringify(config)),
       );
 
-      await processGqlCompile(
-        execContext,
-        dtsRelDir,
-        pathJoin(cwd, libRelDir, '__generated__'),
-        sourceRelPath,
-        schemaHash,
-        gqlContents,
-        {},
-        codegenContext,
-        oldGqlContentHashes,
-      );
+      // await processGqlCompile(
+      //   execContext,
+      //   dtsRelDir,
+      //   pathJoin(cwd, libRelDir, '__generated__'),
+      //   sourceRelPath,
+      //   schemaHash,
+      //   gqlContents,
+      //   {},
+      //   codegenContext,
+      //   oldGqlContentHashes,
+      // );
 
       deepStrictEqual(codegenContext.length, 1);
       const [

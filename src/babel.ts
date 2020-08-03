@@ -180,7 +180,7 @@ function modifyGqlCalls(
   programPath: NodePath<t.Program>,
   sourceFullPath: string,
   visitGqlCallResults: VisitGqlCallResults,
-  gqlCodegenContext: SrcCodegenContext[],
+  codegenContext: SrcCodegenContext[],
 ) {
   const {
     gqlCallExpressionPaths,
@@ -188,11 +188,11 @@ function modifyGqlCalls(
     hasError,
   } = visitGqlCallResults;
 
-  if (gqlCallExpressionPaths.length !== gqlCodegenContext.length)
+  if (gqlCallExpressionPaths.length !== codegenContext.length)
     throw new Error('what');
 
   for (const [i, [callExpressionPath]] of gqlCallExpressionPaths.entries()) {
-    const { gqlHash, tsxFullPath } = gqlCodegenContext[i]!;
+    const { gqlHash, tsxFullPath } = codegenContext[i]!;
     const tsxRelPathFromSource =
       './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
 
@@ -224,42 +224,6 @@ function modifyGqlCalls(
   }
 }
 
-// export function processProgramPathSync(
-//   execContext: ExecContext,
-//   schemaHash: string,
-//   programPath: NodePath<t.Program>,
-//   onlyMatchImportSuffix: boolean,
-//   importName: string,
-//   sourceRelPath: string,
-//   sourceFullPath: string,
-// ) {
-//   const visitGqlCallResults = visitGqlCalls(
-//     programPath,
-//     importName,
-//     onlyMatchImportSuffix,
-//   );
-//   const { gqlCallExpressionPaths } = visitGqlCallResults;
-//
-//   // TODO: Handle error
-//
-//   if (!gqlCallExpressionPaths.length) return;
-//
-//   const gqlCodegenContext: SrcCodegenContext[] = gqlCompileSync({
-//     hostDirname: __dirname,
-//     execContext,
-//     schemaHash,
-//     sourceRelPath,
-//     gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
-//   });
-//
-//   modifyGqlCalls(
-//     programPath,
-//     sourceFullPath,
-//     visitGqlCallResults,
-//     gqlCodegenContext,
-//   );
-// }
-
 export async function processProgramPath(
   execContext: ExecContext,
   schemaHash: string,
@@ -280,7 +244,7 @@ export async function processProgramPath(
 
   if (!gqlCallExpressionPaths.length) return;
 
-  const gqlCodegenContext: SrcCodegenContext[] = await gqlCompile({
+  const codegenContext: SrcCodegenContext[] = await gqlCompile({
     execContext,
     schemaHash,
     sourceRelPath,
@@ -291,7 +255,7 @@ export async function processProgramPath(
     programPath,
     sourceFullPath,
     visitGqlCallResults,
-    gqlCodegenContext,
+    codegenContext,
   );
 }
 
