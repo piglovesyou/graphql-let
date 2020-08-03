@@ -179,22 +179,25 @@ export async function processGqlCompile(
   const dtsRelDir = dirname(config.gqlDtsEntrypoint);
 
   /**
-   * 0. Shape of storage
-   * {
-   *   "userRelPath.tsx": {
-   *     "gqlContentHash1": "query{\n}",
-   *     "gqlContentHash2": "query{\n}",
+   * Shape of storage
+   *   {
+   *     "userRelPath.tsx": {
+   *       "gqlHash1": "query {}",
+   *       "gqlHash2": "query {}",
+   *     }
    *   }
-   * }
-   * 1. take care all multiple gql() in file. Check gqlContentHash and generate if not exists.
-   * 2. All done. remove all old dts.
-   * 3. Store the latest dts paths.
-   * 4. Print index.d.ts from the entire storage
+   * 1. Prepare store if not exists.
+   * 2. Get the current state of the target source `.tsx`.
+   * 3. Check if caches of the gqlContents exist.
+   *    If not, put it to codegenContext to create new.
+   * 4. If we have obsolete caches, delete them.
+   * 5. Finally,
+   *    1. Update dtsEntryFullPath
+   *    2. Update projectStore
    *
-   * 5. Write .tsx to cacheDir
-   * 6. Import it from babel target by inserting a "import" line
-   *
-   * 7. Done.
+   * We don't do these here:
+   *    1. Write tsx
+   *    2. Write dts
    */
 
   // Processes inside a sub-process of babel-plugin
@@ -233,12 +236,6 @@ export async function processGqlCompile(
       scopedStore[gqlHash] = strippedGqlContent;
     }
   }
-
-  // if (!newGqlCodegenContext.length) return;
-  //
-  // await generateTsx(execContext, newGqlCodegenContext);
-  //
-  // await generateDts(execContext, newGqlCodegenContext, scopedStore);
 
   // Remove old caches
   for (const oldGqlHash of oldGqlHashes) {
@@ -298,24 +295,6 @@ export async function gqlCompile(
   const codegenContext: SrcCodegenContext[] = [];
   const skippedCodegenContext: SrcCodegenContext[] = [];
 
-  // const { cwd, config, cacheFullDir } = execContext;
-  // const dtsRelDir = dirname(config.gqlDtsEntrypoint);
-
-  // // Processes inside a sub-process of babel-plugin
-  // const storeFullPath = pathJoin(cwd, dtsRelDir, 'store.json');
-  // const projectStore: ProjectCacheStore = existsSync(storeFullPath)
-  //   ? JSON.parse(await readFile(storeFullPath, 'utf-8'))
-  //   : {};
-  // const scopedStore =
-  //   projectStore[sourceRelPath] || (projectStore[sourceRelPath] = {});
-  // const oldGqlHashes = new Set(Object.keys(scopedStore));
-  //
-  // // Prepare
-  // await Promise.all([
-  //   await makeDir(join(cwd, dtsRelDir)),
-  //   await makeDir(cacheFullDir),
-  // ]);
-
   await memoizedProcessGqlCompile(
     execContext,
     sourceRelPath,
@@ -328,34 +307,6 @@ export async function gqlCompile(
   await generateTsx(execContext, codegenContext);
 
   await generateDts(execContext, codegenContext);
-
-  //   // Remove old caches
-  //   for (const oldGqlHash of oldGqlHashes) {
-  //     delete scopedStore[oldGqlHash];
-  //     const { dtsFullPath } = createPaths(
-  //       sourceRelPath,
-  //       oldGqlHash,
-  //       dtsRelDir,
-  //       cacheFullDir,
-  //       cwd,
-  //     );
-  //     if (existsSync(dtsFullPath)) {
-  //       await rimraf(dtsFullPath);
-  //     }
-  //   }
-  //
-  //   // Update index.d.ts
-  //   const dtsEntryFullPath = pathJoin(cwd, config.gqlDtsEntrypoint);
-  //   const writeStream = createWriteStream(dtsEntryFullPath);
-  //   for (const { gqlContent, gqlHash, dtsRelPath } of codegenContext) {
-  //     const chunk = `import T${gqlHash} from './${slash(dtsRelPath)}';
-  // export default function gql(gql: \`${gqlContent}\`): T${gqlHash}.__AllExports;
-  // `;
-  //     await new Promise((resolve) => writeStream.write(chunk, resolve));
-  //   }
-  //
-  //   // Update storeJson
-  //   await writeFile(storeFullPath, JSON.stringify(projectStore, null, 2));
 
   return codegenContext;
 }
