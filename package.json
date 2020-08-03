@@ -28,16 +28,18 @@
     "minimist": "^1.2.0",
     "rimraf": "^3.0.2",
     "slash": "^3.0.0",
-    "yaml": "^1.7.2"
+    "yaml": "^1.7.2",
+    "@babel/core": "^7.0.0",
+    "@babel/helper-plugin-utils": "^7.0.0",
+    "@babel/parser": "^7.0.0",
+    "@babel/traverse": "^7.0.0",
+    "do-sync": "^2.2.0"
   },
   "devDependencies": {
     "@apollo/react-common": "^3.1.3",
     "@apollo/react-components": "^3.1.3",
     "@apollo/react-hooks": "^3.1.3",
-    "@babel/core": ">=7.0.0",
-    "@babel/helper-plugin-utils": ">=7.0.0",
     "@babel/helper-transform-fixture-test-runner": ">=7.0.0",
-    "@babel/parser": ">=7.0.0",
     "@babel/plugin-syntax-jsx": ">=7.0.0",
     "@babel/preset-env": "^7.8.4",
     "@babel/preset-react": ">=7.0.0",
@@ -110,12 +112,7 @@
     "typescript": "*"
   },
   "optionalDependencies": {
-    "@babel/core": ">=7.0.0",
-    "@babel/helper-plugin-utils": ">=7.0.0",
-    "@babel/parser": ">=7.0.0",
-    "@babel/traverse": ">=7.0.0",
     "@graphql-codegen/typescript-resolvers": "*",
-    "do-sync": "*",
     "babel-jest": "*"
   },
   "husky": {
