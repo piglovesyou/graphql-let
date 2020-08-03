@@ -10,11 +10,13 @@ import { readFile, rename, rimraf } from './__tools/file';
 const cwd = pathJoin(__dirname, '__fixtures/gen');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
 
-async function cleanup() {
-  await rimraf(rel('__generated__'));
-  await rimraf(rel('node_modules'));
-  await rimraf(rel('**/*.graphql.d.ts'));
-  await rimraf(rel('**/*.graphqls.d.ts'));
+function cleanup() {
+  return Promise.all([
+    rimraf(rel('__generated__')),
+    rimraf(rel('node_modules')),
+    rimraf(rel('**/*.graphql.d.ts')),
+    rimraf(rel('**/*.graphqls.d.ts')),
+  ]);
 }
 
 describe('"graphql-let" command', () => {
@@ -22,12 +24,12 @@ describe('"graphql-let" command', () => {
     await rename(rel('_gitignore'), rel('.gitignore'));
   }, 60 * 1000);
 
+  beforeEach(cleanup);
+
   afterAll(async () => {
     await rename(rel('.gitignore'), rel('_gitignore'));
     await cleanup();
   });
-
-  beforeEach(cleanup);
 
   test(`generates number of .d.ts ignoring specified files as expected
 * ignoring "!" paths in "schema" and "documents" of graphql-let.yml
