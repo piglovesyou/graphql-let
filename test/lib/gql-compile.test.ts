@@ -55,7 +55,7 @@ describe('gql-compile', () => {
       await processGqlCompile(
         execContext,
         dtsRelDir,
-        pathJoin(libRelDir, '__generated__'),
+        pathJoin(cwd, libRelDir, '__generated__'),
         sourceRelPath,
         schemaHash,
         gqlContents,

@@ -29,12 +29,11 @@ const getPaths = (
   sourceRelPath: string,
   hash: string,
   dtsRelDir: string,
-  cacheRelDir: string,
+  cacheFullDir: string,
   cwd: string,
 ) => {
   const abs = (relPath: string) => pathJoin(cwd, relPath);
 
-  const tsxGenFullDir = abs(cacheRelDir);
   const dtsGenFullDir = abs(dtsRelDir);
   // sourceRelPath: "pages/index.tsx"
   // "pages"
@@ -51,7 +50,7 @@ const getPaths = (
   // "pages/index-2345.tsx"
   const tsxRelPath = pathJoin(relDir, tsxBasename);
   // "/Users/.../node_modules/graphql-let/__generated__/pages/index-2345.d.ts"
-  const tsxFullPath = pathJoin(tsxGenFullDir, tsxRelPath);
+  const tsxFullPath = pathJoin(cacheFullDir, tsxRelPath);
 
   // "index-2345.d.ts"
   const dtsBasename = `${base}-${hash}.d.ts`;
@@ -124,7 +123,7 @@ function appendExportAsObject(dtsContent: string) {
 export async function processGqlCompile(
   execContext: ExecContext,
   dtsRelDir: string,
-  cacheRelDir: string,
+  cacheFullDir: string,
   sourceRelPath: string,
   schemaHash: string,
   gqlContents: string[],
@@ -162,7 +161,7 @@ export async function processGqlCompile(
       gqlContent,
       strippedGqlContent,
       gqlContentHash,
-      ...getPaths(sourceRelPath, gqlContentHash, dtsRelDir, cacheRelDir, cwd),
+      ...getPaths(sourceRelPath, gqlContentHash, dtsRelDir, cacheFullDir, cwd),
     };
     if (!targetStore[gqlContentHash]) {
       newGqlCodegenContext.push(context);
@@ -240,8 +239,6 @@ export async function gqlCompile(
   } = gqlCompileArgs;
   const { cwd, config, cacheFullDir } = execContext;
 
-  const cacheRelDir = relative(cwd, cacheFullDir);
-
   const dtsRelDir = dirname(config.gqlDtsEntrypoint);
   const codegenContext: GqlCodegenContext[] = [];
 
@@ -263,7 +260,7 @@ export async function gqlCompile(
   await memoizedProcessGqlCompile(
     execContext,
     dtsRelDir,
-    cacheRelDir,
+    cacheFullDir,
     sourceRelPath,
     schemaHash,
     gqlContents,
@@ -279,7 +276,7 @@ export async function gqlCompile(
       sourceRelPath,
       oldGqlContentHash,
       dtsRelDir,
-      cacheRelDir,
+      cacheFullDir,
       cwd,
     );
     if (existsSync(dtsFullPath)) {
