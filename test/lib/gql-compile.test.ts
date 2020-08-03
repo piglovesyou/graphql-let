@@ -69,7 +69,7 @@ describe('gql-compile', () => {
         {
           gqlContent,
           strippedGqlContent,
-          gqlContentHash,
+          gqlHash,
           srcFullPath,
           tsxRelPath,
           tsxFullPath,
@@ -85,10 +85,7 @@ describe('gql-compile', () => {
         strippedGqlContent,
         'query Viewer{viewer{id name status}}',
       );
-      deepStrictEqual(
-        gqlContentHash,
-        'dd28f9c0ad11900a2654540e86de9cf9fc16f8b4',
-      );
+      deepStrictEqual(gqlHash, 'dd28f9c0ad11900a2654540e86de9cf9fc16f8b4');
       deepStrictEqual(sourceRelPath, 'pages/index.tsx');
 
       ok(

@@ -192,11 +192,11 @@ function modifyGqlCalls(
     throw new Error('what');
 
   for (const [i, [callExpressionPath]] of gqlCallExpressionPaths.entries()) {
-    const { gqlContentHash, tsxFullPath } = gqlCodegenContext[i]!;
+    const { gqlHash, tsxFullPath } = gqlCodegenContext[i]!;
     const tsxRelPathFromSource =
       './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
 
-    const localVarName = `V${gqlContentHash}`;
+    const localVarName = `V${gqlHash}`;
 
     const importNode = importDeclaration(
       [importNamespaceSpecifier(identifier(localVarName))],

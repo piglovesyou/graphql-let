@@ -1,7 +1,7 @@
 import { generate } from '@graphql-codegen/cli';
 import traverse, { NodePath } from '@babel/traverse';
 import makeDir from 'make-dir';
-import { join as pathJoin, extname, basename, dirname, relative } from 'path';
+import { join as pathJoin, extname, basename, dirname } from 'path';
 import { existsSync } from 'fs';
 import slash from 'slash';
 import { genDts } from './dts';
@@ -16,6 +16,8 @@ import { writeFile } from './file';
 import { createHash } from './hash';
 import memoize from './memoize';
 import * as t from '@babel/types';
+import generator from '@babel/generator';
+import { GqlCodegenContext, SrcCreatedPaths } from './types';
 
 type ScopedCacheStore = {
   [hash: string]: string;
@@ -72,9 +74,6 @@ export const parserOption: ParserOptions = {
   sourceType: 'module',
   plugins: ['typescript', 'jsx'],
 };
-
-import generator from '@babel/generator';
-import { GqlCodegenContext, SrcCreatedPaths } from './types';
 
 function appendExportAsObject(dtsContent: string) {
   // TODO: Build ast
@@ -156,20 +155,20 @@ export async function processGqlCompile(
 
   for (const gqlContent of gqlContents) {
     const strippedGqlContent = stripIgnoredCharacters(gqlContent);
-    const gqlContentHash = createHash(schemaHash + strippedGqlContent);
+    const gqlHash = createHash(schemaHash + strippedGqlContent);
     const context = {
       gqlContent,
       strippedGqlContent,
-      gqlContentHash,
-      ...getPaths(sourceRelPath, gqlContentHash, dtsRelDir, cacheFullDir, cwd),
+      gqlHash,
+      ...getPaths(sourceRelPath, gqlHash, dtsRelDir, cacheFullDir, cwd),
     };
-    if (!targetStore[gqlContentHash]) {
+    if (!targetStore[gqlHash]) {
       newGqlCodegenContext.push(context);
     }
     // Push all for later use
     codegenContext.push(context);
     // Old caches left will be removed
-    oldGqlContentHashes.delete(gqlContentHash);
+    oldGqlContentHashes.delete(gqlHash);
   }
 
   if (!newGqlCodegenContext.length) return;
@@ -203,12 +202,10 @@ export async function processGqlCompile(
   );
   await makeDir(dirname(newGqlCodegenContext[0].dtsFullPath));
   for (const [i, dtsContent] of dtsContents.entries()) {
-    const {
-      dtsFullPath,
-      strippedGqlContent,
-      gqlContentHash,
-    } = newGqlCodegenContext[i]!;
-    targetStore[gqlContentHash] = strippedGqlContent;
+    const { dtsFullPath, strippedGqlContent, gqlHash } = newGqlCodegenContext[
+      i
+    ]!;
+    targetStore[gqlHash] = strippedGqlContent;
     const content = appendExportAsObject(dtsContent);
     await writeFile(dtsFullPath, content);
   }
@@ -249,7 +246,7 @@ export async function gqlCompile(
     : {};
   const scopedStore =
     projectStore[sourceRelPath] || (projectStore[sourceRelPath] = {});
-  const oldGqlContentHashes = new Set(Object.keys(scopedStore));
+  const oldGqlHashes = new Set(Object.keys(scopedStore));
 
   // Prepare
   await Promise.all([
@@ -266,15 +263,15 @@ export async function gqlCompile(
     gqlContents,
     scopedStore,
     codegenContext,
-    oldGqlContentHashes,
+    oldGqlHashes,
   );
 
   // Remove old caches
-  for (const oldGqlContentHash of oldGqlContentHashes) {
-    delete scopedStore[oldGqlContentHash];
+  for (const oldGqlHash of oldGqlHashes) {
+    delete scopedStore[oldGqlHash];
     const { dtsFullPath } = getPaths(
       sourceRelPath,
-      oldGqlContentHash,
+      oldGqlHash,
       dtsRelDir,
       cacheFullDir,
       cwd,
@@ -287,9 +284,9 @@ export async function gqlCompile(
   // Update index.d.ts
   const dtsEntryFullPath = pathJoin(cwd, config.gqlDtsEntrypoint);
   const writeStream = createWriteStream(dtsEntryFullPath);
-  for (const { gqlContent, gqlContentHash, dtsRelPath } of codegenContext) {
-    const chunk = `import T${gqlContentHash} from './${slash(dtsRelPath)}';
-export default function gql(gql: \`${gqlContent}\`): T${gqlContentHash}.__AllExports;
+  for (const { gqlContent, gqlHash, dtsRelPath } of codegenContext) {
+    const chunk = `import T${gqlHash} from './${slash(dtsRelPath)}';
+export default function gql(gql: \`${gqlContent}\`): T${gqlHash}.__AllExports;
 `;
     await new Promise((resolve) => writeStream.write(chunk, resolve));
   }

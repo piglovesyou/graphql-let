@@ -19,10 +19,6 @@ export type GqlCreatedPaths = CreatedPathsBase & {
   gqlRelPath: string;
   gqlFullPath: string;
 };
-export type CodegenContext = GqlCreatedPaths & {
-  gqlHash: string;
-  dtsContentDecorator: (content: string) => string;
-};
 
 /**
  * "source" `.ts(x)`s containing `gql(`query {}`)` calls
@@ -32,10 +28,15 @@ export type SrcCreatedPaths = CreatedPathsBase & {
   srcFullPath: string;
 };
 
+export type CodegenContext = GqlCreatedPaths & {
+  gqlHash: string;
+  dtsContentDecorator: (content: string) => string;
+};
+
 export type GqlCodegenContext = SrcCreatedPaths & {
+  gqlHash: string;
   gqlContent: string;
   strippedGqlContent: string;
-  gqlContentHash: string;
 };
 
 export type SkippedContext = {
