@@ -30,6 +30,7 @@ export type SkippedContext = {
   dtsFullPath: string;
 };
 
+// Take care of `.graphqls`s if needed
 export async function processResolverTypesIfNeeded(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
@@ -92,6 +93,7 @@ export default typeof DocumentNode
   return { schemaHash };
 }
 
+// Take care of `.graphql`s
 export async function processDocuments(
   execContext: ExecContext,
   gqlRelPaths: string[],
@@ -191,6 +193,7 @@ function getGraphQLLetBabelOption(babelOptions: any): BabelOptions {
   return {};
 }
 
+// Take care of `gql(`query {}`)` in `.ts(x)` sources
 async function processSources(
   execContext: ExecContext,
   schemaHash: string,

@@ -11,6 +11,7 @@ import { createHash } from './lib/hash';
 import { loadConfigSync } from './lib/config';
 import { printError } from './lib/print';
 import { shouldGenResolverTypes } from './lib/resolver-types';
+import { gqlCompile } from './lib/gql-compile';
 
 const {
   isIdentifier,
@@ -22,16 +23,18 @@ const {
 } = types;
 
 const gqlCompileSync = doSync(
-  async ({
+  ({
     hostDirname,
     ...gqlCompileArgs
-  }: GqlCompileArgs & { hostDirname: string }) => {
+  }: GqlCompileArgs & { hostDirname: string }): Promise<
+    GqlCodegenContext[]
+  > => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { join } = require('path');
     const modulePath = join(hostDirname, '../dist/lib/gql-compile');
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { gqlCompile } = require(modulePath);
-    return await gqlCompile(gqlCompileArgs);
+    return gqlCompile(gqlCompileArgs);
   },
 );
 
@@ -73,11 +76,25 @@ export const { ensureExecContext, clearExecContext } = (() => {
   return { ensureExecContext, clearExecContext };
 })();
 
+type VisitGqlCallResults = {
+  pendingDeletion: {
+    defaultSpecifier:
+      | t.ImportSpecifier
+      | t.ImportDefaultSpecifier
+      | t.ImportNamespaceSpecifier;
+    path: NodePath<t.ImportDeclaration>;
+  }[];
+  gqlCallExpressionPaths: [
+    NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
+    string,
+  ][];
+  hasError: boolean;
+};
 function visitGqlCalls(
   programPath: NodePath<t.Program>,
   importName: string,
   onlyMatchImportSuffix: boolean,
-) {
+): VisitGqlCallResults {
   const pendingDeletion: {
     defaultSpecifier:
       | t.ImportSpecifier
@@ -158,23 +175,18 @@ function visitGqlCalls(
   return { pendingDeletion, gqlCallExpressionPaths, hasError };
 }
 
-function modifyProgram(
+function modifyGqlCalls(
   programPath: NodePath<t.Program>,
   sourceFullPath: string,
-  gqlCallExpressionPaths: [
-    NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
-    string,
-  ][],
+  visitGqlCallResults: VisitGqlCallResults,
   gqlCodegenContext: GqlCodegenContext[],
-  pendingDeletion: {
-    defaultSpecifier:
-      | t.ImportSpecifier
-      | t.ImportDefaultSpecifier
-      | t.ImportNamespaceSpecifier;
-    path: NodePath<t.ImportDeclaration>;
-  }[],
-  hasError: boolean,
 ) {
+  const {
+    gqlCallExpressionPaths,
+    pendingDeletion,
+    hasError,
+  } = visitGqlCallResults;
+
   if (gqlCallExpressionPaths.length !== gqlCodegenContext.length)
     throw new Error('what');
 
@@ -220,11 +232,12 @@ export function processProgramPathSync(
   sourceRelPath: string,
   sourceFullPath: string,
 ) {
-  const { gqlCallExpressionPaths, pendingDeletion, hasError } = visitGqlCalls(
+  const visitGqlCallResults = visitGqlCalls(
     programPath,
     importName,
     onlyMatchImportSuffix,
   );
+  const { gqlCallExpressionPaths } = visitGqlCallResults;
 
   // TODO: Handle error
 
@@ -238,13 +251,46 @@ export function processProgramPathSync(
     gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
   });
 
-  modifyProgram(
+  modifyGqlCalls(
     programPath,
     sourceFullPath,
-    gqlCallExpressionPaths,
+    visitGqlCallResults,
     gqlCodegenContext,
-    pendingDeletion,
-    hasError,
+  );
+}
+
+export async function processProgramPath(
+  execContext: ExecContext,
+  schemaHash: string,
+  programPath: NodePath<t.Program>,
+  onlyMatchImportSuffix: boolean,
+  importName: string,
+  sourceRelPath: string,
+  sourceFullPath: string,
+) {
+  const visitGqlCallResults = visitGqlCalls(
+    programPath,
+    importName,
+    onlyMatchImportSuffix,
+  );
+  const { gqlCallExpressionPaths } = visitGqlCallResults;
+
+  // TODO: Handle error
+
+  if (!gqlCallExpressionPaths.length) return;
+
+  const gqlCodegenContext: GqlCodegenContext[] = await gqlCompile({
+    execContext,
+    schemaHash,
+    sourceRelPath,
+    gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
+  });
+
+  modifyGqlCalls(
+    programPath,
+    sourceFullPath,
+    visitGqlCallResults,
+    gqlCodegenContext,
   );
 }
 
