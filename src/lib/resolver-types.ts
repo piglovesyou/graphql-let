@@ -1,9 +1,9 @@
 import { extname } from 'path';
 import { PartialCodegenOpts } from './create-codegen-opts';
 import { ConfigTypes } from './config';
-import { CreatedPaths } from './paths';
 import { PRINT_PREFIX } from './print';
 import { processGraphQLCodegen } from './graphql-codegen';
+import { CreatedPaths } from './types';
 
 // Currently glob for schema is not allowed.
 function isLocalFilePathWithExtension(

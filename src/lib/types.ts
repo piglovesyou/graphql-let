@@ -1,8 +1,15 @@
-import { CreatedPaths } from './paths';
-
 export type CommandOpts = {
   cwd: string;
   configFilePath?: string;
+};
+
+export type CreatedPaths = {
+  gqlRelPath: string;
+  tsxRelPath: string;
+  tsxFullPath: string;
+  dtsFullPath: string;
+  dtsRelPath: string;
+  gqlFullPath: string;
 };
 
 export type GqlCodegenContext = {

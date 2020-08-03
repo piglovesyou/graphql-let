@@ -1,14 +1,6 @@
 import { isAbsolute, join, extname } from 'path';
 import { ExecContext } from './exec-context';
-
-export type CreatedPaths = {
-  gqlRelPath: string;
-  tsxRelPath: string;
-  tsxFullPath: string;
-  dtsFullPath: string;
-  dtsRelPath: string;
-  gqlFullPath: string;
-};
+import { CreatedPaths } from './types';
 
 export const getCacheFullDir = (cwd: string, cacheDir: string) => {
   return isAbsolute(cacheDir) ? cacheDir : join(cwd, cacheDir);
