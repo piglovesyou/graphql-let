@@ -426,38 +426,37 @@ import * as ApolloReactComponents from '@apollo/react-components';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export declare type Maybe<T> = T | null;
 export declare type Exact<T extends {
-    [key: string]: unknown;
-}> = {
-    [K in keyof T]: T[K];
-};
+  [key: string]: unknown;
+}> = { [K in keyof T]: T[K] };
 export declare type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 /** All built-in and custom scalars, mapped to their actual values */
+
 export declare type Scalars = {
-    ID: string;
-    String: string;
-    Boolean: boolean;
-    Int: number;
-    Float: number;
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
 };
 export declare type Query = {
-    __typename?: 'Query';
-    viewer?: Maybe<User>;
+  __typename?: 'Query';
+  viewer?: Maybe<User>;
 };
 export declare type User = {
-    __typename?: 'User';
-    id: Scalars['ID'];
-    name: Scalars['String'];
-    status: Scalars['String'];
+  __typename?: 'User';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  status: Scalars['String'];
 };
 export declare type ViewerXQueryVariables = Exact<{
-    [key: string]: never;
+  [key: string]: never;
 }>;
 export declare type ViewerXQuery = ({
-    __typename?: 'Query';
+  __typename?: 'Query';
 } & {
-    viewer?: Maybe<({
-        __typename?: 'User';
-    } & Pick<User, 'name'>)>;
+  viewer?: Maybe<({
+    __typename?: 'User';
+  } & Pick<User, 'name'>)>;
 });
 export declare const ViewerXDocument: import(\\"graphql\\").DocumentNode;
 export declare type ViewerXComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<ViewerXQuery, ViewerXQueryVariables>, 'query'>;
@@ -477,16 +476,34 @@ export declare const ViewerXComponent: (props: ViewerXComponentProps) => JSX.Ele
  *   },
  * });
  */
+
 export declare function useViewerXQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ViewerXQuery, ViewerXQueryVariables>): ApolloReactCommon.QueryResult<ViewerXQuery, Exact<{
-    [key: string]: never;
+  [key: string]: never;
 }>>;
 export declare function useViewerXLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ViewerXQuery, ViewerXQueryVariables>): ApolloReactHooks.QueryTuple<ViewerXQuery, Exact<{
-    [key: string]: never;
+  [key: string]: never;
 }>>;
 export declare type ViewerXQueryHookResult = ReturnType<typeof useViewerXQuery>;
 export declare type ViewerXLazyQueryHookResult = ReturnType<typeof useViewerXLazyQuery>;
 export declare type ViewerXQueryResult = ApolloReactCommon.QueryResult<ViewerXQuery, ViewerXQueryVariables>;
-"
+export declare type __AllExports = {
+  Maybe: Maybe;
+  Exact: Exact;
+  Omit: Omit;
+  Scalars: Scalars;
+  Query: Query;
+  User: User;
+  ViewerXQueryVariables: ViewerXQueryVariables;
+  ViewerXQuery: ViewerXQuery;
+  ViewerXDocument: ViewerXDocument;
+  ViewerXComponentProps: ViewerXComponentProps;
+  ViewerXComponent: ViewerXComponent;
+  useViewerXQuery: typeof useViewerXQuery;
+  useViewerXLazyQuery: typeof useViewerXLazyQuery;
+  ViewerXQueryHookResult: ViewerXQueryHookResult;
+  ViewerXLazyQueryHookResult: ViewerXLazyQueryHookResult;
+  ViewerXQueryResult: ViewerXQueryResult;
+};"
 `;
 
 exports[`"graphql-let" command documents: **/*.tsx generates .d.ts for babel: node_modules/@types/graphql-let/store.json 1`] = `
