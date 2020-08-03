@@ -149,19 +149,19 @@ async function generateTsx(
 
 async function generateDts(
   execContext: ExecContext,
-  newGqlCodegenContext: SrcCodegenContext[],
-  targetStore: ScopedCacheStore,
+  codegenContext: SrcCodegenContext[],
 ) {
+  if (!codegenContext.length) return;
+
   // Dts only for newly created `.tsx`s
   const dtsContents = genDts(
     execContext,
-    newGqlCodegenContext.map(({ tsxFullPath }) => tsxFullPath),
+    codegenContext.map(({ tsxFullPath }) => tsxFullPath),
   );
-  await makeDir(dirname(newGqlCodegenContext[0].dtsFullPath));
+
+  await makeDir(dirname(codegenContext[0].dtsFullPath));
   for (const [i, dtsContent] of dtsContents.entries()) {
-    const { dtsFullPath, strippedGqlContent, gqlHash } = newGqlCodegenContext[
-      i
-    ]!;
+    const { dtsFullPath } = codegenContext[i]!;
     const content = appendExportAsObject(dtsContent);
     await writeFile(dtsFullPath, content);
   }
@@ -172,27 +172,11 @@ export async function processGqlCompile(
   sourceRelPath: string,
   schemaHash: string,
   gqlContents: string[],
-  // scopedStore: ScopedCacheStore,
   codegenContext: SrcCodegenContext[],
-  // oldGqlHashes: Set<string>,
+  skippedCodegenContext: SrcCodegenContext[],
 ) {
   const { cwd, config, cacheFullDir } = execContext;
   const dtsRelDir = dirname(config.gqlDtsEntrypoint);
-
-  // Processes inside a sub-process of babel-plugin
-  const storeFullPath = pathJoin(cwd, dtsRelDir, 'store.json');
-  const projectStore: ProjectCacheStore = existsSync(storeFullPath)
-    ? JSON.parse(await readFile(storeFullPath, 'utf-8'))
-    : {};
-  const scopedStore =
-    projectStore[sourceRelPath] || (projectStore[sourceRelPath] = {});
-  const oldGqlHashes = new Set(Object.keys(scopedStore));
-
-  // Prepare
-  await Promise.all([
-    await makeDir(join(cwd, dtsRelDir)),
-    await makeDir(cacheFullDir),
-  ]);
 
   /**
    * 0. Shape of storage
@@ -212,7 +196,21 @@ export async function processGqlCompile(
    *
    * 7. Done.
    */
-  const newGqlCodegenContext: SrcCodegenContext[] = [];
+
+  // Processes inside a sub-process of babel-plugin
+  const storeFullPath = pathJoin(cwd, dtsRelDir, 'store.json');
+  const projectStore: ProjectCacheStore = existsSync(storeFullPath)
+    ? JSON.parse(await readFile(storeFullPath, 'utf-8'))
+    : {};
+  const scopedStore =
+    projectStore[sourceRelPath] || (projectStore[sourceRelPath] = {});
+  const oldGqlHashes = new Set(Object.keys(scopedStore));
+
+  // Prepare
+  await Promise.all([
+    await makeDir(join(cwd, dtsRelDir)),
+    await makeDir(cacheFullDir),
+  ]);
 
   for (const gqlContent of gqlContents) {
     const strippedGqlContent = stripIgnoredCharacters(gqlContent);
@@ -223,21 +221,24 @@ export async function processGqlCompile(
       strippedGqlContent,
       gqlHash,
     };
-    if (!scopedStore[gqlHash]) {
-      newGqlCodegenContext.push(context);
-      scopedStore[gqlHash] = strippedGqlContent;
-    }
-    // Push all for later use
-    codegenContext.push(context);
+
     // Old caches left will be removed
     oldGqlHashes.delete(gqlHash);
+
+    if (scopedStore[gqlHash]) {
+      skippedCodegenContext.push(context);
+    } else {
+      // newGqlCodegenContext.push(context);
+      codegenContext.push(context);
+      scopedStore[gqlHash] = strippedGqlContent;
+    }
   }
 
-  if (!newGqlCodegenContext.length) return;
-
-  await generateTsx(execContext, newGqlCodegenContext);
-
-  await generateDts(execContext, newGqlCodegenContext, scopedStore);
+  // if (!newGqlCodegenContext.length) return;
+  //
+  // await generateTsx(execContext, newGqlCodegenContext);
+  //
+  // await generateDts(execContext, newGqlCodegenContext, scopedStore);
 
   // Remove old caches
   for (const oldGqlHash of oldGqlHashes) {
@@ -257,7 +258,9 @@ export async function processGqlCompile(
   // Update index.d.ts
   const dtsEntryFullPath = pathJoin(cwd, config.gqlDtsEntrypoint);
   const writeStream = createWriteStream(dtsEntryFullPath);
-  for (const { gqlContent, gqlHash, dtsRelPath } of codegenContext) {
+  for (const { gqlContent, gqlHash, dtsRelPath } of codegenContext.concat(
+    skippedCodegenContext,
+  )) {
     const chunk = `import T${gqlHash} from './${slash(dtsRelPath)}';
 export default function gql(gql: \`${gqlContent}\`): T${gqlHash}.__AllExports;
 `;
@@ -293,6 +296,7 @@ export async function gqlCompile(
   } = gqlCompileArgs;
 
   const codegenContext: SrcCodegenContext[] = [];
+  const skippedCodegenContext: SrcCodegenContext[] = [];
 
   // const { cwd, config, cacheFullDir } = execContext;
   // const dtsRelDir = dirname(config.gqlDtsEntrypoint);
@@ -314,13 +318,16 @@ export async function gqlCompile(
 
   await memoizedProcessGqlCompile(
     execContext,
-    // dtsRelDir,
-    // cacheFullDir,
     sourceRelPath,
     schemaHash,
     gqlContents,
     codegenContext,
+    skippedCodegenContext,
   );
+
+  await generateTsx(execContext, codegenContext);
+
+  await generateDts(execContext, codegenContext);
 
   //   // Remove old caches
   //   for (const oldGqlHash of oldGqlHashes) {
