@@ -14,7 +14,7 @@ import {
 import { ExecContext } from './exec-context';
 import { withHash, writeFile } from './file';
 import { ConfigTypes } from './config';
-import { GqlCodegenContext } from './types';
+import { FileCodegenContext } from './types';
 
 const essentialCompilerOptions: CompilerOptions = {
   declaration: true,
@@ -119,7 +119,7 @@ export function genDts(
 
 export async function processGenDts(
   execContext: ExecContext,
-  codegenContext: GqlCodegenContext,
+  codegenContext: FileCodegenContext,
 ) {
   const { dtsFullPath, gqlHash } = codegenContext;
   await makeDir(path.dirname(dtsFullPath));

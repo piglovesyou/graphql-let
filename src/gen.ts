@@ -4,7 +4,7 @@ import fullGenerate from './lib/full-generate';
 import loadConfig, { ConfigTypes } from './lib/config';
 import { getCacheFullDir } from './lib/paths';
 import { PRINT_PREFIX } from './lib/print';
-import { CommandOpts, SkippedContext, CodegenContext } from './lib/types';
+import { CommandOpts, CodegenContext } from './lib/types';
 import logUpdate from 'log-update';
 import { rimraf } from './lib/file';
 
@@ -12,13 +12,9 @@ async function removeOldTsxCaches(
   cwd: string,
   config: ConfigTypes,
   codegenContext: CodegenContext[],
-  skippedContext: SkippedContext[],
 ) {
   const cacheDir = getCacheFullDir(cwd, config.cacheDir);
-  const validTsxCaches = [
-    ...codegenContext.map(({ tsxFullPath }) => tsxFullPath),
-    ...skippedContext.map(({ tsxFullPath }) => tsxFullPath),
-  ];
+  const validTsxCaches = codegenContext.map(({ tsxFullPath }) => tsxFullPath);
   const oldTsxPaths = await globby(
     [cacheDir + '/**', ...validTsxCaches.map((validCache) => '!' + validCache)],
     { absolute: true },
@@ -35,12 +31,12 @@ export default async function gen({
   const [config, configHash] = await loadConfig(cwd, configFilePath);
   const execContext = createExecContext(cwd, config, configHash);
 
-  const [generated, skipped] = await fullGenerate(execContext);
+  const codegenContext = await fullGenerate(execContext);
 
-  await removeOldTsxCaches(cwd, config, generated, skipped);
+  await removeOldTsxCaches(cwd, config, codegenContext);
 
-  if (generated.length) {
-    logUpdate(PRINT_PREFIX + `${generated.length} .d.ts were generated.`);
+  if (codegenContext.filter((e) => !e.skip).length) {
+    logUpdate(PRINT_PREFIX + `${codegenContext.length} .d.ts were generated.`);
   } else {
     logUpdate(PRINT_PREFIX + `Done nothing, caches are fresh.`);
   }

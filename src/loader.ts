@@ -69,6 +69,7 @@ const processGraphQLCodegenLoader = memoize(
         ...createdPaths,
         gqlHash,
         dtsContentDecorator: (_) => _,
+        skip: false,
       });
       logUpdate(PRINT_PREFIX + `${dtsRelPath} was generated.`);
       // Hack to prevent duplicated logs for simultaneous build, in SSR app for an example.

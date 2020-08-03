@@ -108,12 +108,13 @@ describe('"graphql-let" command', () => {
 
   test(`documents: **/*.tsx generates .d.ts for babel`, async () => {
     const expectedFiles = [
+      '__generated__/pages/index-c307b608d6f3bd4130e526f0de83cbe05bff54cd.tsx',
       '__generated__/pages/viewer.graphql.tsx',
       '__generated__/pages/viewer2.graphql.tsx',
       '__generated__/schema/type-defs.graphqls.tsx',
       'node_modules/@types/graphql-let/index.d.ts',
-      'node_modules/@types/graphql-let/store.json',
       'node_modules/@types/graphql-let/pages/index-c307b608d6f3bd4130e526f0de83cbe05bff54cd.d.ts',
+      'node_modules/@types/graphql-let/store.json',
     ];
     await gen({ cwd, configFilePath: '.graphql-let-babel.yml' });
 

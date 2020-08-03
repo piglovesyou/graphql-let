@@ -3,10 +3,10 @@ import { join as pathJoin } from 'path';
 import createExecContext from '../../src/lib/exec-context';
 import slash from 'slash';
 import { rimraf } from '../../src/lib/file';
-import { processGqlCompile } from '../../src/lib/gql-compile';
+// import { processGqlCompile } from '../../src/lib/gql-compile';
 import { buildConfig, ConfigTypes } from '../../src/lib/config';
 import { createHash } from '../../src/lib/hash';
-import { SrcCodegenContext } from '../../src/lib/types';
+import { LiteralCodegenContext } from '../../src/lib/types';
 
 const dtsRelDir = 'node_modules/@types/graphql-let';
 const libRelDir = 'node_modules/graphql-let';
@@ -43,7 +43,7 @@ describe.skip('gql-compile', () => {
     }
 }`,
       ];
-      const codegenContext: SrcCodegenContext[] = [];
+      const codegenContext: LiteralCodegenContext[] = [];
       const oldGqlContentHashes = new Set<string>();
       // const skippedContext: GqlCodegenContext = [];
       const execContext = createExecContext(

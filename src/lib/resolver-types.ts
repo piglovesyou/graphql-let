@@ -3,7 +3,7 @@ import { PartialCodegenOpts } from './create-codegen-opts';
 import { ConfigTypes } from './config';
 import { PRINT_PREFIX } from './print';
 import { processGraphQLCodegen } from './graphql-codegen';
-import { GqlCreatedPaths } from './types';
+import { FileCreatedPaths } from './types';
 
 // Currently glob for schema is not allowed.
 function isLocalFilePathWithExtension(
@@ -35,7 +35,7 @@ export async function processGenerateResolverTypes(
   schemaHash: string,
   config: ConfigTypes,
   codegenOpts: PartialCodegenOpts,
-  createdPath: GqlCreatedPaths,
+  createdPath: FileCreatedPaths,
   cwd: string,
 ): Promise<void> {
   const { gqlFullPath, tsxFullPath } = createdPath;

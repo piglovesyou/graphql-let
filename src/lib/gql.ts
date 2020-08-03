@@ -17,7 +17,12 @@ import { createHash } from './hash';
 import memoize from './memoize';
 import * as t from '@babel/types';
 import generator from '@babel/generator';
-import { SrcCodegenContext, SrcCreatedPaths } from './types';
+import {
+  CodegenContext,
+  isFileCodegenContext,
+  LiteralCodegenContext,
+  LiteralCreatedPaths,
+} from './types';
 
 type ScopedCacheStore = {
   [hash: string]: string;
@@ -33,7 +38,7 @@ const createPaths = (
   dtsRelDir: string,
   cacheFullDir: string,
   cwd: string,
-): SrcCreatedPaths => {
+): LiteralCreatedPaths => {
   const abs = (relPath: string) => pathJoin(cwd, relPath);
 
   const dtsGenFullDir = abs(dtsRelDir);
@@ -121,12 +126,17 @@ function appendExportAsObject(dtsContent: string) {
 
 async function generateTsx(
   execContext: ExecContext,
-  newGqlCodegenContext: SrcCodegenContext[],
+  codegenContext: CodegenContext[],
 ) {
   const { cwd, config } = execContext;
 
   // Codegen
-  for (const { strippedGqlContent, tsxFullPath } of newGqlCodegenContext) {
+  for (const context of codegenContext) {
+    if (isFileCodegenContext(context)) return;
+    const {
+      strippedGqlContent,
+      tsxFullPath,
+    } = context as LiteralCodegenContext;
     const [{ content }] = await generate(
       {
         silent: true, // Necessary to pass stdout to the parent process
@@ -149,7 +159,7 @@ async function generateTsx(
 
 async function generateDts(
   execContext: ExecContext,
-  codegenContext: SrcCodegenContext[],
+  codegenContext: LiteralCodegenContext[],
 ) {
   if (!codegenContext.length) return;
 
@@ -167,13 +177,13 @@ async function generateDts(
   }
 }
 
-export async function processGqlCompile(
+export async function processGql(
   execContext: ExecContext,
   sourceRelPath: string,
   schemaHash: string,
   gqlContents: string[],
-  codegenContext: SrcCodegenContext[],
-) {
+  codegenContext: CodegenContext[],
+): Promise<void> {
   const { cwd, config, cacheFullDir } = execContext;
   const dtsRelDir = dirname(config.gqlDtsEntrypoint);
 
@@ -250,7 +260,13 @@ export async function processGqlCompile(
   // Update index.d.ts
   const dtsEntryFullPath = pathJoin(cwd, config.gqlDtsEntrypoint);
   const writeStream = createWriteStream(dtsEntryFullPath);
-  for (const { gqlContent, gqlHash, dtsRelPath } of codegenContext) {
+  for (const context of codegenContext) {
+    if (isFileCodegenContext(context)) continue;
+    const {
+      gqlContent,
+      gqlHash,
+      dtsRelPath,
+    } = context as LiteralCodegenContext;
     const chunk = `import T${gqlHash} from './${slash(dtsRelPath)}';
 export default function gql(gql: \`${gqlContent}\`): T${gqlHash}.__AllExports;
 `;
@@ -259,43 +275,38 @@ export default function gql(gql: \`${gqlContent}\`): T${gqlHash}.__AllExports;
 
   // Update storeJson
   await writeFile(storeFullPath, JSON.stringify(projectStore, null, 2));
+
+  await generateTsx(execContext, codegenContext);
 }
 
-export type GqlCompileArgs = {
+export type GqlArgs = {
   execContext: ExecContext;
   schemaHash: string;
   sourceRelPath: string;
   gqlContents: string[];
 };
 
-// It's still troublesome even it's babel-plugin in SSR applicaiton like Next.js
-// where multiple webpack transpile handles a single source file.
-const memoizedProcessGqlCompile = memoize(
-  processGqlCompile,
-  (_execContext, sourceRelPath) => sourceRelPath,
-);
+// // It's still troublesome even it's babel-plugin in SSR applicaiton like Next.js
+// // where multiple webpack transpile handles a single source file.
+// const memoizedProcessGqlCompile = memoize(
+//   processGql,
+//   (_execContext, sourceRelPath) => sourceRelPath,
+// );
 
-export async function gqlCompile(
-  gqlCompileArgs: GqlCompileArgs,
-): Promise<SrcCodegenContext[]> {
-  const {
-    execContext,
-    sourceRelPath,
-    schemaHash,
-    gqlContents,
-  } = gqlCompileArgs;
+export async function gqlInSubProcess(
+  gqlArgs: GqlArgs,
+): Promise<LiteralCodegenContext[]> {
+  const { execContext, sourceRelPath, schemaHash, gqlContents } = gqlArgs;
 
-  const codegenContext: SrcCodegenContext[] = [];
+  const codegenContext: LiteralCodegenContext[] = [];
 
-  await memoizedProcessGqlCompile(
+  await processGql(
     execContext,
     sourceRelPath,
     schemaHash,
     gqlContents,
     codegenContext,
   );
-
-  await generateTsx(execContext, codegenContext);
 
   await generateDts(execContext, codegenContext);
 

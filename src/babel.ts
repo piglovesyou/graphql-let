@@ -6,13 +6,12 @@ import doSync from 'do-sync';
 import slash from 'slash';
 import createExecContext, { ExecContext } from './lib/exec-context';
 import { readFileSync } from './lib/file';
-import { GqlCompileArgs } from './lib/gql-compile';
+import { GqlArgs } from './lib/gql';
 import { createHash } from './lib/hash';
 import { loadConfigSync } from './lib/config';
 import { printError } from './lib/print';
 import { shouldGenResolverTypes } from './lib/resolver-types';
-import { gqlCompile } from './lib/gql-compile';
-import { SrcCodegenContext } from './lib/types';
+import { CodegenContext, LiteralCodegenContext } from './lib/types';
 
 const {
   isIdentifier,
@@ -27,15 +26,13 @@ const gqlCompileSync = doSync(
   ({
     hostDirname,
     ...gqlCompileArgs
-  }: GqlCompileArgs & { hostDirname: string }): Promise<
-    SrcCodegenContext[]
-  > => {
+  }: GqlArgs & { hostDirname: string }): Promise<LiteralCodegenContext[]> => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { join } = require('path');
-    const modulePath = join(hostDirname, '../dist/lib/gql-compile');
+    const modulePath = join(hostDirname, '../dist/lib/gql');
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { gqlCompile } = require(modulePath);
-    return gqlCompile(gqlCompileArgs);
+    const { gqlInSubProcess } = require(modulePath);
+    return gqlInSubProcess(gqlCompileArgs);
   },
 );
 
@@ -91,7 +88,7 @@ type VisitGqlCallResults = {
   ][];
   hasError: boolean;
 };
-function visitGqlCalls(
+export function visitGqlCalls(
   programPath: NodePath<t.Program>,
   importName: string,
   onlyMatchImportSuffix: boolean,
@@ -176,11 +173,11 @@ function visitGqlCalls(
   return { pendingDeletion, gqlCallExpressionPaths, hasError };
 }
 
-function modifyGqlCalls(
+export function modifyGqlCalls(
   programPath: NodePath<t.Program>,
   sourceFullPath: string,
   visitGqlCallResults: VisitGqlCallResults,
-  codegenContext: SrcCodegenContext[],
+  codegenContext: CodegenContext[],
 ) {
   const {
     gqlCallExpressionPaths,
@@ -224,40 +221,40 @@ function modifyGqlCalls(
   }
 }
 
-export async function processProgramPath(
-  execContext: ExecContext,
-  schemaHash: string,
-  programPath: NodePath<t.Program>,
-  onlyMatchImportSuffix: boolean,
-  importName: string,
-  sourceRelPath: string,
-  sourceFullPath: string,
-) {
-  const visitGqlCallResults = visitGqlCalls(
-    programPath,
-    importName,
-    onlyMatchImportSuffix,
-  );
-  const { gqlCallExpressionPaths } = visitGqlCallResults;
-
-  // TODO: Handle error
-
-  if (!gqlCallExpressionPaths.length) return;
-
-  const codegenContext: SrcCodegenContext[] = await gqlCompile({
-    execContext,
-    schemaHash,
-    sourceRelPath,
-    gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
-  });
-
-  modifyGqlCalls(
-    programPath,
-    sourceFullPath,
-    visitGqlCallResults,
-    codegenContext,
-  );
-}
+// export async function processProgramPath(
+//   execContext: ExecContext,
+//   schemaHash: string,
+//   programPath: NodePath<t.Program>,
+//   onlyMatchImportSuffix: boolean,
+//   importName: string,
+//   sourceRelPath: string,
+//   sourceFullPath: string,
+// ) {
+//   const visitGqlCallResults = visitGqlCalls(
+//     programPath,
+//     importName,
+//     onlyMatchImportSuffix,
+//   );
+//   const { gqlCallExpressionPaths } = visitGqlCallResults;
+//
+//   // TODO: Handle error
+//
+//   if (!gqlCallExpressionPaths.length) return;
+//
+//   const codegenContext: LiteralCodegenContext[] = await gqlCompile({
+//     execContext,
+//     schemaHash,
+//     sourceRelPath,
+//     gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
+//   });
+//
+//   modifyGqlCalls(
+//     programPath,
+//     sourceFullPath,
+//     visitGqlCallResults,
+//     codegenContext,
+//   );
+// }
 
 // With all my respect, I cloned the source from
 // https://github.com/gajus/babel-plugin-graphql-tag/blob/master/src/index.js
@@ -295,7 +292,7 @@ const configFunction = (
 
         if (!gqlCallExpressionPaths.length) return;
 
-        const gqlCodegenContext: SrcCodegenContext[] = gqlCompileSync({
+        const gqlCodegenContext: LiteralCodegenContext[] = gqlCompileSync({
           hostDirname: __dirname,
           execContext,
           schemaHash,

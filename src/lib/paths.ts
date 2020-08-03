@@ -1,6 +1,6 @@
 import { isAbsolute, join, extname } from 'path';
 import { ExecContext } from './exec-context';
-import { GqlCreatedPaths } from './types';
+import { FileCreatedPaths } from './types';
 
 export const getCacheFullDir = (cwd: string, cacheDir: string) => {
   return isAbsolute(cacheDir) ? cacheDir : join(cwd, cacheDir);
@@ -9,7 +9,7 @@ export const getCacheFullDir = (cwd: string, cacheDir: string) => {
 export function createPaths(
   { cwd, cacheFullDir }: ExecContext,
   gqlRelPath: string,
-): GqlCreatedPaths {
+): FileCreatedPaths {
   const tsxRelPath = `${gqlRelPath}.tsx`;
   const tsxFullPath = join(cacheFullDir, tsxRelPath);
   const dtsRelPath = `${gqlRelPath}.d.ts`;

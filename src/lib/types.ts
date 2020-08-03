@@ -13,41 +13,40 @@ export type CreatedPathsBase = {
 };
 
 export type CodegenContextBase = {
+  gqlHash: string;
   // If true, cache is fresh, so we don't need to generate new one.
   skip: boolean;
 };
 
 /**
- * "gql" stands for `.graphql`s and `.graphqls`s as source files
+ * Assumes `.graphql`s and `.graphqls`s
  */
-export type GqlCreatedPaths = CreatedPathsBase & {
+export type FileCreatedPaths = CreatedPathsBase & {
   gqlRelPath: string;
   gqlFullPath: string;
 };
 
 /**
- * "source" `.ts(x)`s containing `gql(`query {}`)` calls
+ * Assumes `gql(`query {}`)` calls in `.ts(x)`s
  */
-export type SrcCreatedPaths = CreatedPathsBase & {
+export type LiteralCreatedPaths = CreatedPathsBase & {
   srcRelPath: string;
   srcFullPath: string;
 };
 
-export type GqlCodegenContext = GqlCreatedPaths & {
-  gqlHash: string;
+export type FileCodegenContext = {
   dtsContentDecorator: (content: string) => string;
-};
+} & CodegenContextBase &
+  FileCreatedPaths;
 
-export type SrcCodegenContext = SrcCreatedPaths &
-  CodegenContextBase & {
-    gqlHash: string;
-    gqlContent: string;
-    strippedGqlContent: string;
-  };
+export type LiteralCodegenContext = {
+  gqlContent: string;
+  strippedGqlContent: string;
+} & CodegenContextBase &
+  LiteralCreatedPaths;
 
-export type CodegenContext = GqlCodegenContext | SrcCodegenContext;
+export type CodegenContext = FileCodegenContext | LiteralCodegenContext;
 
-export type SkippedContext = {
-  tsxFullPath: string;
-  dtsFullPath: string;
-};
+export function isFileCodegenContext(context: CodegenContext): boolean {
+  return Boolean((context as FileCodegenContext).dtsContentDecorator); // === 'function';
+}

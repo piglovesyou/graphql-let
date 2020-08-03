@@ -2,7 +2,7 @@ import logUpdate from 'log-update';
 import { loader } from 'webpack';
 import createExecContext from './lib/exec-context';
 import {
-  processDtsForCodegenContext,
+  generateDts,
   prepareFullGenerate,
   processDocuments,
   processResolverTypesIfNeeded,
@@ -10,35 +10,35 @@ import {
 import loadConfig from './lib/config';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX } from './lib/print';
-import { GqlCodegenContext, SkippedContext } from './lib/types';
+import { FileCodegenContext } from './lib/types';
 
 const processGraphQLCodegenSchemaLoader = memoize(
   async (cwd: string) => {
     const [config, configHash] = await loadConfig(cwd);
     const execContext = createExecContext(cwd, config, configHash);
 
-    const codegenContext: GqlCodegenContext[] = [];
-    const skippedContext: SkippedContext[] = [];
+    const codegenContext: FileCodegenContext[] = [];
+    // const skippedContext: SkippedContext[] = [];
 
-    const { gqlRelPaths } = await prepareFullGenerate(execContext);
+    const { graphqlRelPaths } = await prepareFullGenerate(execContext);
 
     const { schemaHash } = await processResolverTypesIfNeeded(
       execContext,
       codegenContext,
-      skippedContext,
+      // skippedContext,
     );
 
     // Only if schema was changed, documents are also handled for quick startup of webpack dev.
     if (codegenContext.length) {
       await processDocuments(
         execContext,
-        gqlRelPaths,
+        graphqlRelPaths,
         schemaHash,
         codegenContext,
-        skippedContext,
+        // skippedContext,
       );
 
-      await processDtsForCodegenContext(execContext, codegenContext);
+      await generateDts(execContext, codegenContext);
     }
   },
   () => 'schemaLoader',

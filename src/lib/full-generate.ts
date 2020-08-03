@@ -3,10 +3,10 @@ import glob from 'globby';
 import logUpdate from 'log-update';
 import makeDir from 'make-dir';
 import { join as pathJoin, dirname } from 'path';
-import { BabelOptions, processProgramPath } from '../babel';
+import { BabelOptions, modifyGqlCalls, visitGqlCalls } from '../babel';
 import { genDts } from './dts';
 import { ExecContext } from './exec-context';
-import { parserOption } from './gql-compile';
+import { parserOption, processGql } from './gql';
 import { createHash } from './hash';
 import { createPaths, isTypeScriptPath } from './paths';
 import { PRINT_PREFIX } from './print';
@@ -19,19 +19,17 @@ import { readFile, writeFile, withHash, readHash } from './file';
 import traverse, { NodePath } from '@babel/traverse';
 import { parse } from '@babel/parser';
 import { loadOptions } from '@babel/core';
-import generate from '@babel/generator';
 import {
   CodegenContext,
-  GqlCodegenContext,
-  SkippedContext,
-  SrcCodegenContext,
+  FileCodegenContext,
+  LiteralCodegenContext,
 } from './types';
 
 // Take care of `.graphqls`s if needed
 export async function processResolverTypesIfNeeded(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
-  skippedContext: SkippedContext[],
+  // skippedContext: SkippedContext[],
 ) {
   const { cwd, config, configHash, codegenOpts } = execContext;
   // To pass config change on subsequent generation,
@@ -48,6 +46,24 @@ export async function processResolverTypesIfNeeded(
     const shouldUpdate =
       schemaHash !== (await readHash(createdPaths.tsxFullPath)) ||
       schemaHash !== (await readHash(createdPaths.dtsFullPath));
+
+    const context: FileCodegenContext = {
+      ...createdPaths,
+      gqlHash: schemaHash,
+      dtsContentDecorator: (s) => {
+        return `${s}
+          
+// This is an extra code in addition to what graphql-codegen makes.
+// Users are likely to use 'graphql-tag/loader' with 'graphql-tag/schema/loader'
+// in webpack. This code enables the result to be typed.
+import { DocumentNode } from 'graphql'
+export default typeof DocumentNode
+`;
+      },
+      skip: !shouldUpdate,
+    };
+    codegenContext.push(context);
+
     if (shouldUpdate) {
       // We don't delete tsxFullPath and dtsFullPath here because:
       // 1. We'll overwrite them so deleting is not necessary
@@ -65,26 +81,6 @@ export async function processResolverTypesIfNeeded(
         createdPaths,
         cwd,
       );
-
-      codegenContext.push({
-        ...createdPaths,
-        gqlHash: schemaHash,
-        dtsContentDecorator: (s) => {
-          return `${s}
-          
-// This is an extra code in addition to what graphql-codegen makes.
-// Users are likely to use 'graphql-tag/loader' with 'graphql-tag/schema/loader'
-// in webpack. This code enables the result to be typed.
-import { DocumentNode } from 'graphql'
-export default typeof DocumentNode
-`;
-        },
-      });
-    } else {
-      skippedContext.push({
-        tsxFullPath: createdPaths.tsxFullPath,
-        dtsFullPath: createdPaths.dtsFullPath,
-      });
     }
   }
   return { schemaHash };
@@ -96,7 +92,7 @@ export async function processDocuments(
   gqlRelPaths: string[],
   schemaHash: string,
   codegenContext: CodegenContext[],
-  skippedContext: SkippedContext[],
+  // skippedContext: SkippedContext[],
 ) {
   if (!gqlRelPaths.length) return;
 
@@ -114,6 +110,15 @@ export async function processDocuments(
     const shouldUpdate =
       gqlHash !== (await readHash(tsxFullPath)) ||
       gqlHash !== (await readHash(dtsFullPath));
+
+    const context: FileCodegenContext = {
+      ...createdPaths,
+      gqlHash,
+      dtsContentDecorator: (s) => s,
+      skip: !shouldUpdate,
+    };
+    codegenContext.push(context);
+
     if (shouldUpdate) {
       // We don't delete tsxFullPath and dtsFullPath here because:
       // 1. We'll overwrite them so deleting is not necessary
@@ -127,13 +132,6 @@ export async function processDocuments(
         gqlHash,
         documents: gqlRelPath,
       });
-      codegenContext.push({
-        ...createdPaths,
-        gqlHash,
-        dtsContentDecorator: (s) => s,
-      });
-    } else {
-      skippedContext.push({ tsxFullPath, dtsFullPath });
     }
   }
 }
@@ -141,7 +139,10 @@ export async function processDocuments(
 export async function prepareFullGenerate({
   cwd,
   config,
-}: ExecContext): Promise<{ gqlRelPaths: string[]; sourceRelPaths: string[] }> {
+}: ExecContext): Promise<{
+  graphqlRelPaths: string[];
+  tsSourceRelPaths: string[];
+}> {
   const documentPaths = await glob(config.documents, {
     cwd,
     gitignore: config.respectGitIgnore,
@@ -153,15 +154,15 @@ export async function prepareFullGenerate({
       )}. Check "documents" in .graphql-let.yml.`,
     );
   }
-  const gqlRelPaths: string[] = [];
-  const sourceRelPaths: string[] = [];
+  const graphqlRelPaths: string[] = [];
+  const tsSourceRelPaths: string[] = [];
   for (const p of documentPaths) {
-    isTypeScriptPath(p) ? sourceRelPaths.push(p) : gqlRelPaths.push(p);
+    isTypeScriptPath(p) ? tsSourceRelPaths.push(p) : graphqlRelPaths.push(p);
   }
-  return { gqlRelPaths, sourceRelPaths };
+  return { graphqlRelPaths, tsSourceRelPaths };
 }
 
-export async function processDtsForCodegenContext(
+export async function generateDts(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
 ) {
@@ -177,11 +178,12 @@ export async function processDtsForCodegenContext(
   for (const [i, dtsContent] of dtsContents.entries()) {
     const ctx = codegenContext[i];
     const { dtsFullPath, gqlHash } = ctx!;
-    const { dtsContentDecorator } = ctx as GqlCodegenContext;
+    const { dtsContentDecorator } = ctx as FileCodegenContext;
     const content = withHash(
       gqlHash,
       dtsContentDecorator ? dtsContentDecorator(dtsContent) : dtsContent,
     );
+    await makeDir(dirname(dtsFullPath));
     await writeFile(dtsFullPath, content);
   }
 }
@@ -196,10 +198,11 @@ function getGraphQLLetBabelOption(babelOptions: any): BabelOptions {
 }
 
 // Take care of `gql(`query {}`)` in `.ts(x)` sources
-async function processSources(
+async function processLiterals(
   execContext: ExecContext,
   schemaHash: string,
   sourceRelPaths: string[],
+  codegenContext: CodegenContext[],
 ) {
   if (!sourceRelPaths.length) return;
 
@@ -218,56 +221,76 @@ async function processSources(
     const sourceAST = parse(sourceContent, parserOption);
     traverse(sourceAST, {
       Program(programPath: NodePath<t.Program>) {
-        const p = processProgramPath(
-          execContext,
-          schemaHash,
+        const literalCodegenContext: LiteralCodegenContext[] = [];
+
+        const visitGqlCallResults = visitGqlCalls(
           programPath,
-          onlyMatchImportSuffix,
           importName,
+          onlyMatchImportSuffix,
+        );
+        const { gqlCallExpressionPaths } = visitGqlCallResults;
+        const gqlContents = gqlCallExpressionPaths.map(([, value]) => value);
+
+        // TODO: Handle error
+
+        if (!gqlCallExpressionPaths.length) return;
+
+        const p = processGql(
+          execContext,
           sourceRelPath,
-          sourceFullPath,
+          schemaHash,
+          gqlContents,
+          literalCodegenContext,
         ).then(() => {
-          const { code } = generate(sourceAST);
+          modifyGqlCalls(
+            programPath,
+            sourceFullPath,
+            visitGqlCallResults,
+            literalCodegenContext,
+          );
+          for (const c of literalCodegenContext) codegenContext.push(c);
         });
+
         promises.push(p);
       },
     });
   }
   // TODO: Heavy? Should stream?
-  const results = await Promise.all(promises);
-
-  console.log(results);
+  // Wait for codegenContext is filled
+  await Promise.all(promises);
 }
 
 async function fullGenerate(
   execContext: ExecContext,
-): Promise<[CodegenContext[], SkippedContext[]]> {
+): Promise<CodegenContext[]> {
   const codegenContext: CodegenContext[] = [];
-  const skippedContext: SkippedContext[] = [];
 
-  const { gqlRelPaths, sourceRelPaths } = await prepareFullGenerate(
+  const { graphqlRelPaths, tsSourceRelPaths } = await prepareFullGenerate(
     execContext,
   );
 
   const { schemaHash } = await processResolverTypesIfNeeded(
     execContext,
     codegenContext,
-    skippedContext,
   );
 
   await processDocuments(
     execContext,
-    gqlRelPaths,
+    graphqlRelPaths,
     schemaHash,
     codegenContext,
-    skippedContext,
   );
 
-  await processSources(execContext, schemaHash, sourceRelPaths);
+  await processLiterals(
+    execContext,
+    schemaHash,
+    tsSourceRelPaths,
+    codegenContext,
+  );
 
-  await processDtsForCodegenContext(execContext, codegenContext);
+  await generateDts(execContext, codegenContext);
 
-  return [codegenContext, skippedContext];
+  return codegenContext;
 }
 
 export default fullGenerate;
