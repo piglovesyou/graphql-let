@@ -22,11 +22,13 @@ const {
   valueToNode,
 } = types;
 
-const gqlCompileSync = doSync(
+const gqlInSubProcessSync = doSync(
   ({
     hostDirname,
     ...gqlCompileArgs
-  }: GqlArgs & { hostDirname: string }): Promise<LiteralCodegenContext[]> => {
+  }: GqlArgs & {
+    hostDirname: string;
+  }): /* Promise<LiteralCodegenContext[]> */ any => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { join } = require('path');
     const modulePath = join(hostDirname, '../dist/lib/gql');
@@ -292,13 +294,13 @@ const configFunction = (
 
         if (!gqlCallExpressionPaths.length) return;
 
-        const gqlCodegenContext: LiteralCodegenContext[] = gqlCompileSync({
+        const gqlCodegenContext: LiteralCodegenContext[] = gqlInSubProcessSync({
           hostDirname: __dirname,
           execContext,
           schemaHash,
           sourceRelPath,
           gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
-        });
+        }) as any; // Suppress JSONValue error. LiteralCodegenContext has a function property, but it can be ignored.
 
         modifyGqlCalls(
           programPath,

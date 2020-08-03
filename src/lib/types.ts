@@ -16,6 +16,7 @@ export type CodegenContextBase = {
   gqlHash: string;
   // If true, cache is fresh, so we don't need to generate new one.
   skip: boolean;
+  dtsContentDecorator: (content: string) => string;
 };
 
 /**
@@ -34,10 +35,7 @@ export type LiteralCreatedPaths = CreatedPathsBase & {
   srcFullPath: string;
 };
 
-export type FileCodegenContext = {
-  dtsContentDecorator: (content: string) => string;
-} & CodegenContextBase &
-  FileCreatedPaths;
+export type FileCodegenContext = {} & CodegenContextBase & FileCreatedPaths;
 
 export type LiteralCodegenContext = {
   gqlContent: string;
@@ -47,6 +45,6 @@ export type LiteralCodegenContext = {
 
 export type CodegenContext = FileCodegenContext | LiteralCodegenContext;
 
-export function isFileCodegenContext(context: CodegenContext): boolean {
-  return Boolean((context as FileCodegenContext).dtsContentDecorator); // === 'function';
+export function isLiteralContext(context: CodegenContext): boolean {
+  return Boolean((context as LiteralCodegenContext).strippedGqlContent);
 }

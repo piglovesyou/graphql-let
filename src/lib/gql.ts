@@ -19,7 +19,7 @@ import * as t from '@babel/types';
 import generator from '@babel/generator';
 import {
   CodegenContext,
-  isFileCodegenContext,
+  isLiteralContext,
   LiteralCodegenContext,
   LiteralCreatedPaths,
 } from './types';
@@ -132,7 +132,7 @@ async function generateTsx(
 
   // Codegen
   for (const context of codegenContext) {
-    if (isFileCodegenContext(context)) return;
+    if (!isLiteralContext(context)) return;
     const {
       strippedGqlContent,
       tsxFullPath,
@@ -236,6 +236,7 @@ export async function processGql(
       strippedGqlContent,
       gqlHash,
       skip: Boolean(scopedStore[gqlHash]),
+      dtsContentDecorator: appendExportAsObject,
     });
 
     // Old caches left will be removed
@@ -261,7 +262,7 @@ export async function processGql(
   const dtsEntryFullPath = pathJoin(cwd, config.gqlDtsEntrypoint);
   const writeStream = createWriteStream(dtsEntryFullPath);
   for (const context of codegenContext) {
-    if (isFileCodegenContext(context)) continue;
+    if (!isLiteralContext(context)) continue;
     const {
       gqlContent,
       gqlHash,

@@ -242,6 +242,7 @@ async function processLiterals(
           gqlContents,
           literalCodegenContext,
         ).then(() => {
+          // TODO: Check context.skip
           modifyGqlCalls(
             programPath,
             sourceFullPath,
