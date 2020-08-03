@@ -26,24 +26,24 @@ type ProjectCacheStore = {
 };
 
 const getPaths = (
-  sourceRelPath: string,
+  srcRelPath: string,
   hash: string,
   dtsRelDir: string,
   cacheFullDir: string,
   cwd: string,
-) => {
+): SrcCreatedPaths => {
   const abs = (relPath: string) => pathJoin(cwd, relPath);
 
   const dtsGenFullDir = abs(dtsRelDir);
-  // sourceRelPath: "pages/index.tsx"
+  // srcRelPath: "pages/index.tsx"
   // "pages"
-  const relDir = dirname(sourceRelPath);
+  const relDir = dirname(srcRelPath);
   // ".tsx"
-  const ext = extname(sourceRelPath);
+  const ext = extname(srcRelPath);
   // "${cwd}/pages/index.tsx"
-  const sourceFullPath = abs(sourceRelPath);
+  const srcFullPath = abs(srcRelPath);
   // "index"
-  const base = basename(sourceRelPath, ext);
+  const base = basename(srcRelPath, ext);
 
   // "index-2345.tsx"
   const tsxBasename = `${base}-${hash}${ext}`;
@@ -60,8 +60,8 @@ const getPaths = (
   const dtsFullPath = pathJoin(dtsGenFullDir, dtsRelPath);
   // TODO
   return {
-    sourceRelPath,
-    sourceFullPath,
+    srcRelPath,
+    srcFullPath,
     tsxRelPath,
     tsxFullPath,
     dtsRelPath,
@@ -74,7 +74,7 @@ export const parserOption: ParserOptions = {
 };
 
 import generator from '@babel/generator';
-import { GqlCodegenContext } from './types';
+import { GqlCodegenContext, SrcCreatedPaths } from './types';
 
 function appendExportAsObject(dtsContent: string) {
   // TODO: Build ast

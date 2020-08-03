@@ -70,7 +70,7 @@ describe('gql-compile', () => {
           gqlContent,
           strippedGqlContent,
           gqlContentHash,
-          sourceFullPath,
+          srcFullPath,
           tsxRelPath,
           tsxFullPath,
           dtsRelPath,
@@ -92,10 +92,10 @@ describe('gql-compile', () => {
       deepStrictEqual(sourceRelPath, 'pages/index.tsx');
 
       ok(
-        slash(sourceFullPath).endsWith(
+        slash(srcFullPath).endsWith(
           'graphql-let/test/__fixtures/gql-compile/pages/index.tsx',
         ),
-        sourceFullPath,
+        srcFullPath,
       );
 
       // TODO: snapshot test
