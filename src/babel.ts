@@ -12,7 +12,7 @@ import { loadConfigSync } from './lib/config';
 import { printError } from './lib/print';
 import { shouldGenResolverTypes } from './lib/resolver-types';
 import { gqlCompile } from './lib/gql-compile';
-import { GqlCodegenContext } from './lib/types';
+import { SrcCodegenContext } from './lib/types';
 
 const {
   isIdentifier,
@@ -28,7 +28,7 @@ const gqlCompileSync = doSync(
     hostDirname,
     ...gqlCompileArgs
   }: GqlCompileArgs & { hostDirname: string }): Promise<
-    GqlCodegenContext[]
+    SrcCodegenContext[]
   > => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { join } = require('path');
@@ -180,7 +180,7 @@ function modifyGqlCalls(
   programPath: NodePath<t.Program>,
   sourceFullPath: string,
   visitGqlCallResults: VisitGqlCallResults,
-  gqlCodegenContext: GqlCodegenContext[],
+  gqlCodegenContext: SrcCodegenContext[],
 ) {
   const {
     gqlCallExpressionPaths,
@@ -244,7 +244,7 @@ export function processProgramPathSync(
 
   if (!gqlCallExpressionPaths.length) return;
 
-  const gqlCodegenContext: GqlCodegenContext[] = gqlCompileSync({
+  const gqlCodegenContext: SrcCodegenContext[] = gqlCompileSync({
     hostDirname: __dirname,
     execContext,
     schemaHash,
@@ -280,7 +280,7 @@ export async function processProgramPath(
 
   if (!gqlCallExpressionPaths.length) return;
 
-  const gqlCodegenContext: GqlCodegenContext[] = await gqlCompile({
+  const gqlCodegenContext: SrcCodegenContext[] = await gqlCompile({
     execContext,
     schemaHash,
     sourceRelPath,

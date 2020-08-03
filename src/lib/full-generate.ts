@@ -19,7 +19,13 @@ import { readFile, writeFile, withHash, readHash } from './file';
 import traverse, { NodePath } from '@babel/traverse';
 import { parse } from '@babel/parser';
 import { loadOptions } from '@babel/core';
-import { CodegenContext, SkippedContext } from './types';
+import generate from '@babel/generator';
+import {
+  CodegenContext,
+  GqlCodegenContext,
+  SkippedContext,
+  SrcCodegenContext,
+} from './types';
 
 // Take care of `.graphqls`s if needed
 export async function processResolverTypesIfNeeded(
@@ -169,8 +175,13 @@ export async function processDtsForCodegenContext(
 
   await makeDir(dirname(codegenContext[0].dtsFullPath));
   for (const [i, dtsContent] of dtsContents.entries()) {
-    const { dtsFullPath, gqlHash, dtsContentDecorator } = codegenContext[i]!;
-    const content = withHash(gqlHash, dtsContentDecorator(dtsContent));
+    const ctx = codegenContext[i];
+    const { dtsFullPath, gqlHash } = ctx!;
+    const { dtsContentDecorator } = ctx as GqlCodegenContext;
+    const content = withHash(
+      gqlHash,
+      dtsContentDecorator ? dtsContentDecorator(dtsContent) : dtsContent,
+    );
     await writeFile(dtsFullPath, content);
   }
 }
@@ -215,13 +226,17 @@ async function processSources(
           importName,
           sourceRelPath,
           sourceFullPath,
-        );
+        ).then(() => {
+          const { code } = generate(sourceAST);
+        });
         promises.push(p);
       },
     });
   }
   // TODO: Heavy? Should stream?
-  return Promise.all(promises);
+  const results = await Promise.all(promises);
+
+  console.log(results);
 }
 
 async function fullGenerate(

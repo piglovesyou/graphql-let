@@ -28,16 +28,18 @@ export type SrcCreatedPaths = CreatedPathsBase & {
   srcFullPath: string;
 };
 
-export type CodegenContext = GqlCreatedPaths & {
+export type GqlCodegenContext = GqlCreatedPaths & {
   gqlHash: string;
   dtsContentDecorator: (content: string) => string;
 };
 
-export type GqlCodegenContext = SrcCreatedPaths & {
+export type SrcCodegenContext = SrcCreatedPaths & {
   gqlHash: string;
   gqlContent: string;
   strippedGqlContent: string;
 };
+
+export type CodegenContext = GqlCodegenContext | SrcCodegenContext;
 
 export type SkippedContext = {
   tsxFullPath: string;

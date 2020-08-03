@@ -10,14 +10,14 @@ import {
 import loadConfig from './lib/config';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX } from './lib/print';
-import { CodegenContext, SkippedContext } from './lib/types';
+import { GqlCodegenContext, SkippedContext } from './lib/types';
 
 const processGraphQLCodegenSchemaLoader = memoize(
   async (cwd: string) => {
     const [config, configHash] = await loadConfig(cwd);
     const execContext = createExecContext(cwd, config, configHash);
 
-    const codegenContext: CodegenContext[] = [];
+    const codegenContext: GqlCodegenContext[] = [];
     const skippedContext: SkippedContext[] = [];
 
     const { gqlRelPaths } = await prepareFullGenerate(execContext);

@@ -4,7 +4,7 @@ import fullGenerate from './lib/full-generate';
 import loadConfig, { ConfigTypes } from './lib/config';
 import { getCacheFullDir } from './lib/paths';
 import { PRINT_PREFIX } from './lib/print';
-import { CodegenContext, CommandOpts, SkippedContext } from './lib/types';
+import { CommandOpts, SkippedContext, CodegenContext } from './lib/types';
 import logUpdate from 'log-update';
 import { rimraf } from './lib/file';
 

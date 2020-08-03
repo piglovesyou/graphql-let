@@ -28,7 +28,7 @@ describe('"graphql-let" command', () => {
 
   afterAll(async () => {
     await rename(rel('.gitignore'), rel('_gitignore'));
-    await cleanup();
+    // await cleanup();
   });
 
   test(`generates number of .d.ts ignoring specified files as expected
