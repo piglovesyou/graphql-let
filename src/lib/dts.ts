@@ -13,8 +13,8 @@ import {
 } from 'typescript';
 import { ExecContext } from './exec-context';
 import { withHash, writeFile } from './file';
-import { CodegenContext } from './full-generate';
 import { ConfigTypes } from './config';
+import { CodegenContext } from './types';
 
 const essentialCompilerOptions: CompilerOptions = {
   declaration: true,

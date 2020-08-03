@@ -6,12 +6,11 @@ import {
   prepareFullGenerate,
   processDocuments,
   processResolverTypesIfNeeded,
-  CodegenContext,
-  SkippedContext,
 } from './lib/full-generate';
 import loadConfig from './lib/config';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX } from './lib/print';
+import { CodegenContext, SkippedContext } from './lib/types';
 
 const processGraphQLCodegenSchemaLoader = memoize(
   async (cwd: string) => {

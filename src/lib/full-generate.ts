@@ -8,7 +8,7 @@ import { genDts } from './dts';
 import { ExecContext } from './exec-context';
 import { parserOption } from './gql-compile';
 import { createHash } from './hash';
-import { CreatedPaths, createPaths, isTypeScriptPath } from './paths';
+import { createPaths, isTypeScriptPath } from './paths';
 import { PRINT_PREFIX } from './print';
 import {
   processGenerateResolverTypes,
@@ -19,16 +19,7 @@ import { readFile, writeFile, withHash, readHash } from './file';
 import traverse, { NodePath } from '@babel/traverse';
 import { parse } from '@babel/parser';
 import { loadOptions } from '@babel/core';
-
-export type CodegenContext = CreatedPaths & {
-  gqlHash: string;
-  dtsContentDecorator: (content: string) => string;
-};
-
-export type SkippedContext = {
-  tsxFullPath: string;
-  dtsFullPath: string;
-};
+import { CodegenContext, SkippedContext } from './types';
 
 // Take care of `.graphqls`s if needed
 export async function processResolverTypesIfNeeded(

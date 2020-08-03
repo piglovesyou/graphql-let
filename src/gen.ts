@@ -1,13 +1,10 @@
 import globby from 'globby';
 import createExecContext from './lib/exec-context';
-import fullGenerate, {
-  CodegenContext,
-  SkippedContext,
-} from './lib/full-generate';
+import fullGenerate from './lib/full-generate';
 import loadConfig, { ConfigTypes } from './lib/config';
 import { getCacheFullDir } from './lib/paths';
 import { PRINT_PREFIX } from './lib/print';
-import { CommandOpts } from './lib/types';
+import { CodegenContext, CommandOpts, SkippedContext } from './lib/types';
 import logUpdate from 'log-update';
 import { rimraf } from './lib/file';
 
