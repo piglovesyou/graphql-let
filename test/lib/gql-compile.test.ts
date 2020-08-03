@@ -25,7 +25,7 @@ const config: ConfigTypes = buildConfig({
   },
 });
 
-describe('gql-compile', () => {
+describe.skip('gql-compile', () => {
   beforeAll(async () => {
     await rimraf(pathJoin(cwd, 'node_modules'));
   });

@@ -224,41 +224,41 @@ function modifyGqlCalls(
   }
 }
 
-export function processProgramPathSync(
-  execContext: ExecContext,
-  schemaHash: string,
-  programPath: NodePath<t.Program>,
-  onlyMatchImportSuffix: boolean,
-  importName: string,
-  sourceRelPath: string,
-  sourceFullPath: string,
-) {
-  const visitGqlCallResults = visitGqlCalls(
-    programPath,
-    importName,
-    onlyMatchImportSuffix,
-  );
-  const { gqlCallExpressionPaths } = visitGqlCallResults;
-
-  // TODO: Handle error
-
-  if (!gqlCallExpressionPaths.length) return;
-
-  const gqlCodegenContext: SrcCodegenContext[] = gqlCompileSync({
-    hostDirname: __dirname,
-    execContext,
-    schemaHash,
-    sourceRelPath,
-    gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
-  });
-
-  modifyGqlCalls(
-    programPath,
-    sourceFullPath,
-    visitGqlCallResults,
-    gqlCodegenContext,
-  );
-}
+// export function processProgramPathSync(
+//   execContext: ExecContext,
+//   schemaHash: string,
+//   programPath: NodePath<t.Program>,
+//   onlyMatchImportSuffix: boolean,
+//   importName: string,
+//   sourceRelPath: string,
+//   sourceFullPath: string,
+// ) {
+//   const visitGqlCallResults = visitGqlCalls(
+//     programPath,
+//     importName,
+//     onlyMatchImportSuffix,
+//   );
+//   const { gqlCallExpressionPaths } = visitGqlCallResults;
+//
+//   // TODO: Handle error
+//
+//   if (!gqlCallExpressionPaths.length) return;
+//
+//   const gqlCodegenContext: SrcCodegenContext[] = gqlCompileSync({
+//     hostDirname: __dirname,
+//     execContext,
+//     schemaHash,
+//     sourceRelPath,
+//     gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
+//   });
+//
+//   modifyGqlCalls(
+//     programPath,
+//     sourceFullPath,
+//     visitGqlCallResults,
+//     gqlCodegenContext,
+//   );
+// }
 
 export async function processProgramPath(
   execContext: ExecContext,
@@ -315,19 +315,35 @@ const configFunction = (
         const { cwd } = state;
         const sourceFullPath = state.file.opts.filename;
         const sourceRelPath = relative(cwd, sourceFullPath);
-
         const [execContext, schemaHash] = ensureExecContext(
           cwd,
           configFilePath,
         );
-        processProgramPathSync(
+
+        const visitGqlCallResults = visitGqlCalls(
+          programPath,
+          importName,
+          onlyMatchImportSuffix,
+        );
+        const { gqlCallExpressionPaths } = visitGqlCallResults;
+
+        // TODO: Handle error
+
+        if (!gqlCallExpressionPaths.length) return;
+
+        const gqlCodegenContext: SrcCodegenContext[] = gqlCompileSync({
+          hostDirname: __dirname,
           execContext,
           schemaHash,
-          programPath,
-          onlyMatchImportSuffix,
-          importName,
           sourceRelPath,
+          gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
+        });
+
+        modifyGqlCalls(
+          programPath,
           sourceFullPath,
+          visitGqlCallResults,
+          gqlCodegenContext,
         );
       },
     },
