@@ -223,41 +223,6 @@ export function modifyGqlCalls(
   }
 }
 
-// export async function processProgramPath(
-//   execContext: ExecContext,
-//   schemaHash: string,
-//   programPath: NodePath<t.Program>,
-//   onlyMatchImportSuffix: boolean,
-//   importName: string,
-//   sourceRelPath: string,
-//   sourceFullPath: string,
-// ) {
-//   const visitGqlCallResults = visitGqlCalls(
-//     programPath,
-//     importName,
-//     onlyMatchImportSuffix,
-//   );
-//   const { gqlCallExpressionPaths } = visitGqlCallResults;
-//
-//   // TODO: Handle error
-//
-//   if (!gqlCallExpressionPaths.length) return;
-//
-//   const codegenContext: LiteralCodegenContext[] = await gqlCompile({
-//     execContext,
-//     schemaHash,
-//     sourceRelPath,
-//     gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
-//   });
-//
-//   modifyGqlCalls(
-//     programPath,
-//     sourceFullPath,
-//     visitGqlCallResults,
-//     codegenContext,
-//   );
-// }
-
 // With all my respect, I cloned the source from
 // https://github.com/gajus/babel-plugin-graphql-tag/blob/master/src/index.js
 const configFunction = (
