@@ -13,6 +13,7 @@ module.exports = {
   ],
 
   ignorePatterns: [
+    'test/__fixtures/gen/pages/index.tsx',
     'test/__fixtures/babel/**/input.tsx',
     'test/__fixtures/babel/**/output.mjs',
   ],

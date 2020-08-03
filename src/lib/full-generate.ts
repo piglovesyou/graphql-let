@@ -201,7 +201,7 @@ async function processSources(
 ) {
   if (!sourceRelPaths.length) return;
 
-  const { cwd, config, codegenOpts } = execContext;
+  const { cwd } = execContext;
   const babelOptions = await loadOptions({ cwd });
   const {
     // configFilePath,
