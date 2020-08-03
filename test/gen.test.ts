@@ -12,6 +12,7 @@ const rel = (relPath: string) => pathJoin(cwd, relPath);
 
 async function cleanup() {
   await rimraf(rel('__generated__'));
+  await rimraf(rel('node_modules'));
   await rimraf(rel('**/*.graphql.d.ts'));
   await rimraf(rel('**/*.graphqls.d.ts'));
 }
