@@ -45,7 +45,7 @@ describe('gql-compile', () => {
     }
 }`,
       ];
-      const codegenContext: GqlCodegenContext = [];
+      const codegenContext: GqlCodegenContext[] = [];
       const oldGqlContentHashes = new Set<string>();
       // const skippedContext: GqlCodegenContext = [];
       const execContext = createExecContext(

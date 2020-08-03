@@ -27,7 +27,7 @@ export type GqlCodegenContext = {
   tsxFullPath: string;
   dtsRelPath: string;
   dtsFullPath: string;
-}[];
+};
 
 type ScopedCacheStore = {
   [hash: string]: string;
@@ -140,7 +140,7 @@ export async function processGqlCompile(
   schemaHash: string,
   gqlContents: string[],
   targetStore: ScopedCacheStore,
-  codegenContext: GqlCodegenContext,
+  codegenContext: GqlCodegenContext[],
   // skippedContext: GqlCodegenContext,
   oldGqlContentHashes: Set<string>,
 ) {
@@ -164,7 +164,7 @@ export async function processGqlCompile(
    *
    * 7. Done.
    */
-  const newGqlCodegenContext: GqlCodegenContext = [];
+  const newGqlCodegenContext: GqlCodegenContext[] = [];
 
   for (const gqlContent of gqlContents) {
     const strippedGqlContent = stripIgnoredCharacters(gqlContent);
@@ -242,7 +242,7 @@ const memoizedProcessGqlCompile = memoize(
 
 export async function gqlCompile(
   gqlCompileArgs: GqlCompileArgs,
-): Promise<GqlCodegenContext> {
+): Promise<GqlCodegenContext[]> {
   const {
     execContext,
     sourceRelPath,
@@ -255,7 +255,7 @@ export async function gqlCompile(
   const cacheRelDir = relative(cwd, cacheFullDir); // Want this?
 
   const dtsRelDir = dirname(config.gqlDtsEntrypoint);
-  const codegenContext: GqlCodegenContext = [];
+  const codegenContext: GqlCodegenContext[] = [];
 
   // Processes inside a sub-process of babel-plugin
   const storeFullPath = pathJoin(cwd, dtsRelDir, 'store.json');

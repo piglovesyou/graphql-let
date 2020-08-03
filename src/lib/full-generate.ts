@@ -3,7 +3,7 @@ import glob from 'globby';
 import logUpdate from 'log-update';
 import makeDir from 'make-dir';
 import { join as pathJoin, dirname } from 'path';
-import { BabelOptions, processProgramPathSync } from '../babel';
+import { BabelOptions, processProgramPath } from '../babel';
 import { genDts } from './dts';
 import { ExecContext } from './exec-context';
 import { parserOption } from './gql-compile';
@@ -206,13 +206,14 @@ async function processSources(
     onlyMatchImportSuffix = false,
     // strip = false,
   } = getGraphQLLetBabelOption(babelOptions);
+  const promises: Promise<void>[] = [];
   for (const sourceRelPath of sourceRelPaths) {
     const sourceFullPath = pathJoin(cwd, sourceRelPath);
     const sourceContent = await readFile(pathJoin(cwd, sourceRelPath), 'utf-8');
     const sourceAST = parse(sourceContent, parserOption);
     traverse(sourceAST, {
       Program(programPath: NodePath<t.Program>) {
-        processProgramPathSync(
+        const p = processProgramPath(
           execContext,
           schemaHash,
           programPath,
@@ -221,9 +222,12 @@ async function processSources(
           sourceRelPath,
           sourceFullPath,
         );
+        promises.push(p);
       },
     });
   }
+  // TODO: Heavy? Should stream?
+  return Promise.all(promises);
 }
 
 async function fullGenerate(

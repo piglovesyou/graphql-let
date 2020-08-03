@@ -73,16 +73,11 @@ export const { ensureExecContext, clearExecContext } = (() => {
   return { ensureExecContext, clearExecContext };
 })();
 
-export function processProgramPathSync(
-  execContext: ExecContext,
-  schemaHash: string,
+function visitGqlCalls(
   programPath: NodePath<t.Program>,
-  onlyMatchImportSuffix: boolean,
   importName: string,
-  sourceRelPath: string,
-  sourceFullPath: string,
+  onlyMatchImportSuffix: boolean,
 ) {
-  const tagNames: string[] = [];
   const pendingDeletion: {
     defaultSpecifier:
       | t.ImportSpecifier
@@ -95,6 +90,8 @@ export function processProgramPathSync(
     string,
   ][] = [];
   let hasError = false;
+
+  const tagNames: string[] = [];
 
   function processTargetCalls(
     path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
@@ -158,22 +155,31 @@ export function processProgramPathSync(
       processTargetCalls(path, 'tag');
     },
   });
+  return { pendingDeletion, gqlCallExpressionPaths, hasError };
+}
 
-  // TODO: Handle error
-
-  if (!gqlCallExpressionPaths.length) return;
-
-  const rv: GqlCodegenContext = gqlCompileSync({
-    hostDirname: __dirname,
-    execContext,
-    schemaHash,
-    sourceRelPath,
-    gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
-  });
-  if (gqlCallExpressionPaths.length !== rv.length) throw new Error('what');
+function modifyProgram(
+  programPath: NodePath<t.Program>,
+  sourceFullPath: string,
+  gqlCallExpressionPaths: [
+    NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
+    string,
+  ][],
+  gqlCodegenContext: GqlCodegenContext[],
+  pendingDeletion: {
+    defaultSpecifier:
+      | t.ImportSpecifier
+      | t.ImportDefaultSpecifier
+      | t.ImportNamespaceSpecifier;
+    path: NodePath<t.ImportDeclaration>;
+  }[],
+  hasError: boolean,
+) {
+  if (gqlCallExpressionPaths.length !== gqlCodegenContext.length)
+    throw new Error('what');
 
   for (const [i, [callExpressionPath]] of gqlCallExpressionPaths.entries()) {
-    const { gqlContentHash, tsxFullPath } = rv[i]!;
+    const { gqlContentHash, tsxFullPath } = gqlCodegenContext[i]!;
     const tsxRelPathFromSource =
       './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
 
@@ -203,6 +209,43 @@ export function processProgramPathSync(
       }
     }
   }
+}
+
+export function processProgramPathSync(
+  execContext: ExecContext,
+  schemaHash: string,
+  programPath: NodePath<t.Program>,
+  onlyMatchImportSuffix: boolean,
+  importName: string,
+  sourceRelPath: string,
+  sourceFullPath: string,
+) {
+  const { gqlCallExpressionPaths, pendingDeletion, hasError } = visitGqlCalls(
+    programPath,
+    importName,
+    onlyMatchImportSuffix,
+  );
+
+  // TODO: Handle error
+
+  if (!gqlCallExpressionPaths.length) return;
+
+  const gqlCodegenContext: GqlCodegenContext[] = gqlCompileSync({
+    hostDirname: __dirname,
+    execContext,
+    schemaHash,
+    sourceRelPath,
+    gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
+  });
+
+  modifyProgram(
+    programPath,
+    sourceFullPath,
+    gqlCallExpressionPaths,
+    gqlCodegenContext,
+    pendingDeletion,
+    hasError,
+  );
 }
 
 // With all my respect, I cloned the source from
