@@ -14,7 +14,6 @@ import { readFile } from './file';
 import { join } from 'path';
 import { writeFile } from './file';
 import { createHash } from './hash';
-import memoize from './memoize';
 import * as t from '@babel/types';
 import generator from '@babel/generator';
 import {
@@ -286,13 +285,6 @@ export type GqlArgs = {
   sourceRelPath: string;
   gqlContents: string[];
 };
-
-// // It's still troublesome even it's babel-plugin in SSR applicaiton like Next.js
-// // where multiple webpack transpile handles a single source file.
-// const memoizedProcessGqlCompile = memoize(
-//   processGql,
-//   (_execContext, sourceRelPath) => sourceRelPath,
-// );
 
 export async function gqlInSubProcess(
   gqlArgs: GqlArgs,

@@ -282,19 +282,21 @@ yarn add -D graphql-let do-sync @babel/core @babel/parser @babel/traverse @babel
 Add target `.ts(x)`s to `documents` that contains `gql()` calls. This is used
 for the CLI execution.
 
-```yaml
-documents:
-    - "pages/**/*.tsx"
-    - "**/*.graphql"
+```diff
+ documents:
++  - "pages/**/*.tsx"
+   - "**/*.graphql"
 ```
 
 Put `graphql-let/babel` to plugins section in your babel configuration such as
 `babel.config.json`.
 
-```json
-{
-    "plugins": ["graphql-let/babel"]
-}
+```diff
+ {
+   "plugins": [
++    "graphql-let/babel"
+   ]
+ }
 ```
 
 Note: The `.tsx`s are generated in `node_modules/graphql-let/__generated__` by
@@ -314,12 +316,12 @@ excluded to be TS compilation. Please try `cacheDir: __generated__` in your
 
 `graphql-let/jestTransformer` is available. Configure your `jest.config.js` as:
 
-```javascript
-module.exports = {
+```diff
+  module.exports = {
     transform: {
-        "\\.graphql$": "graphql-let/jestTransformer",
++     "\\.graphql$": "graphql-let/jestTransformer",
     },
-};
+  };
 ```
 
 ### Use `babel-jest` in Jest
@@ -338,19 +340,19 @@ And make sure your babel config can compile generated `.ts(x)`s.
 The option `subsequentTransformer` is available. If you use `ts-jest`, your
 `jest.config.js` will look like this:
 
-```javascript
-const { defaults: tsjPreset } = require("ts-jest/presets");
+```diff
+  const { defaults: tsjPreset } = require("ts-jest/presets");
 
-module.exports = {
+  module.exports = {
     preset: "ts-jest",
     transform: {
-        ...tsjPreset.transform,
-        "\\.graphql$": [
-            "graphql-let/jestTransformer",
-            { subsequentTransformer: "ts-jest" },
-        ],
+      ...tsjPreset.transform,
++     "\\.graphql$": [
++       "graphql-let/jestTransformer",
++       { subsequentTransformer: "ts-jest" },
++     ],
     },
-};
+  };
 ```
 
 ### Transform `.graphqls` in Jest
@@ -359,13 +361,13 @@ If you use `graphql-let/schema/loader`, you may want a corresponding
 transformer, but remember graphql-let does not transform the content of GraphQL
 schema. Just use what you need, it's most likely to be `jest-transform-graphql`.
 
-```javascript
-module.exports = {
+```diff
+  module.exports = {
     transform: {
-        "\\.graphql$": "graphql-let/jestTransformer",
-        "\\.graphqls$": "jest-transform-graphql",
+      "\\.graphql$": "graphql-let/jestTransformer",
++     "\\.graphqls$": "jest-transform-graphql",
     },
-};
+  };
 ```
 
 ## Experimental feature: Resolver Types
