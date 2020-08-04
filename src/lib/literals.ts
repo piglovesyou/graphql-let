@@ -1,9 +1,11 @@
+import { loadOptions } from '@babel/core';
 import { generate } from '@graphql-codegen/cli';
 import traverse, { NodePath } from '@babel/traverse';
 import makeDir from 'make-dir';
 import { join as pathJoin, extname, basename, dirname } from 'path';
 import { existsSync } from 'fs';
 import slash from 'slash';
+import { BabelOptions, modifyGqlCalls, visitGqlCalls } from '../babel';
 import { genDts } from './dts';
 import { ExecContext } from './exec-context';
 import { rimraf } from './file';
@@ -176,7 +178,7 @@ async function generateDts(
   }
 }
 
-export async function processGql(
+export async function processLiterals(
   execContext: ExecContext,
   sourceRelPath: string,
   schemaHash: string,
@@ -278,21 +280,21 @@ export default function gql(gql: \`${gqlContent}\`): T${gqlHash}.__AllExports;
   await generateTsx(execContext, codegenContext);
 }
 
-export type GqlArgs = {
+export type LiteralsArgs = {
   execContext: ExecContext;
   schemaHash: string;
   sourceRelPath: string;
   gqlContents: string[];
 };
 
-export async function gqlInSubProcess(
-  gqlArgs: GqlArgs,
+export async function literalsInSubProcess(
+  literalsArgs: LiteralsArgs,
 ): Promise<LiteralCodegenContext[]> {
-  const { execContext, sourceRelPath, schemaHash, gqlContents } = gqlArgs;
+  const { execContext, sourceRelPath, schemaHash, gqlContents } = literalsArgs;
 
   const codegenContext: LiteralCodegenContext[] = [];
 
-  await processGql(
+  await processLiterals(
     execContext,
     sourceRelPath,
     schemaHash,
@@ -303,4 +305,76 @@ export async function gqlInSubProcess(
   await generateDts(execContext, codegenContext);
 
   return codegenContext;
+}
+
+function getGraphQLLetBabelOption(babelOptions: any): BabelOptions {
+  for (const { key, options } of babelOptions.plugins || []) {
+    if (key.includes('graphql-let/')) {
+      return options;
+    }
+  }
+  return {};
+}
+
+export async function processLiteralsForContext(
+  execContext: ExecContext,
+  schemaHash: string,
+  sourceRelPaths: string[],
+  codegenContext: CodegenContext[],
+) {
+  if (!sourceRelPaths.length) return;
+
+  const { cwd } = execContext;
+  const babelOptions = await loadOptions({ cwd });
+  const {
+    // configFilePath,
+    importName = 'graphql-let',
+    onlyMatchImportSuffix = false,
+    // strip = false,
+  } = getGraphQLLetBabelOption(babelOptions);
+  const promises: Promise<void>[] = [];
+  for (const sourceRelPath of sourceRelPaths) {
+    const sourceFullPath = pathJoin(cwd, sourceRelPath);
+    const sourceContent = await readFile(pathJoin(cwd, sourceRelPath), 'utf-8');
+    const sourceAST = parse(sourceContent, parserOption);
+    traverse(sourceAST, {
+      Program(programPath: NodePath<t.Program>) {
+        const literalCodegenContext: LiteralCodegenContext[] = [];
+
+        const visitGqlCallResults = visitGqlCalls(
+          programPath,
+          importName,
+          onlyMatchImportSuffix,
+        );
+        const { gqlCallExpressionPaths } = visitGqlCallResults;
+        const gqlContents = gqlCallExpressionPaths.map(([, value]) => value);
+
+        // TODO: Handle error
+
+        if (!gqlCallExpressionPaths.length) return;
+
+        const p = processLiterals(
+          execContext,
+          sourceRelPath,
+          schemaHash,
+          gqlContents,
+          literalCodegenContext,
+        ).then(() => {
+          // TODO: Check context.skip
+          modifyGqlCalls(
+            programPath,
+            sourceFullPath,
+            visitGqlCallResults,
+            literalCodegenContext,
+          );
+          for (const c of literalCodegenContext) codegenContext.push(c);
+        });
+
+        promises.push(p);
+      },
+    });
+  }
+  // TODO: Heavy? Should stream?
+  // Wait for codegenContext is filled
+  await Promise.all(promises);
 }

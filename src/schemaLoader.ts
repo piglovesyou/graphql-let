@@ -1,11 +1,9 @@
 import logUpdate from 'log-update';
 import { loader } from 'webpack';
+import { processDocumentsForContext } from './lib/documents';
 import { processDtsForContext } from './lib/dts';
 import createExecContext from './lib/exec-context';
-import {
-  prepareFullGenerate,
-  processDocumentsForContext,
-} from './lib/full-generate';
+import { prepareFullGenerate } from './lib/full-generate';
 import loadConfig from './lib/config';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX } from './lib/print';

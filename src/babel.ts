@@ -6,9 +6,9 @@ import doSync from 'do-sync';
 import slash from 'slash';
 import createExecContext, { ExecContext } from './lib/exec-context';
 import { readFileSync } from './lib/file';
-import { GqlArgs } from './lib/gql';
 import { createHash } from './lib/hash';
 import { loadConfigSync } from './lib/config';
+import { LiteralsArgs } from './lib/literals';
 import { printError } from './lib/print';
 import { shouldGenResolverTypes } from './lib/resolver-types';
 import { CodegenContext, LiteralCodegenContext } from './lib/types';
@@ -22,19 +22,19 @@ const {
   valueToNode,
 } = types;
 
-const gqlInSubProcessSync = doSync(
+const literalsInSubProcessSync = doSync(
   ({
     hostDirname,
     ...gqlCompileArgs
-  }: GqlArgs & {
+  }: LiteralsArgs & {
     hostDirname: string;
   }): /* Promise<LiteralCodegenContext[]> */ any => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { join } = require('path');
     const modulePath = join(hostDirname, '../dist/lib/gql');
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { gqlInSubProcess } = require(modulePath);
-    return gqlInSubProcess(gqlCompileArgs);
+    const { literalsInSubProcess } = require(modulePath);
+    return literalsInSubProcess(gqlCompileArgs);
   },
 );
 
@@ -90,6 +90,7 @@ type VisitGqlCallResults = {
   ][];
   hasError: boolean;
 };
+
 export function visitGqlCalls(
   programPath: NodePath<t.Program>,
   importName: string,
@@ -259,19 +260,21 @@ const configFunction = (
 
         if (!gqlCallExpressionPaths.length) return;
 
-        const gqlCodegenContext: LiteralCodegenContext[] = gqlInSubProcessSync({
-          hostDirname: __dirname,
-          execContext,
-          schemaHash,
-          sourceRelPath,
-          gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
-        }) as any; // Suppress JSONValue error. LiteralCodegenContext has a function property, but it can be ignored.
+        const literalCodegenContext: LiteralCodegenContext[] = literalsInSubProcessSync(
+          {
+            hostDirname: __dirname,
+            execContext,
+            schemaHash,
+            sourceRelPath,
+            gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
+          },
+        ) as any; // Suppress JSONValue error. LiteralCodegenContext has a function property, but it can be ignored.
 
         modifyGqlCalls(
           programPath,
           sourceFullPath,
           visitGqlCallResults,
-          gqlCodegenContext,
+          literalCodegenContext,
         );
       },
     },

@@ -73,7 +73,6 @@ const processGraphQLCodegenLoader = memoize(
         },
       ];
 
-      updateLog('Generating .d.ts...');
       await processDtsForContext(execContext, codegenContext);
       updateLog(`${dtsRelPath} was generated.`);
 

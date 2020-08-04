@@ -14,6 +14,7 @@ import {
 import { ExecContext } from './exec-context';
 import { withHash, writeFile } from './file';
 import { ConfigTypes } from './config';
+import { updateLog } from './print';
 import { CodegenContext, FileCodegenContext } from './types';
 
 const essentialCompilerOptions: CompilerOptions = {
@@ -133,6 +134,8 @@ export async function processDtsForContext(
   codegenContext: CodegenContext[],
 ) {
   if (!codegenContext.length) return;
+
+  updateLog('Generating .d.ts...');
 
   const dtsContents = genDts(
     execContext,
