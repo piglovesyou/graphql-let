@@ -118,17 +118,6 @@ export function genDts(
   return dtsContents;
 }
 
-// export async function processGenDts(
-//   execContext: ExecContext,
-//   codegenContext: FileCodegenContext,
-// ) {
-//   const { dtsFullPath, gqlHash } = codegenContext;
-//   await makeDir(path.dirname(dtsFullPath));
-//   const [dtsContent] = await genDts(execContext, [codegenContext.tsxFullPath]);
-//   if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
-//   await writeFile(dtsFullPath, withHash(gqlHash, dtsContent));
-// }
-
 export async function processDtsForContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
