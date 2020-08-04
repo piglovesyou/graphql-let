@@ -2,7 +2,6 @@ import { Types } from '@graphql-codegen/plugin-helpers';
 import { generate } from '@graphql-codegen/cli';
 import makeDir from 'make-dir';
 import path from 'path';
-import { ExecContext } from './exec-context';
 import { ConfigTypes } from './config';
 import { withHash, writeFile } from './file';
 
