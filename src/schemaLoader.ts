@@ -5,12 +5,12 @@ import createExecContext from './lib/exec-context';
 import {
   prepareFullGenerate,
   processDocumentsForContext,
-  processResolverTypesIfNeeded,
 } from './lib/full-generate';
 import loadConfig from './lib/config';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX } from './lib/print';
-import { CodegenContext, FileCodegenContext } from './lib/types';
+import { processResolverTypesIfNeeded } from './lib/resolver-types';
+import { CodegenContext } from './lib/types';
 
 const processGraphQLCodegenSchemaLoader = memoize(
   async (cwd: string) => {

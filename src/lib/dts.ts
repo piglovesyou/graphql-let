@@ -1,5 +1,5 @@
 import makeDir from 'make-dir';
-import path, { dirname } from 'path';
+import { dirname } from 'path';
 import slash from 'slash';
 import {
   createCompilerHost,
