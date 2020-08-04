@@ -1,5 +1,5 @@
 import makeDir from 'make-dir';
-import path from 'path';
+import path, { dirname } from 'path';
 import slash from 'slash';
 import {
   createCompilerHost,
@@ -14,7 +14,7 @@ import {
 import { ExecContext } from './exec-context';
 import { withHash, writeFile } from './file';
 import { ConfigTypes } from './config';
-import { FileCodegenContext } from './types';
+import { CodegenContext, FileCodegenContext } from './types';
 
 const essentialCompilerOptions: CompilerOptions = {
   declaration: true,
@@ -117,14 +117,38 @@ export function genDts(
   return dtsContents;
 }
 
-export async function processGenDts(
+// export async function processGenDts(
+//   execContext: ExecContext,
+//   codegenContext: FileCodegenContext,
+// ) {
+//   const { dtsFullPath, gqlHash } = codegenContext;
+//   await makeDir(path.dirname(dtsFullPath));
+//   const [dtsContent] = await genDts(execContext, [codegenContext.tsxFullPath]);
+//   if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
+//   await writeFile(dtsFullPath, withHash(gqlHash, dtsContent));
+// }
+
+export async function processDtsForContext(
   execContext: ExecContext,
-  codegenContext: FileCodegenContext,
+  codegenContext: CodegenContext[],
 ) {
-  const { dtsFullPath, gqlHash } = codegenContext;
-  await makeDir(path.dirname(dtsFullPath));
-  const [dtsContent] = await genDts(execContext, [codegenContext.tsxFullPath]);
-  if (!dtsContent) throw new Error(`Generate ${dtsFullPath} fails.`);
-  await writeFile(dtsFullPath, withHash(gqlHash, dtsContent));
-  return dtsContent;
+  if (!codegenContext.length) return;
+
+  const dtsContents = genDts(
+    execContext,
+    codegenContext.map(({ tsxFullPath }) => tsxFullPath),
+  );
+
+  await makeDir(dirname(codegenContext[0].dtsFullPath));
+  for (const [i, dtsContent] of dtsContents.entries()) {
+    const ctx = codegenContext[i];
+    const { dtsFullPath, gqlHash } = ctx!;
+    const { dtsContentDecorator } = ctx as FileCodegenContext;
+    const content = withHash(
+      gqlHash,
+      dtsContentDecorator ? dtsContentDecorator(dtsContent) : dtsContent,
+    );
+    await makeDir(dirname(dtsFullPath));
+    await writeFile(dtsFullPath, content);
+  }
 }

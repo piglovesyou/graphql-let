@@ -4,7 +4,7 @@ import logUpdate from 'log-update';
 import makeDir from 'make-dir';
 import { join as pathJoin, dirname } from 'path';
 import { BabelOptions, modifyGqlCalls, visitGqlCalls } from '../babel';
-import { genDts } from './dts';
+import { genDts, processDtsForContext } from './dts';
 import { ExecContext } from './exec-context';
 import { parserOption, processGql } from './gql';
 import { createHash } from './hash';
@@ -87,12 +87,11 @@ export default typeof DocumentNode
 }
 
 // Take care of `.graphql`s
-export async function processDocuments(
+export async function processDocumentsForContext(
   execContext: ExecContext,
   gqlRelPaths: string[],
   schemaHash: string,
   codegenContext: CodegenContext[],
-  // skippedContext: SkippedContext[],
 ) {
   if (!gqlRelPaths.length) return;
 
@@ -160,32 +159,6 @@ export async function prepareFullGenerate({
     isTypeScriptPath(p) ? tsSourceRelPaths.push(p) : graphqlRelPaths.push(p);
   }
   return { graphqlRelPaths, tsSourceRelPaths };
-}
-
-export async function generateDts(
-  execContext: ExecContext,
-  codegenContext: CodegenContext[],
-) {
-  if (!codegenContext.length) return;
-
-  logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
-  const dtsContents = genDts(
-    execContext,
-    codegenContext.map(({ tsxFullPath }) => tsxFullPath),
-  );
-
-  await makeDir(dirname(codegenContext[0].dtsFullPath));
-  for (const [i, dtsContent] of dtsContents.entries()) {
-    const ctx = codegenContext[i];
-    const { dtsFullPath, gqlHash } = ctx!;
-    const { dtsContentDecorator } = ctx as FileCodegenContext;
-    const content = withHash(
-      gqlHash,
-      dtsContentDecorator ? dtsContentDecorator(dtsContent) : dtsContent,
-    );
-    await makeDir(dirname(dtsFullPath));
-    await writeFile(dtsFullPath, content);
-  }
 }
 
 function getGraphQLLetBabelOption(babelOptions: any): BabelOptions {
@@ -275,7 +248,7 @@ async function fullGenerate(
     codegenContext,
   );
 
-  await processDocuments(
+  await processDocumentsForContext(
     execContext,
     graphqlRelPaths,
     schemaHash,
@@ -289,7 +262,9 @@ async function fullGenerate(
     codegenContext,
   );
 
-  await generateDts(execContext, codegenContext);
+  logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
+
+  await processDtsForContext(execContext, codegenContext);
 
   return codegenContext;
 }

@@ -203,9 +203,8 @@ export async function processGql(
    *    1. Update dtsEntryFullPath
    *    2. Update projectStore
    *
-   * We don't do these here:
-   *    1. Write tsx
-   *    2. Write dts
+   * - We write tsx
+   * - We don't write dts here.
    */
 
   // Processes inside a sub-process of babel-plugin
