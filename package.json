@@ -46,7 +46,7 @@
     "@graphql-codegen/plugin-helpers": "^1.12.2",
     "@graphql-codegen/typescript": "^1.12.2",
     "@graphql-codegen/typescript-operations": "^1.12.2",
-    "@graphql-codegen/typescript-react-apollo": "^1.12.2",
+    "@graphql-codegen/typescript-react-apollo": "^2.0.0",
     "@graphql-codegen/typescript-resolvers": "^1.12.2",
     "@jest/transform": "^26.1.0",
     "@jest/types": "^26.1.0",
