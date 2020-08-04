@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@apollo/react-common": "^3.1.3",
-    "@apollo/react-components": "^3.1.3",
+    "@apollo/react-components": "^4.0.0",
     "@apollo/react-hooks": "^3.1.3",
     "@babel/helper-transform-fixture-test-runner": ">=7.0.0",
     "@babel/plugin-syntax-jsx": ">=7.0.0",
