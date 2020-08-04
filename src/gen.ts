@@ -1,27 +1,26 @@
 import globby from 'globby';
-import createExecContext from './lib/exec-context';
-import fullGenerate, {
-  CodegenContext,
-  SkippedContext,
-} from './lib/full-generate';
-import loadConfig, { ConfigTypes } from './lib/config';
-import { getCacheFullDir } from './lib/paths';
-import { PRINT_PREFIX } from './lib/print';
-import { CommandOpts } from './lib/types';
 import logUpdate from 'log-update';
+import {
+  findTargetDocuments,
+  processDocumentsForContext,
+} from './lib/documents';
+import { processDtsForContext } from './lib/dts';
+import createExecContext from './lib/exec-context';
+import loadConfig, { ConfigTypes } from './lib/config';
+import { processLiteralsForContext } from './lib/literals';
+import { getCacheFullDir } from './lib/paths';
+import { updateLog } from './lib/print';
+import { processResolverTypesIfNeeded } from './lib/resolver-types';
+import { CommandOpts, CodegenContext } from './lib/types';
 import { rimraf } from './lib/file';
 
 async function removeOldTsxCaches(
   cwd: string,
   config: ConfigTypes,
   codegenContext: CodegenContext[],
-  skippedContext: SkippedContext[],
 ) {
   const cacheDir = getCacheFullDir(cwd, config.cacheDir);
-  const validTsxCaches = [
-    ...codegenContext.map(({ tsxFullPath }) => tsxFullPath),
-    ...skippedContext.map(({ tsxFullPath }) => tsxFullPath),
-  ];
+  const validTsxCaches = codegenContext.map(({ tsxFullPath }) => tsxFullPath);
   const oldTsxPaths = await globby(
     [cacheDir + '/**', ...validTsxCaches.map((validCache) => '!' + validCache)],
     { absolute: true },
@@ -32,20 +31,47 @@ async function removeOldTsxCaches(
 export default async function gen({
   cwd,
   configFilePath,
-}: CommandOpts): Promise<void> {
-  logUpdate(PRINT_PREFIX + 'Running graphql-codegen...');
+}: CommandOpts): Promise<CodegenContext[]> {
+  updateLog('Running graphql-codegen...');
 
   const [config, configHash] = await loadConfig(cwd, configFilePath);
   const execContext = createExecContext(cwd, config, configHash);
+  const codegenContext: CodegenContext[] = [];
 
-  const [generated, skipped] = await fullGenerate(execContext);
+  const { graphqlRelPaths, tsSourceRelPaths } = await findTargetDocuments(
+    execContext,
+  );
 
-  await removeOldTsxCaches(cwd, config, generated, skipped);
+  const { schemaHash } = await processResolverTypesIfNeeded(
+    execContext,
+    codegenContext,
+  );
 
-  if (generated.length) {
-    logUpdate(PRINT_PREFIX + `${generated.length} .d.ts were generated.`);
+  await processDocumentsForContext(
+    execContext,
+    schemaHash,
+    codegenContext,
+    graphqlRelPaths,
+  );
+
+  await processLiteralsForContext(
+    execContext,
+    schemaHash,
+    tsSourceRelPaths,
+    codegenContext,
+  );
+
+  updateLog('Generating .d.ts...');
+  await processDtsForContext(execContext, codegenContext);
+
+  await removeOldTsxCaches(cwd, config, codegenContext);
+
+  if (codegenContext.filter((e) => !e.skip).length) {
+    updateLog(`${codegenContext.length} .d.ts were generated.`);
   } else {
-    logUpdate(PRINT_PREFIX + `Done nothing, caches are fresh.`);
+    updateLog(`Done nothing, caches are fresh.`);
   }
   logUpdate.done();
+
+  return codegenContext;
 }

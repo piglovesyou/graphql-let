@@ -2,7 +2,6 @@ import { Types } from '@graphql-codegen/plugin-helpers';
 import { generate } from '@graphql-codegen/cli';
 import makeDir from 'make-dir';
 import path from 'path';
-import { ExecContext } from './exec-context';
 import { ConfigTypes } from './config';
 import { withHash, writeFile } from './file';
 
@@ -59,24 +58,4 @@ export async function processGraphQLCodegen(
     }
     throw e;
   }
-}
-/**
- * Process graphql-codegen including calling "loadSchema", which is also a possibly expensive function
- */
-export function processGraphQLCodegenFromConfig(
-  { cwd, config, codegenOpts }: ExecContext,
-  tsxFullPath: string,
-  gqlRelPath: string,
-  gqlContent: string,
-  gqlHash: string,
-) {
-  return processGraphQLCodegen({
-    cwd,
-    schema: config.schema,
-    filename: tsxFullPath,
-    documents: gqlContent,
-    gqlHash,
-    plugins: config.plugins,
-    config: codegenOpts.config,
-  });
 }

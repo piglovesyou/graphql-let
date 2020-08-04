@@ -1,19 +1,18 @@
 import logUpdate from 'log-update';
 import { loader } from 'webpack';
 import { join as pathJoin, relative as pathRelative } from 'path';
-import { processGenDts } from './lib/dts';
+import { processDocumentsForContext } from './lib/documents';
+import { processDtsForContext } from './lib/dts';
 import createExecContext from './lib/exec-context';
-import { readHash } from './lib/file';
-import { processGraphQLCodegenFromConfig } from './lib/graphql-codegen';
 import { createHash } from './lib/hash';
 import loadConfig from './lib/config';
 import memoize from './lib/memoize';
-import { createPaths } from './lib/paths';
 import { shouldGenResolverTypes } from './lib/resolver-types';
-import { PRINT_PREFIX } from './lib/print';
+import { PRINT_PREFIX, updateLog } from './lib/print';
 import { readFile } from './lib/file';
+import { CodegenContext } from './lib/types';
 
-const processGraphQLCodegenLoader = memoize(
+const processGraphQLLetLoader = memoize(
   async (
     gqlFullPath: string,
     gqlContent: string | Buffer,
@@ -25,7 +24,7 @@ const processGraphQLCodegenLoader = memoize(
 
     // To pass config change on subsequent generation,
     // configHash should be primary hash seed.
-    let schemaHash;
+    let schemaHash = configHash;
 
     if (shouldGenResolverTypes(config)) {
       const fileSchema = config.schema as string;
@@ -35,59 +34,44 @@ const processGraphQLCodegenLoader = memoize(
 
       // If using resolver types, all documents should depend on all schema files.
       addDependency(schemaFullPath);
-    } else {
-      schemaHash = configHash;
     }
 
-    const createdPaths = createPaths(
+    const gqlRelPath = pathRelative(cwd, gqlFullPath);
+    const codegenContext: CodegenContext[] = [];
+
+    const tsxContents = await processDocumentsForContext(
       execContext,
-      pathRelative(cwd, gqlFullPath),
+      schemaHash,
+      codegenContext,
+      [gqlRelPath],
+      [String(gqlContent)],
     );
-    const { tsxFullPath, dtsFullPath, dtsRelPath, gqlRelPath } = createdPaths;
-    const gqlHash = createHash(schemaHash + gqlContent);
 
-    const shouldUpdate =
-      gqlHash !== (await readHash(tsxFullPath)) ||
-      gqlHash !== (await readHash(dtsFullPath));
-    let tsxContent: string;
-    if (shouldUpdate) {
-      logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
+    // Cache was obsolete
+    if (tsxContents[gqlRelPath]) {
+      updateLog('Generating .d.ts...');
+      await processDtsForContext(execContext, codegenContext);
+      updateLog(`${gqlRelPath} was generated.`);
 
-      // We don't delete tsxFullPath and dtsFullPath here because:
-      // 1. We'll overwrite them so deleting is not necessary
-      // 2. Windows throws EPERM error for the deleting and creating file process.
-
-      tsxContent = await processGraphQLCodegenFromConfig(
-        execContext,
-        tsxFullPath,
-        gqlRelPath,
-        String(gqlContent),
-        gqlHash,
-      );
-
-      await processGenDts(execContext, {
-        ...createdPaths,
-        gqlHash,
-        dtsContentDecorator: (_) => _,
-      });
-      logUpdate(PRINT_PREFIX + `${dtsRelPath} was generated.`);
       // Hack to prevent duplicated logs for simultaneous build, in SSR app for an example.
       await new Promise((resolve) => setTimeout(resolve, 0));
       logUpdate.done();
+      return tsxContents[gqlRelPath];
     } else {
-      tsxContent = await readFile(tsxFullPath, 'utf-8');
+      // When cache is fresh, just load it
+      if (codegenContext.length !== 1) throw new Error('never');
+      const [{ tsxFullPath }] = codegenContext;
+      return await readFile(tsxFullPath, 'utf-8');
     }
-
-    return tsxContent;
   },
   (gqlFullPath: string) => gqlFullPath,
 );
 
-const graphlqCodegenLoader: loader.Loader = function (gqlContent) {
+const graphQLLetLoader: loader.Loader = function (gqlContent) {
   const callback = this.async()!;
   const { resourcePath: gqlFullPath, rootContext: cwd } = this;
 
-  processGraphQLCodegenLoader(
+  processGraphQLLetLoader(
     gqlFullPath,
     gqlContent,
     this.addDependency.bind(this),
@@ -107,4 +91,4 @@ const graphlqCodegenLoader: loader.Loader = function (gqlContent) {
     });
 };
 
-export default graphlqCodegenLoader;
+export default graphQLLetLoader;

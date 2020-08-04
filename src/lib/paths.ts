@@ -1,30 +1,20 @@
-import path from 'path';
+import { isAbsolute, join, extname } from 'path';
 import { ExecContext } from './exec-context';
-
-export type CreatedPaths = {
-  gqlRelPath: string;
-  tsxRelPath: string;
-  tsxFullPath: string;
-  dtsFullPath: string;
-  dtsRelPath: string;
-  gqlFullPath: string;
-};
-
-// export const libFullDir = path.resolve(__dirname, '../..');
+import { FileCreatedPaths } from './types';
 
 export const getCacheFullDir = (cwd: string, cacheDir: string) => {
-  return path.isAbsolute(cacheDir) ? cacheDir : path.join(cwd, cacheDir);
+  return isAbsolute(cacheDir) ? cacheDir : join(cwd, cacheDir);
 };
 
 export function createPaths(
   { cwd, cacheFullDir }: ExecContext,
   gqlRelPath: string,
-): CreatedPaths {
+): FileCreatedPaths {
   const tsxRelPath = `${gqlRelPath}.tsx`;
-  const tsxFullPath = path.join(cacheFullDir, tsxRelPath);
+  const tsxFullPath = join(cacheFullDir, tsxRelPath);
   const dtsRelPath = `${gqlRelPath}.d.ts`;
-  const dtsFullPath = path.join(cwd, dtsRelPath);
-  const gqlFullPath = path.join(cwd, gqlRelPath);
+  const dtsFullPath = join(cwd, dtsRelPath);
+  const gqlFullPath = join(cwd, gqlRelPath);
 
   return {
     gqlRelPath,
@@ -43,4 +33,9 @@ export function isURL(p: string): boolean {
   } catch (e) {
     return false;
   }
+}
+
+export function isTypeScriptPath(path: string) {
+  const x = extname(path);
+  return x === '.ts' || x === '.tsx';
 }

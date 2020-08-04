@@ -1,17 +1,16 @@
 import logUpdate from 'log-update';
 import { loader } from 'webpack';
-import createExecContext from './lib/exec-context';
 import {
-  processDtsForCodegenContext,
-  prepareFullGenerate,
-  processDocuments,
-  processResolverTypesIfNeeded,
-  CodegenContext,
-  SkippedContext,
-} from './lib/full-generate';
+  findTargetDocuments,
+  processDocumentsForContext,
+} from './lib/documents';
+import { processDtsForContext } from './lib/dts';
+import createExecContext from './lib/exec-context';
 import loadConfig from './lib/config';
 import memoize from './lib/memoize';
-import { PRINT_PREFIX } from './lib/print';
+import { PRINT_PREFIX, updateLog } from './lib/print';
+import { processResolverTypesIfNeeded } from './lib/resolver-types';
+import { CodegenContext } from './lib/types';
 
 const processGraphQLCodegenSchemaLoader = memoize(
   async (cwd: string) => {
@@ -19,27 +18,25 @@ const processGraphQLCodegenSchemaLoader = memoize(
     const execContext = createExecContext(cwd, config, configHash);
 
     const codegenContext: CodegenContext[] = [];
-    const skippedContext: SkippedContext[] = [];
 
-    const gqlRelPaths = await prepareFullGenerate(execContext);
+    const { graphqlRelPaths } = await findTargetDocuments(execContext);
 
     const { schemaHash } = await processResolverTypesIfNeeded(
       execContext,
       codegenContext,
-      skippedContext,
     );
 
-    // Only if schema was changed, documents are also handled for quick startup of webpack dev.
-    if (codegenContext.length) {
-      await processDocuments(
+    // Only if schema was changed, documents should also be handled for quick startup of webpack dev.
+    if (codegenContext.some(({ skip }) => !skip)) {
+      await processDocumentsForContext(
         execContext,
-        gqlRelPaths,
         schemaHash,
         codegenContext,
-        skippedContext,
+        graphqlRelPaths,
       );
 
-      await processDtsForCodegenContext(execContext, codegenContext);
+      updateLog('Generating .d.ts...');
+      await processDtsForContext(execContext, codegenContext);
     }
   },
   () => 'schemaLoader',

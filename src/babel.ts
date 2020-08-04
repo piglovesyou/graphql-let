@@ -6,11 +6,12 @@ import doSync from 'do-sync';
 import slash from 'slash';
 import createExecContext, { ExecContext } from './lib/exec-context';
 import { readFileSync } from './lib/file';
-import { GqlCodegenContext, GqlCompileArgs } from './lib/gql-compile';
 import { createHash } from './lib/hash';
 import { loadConfigSync } from './lib/config';
+import { LiteralsArgs } from './lib/literals';
 import { printError } from './lib/print';
 import { shouldGenResolverTypes } from './lib/resolver-types';
+import { CodegenContext, LiteralCodegenContext } from './lib/types';
 
 const {
   isIdentifier,
@@ -21,17 +22,19 @@ const {
   valueToNode,
 } = types;
 
-const gqlCompileSync = doSync(
-  async ({
+const processLiteralsWithDtsGenerateSync = doSync(
+  ({
     hostDirname,
     ...gqlCompileArgs
-  }: GqlCompileArgs & { hostDirname: string }) => {
+  }: LiteralsArgs & {
+    hostDirname: string;
+  }): /* Promise<LiteralCodegenContext[]> */ any => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { join } = require('path');
-    const modulePath = join(hostDirname, '../dist/lib/gql-compile');
+    const modulePath = join(hostDirname, '../dist/lib/literals');
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { gqlCompile } = require(modulePath);
-    return await gqlCompile(gqlCompileArgs);
+    const { processLiteralsWithDtsGenerate } = require(modulePath);
+    return processLiteralsWithDtsGenerate(gqlCompileArgs);
   },
 );
 
@@ -73,6 +76,160 @@ export const { ensureExecContext, clearExecContext } = (() => {
   return { ensureExecContext, clearExecContext };
 })();
 
+type VisitLiteralCallResults = {
+  pendingDeletion: {
+    defaultSpecifier:
+      | t.ImportSpecifier
+      | t.ImportDefaultSpecifier
+      | t.ImportNamespaceSpecifier;
+    path: NodePath<t.ImportDeclaration>;
+  }[];
+  literalCallExpressionPaths: [
+    NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
+    string,
+  ][];
+  hasError: boolean;
+};
+
+export function visitLiteralCalls(
+  programPath: NodePath<t.Program>,
+  importName: string,
+  onlyMatchImportSuffix: boolean,
+): VisitLiteralCallResults {
+  const pendingDeletion: {
+    defaultSpecifier:
+      | t.ImportSpecifier
+      | t.ImportDefaultSpecifier
+      | t.ImportNamespaceSpecifier;
+    path: NodePath<t.ImportDeclaration>;
+  }[] = [];
+  const literalCallExpressionPaths: [
+    NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
+    string,
+  ][] = [];
+  let hasError = false;
+
+  const tagNames: string[] = [];
+
+  function processTargetCalls(
+    path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
+    nodeName: string,
+  ) {
+    if (
+      tagNames.some((name) => {
+        return isIdentifier((path.get(nodeName) as any).node, { name });
+      })
+    ) {
+      try {
+        let value = '';
+        path.traverse({
+          TemplateLiteral(path: NodePath<t.TemplateLiteral>) {
+            if (path.node.quasis.length !== 1)
+              printError(
+                new Error(
+                  `TemplateLiteral of the argument must not contain arguments.`,
+                ),
+              );
+            value = path.node.quasis[0].value.raw;
+          },
+          StringLiteral(path: NodePath<t.StringLiteral>) {
+            value = path.node.value;
+          },
+        });
+        if (!value) printError(new Error(`Check argument.`));
+        literalCallExpressionPaths.push([path, value]);
+      } catch (error) {
+        printError(error);
+        hasError = true;
+      }
+    }
+  }
+
+  programPath.traverse({
+    ImportDeclaration(path: NodePath<t.ImportDeclaration>) {
+      const pathValue = path.node.source.value;
+      if (
+        onlyMatchImportSuffix
+          ? pathValue.endsWith(importName)
+          : pathValue === importName
+      ) {
+        const defaultSpecifier = path.node.specifiers.find((specifier) => {
+          return isImportDefaultSpecifier(specifier);
+        });
+
+        if (defaultSpecifier) {
+          tagNames.push(defaultSpecifier.local.name);
+          pendingDeletion.push({
+            defaultSpecifier,
+            path,
+          });
+        }
+      }
+    },
+    CallExpression(path: NodePath<t.CallExpression>) {
+      processTargetCalls(path, 'callee');
+    },
+    TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {
+      processTargetCalls(path, 'tag');
+    },
+  });
+  return {
+    pendingDeletion,
+    literalCallExpressionPaths: literalCallExpressionPaths,
+    hasError,
+  };
+}
+
+export function modifyLiteralCalls(
+  programPath: NodePath<t.Program>,
+  sourceFullPath: string,
+  visitLiteralCallResults: VisitLiteralCallResults,
+  codegenContext: CodegenContext[],
+) {
+  const {
+    literalCallExpressionPaths,
+    pendingDeletion,
+    hasError,
+  } = visitLiteralCallResults;
+
+  if (literalCallExpressionPaths.length !== codegenContext.length)
+    throw new Error('what');
+
+  for (const [
+    i,
+    [callExpressionPath],
+  ] of literalCallExpressionPaths.entries()) {
+    const { gqlHash, tsxFullPath } = codegenContext[i]!;
+    const tsxRelPathFromSource =
+      './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
+
+    const localVarName = `V${gqlHash}`;
+
+    const importNode = importDeclaration(
+      [importNamespaceSpecifier(identifier(localVarName))],
+      valueToNode(tsxRelPathFromSource),
+    );
+
+    programPath.unshiftContainer('body', importNode);
+    callExpressionPath.replaceWithSourceString(localVarName);
+  }
+
+  // Only delete import statement or specifier when there is no error
+  if (!hasError) {
+    for (const { defaultSpecifier, path: pathForDeletion } of pendingDeletion) {
+      if (pathForDeletion.node.specifiers.length === 1) {
+        pathForDeletion.remove();
+      } else {
+        pathForDeletion.node.specifiers = pathForDeletion.node.specifiers.filter(
+          (specifier) => {
+            return specifier !== defaultSpecifier;
+          },
+        );
+      }
+    }
+  }
+}
+
 // With all my respect, I cloned the source from
 // https://github.com/gajus/babel-plugin-graphql-tag/blob/master/src/index.js
 const configFunction = (
@@ -93,144 +250,38 @@ const configFunction = (
         const { cwd } = state;
         const sourceFullPath = state.file.opts.filename;
         const sourceRelPath = relative(cwd, sourceFullPath);
-
         const [execContext, schemaHash] = ensureExecContext(
           cwd,
           configFilePath,
         );
 
-        const tagNames: string[] = [];
-        const pendingDeletion: {
-          defaultSpecifier:
-            | t.ImportSpecifier
-            | t.ImportDefaultSpecifier
-            | t.ImportNamespaceSpecifier;
-          path: NodePath<t.ImportDeclaration>;
-        }[] = [];
-        const gqlCallExpressionPaths: [
-          NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
-          string,
-        ][] = [];
-        let hasError = false;
-
-        function processTargetCalls(
-          path:
-            | NodePath<t.TaggedTemplateExpression>
-            | NodePath<t.CallExpression>,
-          nodeName: string,
-        ) {
-          if (
-            tagNames.some((name) => {
-              return isIdentifier((path.get(nodeName) as any).node, { name });
-            })
-          ) {
-            try {
-              let value = '';
-              path.traverse({
-                TemplateLiteral(path: NodePath<t.TemplateLiteral>) {
-                  if (path.node.quasis.length !== 1)
-                    printError(
-                      new Error(
-                        `TemplateLiteral of the argument must not contain arguments.`,
-                      ),
-                    );
-                  value = path.node.quasis[0].value.raw;
-                },
-                StringLiteral(path: NodePath<t.StringLiteral>) {
-                  value = path.node.value;
-                },
-              });
-              if (!value) printError(new Error(`Check argument.`));
-              gqlCallExpressionPaths.push([path, value]);
-            } catch (error) {
-              printError(error);
-              hasError = true;
-            }
-          }
-        }
-
-        programPath.traverse({
-          ImportDeclaration(path: NodePath<t.ImportDeclaration>) {
-            const pathValue = path.node.source.value;
-            if (
-              onlyMatchImportSuffix
-                ? pathValue.endsWith(importName)
-                : pathValue === importName
-            ) {
-              const defaultSpecifier = path.node.specifiers.find(
-                (specifier) => {
-                  return isImportDefaultSpecifier(specifier);
-                },
-              );
-
-              if (defaultSpecifier) {
-                tagNames.push(defaultSpecifier.local.name);
-                pendingDeletion.push({
-                  defaultSpecifier,
-                  path,
-                });
-              }
-            }
-          },
-          CallExpression(path: NodePath<t.CallExpression>) {
-            processTargetCalls(path, 'callee');
-          },
-          TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {
-            processTargetCalls(path, 'tag');
-          },
-        });
+        const visitLiteralCallResults = visitLiteralCalls(
+          programPath,
+          importName,
+          onlyMatchImportSuffix,
+        );
+        const { literalCallExpressionPaths } = visitLiteralCallResults;
 
         // TODO: Handle error
 
-        if (!gqlCallExpressionPaths.length) return;
+        if (!literalCallExpressionPaths.length) return;
 
-        const rv: GqlCodegenContext = gqlCompileSync({
-          hostDirname: __dirname,
-          execContext,
-          schemaHash,
-          sourceRelPath,
-          gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
-        });
-        if (gqlCallExpressionPaths.length !== rv.length)
-          throw new Error('what');
+        const literalCodegenContext: LiteralCodegenContext[] = processLiteralsWithDtsGenerateSync(
+          {
+            hostDirname: __dirname,
+            execContext,
+            schemaHash,
+            sourceRelPath,
+            gqlContents: literalCallExpressionPaths.map(([, value]) => value),
+          },
+        ) as any; // Suppress JSONValue error. LiteralCodegenContext has a function property, but it can be ignored.
 
-        for (const [
-          i,
-          [callExpressionPath],
-        ] of gqlCallExpressionPaths.entries()) {
-          const { gqlContentHash, tsxFullPath } = rv[i]!;
-          const tsxRelPathFromSource =
-            './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
-
-          const localVarName = `V${gqlContentHash}`;
-
-          const importNode = importDeclaration(
-            [importNamespaceSpecifier(identifier(localVarName))],
-            valueToNode(tsxRelPathFromSource),
-          );
-
-          programPath.unshiftContainer('body', importNode);
-          callExpressionPath.replaceWithSourceString(localVarName);
-        }
-
-        // Only delete import statement or specifier when there is no error
-        if (!hasError) {
-          for (const {
-            defaultSpecifier,
-            path: pathForDeletion,
-          } of pendingDeletion) {
-            if (pathForDeletion.node.specifiers.length === 1) {
-              pathForDeletion.remove();
-            } else {
-              // TODO what's going on
-              pathForDeletion.node.specifiers = pathForDeletion.node.specifiers.filter(
-                (specifier) => {
-                  return specifier !== defaultSpecifier;
-                },
-              );
-            }
-          }
-        }
+        modifyLiteralCalls(
+          programPath,
+          sourceFullPath,
+          visitLiteralCallResults,
+          literalCodegenContext,
+        );
       },
     },
   };
