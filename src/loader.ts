@@ -4,12 +4,9 @@ import { join as pathJoin, relative as pathRelative } from 'path';
 import { processDocumentsForContext } from './lib/documents';
 import { processDtsForContext } from './lib/dts';
 import createExecContext from './lib/exec-context';
-import { readHash } from './lib/file';
-import { processGraphQLCodegenFromConfig } from './lib/graphql-codegen';
 import { createHash } from './lib/hash';
 import loadConfig from './lib/config';
 import memoize from './lib/memoize';
-import { createPaths } from './lib/paths';
 import { shouldGenResolverTypes } from './lib/resolver-types';
 import { PRINT_PREFIX, updateLog } from './lib/print';
 import { readFile } from './lib/file';
@@ -65,49 +62,6 @@ const processGraphQLLetLoader = memoize(
       const [{ tsxFullPath }] = codegenContext;
       return await readFile(tsxFullPath, 'utf-8');
     }
-
-    // const createdPaths = createPaths(
-    //   execContext,
-    //   pathRelative(cwd, gqlFullPath),
-    // );
-    // const { tsxFullPath, dtsFullPath, dtsRelPath, gqlRelPath } = createdPaths;
-    // const gqlHash = createHash(schemaHash + gqlContent);
-    //
-    // const shouldUpdate =
-    //   gqlHash !== (await readHash(tsxFullPath)) ||
-    //   gqlHash !== (await readHash(dtsFullPath));
-    // let tsxContent: string;
-    // if (shouldUpdate) {
-    //   // We don't delete tsxFullPath and dtsFullPath here because:
-    //   // 1. We'll overwrite them so deleting is not necessary
-    //   // 2. Windows throws EPERM error for the deleting and creating file process.
-    //
-    //   tsxContent = await processGraphQLCodegenFromConfig(
-    //     execContext,
-    //     tsxFullPath,
-    //     gqlRelPath,
-    //     String(gqlContent),
-    //     gqlHash,
-    //   );
-    //
-    //   const codegenContext: CodegenContext[] = [
-    //     {
-    //       ...createdPaths,
-    //       gqlHash,
-    //       dtsContentDecorator: (_) => _,
-    //       skip: false,
-    //     },
-    //   ];
-    //
-    //   await processDtsForContext(execContext, codegenContext);
-    //   updateLog(`${dtsRelPath} was generated.`);
-    //
-    //   // Hack to prevent duplicated logs for simultaneous build, in SSR app for an example.
-    //   await new Promise((resolve) => setTimeout(resolve, 0));
-    //   logUpdate.done();
-    // } else {
-    //   tsxContent = await readFile(tsxFullPath, 'utf-8');
-    // }
   },
   (gqlFullPath: string) => gqlFullPath,
 );
