@@ -1,10 +1,16 @@
 import globby from 'globby';
 import logUpdate from 'log-update';
+import {
+  findTargetDocuments,
+  processDocumentsForContext,
+} from './lib/documents';
+import { processDtsForContext } from './lib/dts';
 import createExecContext from './lib/exec-context';
-import fullGenerate from './lib/full-generate';
 import loadConfig, { ConfigTypes } from './lib/config';
+import { processLiteralsForContext } from './lib/literals';
 import { getCacheFullDir } from './lib/paths';
 import { updateLog } from './lib/print';
+import { processResolverTypesIfNeeded } from './lib/resolver-types';
 import { CommandOpts, CodegenContext } from './lib/types';
 import { rimraf } from './lib/file';
 
@@ -30,8 +36,32 @@ export default async function gen({
 
   const [config, configHash] = await loadConfig(cwd, configFilePath);
   const execContext = createExecContext(cwd, config, configHash);
+  const codegenContext: CodegenContext[] = [];
 
-  const codegenContext = await fullGenerate(execContext);
+  const { graphqlRelPaths, tsSourceRelPaths } = await findTargetDocuments(
+    execContext,
+  );
+
+  const { schemaHash } = await processResolverTypesIfNeeded(
+    execContext,
+    codegenContext,
+  );
+
+  await processDocumentsForContext(
+    execContext,
+    graphqlRelPaths,
+    schemaHash,
+    codegenContext,
+  );
+
+  await processLiteralsForContext(
+    execContext,
+    schemaHash,
+    tsSourceRelPaths,
+    codegenContext,
+  );
+
+  await processDtsForContext(execContext, codegenContext);
 
   await removeOldTsxCaches(cwd, config, codegenContext);
 

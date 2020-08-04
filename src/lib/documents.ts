@@ -1,11 +1,38 @@
 // Take care of `.graphql`s
+import glob from 'globby';
 import { join as pathJoin } from 'path';
 import { ExecContext } from './exec-context';
 import { readFile, readHash } from './file';
 import { processGraphQLCodegen } from './graphql-codegen';
 import { createHash } from './hash';
-import { createPaths } from './paths';
+import { createPaths, isTypeScriptPath } from './paths';
 import { CodegenContext, FileCodegenContext } from './types';
+
+export async function findTargetDocuments({
+  cwd,
+  config,
+}: ExecContext): Promise<{
+  graphqlRelPaths: string[];
+  tsSourceRelPaths: string[];
+}> {
+  const documentPaths = await glob(config.documents, {
+    cwd,
+    gitignore: config.respectGitIgnore,
+  });
+  if (documentPaths.length === 0) {
+    throw new Error(
+      `No GraphQL documents are found from the path ${JSON.stringify(
+        config.documents,
+      )}. Check "documents" in .graphql-let.yml.`,
+    );
+  }
+  const graphqlRelPaths: string[] = [];
+  const tsSourceRelPaths: string[] = [];
+  for (const p of documentPaths) {
+    isTypeScriptPath(p) ? tsSourceRelPaths.push(p) : graphqlRelPaths.push(p);
+  }
+  return { graphqlRelPaths, tsSourceRelPaths };
+}
 
 export async function processDocumentsForContext(
   execContext: ExecContext,
