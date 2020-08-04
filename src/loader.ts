@@ -10,7 +10,7 @@ import loadConfig from './lib/config';
 import memoize from './lib/memoize';
 import { createPaths } from './lib/paths';
 import { shouldGenResolverTypes } from './lib/resolver-types';
-import { PRINT_PREFIX } from './lib/print';
+import { PRINT_PREFIX, updateLog } from './lib/print';
 import { readFile } from './lib/file';
 import { CodegenContext } from './lib/types';
 
@@ -73,9 +73,9 @@ const processGraphQLCodegenLoader = memoize(
         },
       ];
 
-      logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
+      updateLog('Generating .d.ts...');
       await processDtsForContext(execContext, codegenContext);
-      logUpdate(PRINT_PREFIX + `${dtsRelPath} was generated.`);
+      updateLog(`${dtsRelPath} was generated.`);
 
       // Hack to prevent duplicated logs for simultaneous build, in SSR app for an example.
       await new Promise((resolve) => setTimeout(resolve, 0));

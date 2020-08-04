@@ -1,11 +1,11 @@
 import globby from 'globby';
+import logUpdate from 'log-update';
 import createExecContext from './lib/exec-context';
 import fullGenerate from './lib/full-generate';
 import loadConfig, { ConfigTypes } from './lib/config';
 import { getCacheFullDir } from './lib/paths';
-import { PRINT_PREFIX } from './lib/print';
+import { updateLog } from './lib/print';
 import { CommandOpts, CodegenContext } from './lib/types';
-import logUpdate from 'log-update';
 import { rimraf } from './lib/file';
 
 async function removeOldTsxCaches(
@@ -26,7 +26,7 @@ export default async function gen({
   cwd,
   configFilePath,
 }: CommandOpts): Promise<void> {
-  logUpdate(PRINT_PREFIX + 'Running graphql-codegen...');
+  updateLog('Running graphql-codegen...');
 
   const [config, configHash] = await loadConfig(cwd, configFilePath);
   const execContext = createExecContext(cwd, config, configHash);
@@ -36,9 +36,9 @@ export default async function gen({
   await removeOldTsxCaches(cwd, config, codegenContext);
 
   if (codegenContext.filter((e) => !e.skip).length) {
-    logUpdate(PRINT_PREFIX + `${codegenContext.length} .d.ts were generated.`);
+    updateLog(`${codegenContext.length} .d.ts were generated.`);
   } else {
-    logUpdate(PRINT_PREFIX + `Done nothing, caches are fresh.`);
+    updateLog(`Done nothing, caches are fresh.`);
   }
   logUpdate.done();
 }

@@ -1,6 +1,5 @@
 import * as t from '@babel/types';
 import glob from 'globby';
-import logUpdate from 'log-update';
 import makeDir from 'make-dir';
 import { join as pathJoin, dirname } from 'path';
 import { BabelOptions, modifyGqlCalls, visitGqlCalls } from '../babel';
@@ -9,7 +8,7 @@ import { ExecContext } from './exec-context';
 import { parserOption, processGql } from './gql';
 import { createHash } from './hash';
 import { createPaths, isTypeScriptPath } from './paths';
-import { PRINT_PREFIX } from './print';
+import { PRINT_PREFIX, updateLog } from './print';
 import {
   processGenerateResolverTypes,
   shouldGenResolverTypes,
@@ -69,9 +68,8 @@ export default typeof DocumentNode
       // 1. We'll overwrite them so deleting is not necessary
       // 2. Windows throws EPERM error for the deleting and creating file process.
 
-      logUpdate(
-        PRINT_PREFIX +
-          `Local schema files are detected. Generating resolver types...`,
+      updateLog(
+        `Local schema files are detected. Generating resolver types...`,
       );
 
       await processGenerateResolverTypes(
@@ -262,7 +260,7 @@ async function fullGenerate(
     codegenContext,
   );
 
-  logUpdate(PRINT_PREFIX + 'Generating .d.ts...');
+  updateLog('Generating .d.ts...');
 
   await processDtsForContext(execContext, codegenContext);
 
