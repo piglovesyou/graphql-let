@@ -26,8 +26,8 @@ const processGraphQLCodegenSchemaLoader = memoize(
       codegenContext,
     );
 
-    // Only if schema was changed, documents are also handled for quick startup of webpack dev.
-    if (codegenContext.length) {
+    // Only if schema was changed, documents should also be handled for quick startup of webpack dev.
+    if (codegenContext.some(({ skip }) => !skip)) {
       await processDocumentsForContext(
         execContext,
         schemaHash,
