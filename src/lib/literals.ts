@@ -66,7 +66,6 @@ const createPaths = (
   const dtsRelPath = pathJoin(relDir, dtsBasename);
   // "/Users/.../node_modules/@types/graphql-let/pages/index-2345.d.ts"
   const dtsFullPath = pathJoin(dtsGenFullDir, dtsRelPath);
-  // TODO
   return {
     srcRelPath,
     srcFullPath,
@@ -82,8 +81,7 @@ export const parserOption: ParserOptions = {
 };
 
 function appendExportAsObject(dtsContent: string) {
-  // TODO: Build ast
-  // TODO: "declare" needed?
+  // TODO: Build ast?
   let allExportsCode = `export declare type __AllExports = { `;
   const visitors: any = {
     TSDeclareFunction({
@@ -323,14 +321,15 @@ export async function processLiteralsForContext(
           importName,
           onlyMatchImportSuffix,
         );
+
+        // TODO: Handle error
         const { literalCallExpressionPaths } = visitLiteralCallResults;
+        // There's no `gql(`query {}`)` in the source
+        if (!literalCallExpressionPaths.length) return;
+
         const gqlContents = literalCallExpressionPaths.map(
           ([, value]) => value,
         );
-
-        // TODO: Handle error
-
-        if (!literalCallExpressionPaths.length) return;
 
         const p = processLiterals(
           execContext,
@@ -339,7 +338,6 @@ export async function processLiteralsForContext(
           gqlContents,
           literalCodegenContext,
         ).then(() => {
-          // TODO: Check context.skip
           modifyLiteralCalls(
             programPath,
             sourceFullPath,
