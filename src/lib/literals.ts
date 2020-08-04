@@ -287,7 +287,7 @@ export type LiteralsArgs = {
   gqlContents: string[];
 };
 
-export async function literalsInSubProcess(
+export async function processLiteralsWithDtsGenerate(
   literalsArgs: LiteralsArgs,
 ): Promise<LiteralCodegenContext[]> {
   const { execContext, sourceRelPath, schemaHash, gqlContents } = literalsArgs;
