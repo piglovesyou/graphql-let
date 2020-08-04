@@ -210,7 +210,7 @@ schema: lib/type-defs.graphqls
 
 documents: "**/*.graphql"
 # Required by both "graphql-let/loader" and "graphql-let/babel".
-# The GraphQL documents info of quereis and mutations etc.
+# The GraphQL documents info of queries and mutations etc.
 # Examples:
 #            documents: 'queries/**/*.graphql'
 #            documents:
@@ -291,8 +291,8 @@ for the CLI execution.
    - "**/*.graphql"
 ```
 
-Put `graphql-let/babel` to plugins section in your babel configuration such as
-`babel.config.json`.
+Put `graphql-let/babel` to the plugins section in your babel configuration such
+as `babel.config.json`.
 
 ```diff
  {
@@ -436,7 +436,7 @@ _Yes._
 
 #### Supported combination? / x + y don't work!
 
-Basically both syntax `import './a.graphql'` and `` gql(`query {}` ) `` are
+Basically both syntax `import './a.graphql'` and `` gql(`query {}` ) `` are
 suposed to just work, but currently some of combinations require more effort.
 Please vote by creating issues.
 [Sponsering me](https://github.com/sponsors/piglovesyou) is another way to get
@@ -459,8 +459,8 @@ No. There are
 
 #### Can I write GraphQL documents in my `.tsx` as `` const query = gql`query News{ ... }`; ``?
 
-Please try the Babel Plugin `graphql-let/babel`, but you need parensesis
-(`` gql(`query {}`) ``).
+Please try the Babel Plugin `graphql-let/babel`, but you need parenthesis
+`` gql(`query {}`) ``.
 
 #### What's the extension `.graphqls`? Should I use it for schema and `.graphql` for documents?
 
@@ -485,7 +485,7 @@ You can't, yet.
 -   **Creating a PR** is always welcome!
     -   Running `npm run prepublishOnly` locally will get your local development
         ready.
-    -   Adding test is preferable, but don't hesitate without it, maybe someone
+    -   Adding tests is preferable, but don't hesitate without it, maybe someone
         else will fill it.
 
 ## License
