@@ -509,7 +509,10 @@ export declare type __AllExports = {
 exports[`"graphql-let" command documents: **/*.tsx generates .d.ts for babel: node_modules/@types/graphql-let/store.json 1`] = `
 "{
   \\"pages/index.tsx\\": {
-    \\"c307b608d6f3bd4130e526f0de83cbe05bff54cd\\": \\"query ViewerX{viewer{name}}\\"
+    \\"c307b608d6f3bd4130e526f0de83cbe05bff54cd\\": [
+      \\"pages/index-c307b608d6f3bd4130e526f0de83cbe05bff54cd.d.ts\\",
+      \\"\\\\n  query ViewerX {\\\\n    viewer {\\\\n      name\\\\n    }\\\\n  }\\\\n\\"
+    ]
   }
 }"
 `;

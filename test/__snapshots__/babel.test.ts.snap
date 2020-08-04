@@ -94,7 +94,10 @@ export declare type __AllExports = {
 exports[`Generated files are okay: fixtures/basic/node_modules/@types/graphql-let/store.json 1`] = `
 "{
   \\"input.tsx\\": {
-    \\"3daf5b4311465bd8566d77d548e135871cc11646\\": \\"query Viewer{viewer{name}}\\"
+    \\"3daf5b4311465bd8566d77d548e135871cc11646\\": [
+      \\"input-3daf5b4311465bd8566d77d548e135871cc11646.d.ts\\",
+      \\"query Viewer { viewer { name } }\\"
+    ]
   }
 }"
 `;
@@ -281,7 +284,10 @@ export declare type __AllExports = {
 exports[`Generated files are okay: fixtures/tagged-template-call/node_modules/@types/graphql-let/store.json 1`] = `
 "{
   \\"input.tsx\\": {
-    \\"3daf5b4311465bd8566d77d548e135871cc11646\\": \\"query Viewer{viewer{name}}\\"
+    \\"3daf5b4311465bd8566d77d548e135871cc11646\\": [
+      \\"input-3daf5b4311465bd8566d77d548e135871cc11646.d.ts\\",
+      \\"\\\\n    query Viewer {\\\\n        viewer {\\\\n            name\\\\n        }\\\\n    }\\\\n\\"
+    ]
   }
 }"
 `;

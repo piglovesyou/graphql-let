@@ -5,32 +5,43 @@ import makeDir from 'make-dir';
 import { join as pathJoin, extname, basename, dirname } from 'path';
 import { existsSync } from 'fs';
 import slash from 'slash';
-import { BabelOptions, modifyLiteralCalls, visitLiteralCalls } from '../babel';
-import { processDtsForContext } from './dts';
-import { ExecContext } from './exec-context';
-import { rimraf } from './file';
-import { createWriteStream } from 'fs';
+import {
+  BabelOptions,
+  modifyLiteralCalls,
+  visitLiteralCalls,
+} from '../../babel';
+import { processDtsForContext } from '../dts';
+import { ExecContext } from '../exec-context';
+import { rimraf } from '../file';
 import { stripIgnoredCharacters } from 'graphql';
 import { parse, ParserOptions } from '@babel/parser';
-import { readFile } from './file';
+import { readFile } from '../file';
 import { join } from 'path';
-import { writeFile } from './file';
-import { createHash } from './hash';
+import { writeFile } from '../file';
+import { createHash } from '../hash';
 import * as t from '@babel/types';
 import generator from '@babel/generator';
+import { LiteralCacheManager, PartialCacheStore } from './cache';
 import {
   CodegenContext,
   isLiteralContext,
   LiteralCodegenContext,
   LiteralCreatedPaths,
-} from './types';
+} from '../types';
 
-type ScopedCacheStore = {
-  [hash: string]: string;
-};
-
-type ProjectCacheStore = {
-  [tsxRelPath: string]: ScopedCacheStore;
+export type VisitLiteralCallResults = {
+  pendingDeletion: {
+    defaultSpecifier:
+      | t.ImportSpecifier
+      | t.ImportDefaultSpecifier
+      | t.ImportNamespaceSpecifier;
+    path: NodePath<t.ImportDeclaration>;
+  }[];
+  literalCallExpressionPaths: [
+    NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
+    string,
+  ][];
+  hasError: boolean;
 };
 
 const createPaths = (
@@ -159,18 +170,12 @@ export async function processLiterals(
   schemaHash: string,
   gqlContents: string[],
   codegenContext: CodegenContext[],
+  partialCache: PartialCacheStore,
 ): Promise<void> {
   const { cwd, config, cacheFullDir } = execContext;
   const dtsRelDir = dirname(config.gqlDtsEntrypoint);
 
   /**
-   * Shape of storage
-   *   {
-   *     "userRelPath.tsx": {
-   *       "gqlHash1": "query {}",
-   *       "gqlHash2": "query {}",
-   *     }
-   *   }
    * 1. Prepare store if not exists.
    * 2. Get the current state of the target source `.tsx`.
    * 3. Check if caches of the gqlContents exist.
@@ -184,14 +189,7 @@ export async function processLiterals(
    * - We don't write dts here.
    */
 
-  // Processes inside a sub-process of babel-plugin
-  const storeFullPath = pathJoin(cwd, dtsRelDir, 'store.json');
-  const projectStore: ProjectCacheStore = existsSync(storeFullPath)
-    ? JSON.parse(await readFile(storeFullPath, 'utf-8'))
-    : {};
-  const scopedStore =
-    projectStore[sourceRelPath] || (projectStore[sourceRelPath] = {});
-  const oldGqlHashes = new Set(Object.keys(scopedStore));
+  const oldGqlHashes = new Set(Object.keys(partialCache));
 
   // Prepare
   await Promise.all([
@@ -202,25 +200,36 @@ export async function processLiterals(
   for (const gqlContent of gqlContents) {
     const strippedGqlContent = stripIgnoredCharacters(gqlContent);
     const gqlHash = createHash(schemaHash + strippedGqlContent);
-
+    const createdPaths = createPaths(
+      sourceRelPath,
+      gqlHash,
+      dtsRelDir,
+      cacheFullDir,
+      cwd,
+    );
     codegenContext.push({
-      ...createPaths(sourceRelPath, gqlHash, dtsRelDir, cacheFullDir, cwd),
+      ...createdPaths,
       gqlContent,
       strippedGqlContent,
       gqlHash,
-      skip: Boolean(scopedStore[gqlHash]),
+      skip: Boolean(partialCache[gqlHash]),
       dtsContentDecorator: appendExportAsObject,
     });
 
-    scopedStore[gqlHash] = strippedGqlContent;
+    // Note: Non-stripped gqlContent is necessary
+    // to write dtsEntrypoint.
+    partialCache[gqlHash] = [slash(createdPaths.dtsRelPath), gqlContent];
 
     // Old caches left will be removed
     oldGqlHashes.delete(gqlHash);
   }
 
+  // Run codegen to write .tsx
+  await processGraphQLCodegenForLiterals(execContext, codegenContext);
+
   // Remove old caches
   for (const oldGqlHash of oldGqlHashes) {
-    delete scopedStore[oldGqlHash];
+    delete partialCache[oldGqlHash];
     const { dtsFullPath } = createPaths(
       sourceRelPath,
       oldGqlHash,
@@ -232,27 +241,6 @@ export async function processLiterals(
       await rimraf(dtsFullPath);
     }
   }
-
-  // Update index.d.ts
-  const dtsEntryFullPath = pathJoin(cwd, config.gqlDtsEntrypoint);
-  const writeStream = createWriteStream(dtsEntryFullPath);
-  for (const context of codegenContext) {
-    if (!isLiteralContext(context)) continue;
-    const {
-      gqlContent,
-      gqlHash,
-      dtsRelPath,
-    } = context as LiteralCodegenContext;
-    const chunk = `import T${gqlHash} from './${slash(dtsRelPath)}';
-export default function gql(gql: \`${gqlContent}\`): T${gqlHash}.__AllExports;
-`;
-    await new Promise((resolve) => writeStream.write(chunk, resolve));
-  }
-
-  // Update storeJson
-  await writeFile(storeFullPath, JSON.stringify(projectStore, null, 2));
-
-  await processGraphQLCodegenForLiterals(execContext, codegenContext);
 }
 
 export type LiteralsArgs = {
@@ -269,13 +257,18 @@ export async function processLiteralsWithDtsGenerate(
 
   const codegenContext: LiteralCodegenContext[] = [];
 
+  const cache = new LiteralCacheManager(execContext);
+  await cache.load();
+
   await processLiterals(
     execContext,
     sourceRelPath,
     schemaHash,
     gqlContents,
     codegenContext,
+    cache.get(sourceRelPath),
   );
+  await cache.unload();
 
   await processDtsForContext(execContext, codegenContext);
 
@@ -307,51 +300,70 @@ export async function processLiteralsForContext(
     onlyMatchImportSuffix = false,
     // strip = false,
   } = getGraphQLLetBabelOption(babelOptions);
-  const promises: Promise<void>[] = [];
+
+  const visitedSources: {
+    visitLiteralCallResults: VisitLiteralCallResults;
+    programPath: NodePath<t.Program>;
+    sourceFullPath: string;
+    sourceRelPath: string;
+  }[] = [];
+
   for (const sourceRelPath of sourceRelPaths) {
     const sourceFullPath = pathJoin(cwd, sourceRelPath);
     const sourceContent = await readFile(pathJoin(cwd, sourceRelPath), 'utf-8');
     const sourceAST = parse(sourceContent, parserOption);
     traverse(sourceAST, {
       Program(programPath: NodePath<t.Program>) {
-        const literalCodegenContext: LiteralCodegenContext[] = [];
-
         const visitLiteralCallResults = visitLiteralCalls(
           programPath,
           importName,
           onlyMatchImportSuffix,
         );
-
         // TODO: Handle error
-        const { literalCallExpressionPaths } = visitLiteralCallResults;
         // There's no `gql(`query {}`)` in the source
-        if (!literalCallExpressionPaths.length) return;
+        if (!visitLiteralCallResults.literalCallExpressionPaths.length) return;
 
-        const gqlContents = literalCallExpressionPaths.map(
-          ([, value]) => value,
-        );
-
-        const p = processLiterals(
-          execContext,
+        visitedSources.push({
+          visitLiteralCallResults,
+          programPath,
+          sourceFullPath,
           sourceRelPath,
-          schemaHash,
-          gqlContents,
-          literalCodegenContext,
-        ).then(() => {
-          modifyLiteralCalls(
-            programPath,
-            sourceFullPath,
-            visitLiteralCallResults,
-            literalCodegenContext,
-          );
-          for (const c of literalCodegenContext) codegenContext.push(c);
         });
-
-        promises.push(p);
       },
     });
   }
-  // TODO: Heavy? Should stream?
-  // Wait for codegenContext is filled
-  await Promise.all(promises);
+
+  const cache = new LiteralCacheManager(execContext);
+  await cache.load();
+
+  for (const visited of visitedSources) {
+    const scopedCodegenContext: LiteralCodegenContext[] = [];
+    const {
+      visitLiteralCallResults,
+      programPath,
+      sourceFullPath,
+      sourceRelPath,
+    } = visited;
+    const { literalCallExpressionPaths } = visitLiteralCallResults;
+
+    const gqlContents = literalCallExpressionPaths.map(([, value]) => value);
+
+    await processLiterals(
+      execContext,
+      sourceRelPath,
+      schemaHash,
+      gqlContents,
+      scopedCodegenContext,
+      cache.get(sourceRelPath),
+    );
+    modifyLiteralCalls(
+      programPath,
+      sourceFullPath,
+      visitLiteralCallResults,
+      scopedCodegenContext,
+    );
+    for (const context of scopedCodegenContext) codegenContext.push(context);
+  }
+
+  await cache.unload();
 }
