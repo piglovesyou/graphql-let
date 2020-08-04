@@ -8,7 +8,7 @@ import { processDtsForContext } from './lib/dts';
 import createExecContext from './lib/exec-context';
 import loadConfig from './lib/config';
 import memoize from './lib/memoize';
-import { PRINT_PREFIX } from './lib/print';
+import { PRINT_PREFIX, updateLog } from './lib/print';
 import { processResolverTypesIfNeeded } from './lib/resolver-types';
 import { CodegenContext } from './lib/types';
 
@@ -35,6 +35,7 @@ const processGraphQLCodegenSchemaLoader = memoize(
         graphqlRelPaths,
       );
 
+      updateLog('Generating .d.ts...');
       await processDtsForContext(execContext, codegenContext);
     }
   },

@@ -60,23 +60,3 @@ export async function processGraphQLCodegen(
     throw e;
   }
 }
-/**
- * Process graphql-codegen including calling "loadSchema", which is also a possibly expensive function
- */
-export function processGraphQLCodegenFromConfig(
-  { cwd, config, codegenOpts }: ExecContext,
-  tsxFullPath: string,
-  gqlRelPath: string,
-  gqlContent: string,
-  gqlHash: string,
-) {
-  return processGraphQLCodegen({
-    cwd,
-    schema: config.schema,
-    filename: tsxFullPath,
-    documents: gqlContent,
-    gqlHash,
-    plugins: config.plugins,
-    config: codegenOpts.config,
-  });
-}

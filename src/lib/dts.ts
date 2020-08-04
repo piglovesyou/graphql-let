@@ -122,9 +122,7 @@ export async function processDtsForContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
 ) {
-  if (!codegenContext.length) return;
-
-  updateLog('Generating .d.ts...');
+  if (codegenContext.every(({ skip }) => skip)) return;
 
   const dtsContents = genDts(
     execContext,

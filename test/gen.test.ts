@@ -6,6 +6,7 @@ import { deepStrictEqual, strictEqual } from 'assert';
 import gen from '../src/gen';
 import glob from 'globby';
 import { readFile, rename, rimraf } from './__tools/file';
+import { assertObjectsInclude } from './__tools/object';
 
 const cwd = pathJoin(__dirname, '__fixtures/gen');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
@@ -85,8 +86,54 @@ describe('"graphql-let" command', () => {
   });
 
   test(`runs twice and keeps valid caches`, async () => {
-    await gen({ cwd });
-    await gen({ cwd });
+    assertObjectsInclude(await gen({ cwd }), [
+      {
+        gqlRelPath: 'schema/type-defs.graphqls',
+        tsxRelPath: 'schema/type-defs.graphqls.tsx',
+        dtsRelPath: 'schema/type-defs.graphqls.d.ts',
+        gqlHash: '14d70566f4d02e53323ea8c820b4a3edeecc4672',
+        skip: false,
+      },
+      {
+        gqlRelPath: 'pages/viewer.graphql',
+        tsxRelPath: 'pages/viewer.graphql.tsx',
+        dtsRelPath: 'pages/viewer.graphql.d.ts',
+        gqlHash: 'c4ffa0d4a98b9173e641f88cb713cbbaa35a8692',
+        skip: false,
+      },
+      {
+        gqlRelPath: 'pages/viewer2.graphql',
+        tsxRelPath: 'pages/viewer2.graphql.tsx',
+        dtsRelPath: 'pages/viewer2.graphql.d.ts',
+        gqlHash: 'b2463a5b834ec0328b95dd554ca377c66498827e',
+        skip: false,
+      },
+    ]);
+
+    assertObjectsInclude(await gen({ cwd }), [
+      {
+        gqlRelPath: 'schema/type-defs.graphqls',
+        tsxRelPath: 'schema/type-defs.graphqls.tsx',
+        dtsRelPath: 'schema/type-defs.graphqls.d.ts',
+        gqlHash: '14d70566f4d02e53323ea8c820b4a3edeecc4672',
+        skip: true,
+      },
+      {
+        gqlRelPath: 'pages/viewer.graphql',
+        tsxRelPath: 'pages/viewer.graphql.tsx',
+        dtsRelPath: 'pages/viewer.graphql.d.ts',
+        gqlHash: 'c4ffa0d4a98b9173e641f88cb713cbbaa35a8692',
+        skip: true,
+      },
+      {
+        gqlRelPath: 'pages/viewer2.graphql',
+        tsxRelPath: 'pages/viewer2.graphql.tsx',
+        dtsRelPath: 'pages/viewer2.graphql.d.ts',
+        gqlHash: 'b2463a5b834ec0328b95dd554ca377c66498827e',
+        skip: true,
+      },
+    ]);
+
     const actual = await glob('__generated__/**/*.tsx', {
       cwd,
     });

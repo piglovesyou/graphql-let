@@ -31,7 +31,7 @@ async function removeOldTsxCaches(
 export default async function gen({
   cwd,
   configFilePath,
-}: CommandOpts): Promise<void> {
+}: CommandOpts): Promise<CodegenContext[]> {
   updateLog('Running graphql-codegen...');
 
   const [config, configHash] = await loadConfig(cwd, configFilePath);
@@ -61,6 +61,7 @@ export default async function gen({
     codegenContext,
   );
 
+  updateLog('Generating .d.ts...');
   await processDtsForContext(execContext, codegenContext);
 
   await removeOldTsxCaches(cwd, config, codegenContext);
@@ -71,4 +72,6 @@ export default async function gen({
     updateLog(`Done nothing, caches are fresh.`);
   }
   logUpdate.done();
+
+  return codegenContext;
 }

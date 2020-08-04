@@ -6,7 +6,7 @@ import { join as pathJoin, extname, basename, dirname } from 'path';
 import { existsSync } from 'fs';
 import slash from 'slash';
 import { BabelOptions, modifyGqlCalls, visitGqlCalls } from '../babel';
-import { genDts } from './dts';
+import { processDtsForContext } from './dts';
 import { ExecContext } from './exec-context';
 import { rimraf } from './file';
 import { createWriteStream } from 'fs';
@@ -125,19 +125,16 @@ function appendExportAsObject(dtsContent: string) {
   return code;
 }
 
-async function generateTsx(
+async function processGraphQLCodegenForLiterals(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
 ) {
   const { cwd, config } = execContext;
 
   // Codegen
-  for (const context of codegenContext) {
-    if (!isLiteralContext(context)) return;
-    const {
-      strippedGqlContent,
-      tsxFullPath,
-    } = context as LiteralCodegenContext;
+  for (const { strippedGqlContent, tsxFullPath } of codegenContext.filter(
+    isLiteralContext,
+  ) as LiteralCodegenContext[]) {
     const [{ content }] = await generate(
       {
         silent: true, // Necessary to pass stdout to the parent process
@@ -155,26 +152,6 @@ async function generateTsx(
     );
     await makeDir(dirname(tsxFullPath));
     await writeFile(tsxFullPath, content);
-  }
-}
-
-async function generateDts(
-  execContext: ExecContext,
-  codegenContext: LiteralCodegenContext[],
-) {
-  if (!codegenContext.length) return;
-
-  // Dts only for newly created `.tsx`s
-  const dtsContents = genDts(
-    execContext,
-    codegenContext.map(({ tsxFullPath }) => tsxFullPath),
-  );
-
-  await makeDir(dirname(codegenContext[0].dtsFullPath));
-  for (const [i, dtsContent] of dtsContents.entries()) {
-    const { dtsFullPath } = codegenContext[i]!;
-    const content = appendExportAsObject(dtsContent);
-    await writeFile(dtsFullPath, content);
   }
 }
 
@@ -228,8 +205,6 @@ export async function processLiterals(
     const strippedGqlContent = stripIgnoredCharacters(gqlContent);
     const gqlHash = createHash(schemaHash + strippedGqlContent);
 
-    scopedStore[gqlHash] = strippedGqlContent;
-
     codegenContext.push({
       ...createPaths(sourceRelPath, gqlHash, dtsRelDir, cacheFullDir, cwd),
       gqlContent,
@@ -238,6 +213,8 @@ export async function processLiterals(
       skip: Boolean(scopedStore[gqlHash]),
       dtsContentDecorator: appendExportAsObject,
     });
+
+    scopedStore[gqlHash] = strippedGqlContent;
 
     // Old caches left will be removed
     oldGqlHashes.delete(gqlHash);
@@ -277,7 +254,7 @@ export default function gql(gql: \`${gqlContent}\`): T${gqlHash}.__AllExports;
   // Update storeJson
   await writeFile(storeFullPath, JSON.stringify(projectStore, null, 2));
 
-  await generateTsx(execContext, codegenContext);
+  await processGraphQLCodegenForLiterals(execContext, codegenContext);
 }
 
 export type LiteralsArgs = {
@@ -302,7 +279,7 @@ export async function processLiteralsWithDtsGenerate(
     codegenContext,
   );
 
-  await generateDts(execContext, codegenContext);
+  await processDtsForContext(execContext, codegenContext);
 
   return codegenContext;
 }

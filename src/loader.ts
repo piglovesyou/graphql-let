@@ -49,6 +49,7 @@ const processGraphQLLetLoader = memoize(
 
     // Cache was obsolete
     if (tsxContents[gqlRelPath]) {
+      updateLog('Generating .d.ts...');
       await processDtsForContext(execContext, codegenContext);
       updateLog(`${gqlRelPath} was generated.`);
 
