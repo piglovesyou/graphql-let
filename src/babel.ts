@@ -76,7 +76,7 @@ export const { ensureExecContext, clearExecContext } = (() => {
   return { ensureExecContext, clearExecContext };
 })();
 
-type VisitGqlCallResults = {
+type VisitLiteralCallResults = {
   pendingDeletion: {
     defaultSpecifier:
       | t.ImportSpecifier
@@ -84,18 +84,18 @@ type VisitGqlCallResults = {
       | t.ImportNamespaceSpecifier;
     path: NodePath<t.ImportDeclaration>;
   }[];
-  gqlCallExpressionPaths: [
+  literalCallExpressionPaths: [
     NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
     string,
   ][];
   hasError: boolean;
 };
 
-export function visitGqlCalls(
+export function visitLiteralCalls(
   programPath: NodePath<t.Program>,
   importName: string,
   onlyMatchImportSuffix: boolean,
-): VisitGqlCallResults {
+): VisitLiteralCallResults {
   const pendingDeletion: {
     defaultSpecifier:
       | t.ImportSpecifier
@@ -103,7 +103,7 @@ export function visitGqlCalls(
       | t.ImportNamespaceSpecifier;
     path: NodePath<t.ImportDeclaration>;
   }[] = [];
-  const gqlCallExpressionPaths: [
+  const literalCallExpressionPaths: [
     NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
     string,
   ][] = [];
@@ -137,7 +137,7 @@ export function visitGqlCalls(
           },
         });
         if (!value) printError(new Error(`Check argument.`));
-        gqlCallExpressionPaths.push([path, value]);
+        literalCallExpressionPaths.push([path, value]);
       } catch (error) {
         printError(error);
         hasError = true;
@@ -173,25 +173,32 @@ export function visitGqlCalls(
       processTargetCalls(path, 'tag');
     },
   });
-  return { pendingDeletion, gqlCallExpressionPaths, hasError };
+  return {
+    pendingDeletion,
+    literalCallExpressionPaths: literalCallExpressionPaths,
+    hasError,
+  };
 }
 
-export function modifyGqlCalls(
+export function modifyLiteralCalls(
   programPath: NodePath<t.Program>,
   sourceFullPath: string,
-  visitGqlCallResults: VisitGqlCallResults,
+  visitLiteralCallResults: VisitLiteralCallResults,
   codegenContext: CodegenContext[],
 ) {
   const {
-    gqlCallExpressionPaths,
+    literalCallExpressionPaths,
     pendingDeletion,
     hasError,
-  } = visitGqlCallResults;
+  } = visitLiteralCallResults;
 
-  if (gqlCallExpressionPaths.length !== codegenContext.length)
+  if (literalCallExpressionPaths.length !== codegenContext.length)
     throw new Error('what');
 
-  for (const [i, [callExpressionPath]] of gqlCallExpressionPaths.entries()) {
+  for (const [
+    i,
+    [callExpressionPath],
+  ] of literalCallExpressionPaths.entries()) {
     const { gqlHash, tsxFullPath } = codegenContext[i]!;
     const tsxRelPathFromSource =
       './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
@@ -213,7 +220,6 @@ export function modifyGqlCalls(
       if (pathForDeletion.node.specifiers.length === 1) {
         pathForDeletion.remove();
       } else {
-        // TODO what's going on
         pathForDeletion.node.specifiers = pathForDeletion.node.specifiers.filter(
           (specifier) => {
             return specifier !== defaultSpecifier;
@@ -249,16 +255,16 @@ const configFunction = (
           configFilePath,
         );
 
-        const visitGqlCallResults = visitGqlCalls(
+        const visitLiteralCallResults = visitLiteralCalls(
           programPath,
           importName,
           onlyMatchImportSuffix,
         );
-        const { gqlCallExpressionPaths } = visitGqlCallResults;
+        const { literalCallExpressionPaths } = visitLiteralCallResults;
 
         // TODO: Handle error
 
-        if (!gqlCallExpressionPaths.length) return;
+        if (!literalCallExpressionPaths.length) return;
 
         const literalCodegenContext: LiteralCodegenContext[] = processLiteralsWithDtsGenerateSync(
           {
@@ -266,14 +272,14 @@ const configFunction = (
             execContext,
             schemaHash,
             sourceRelPath,
-            gqlContents: gqlCallExpressionPaths.map(([, value]) => value),
+            gqlContents: literalCallExpressionPaths.map(([, value]) => value),
           },
         ) as any; // Suppress JSONValue error. LiteralCodegenContext has a function property, but it can be ignored.
 
-        modifyGqlCalls(
+        modifyLiteralCalls(
           programPath,
           sourceFullPath,
-          visitGqlCallResults,
+          visitLiteralCallResults,
           literalCodegenContext,
         );
       },

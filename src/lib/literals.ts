@@ -5,7 +5,7 @@ import makeDir from 'make-dir';
 import { join as pathJoin, extname, basename, dirname } from 'path';
 import { existsSync } from 'fs';
 import slash from 'slash';
-import { BabelOptions, modifyGqlCalls, visitGqlCalls } from '../babel';
+import { BabelOptions, modifyLiteralCalls, visitLiteralCalls } from '../babel';
 import { processDtsForContext } from './dts';
 import { ExecContext } from './exec-context';
 import { rimraf } from './file';
@@ -318,17 +318,19 @@ export async function processLiteralsForContext(
       Program(programPath: NodePath<t.Program>) {
         const literalCodegenContext: LiteralCodegenContext[] = [];
 
-        const visitGqlCallResults = visitGqlCalls(
+        const visitLiteralCallResults = visitLiteralCalls(
           programPath,
           importName,
           onlyMatchImportSuffix,
         );
-        const { gqlCallExpressionPaths } = visitGqlCallResults;
-        const gqlContents = gqlCallExpressionPaths.map(([, value]) => value);
+        const { literalCallExpressionPaths } = visitLiteralCallResults;
+        const gqlContents = literalCallExpressionPaths.map(
+          ([, value]) => value,
+        );
 
         // TODO: Handle error
 
-        if (!gqlCallExpressionPaths.length) return;
+        if (!literalCallExpressionPaths.length) return;
 
         const p = processLiterals(
           execContext,
@@ -338,10 +340,10 @@ export async function processLiteralsForContext(
           literalCodegenContext,
         ).then(() => {
           // TODO: Check context.skip
-          modifyGqlCalls(
+          modifyLiteralCalls(
             programPath,
             sourceFullPath,
-            visitGqlCallResults,
+            visitLiteralCallResults,
             literalCodegenContext,
           );
           for (const c of literalCodegenContext) codegenContext.push(c);
