@@ -30,9 +30,9 @@ const processGraphQLCodegenSchemaLoader = memoize(
     if (codegenContext.length) {
       await processDocumentsForContext(
         execContext,
-        graphqlRelPaths,
         schemaHash,
         codegenContext,
+        graphqlRelPaths,
       );
 
       await processDtsForContext(execContext, codegenContext);

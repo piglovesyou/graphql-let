@@ -49,9 +49,9 @@ export default async function gen({
 
   await processDocumentsForContext(
     execContext,
-    graphqlRelPaths,
     schemaHash,
     codegenContext,
+    graphqlRelPaths,
   );
 
   await processLiteralsForContext(

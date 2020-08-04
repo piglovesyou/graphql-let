@@ -36,15 +36,21 @@ export async function findTargetDocuments({
 
 export async function processDocumentsForContext(
   execContext: ExecContext,
-  gqlRelPaths: string[],
   schemaHash: string,
   codegenContext: CodegenContext[],
+  gqlRelPaths: string[],
+  gqlContents?: string[],
 ) {
-  if (!gqlRelPaths.length) return;
+  const tsxContents: Record</*gqlRelPath*/ string, /*tsxContent*/ string> = {};
+  if (!gqlRelPaths.length) return tsxContents;
 
   const { cwd, config, codegenOpts } = execContext;
-  for (const gqlRelPath of gqlRelPaths) {
-    const gqlContent = await readFile(pathJoin(cwd, gqlRelPath), 'utf-8');
+  for (const [i, gqlRelPath] of gqlRelPaths.entries()) {
+    // Loader passes gqlContent directly
+    const gqlContent = gqlContents
+      ? gqlContents[i]
+      : await readFile(pathJoin(cwd, gqlRelPath), 'utf-8');
+    if (!gqlContent) throw new Error('never');
 
     const createdPaths = createPaths(execContext, gqlRelPath);
     const { tsxFullPath, dtsFullPath } = createdPaths;
@@ -69,15 +75,17 @@ export async function processDocumentsForContext(
       // We don't delete tsxFullPath and dtsFullPath here because:
       // 1. We'll overwrite them so deleting is not necessary
       // 2. Windows throws EPERM error for the deleting and creating file process.
-      await processGraphQLCodegen({
+      const tsxContent = await processGraphQLCodegen({
         cwd,
-        schema: config.schema,
-        plugins: config.plugins,
-        config: codegenOpts.config,
         filename: tsxFullPath,
         gqlHash,
+        schema: config.schema,
         documents: gqlRelPath,
+        plugins: config.plugins,
+        config: codegenOpts.config,
       });
+      tsxContents[gqlRelPath] = tsxContent;
     }
   }
+  return tsxContents;
 }
