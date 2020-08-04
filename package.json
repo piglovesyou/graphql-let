@@ -1,6 +1,6 @@
 {
   "name": "graphql-let",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "repository": {
     "type": "git",
     "url": "git@github.com:piglovesyou/graphql-let.git"
@@ -21,6 +21,11 @@
     "babel.js"
   ],
   "dependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/helper-plugin-utils": "^7.0.0",
+    "@babel/parser": "^7.0.0",
+    "@babel/traverse": "^7.0.0",
+    "do-sync": "^2.2.0",
     "globby": "^11.0.0",
     "loader-utils": "^2.0.0",
     "log-update": "^4.0.0",
@@ -28,12 +33,7 @@
     "minimist": "^1.2.0",
     "rimraf": "^3.0.2",
     "slash": "^3.0.0",
-    "yaml": "^1.7.2",
-    "@babel/core": "^7.0.0",
-    "@babel/helper-plugin-utils": "^7.0.0",
-    "@babel/parser": "^7.0.0",
-    "@babel/traverse": "^7.0.0",
-    "do-sync": "^2.2.0"
+    "yaml": "^1.7.2"
   },
   "devDependencies": {
     "@apollo/react-common": "^3.1.3",
