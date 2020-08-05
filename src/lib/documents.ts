@@ -41,7 +41,10 @@ export async function processDocumentsForContext(
   gqlRelPaths: string[],
   gqlContents?: string[],
 ) {
-  const tsxContents: Record</*gqlRelPath*/ string, /*tsxContent*/ string> = {};
+  const tsxContents: Record<
+    /*gqlRelPath*/ string,
+    /*tsxContent*/ string
+  > = Object.create(null);
   if (!gqlRelPaths.length) return tsxContents;
 
   const { cwd, config, codegenOpts } = execContext;

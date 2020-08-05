@@ -7,7 +7,7 @@ import {
 import { processDtsForContext } from './lib/dts';
 import createExecContext, { ExecContext } from './lib/exec-context';
 import loadConfig from './lib/config';
-import { processLiteralsForContext } from './lib/literals';
+import { processLiteralsForContext } from './lib/literals/literals';
 import { updateLog } from './lib/print';
 import { processResolverTypesIfNeeded } from './lib/resolver-types';
 import { CommandOpts, CodegenContext } from './lib/types';

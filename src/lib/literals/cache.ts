@@ -1,6 +1,5 @@
 import { existsSync } from 'fs';
 import { dirname, join as pathJoin } from 'path';
-import slash from 'slash';
 import { ExecContext } from '../exec-context';
 import { readFile, writeFile } from '../file';
 import { statSync } from '../file';
@@ -27,7 +26,7 @@ export type ProjectCacheStore = {
   [tsxRelPath: string]: PartialCacheStore;
 };
 
-export class LiteralCacheManager {
+export class LiteralCache {
   storeFullPath: string;
   dtsEntrypointFullPath: string;
   projectStore: ProjectCacheStore | null = null;
@@ -47,14 +46,14 @@ export class LiteralCacheManager {
       const content = await readFile(this.storeFullPath, 'utf-8');
       this.projectStore = JSON.parse(content);
     } else {
-      this.projectStore = {};
+      this.projectStore = Object.create(null);
     }
   }
   get(sourceRelPath: string): PartialCacheStore {
     if (!this.projectStore) throw new Error('boom');
     return (
       this.projectStore[sourceRelPath] ||
-      (this.projectStore[sourceRelPath] = {})
+      (this.projectStore[sourceRelPath] = Object.create(null))
     );
   }
   async unload() {

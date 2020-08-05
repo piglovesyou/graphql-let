@@ -2,11 +2,11 @@ import { loadOptions } from '@babel/core';
 import { generate } from '@graphql-codegen/cli';
 import traverse, { NodePath } from '@babel/traverse';
 import makeDir from 'make-dir';
-import { join as pathJoin, extname, basename, dirname } from 'path';
+import { join as pathJoin, dirname } from 'path';
 import { existsSync } from 'fs';
 import slash from 'slash';
 import {
-  BabelOptions,
+  getGraphQLLetBabelOption,
   modifyLiteralCalls,
   visitLiteralCalls,
 } from '../../babel';
@@ -14,20 +14,19 @@ import { processDtsForContext } from '../dts';
 import { ExecContext } from '../exec-context';
 import { rimraf } from '../file';
 import { stripIgnoredCharacters } from 'graphql';
-import { parse, ParserOptions } from '@babel/parser';
+import { parse } from '@babel/parser';
 import { readFile } from '../file';
 import { join } from 'path';
 import { writeFile } from '../file';
 import { createHash } from '../hash';
 import * as t from '@babel/types';
-import generator from '@babel/generator';
-import { LiteralCacheManager, PartialCacheStore } from './cache';
+import { LiteralCache, PartialCacheStore } from './cache';
 import {
   CodegenContext,
   isLiteralContext,
   LiteralCodegenContext,
-  LiteralCreatedPaths,
 } from '../types';
+import { appendExportAsObject, createPaths, parserOption } from './fns';
 
 export type VisitLiteralCallResults = {
   pendingDeletion: {
@@ -44,103 +43,12 @@ export type VisitLiteralCallResults = {
   hasError: boolean;
 };
 
-const createPaths = (
-  srcRelPath: string,
-  hash: string,
-  dtsRelDir: string,
-  cacheFullDir: string,
-  cwd: string,
-): LiteralCreatedPaths => {
-  const abs = (relPath: string) => pathJoin(cwd, relPath);
-
-  const dtsGenFullDir = abs(dtsRelDir);
-  // srcRelPath: "pages/index.tsx"
-  // "pages"
-  const relDir = dirname(srcRelPath);
-  // ".tsx"
-  const ext = extname(srcRelPath);
-  // "${cwd}/pages/index.tsx"
-  const srcFullPath = abs(srcRelPath);
-  // "index"
-  const base = basename(srcRelPath, ext);
-
-  // "index-2345.tsx"
-  const tsxBasename = `${base}-${hash}${ext}`;
-  // "pages/index-2345.tsx"
-  const tsxRelPath = pathJoin(relDir, tsxBasename);
-  // "/Users/.../node_modules/graphql-let/__generated__/pages/index-2345.d.ts"
-  const tsxFullPath = pathJoin(cacheFullDir, tsxRelPath);
-
-  // "index-2345.d.ts"
-  const dtsBasename = `${base}-${hash}.d.ts`;
-  // "pages/index-2345.d.ts"
-  const dtsRelPath = pathJoin(relDir, dtsBasename);
-  // "/Users/.../node_modules/@types/graphql-let/pages/index-2345.d.ts"
-  const dtsFullPath = pathJoin(dtsGenFullDir, dtsRelPath);
-  return {
-    srcRelPath,
-    srcFullPath,
-    tsxRelPath,
-    tsxFullPath,
-    dtsRelPath,
-    dtsFullPath,
-  };
-};
-export const parserOption: ParserOptions = {
-  sourceType: 'module',
-  plugins: ['typescript', 'jsx'],
-};
-
-function appendExportAsObject(dtsContent: string) {
-  // TODO: Build ast?
-  let allExportsCode = `export declare type __AllExports = { `;
-  const visitors: any = {
-    TSDeclareFunction({
-      node: {
-        id: { name },
-      },
-    }: any) {
-      allExportsCode += `${name}: typeof ${name},`;
-    },
-  };
-  visitors.VariableDeclarator = visitors.TSTypeAliasDeclaration = function pushProps({
-    node: {
-      id: { name },
-    },
-  }: any) {
-    allExportsCode += `${name}: ${name},`;
-  };
-
-  const dtsAST = parse(dtsContent, parserOption);
-  traverse(dtsAST, {
-    ExportNamedDeclaration(path: any) {
-      path.traverse(visitors);
-    },
-    Program: {
-      exit(path: NodePath<t.Program>) {
-        allExportsCode += '};';
-        // TODO: refactor
-        traverse(parse(allExportsCode, parserOption), {
-          ExportNamedDeclaration({ node }) {
-            const body = path.get('body');
-            body[body.length - 1].insertAfter(node);
-          },
-        });
-      },
-    },
-  });
-
-  const { code } = generator(dtsAST);
-  return code;
-}
-
-async function processGraphQLCodegenForLiterals(
+async function processCodegenForLiterals(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
 ) {
   const { cwd, config } = execContext;
 
-  // Codegen
   for (const { strippedGqlContent, tsxFullPath } of codegenContext.filter(
     isLiteralContext,
   ) as LiteralCodegenContext[]) {
@@ -174,20 +82,6 @@ export async function processLiterals(
 ): Promise<void> {
   const { cwd, config, cacheFullDir } = execContext;
   const dtsRelDir = dirname(config.gqlDtsEntrypoint);
-
-  /**
-   * 1. Prepare store if not exists.
-   * 2. Get the current state of the target source `.tsx`.
-   * 3. Check if caches of the gqlContents exist.
-   *    If not, put it to codegenContext to create new.
-   * 4. If we have obsolete caches, delete them.
-   * 5. Finally,
-   *    1. Update dtsEntryFullPath
-   *    2. Update projectStore
-   *
-   * - We write tsx
-   * - We don't write dts here.
-   */
 
   const oldGqlHashes = new Set(Object.keys(partialCache));
 
@@ -225,7 +119,7 @@ export async function processLiterals(
   }
 
   // Run codegen to write .tsx
-  await processGraphQLCodegenForLiterals(execContext, codegenContext);
+  await processCodegenForLiterals(execContext, codegenContext);
 
   // Remove old caches
   for (const oldGqlHash of oldGqlHashes) {
@@ -250,6 +144,7 @@ export type LiteralsArgs = {
   gqlContents: string[];
 };
 
+// Used in babel.ts
 export async function processLiteralsWithDtsGenerate(
   literalsArgs: LiteralsArgs,
 ): Promise<LiteralCodegenContext[]> {
@@ -257,7 +152,7 @@ export async function processLiteralsWithDtsGenerate(
 
   const codegenContext: LiteralCodegenContext[] = [];
 
-  const cache = new LiteralCacheManager(execContext);
+  const cache = new LiteralCache(execContext);
   await cache.load();
 
   await processLiterals(
@@ -273,15 +168,6 @@ export async function processLiteralsWithDtsGenerate(
   await processDtsForContext(execContext, codegenContext);
 
   return codegenContext;
-}
-
-function getGraphQLLetBabelOption(babelOptions: any): BabelOptions {
-  for (const { key, options } of babelOptions.plugins || []) {
-    if (key.includes('graphql-let/')) {
-      return options;
-    }
-  }
-  return {};
 }
 
 export async function processLiteralsForContext(
@@ -333,7 +219,7 @@ export async function processLiteralsForContext(
     });
   }
 
-  const cache = new LiteralCacheManager(execContext);
+  const cache = new LiteralCache(execContext);
   await cache.load();
 
   for (const visited of visitedSources) {

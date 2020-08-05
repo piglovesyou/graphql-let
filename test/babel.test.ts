@@ -2,15 +2,13 @@ import { deepStrictEqual } from 'assert';
 import globby from 'globby';
 import { join } from 'path';
 import runner from '@babel/helper-transform-fixture-test-runner';
-import { readFile, rimraf } from './__tools/file';
+import { cleanup, readFile } from './__tools/file';
 import { clearExecContext } from '../src/babel';
 
 const cwd = join(__dirname, '__fixtures/babel');
 const rel = (path: string) => join(cwd, path);
 
-beforeAll(async () => {
-  await rimraf(join(cwd, '**/node_modules'));
-});
+beforeAll(() => cleanup(cwd));
 
 // We cache "config", etc. for production.
 // Here we traverse multiple fixture projects, so erase them for each.

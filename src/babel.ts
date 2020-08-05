@@ -8,7 +8,7 @@ import createExecContext, { ExecContext } from './lib/exec-context';
 import { readFileSync } from './lib/file';
 import { createHash } from './lib/hash';
 import { loadConfigSync } from './lib/config';
-import { LiteralsArgs } from './lib/literals';
+import { LiteralsArgs } from './lib/literals/literals';
 import { printError } from './lib/print';
 import { shouldGenResolverTypes } from './lib/resolver-types';
 import { CodegenContext, LiteralCodegenContext } from './lib/types';
@@ -31,7 +31,7 @@ const processLiteralsWithDtsGenerateSync = doSync(
   }): /* Promise<LiteralCodegenContext[]> */ any => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { join } = require('path');
-    const modulePath = join(hostDirname, '../dist/lib/literals');
+    const modulePath = join(hostDirname, '../dist/lib/literals/literals');
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { processLiteralsWithDtsGenerate } = require(modulePath);
     return processLiteralsWithDtsGenerate(gqlCompileArgs);
@@ -43,6 +43,15 @@ export type BabelOptions = {
   importName?: string;
   onlyMatchImportSuffix?: boolean;
 };
+
+export function getGraphQLLetBabelOption(babelOptions: any): BabelOptions {
+  for (const { key, options } of babelOptions.plugins || []) {
+    if (key.includes('graphql-let/')) {
+      return options;
+    }
+  }
+  return {};
+}
 
 export const { ensureExecContext, clearExecContext } = (() => {
   let execContext: ExecContext | null = null;
