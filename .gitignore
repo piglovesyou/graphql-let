@@ -19,6 +19,7 @@ graphql-let.iml
 .DS_Store
 dist
 *.tgz
+a.js
 
 # To develop with closer deps version that users will use
 yarn.lock

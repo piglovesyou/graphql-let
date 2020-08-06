@@ -2,30 +2,21 @@
 
 import globby from 'globby';
 import { join as pathJoin } from 'path';
-import { deepStrictEqual, strictEqual } from 'assert';
+import { deepStrictEqual } from 'assert';
 import gen from '../src/gen';
 import glob from 'globby';
-import { readFile, rename, rimraf } from './__tools/file';
+import { cleanup, readFile, rename } from './__tools/file';
 import { assertObjectsInclude } from './__tools/object';
 
 const cwd = pathJoin(__dirname, '__fixtures/gen');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
-
-function cleanup() {
-  return Promise.all([
-    rimraf(rel('__generated__')),
-    rimraf(rel('node_modules')),
-    rimraf(rel('**/*.graphql.d.ts')),
-    rimraf(rel('**/*.graphqls.d.ts')),
-  ]);
-}
 
 describe('"graphql-let" command', () => {
   beforeAll(async () => {
     await rename(rel('_gitignore'), rel('.gitignore'));
   }, 60 * 1000);
 
-  beforeEach(cleanup);
+  beforeEach(() => cleanup(cwd));
 
   afterAll(async () => {
     await rename(rel('.gitignore'), rel('_gitignore'));
@@ -39,7 +30,7 @@ describe('"graphql-let" command', () => {
     await gen({ cwd });
 
     const docDtsGlobResults = await glob('**/*.graphql.d.ts', { cwd });
-    strictEqual(
+    deepStrictEqual(
       docDtsGlobResults.find((r) => r.includes('shouldBeIgnored1')),
       undefined,
     );
@@ -53,7 +44,7 @@ describe('"graphql-let" command', () => {
     });
 
     const schemaDtsGlobResults = await glob('**/*.graphqls.d.ts', { cwd });
-    strictEqual(schemaDtsGlobResults.length, 1);
+    deepStrictEqual(schemaDtsGlobResults.length, 1);
 
     const schemaDtsGlobContents = await Promise.all(
       schemaDtsGlobResults.map((filename) =>
@@ -67,8 +58,8 @@ describe('"graphql-let" command', () => {
     const tsxResults = await glob('__generated__/**/*.tsx', {
       cwd,
     });
-    strictEqual(tsxResults.length, 3);
-    strictEqual(
+    deepStrictEqual(tsxResults.length, 3);
+    deepStrictEqual(
       tsxResults.find((r) => r.includes('shouldBeIgnored1')),
       undefined,
     );
