@@ -1,5 +1,4 @@
 import { extname, join as pathJoin } from 'path';
-import { PartialCodegenOpts } from './create-codegen-opts';
 import { ConfigTypes } from './config';
 import { ExecContext } from './exec-context';
 import { readFile, readHash } from './file';
@@ -7,7 +6,7 @@ import { createHash } from './hash';
 import { createPaths } from './paths';
 import { PRINT_PREFIX, updateLog } from './print';
 import { processGraphQLCodegen } from './graphql-codegen';
-import { CodegenContext, FileCodegenContext, FileCreatedPaths } from './types';
+import { CodegenContext, FileCodegenContext } from './types';
 
 // Currently glob for schema is not allowed.
 function isLocalFilePathWithExtension(s: any): boolean {
@@ -42,32 +41,11 @@ export async function prepareGenResolverTypes(execContext: ExecContext) {
   return { schemaFullPath, schemaHash };
 }
 
-export async function processGenerateResolverTypes(
-  schemaHash: string,
-  config: ConfigTypes,
-  codegenOpts: PartialCodegenOpts,
-  createdPath: FileCreatedPaths,
-  cwd: string,
-): Promise<void> {
-  const { gqlFullPath, tsxFullPath } = createdPath;
-  await processGraphQLCodegen({
-    cwd,
-    schema: gqlFullPath,
-    filename: tsxFullPath,
-    documents: config.documents,
-    plugins: ['typescript', 'typescript-resolvers'],
-    config: codegenOpts.config,
-    gqlHash: schemaHash,
-  });
-
-  if (!isLocalFilePathWithExtension(config.schema)) throw new Error('never');
-}
-
 export async function processResolverTypesIfNeeded(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
 ) {
-  const { cwd, config, configHash, codegenOpts } = execContext;
+  const { cwd, config, configHash } = execContext;
   // To pass config change on subsequent generation,
   // configHash should be primary hash seed.
   let schemaHash = configHash;
@@ -109,13 +87,15 @@ export default typeof DocumentNode
         `Local schema files are detected. Generating resolver types...`,
       );
 
-      await processGenerateResolverTypes(
-        schemaHash,
-        config,
-        codegenOpts,
-        createdPaths,
+      await processGraphQLCodegen(execContext, [context], {
+        ...config,
         cwd,
-      );
+        generates: {
+          [context.tsxFullPath]: {
+            plugins: ['typescript', 'typescript-resolvers'],
+          },
+        },
+      });
     }
   }
   return { schemaHash };

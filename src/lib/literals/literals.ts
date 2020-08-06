@@ -10,6 +10,7 @@ import {
   visitLiteralCalls,
 } from '../../babel';
 import loadConfig from '../config';
+import { processGraphQLCodegenForDocuments } from '../documents';
 import { processDtsForContext } from '../dts';
 import createExecContext, { ExecContext } from '../exec-context';
 import { rimraf } from '../file';
@@ -17,7 +18,6 @@ import { stripIgnoredCharacters } from 'graphql';
 import { parse } from '@babel/parser';
 import { readFile } from '../file';
 import { join } from 'path';
-import { processGraphQLCodegenNew } from '../graphql-codegen';
 import { createHash } from '../hash';
 import * as t from '@babel/types';
 import {
@@ -42,41 +42,6 @@ export type VisitLiteralCallResults = {
   ][];
   hasError: boolean;
 };
-
-async function processCodegenForLiterals(
-  execContext: ExecContext,
-  codegenContext: CodegenContext[],
-) {
-  // const { cwd, config } = execContext;
-
-  // const literalContext = codegenContext.filter(
-  //   isLiteralContext,
-  // ) as LiteralCodegenContext[]
-
-  await processGraphQLCodegenNew(execContext, codegenContext);
-
-  // for (const { strippedGqlContent, tsxFullPath } of codegenContext.filter(
-  //   isLiteralContext,
-  // ) as LiteralCodegenContext[]) {
-  //   const [{ content }] = await generate(
-  //     {
-  //       silent: true, // Necessary to pass stdout to the parent process
-  //       cwd,
-  //       schema: config.schema,
-  //       documents: [strippedGqlContent],
-  //       generates: {
-  //         [tsxFullPath]: {
-  //           plugins: config.plugins,
-  //           config: execContext.codegenOpts.config,
-  //         },
-  //       },
-  //     },
-  //     false,
-  //   );
-  //   await makeDir(dirname(tsxFullPath));
-  //   await writeFile(tsxFullPath, content);
-  // }
-}
 
 export async function processLiterals(
   execContext: ExecContext,
@@ -125,7 +90,7 @@ export async function processLiterals(
   }
 
   // Run codegen to write .tsx
-  await processCodegenForLiterals(execContext, codegenContext);
+  await processGraphQLCodegenForDocuments(execContext, codegenContext);
 
   // Remove old caches
   for (const oldGqlHash of oldGqlHashes) {

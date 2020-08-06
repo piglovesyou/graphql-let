@@ -1,15 +1,21 @@
-// Take care of `.graphql`s
+import { CodegenContext as CodegenConfig } from '@graphql-codegen/cli';
+import { Types } from '@graphql-codegen/plugin-helpers';
+import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
 import glob from 'globby';
 import { join as pathJoin } from 'path';
+import { ConfigTypes } from './config';
 import { ExecContext } from './exec-context';
 import { readFile, readHash } from './file';
-import {
-  // processGraphQLCodegen,
-  processGraphQLCodegenNew,
-} from './graphql-codegen';
+import { processGraphQLCodegen } from './graphql-codegen';
 import { createHash } from './hash';
 import { createPaths, isTypeScriptPath } from './paths';
-import { CodegenContext, FileCodegenContext } from './types';
+import {
+  CodegenContext,
+  FileCodegenContext,
+  isLiteralContext,
+  LiteralCodegenContext,
+} from './types';
+import ConfiguredOutput = Types.ConfiguredOutput;
 
 export async function findTargetDocuments({
   cwd,
@@ -41,6 +47,94 @@ type ProcessDocumentsForContextReturnType = Record<
   /*gqlRelPath*/ string,
   /*tsxContent*/ string
 >;
+
+class GraphQLLetConfig extends CodegenConfig {
+  constructor(execContext: ExecContext, codegenContext: CodegenContext[]) {
+    const { cwd, config, codegenOpts } = execContext;
+
+    // In our config, "documents" should always be empty
+    // since "generates" should take care of them.
+    const generates = GraphQLLetConfig.buildGenerates(
+      execContext,
+      codegenContext,
+      config,
+    );
+    super({
+      config: {
+        ...config,
+        // @ts-ignore
+        cwd,
+        config: {
+          // TODO: Quit using codegenOpts
+          ...codegenOpts.config,
+          ...config.config,
+        },
+        // schema: path.join(cwd, config.schema as any),
+        documents: undefined,
+        generates,
+      },
+    });
+    this.cwd = cwd;
+  }
+
+  static buildGenerates(
+    execContext: ExecContext,
+    codegenContext: CodegenContext[],
+    config: Omit<Types.Config, 'generates'> & ConfigTypes,
+  ) {
+    const generates: {
+      [outputPath: string]: ConfiguredOutput;
+    } = Object.create(null);
+    for (const context of codegenContext) {
+      const { tsxFullPath } = context;
+      const documents = isLiteralContext(context)
+        ? (context as LiteralCodegenContext).strippedGqlContent
+        : (context as FileCodegenContext).gqlRelPath;
+      generates[tsxFullPath] = {
+        ...config.generateOptions,
+        // graphql-let -controlled fields:
+        documents,
+        plugins: config.plugins,
+      };
+    }
+    return generates;
+  }
+
+  // from graphql-file-loader
+  static isGraphQLImportFile(rawSDL: string) {
+    const trimmedRawSDL = rawSDL.trim();
+    return (
+      trimmedRawSDL.startsWith('# import') ||
+      trimmedRawSDL.startsWith('#import')
+    );
+  }
+
+  async loadDocuments(pointers: any) {
+    const [pointer] = pointers;
+    if (GraphQLLetConfig.isGraphQLImportFile(pointer)) {
+      // GraphQLFileLoader only allows "# import" when passing file paths.
+      // But we want it even in gql(`query {}`), don't we?
+      const resolved = GraphQLFileLoader.prototype.handleFileContent(
+        pointer,
+        './a.graphql',
+        { cwd: this.cwd },
+      );
+      return [resolved];
+    }
+    return super.loadDocuments(pointers); // , this.getConfig());
+  }
+}
+
+export function processGraphQLCodegenForDocuments(
+  execContext: ExecContext,
+  codegenContext: CodegenContext[],
+) {
+  return processGraphQLCodegen(
+    execContext,
+    codegenContext,
+    new GraphQLLetConfig(execContext, codegenContext),
+  );
+}
 
 export async function processDocumentsForContext(
   execContext: ExecContext,
@@ -81,24 +175,8 @@ export async function processDocumentsForContext(
     };
     codegenContext.push(context);
     documentCodegenContext.push(context);
-
-    // if (shouldUpdate) {
-    //   // We don't delete tsxFullPath and dtsFullPath here because:
-    //   // 1. We'll overwrite them so deleting is not necessary
-    //   // 2. Windows throws EPERM error for the deleting and creating file process.
-    //   const tsxContent = await processGraphQLCodegen({
-    //     cwd,
-    //     filename: tsxFullPath,
-    //     gqlHash,
-    //     schema: config.schema,
-    //     documents: gqlRelPath,
-    //     plugins: config.plugins,
-    //     config: codegenOpts.config,
-    //   });
-    //   tsxContents[gqlRelPath] = tsxContent;
-    // }
   }
-  const results = await processGraphQLCodegenNew(
+  const results = await processGraphQLCodegenForDocuments(
     execContext,
     documentCodegenContext,
   );
