@@ -1,13 +1,15 @@
 import logUpdate from 'log-update';
 import { loader } from 'webpack';
-import { join as pathJoin, relative as pathRelative } from 'path';
+import { relative as pathRelative } from 'path';
 import { processDocumentsForContext } from './lib/documents';
 import { processDtsForContext } from './lib/dts';
 import createExecContext from './lib/exec-context';
-import { createHash } from './lib/hash';
 import loadConfig from './lib/config';
 import memoize from './lib/memoize';
-import { shouldGenResolverTypes } from './lib/resolver-types';
+import {
+  prepareGenResolverTypes,
+  shouldGenResolverTypes,
+} from './lib/resolver-types';
 import { PRINT_PREFIX, updateLog } from './lib/print';
 import { readFile } from './lib/file';
 import { CodegenContext } from './lib/types';
@@ -27,10 +29,11 @@ const processGraphQLLetLoader = memoize(
     let schemaHash = configHash;
 
     if (shouldGenResolverTypes(config)) {
-      const fileSchema = config.schema as string;
-      const schemaFullPath = pathJoin(cwd, fileSchema);
-      const content = await readFile(schemaFullPath);
-      schemaHash = createHash(configHash + content);
+      const {
+        schemaHash: _schemaHash,
+        schemaFullPath,
+      } = await prepareGenResolverTypes(execContext);
+      schemaHash = _schemaHash;
 
       // If using resolver types, all documents should depend on all schema files.
       addDependency(schemaFullPath);

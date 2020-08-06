@@ -10,8 +10,9 @@ import {
   modifyLiteralCalls,
   visitLiteralCalls,
 } from '../../babel';
+import loadConfig from '../config';
 import { processDtsForContext } from '../dts';
-import { ExecContext } from '../exec-context';
+import createExecContext, { ExecContext } from '../exec-context';
 import { rimraf } from '../file';
 import { stripIgnoredCharacters } from 'graphql';
 import { parse } from '@babel/parser';
@@ -20,6 +21,10 @@ import { join } from 'path';
 import { writeFile } from '../file';
 import { createHash } from '../hash';
 import * as t from '@babel/types';
+import {
+  prepareGenResolverTypes,
+  shouldGenResolverTypes,
+} from '../resolver-types';
 import { LiteralCache, PartialCacheStore } from './cache';
 import {
   CodegenContext,
@@ -138,8 +143,10 @@ export async function processLiterals(
 }
 
 export type LiteralsArgs = {
-  execContext: ExecContext;
-  schemaHash: string;
+  // execContext: ExecContext;
+  cwd: string;
+  configFilePath?: string;
+  // schemaHash: string;
   sourceRelPath: string;
   gqlContents: string[];
 };
@@ -148,7 +155,17 @@ export type LiteralsArgs = {
 export async function processLiteralsWithDtsGenerate(
   literalsArgs: LiteralsArgs,
 ): Promise<LiteralCodegenContext[]> {
-  const { execContext, sourceRelPath, schemaHash, gqlContents } = literalsArgs;
+  const { cwd, configFilePath, sourceRelPath, gqlContents } = literalsArgs;
+
+  const [config, configHash] = await loadConfig(cwd, configFilePath);
+  const execContext = createExecContext(cwd, config, configHash);
+  let schemaHash = configHash;
+  if (shouldGenResolverTypes(config)) {
+    const { schemaHash: _schemaHash } = await prepareGenResolverTypes(
+      execContext,
+    );
+    schemaHash = _schemaHash;
+  }
 
   const codegenContext: LiteralCodegenContext[] = [];
 

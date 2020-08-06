@@ -1,16 +1,11 @@
 import { types, ConfigAPI, PluginObj, NodePath } from '@babel/core';
 import * as t from '@babel/types';
-import { relative, dirname, join as pathJoin } from 'path';
+import { relative, dirname } from 'path';
 import { declare } from '@babel/helper-plugin-utils';
 import doSync from 'do-sync';
 import slash from 'slash';
-import createExecContext, { ExecContext } from './lib/exec-context';
-import { readFileSync } from './lib/file';
-import { createHash } from './lib/hash';
-import { loadConfigSync } from './lib/config';
 import { LiteralsArgs } from './lib/literals/literals';
 import { printError } from './lib/print';
-import { shouldGenResolverTypes } from './lib/resolver-types';
 import { CodegenContext, LiteralCodegenContext } from './lib/types';
 
 const {
@@ -52,38 +47,6 @@ export function getGraphQLLetBabelOption(babelOptions: any): BabelOptions {
   }
   return {};
 }
-
-export const { ensureExecContext, clearExecContext } = (() => {
-  let execContext: ExecContext | null = null;
-  let schemaHash: string | null = null;
-
-  function ensureExecContext(
-    cwd: string,
-    configFilePath?: string,
-  ): [ExecContext, string] {
-    if (execContext && schemaHash) {
-      return [execContext, schemaHash];
-    }
-    const [config, configHash] = loadConfigSync(cwd, configFilePath);
-    execContext = createExecContext(cwd, config, configHash);
-
-    schemaHash = configHash;
-    if (shouldGenResolverTypes(config)) {
-      const fileSchema = config.schema as string;
-      const schemaFullPath = pathJoin(cwd, fileSchema);
-      const content = readFileSync(schemaFullPath);
-      schemaHash = createHash(schemaHash + content);
-    }
-    return [execContext, schemaHash];
-  }
-
-  function clearExecContext() {
-    execContext = null;
-    schemaHash = null;
-  }
-
-  return { ensureExecContext, clearExecContext };
-})();
 
 type VisitLiteralCallResults = {
   pendingDeletion: {
@@ -259,10 +222,6 @@ const configFunction = (
         const { cwd } = state;
         const sourceFullPath = state.file.opts.filename;
         const sourceRelPath = relative(cwd, sourceFullPath);
-        const [execContext, schemaHash] = ensureExecContext(
-          cwd,
-          configFilePath,
-        );
 
         const visitLiteralCallResults = visitLiteralCalls(
           programPath,
@@ -278,8 +237,8 @@ const configFunction = (
         const literalCodegenContext: LiteralCodegenContext[] = processLiteralsWithDtsGenerateSync(
           {
             hostDirname: __dirname,
-            execContext,
-            schemaHash,
+            cwd,
+            configFilePath,
             sourceRelPath,
             gqlContents: literalCallExpressionPaths.map(([, value]) => value),
           },

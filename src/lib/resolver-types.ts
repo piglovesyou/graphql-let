@@ -10,9 +10,7 @@ import { processGraphQLCodegen } from './graphql-codegen';
 import { CodegenContext, FileCodegenContext, FileCreatedPaths } from './types';
 
 // Currently glob for schema is not allowed.
-function isLocalFilePathWithExtension(
-  s: string | Record<string, any>,
-): boolean {
+function isLocalFilePathWithExtension(s: any): boolean {
   if (typeof s !== 'string') return false;
   if (extname(s).length) return true;
   return false;
@@ -33,6 +31,15 @@ export function shouldGenResolverTypes(config: ConfigTypes): boolean {
     // Just skip.
     return false;
   }
+}
+
+export async function prepareGenResolverTypes(execContext: ExecContext) {
+  const { cwd, config, configHash } = execContext;
+  const fileSchema = config.schema as string;
+  const schemaFullPath = pathJoin(cwd, fileSchema);
+  const content = await readFile(schemaFullPath);
+  const schemaHash = createHash(configHash + content);
+  return { schemaFullPath, schemaHash };
 }
 
 export async function processGenerateResolverTypes(
