@@ -50,6 +50,7 @@
     "@graphql-codegen/typescript-operations": "^1.12.2",
     "@graphql-codegen/typescript-react-apollo": "^1.12.2",
     "@graphql-codegen/typescript-resolvers": "^1.12.2",
+    "@graphql-tools/graphql-file-loader": "^6.0.16",
     "@jest/transform": "^26.1.0",
     "@jest/types": "^26.1.0",
     "@types/babel__core": "^7.1.5",
