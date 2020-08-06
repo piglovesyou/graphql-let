@@ -1,5 +1,4 @@
 import { loadOptions } from '@babel/core';
-import { generate } from '@graphql-codegen/cli';
 import traverse, { NodePath } from '@babel/traverse';
 import makeDir from 'make-dir';
 import { join as pathJoin, dirname } from 'path';
@@ -18,7 +17,7 @@ import { stripIgnoredCharacters } from 'graphql';
 import { parse } from '@babel/parser';
 import { readFile } from '../file';
 import { join } from 'path';
-import { writeFile } from '../file';
+import { processGraphQLCodegenNew } from '../graphql-codegen';
 import { createHash } from '../hash';
 import * as t from '@babel/types';
 import {
@@ -26,11 +25,7 @@ import {
   shouldGenResolverTypes,
 } from '../resolver-types';
 import { LiteralCache, PartialCacheStore } from './cache';
-import {
-  CodegenContext,
-  isLiteralContext,
-  LiteralCodegenContext,
-} from '../types';
+import { CodegenContext, LiteralCodegenContext } from '../types';
 import { appendExportAsObject, createPaths, parserOption } from './fns';
 
 export type VisitLiteralCallResults = {
@@ -52,29 +47,35 @@ async function processCodegenForLiterals(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
 ) {
-  const { cwd, config } = execContext;
+  // const { cwd, config } = execContext;
 
-  for (const { strippedGqlContent, tsxFullPath } of codegenContext.filter(
-    isLiteralContext,
-  ) as LiteralCodegenContext[]) {
-    const [{ content }] = await generate(
-      {
-        silent: true, // Necessary to pass stdout to the parent process
-        cwd,
-        schema: config.schema,
-        documents: [strippedGqlContent],
-        generates: {
-          [tsxFullPath]: {
-            plugins: config.plugins,
-            config: execContext.codegenOpts.config,
-          },
-        },
-      },
-      false,
-    );
-    await makeDir(dirname(tsxFullPath));
-    await writeFile(tsxFullPath, content);
-  }
+  // const literalContext = codegenContext.filter(
+  //   isLiteralContext,
+  // ) as LiteralCodegenContext[]
+
+  await processGraphQLCodegenNew(execContext, codegenContext);
+
+  // for (const { strippedGqlContent, tsxFullPath } of codegenContext.filter(
+  //   isLiteralContext,
+  // ) as LiteralCodegenContext[]) {
+  //   const [{ content }] = await generate(
+  //     {
+  //       silent: true, // Necessary to pass stdout to the parent process
+  //       cwd,
+  //       schema: config.schema,
+  //       documents: [strippedGqlContent],
+  //       generates: {
+  //         [tsxFullPath]: {
+  //           plugins: config.plugins,
+  //           config: execContext.codegenOpts.config,
+  //         },
+  //       },
+  //     },
+  //     false,
+  //   );
+  //   await makeDir(dirname(tsxFullPath));
+  //   await writeFile(tsxFullPath, content);
+  // }
 }
 
 export async function processLiterals(

@@ -3,7 +3,10 @@ import glob from 'globby';
 import { join as pathJoin } from 'path';
 import { ExecContext } from './exec-context';
 import { readFile, readHash } from './file';
-import { processGraphQLCodegen } from './graphql-codegen';
+import {
+  // processGraphQLCodegen,
+  processGraphQLCodegenNew,
+} from './graphql-codegen';
 import { createHash } from './hash';
 import { createPaths, isTypeScriptPath } from './paths';
 import { CodegenContext, FileCodegenContext } from './types';
@@ -34,6 +37,11 @@ export async function findTargetDocuments({
   return { graphqlRelPaths, tsSourceRelPaths };
 }
 
+type ProcessDocumentsForContextReturnType = Record<
+  /*gqlRelPath*/ string,
+  /*tsxContent*/ string
+>;
+
 export async function processDocumentsForContext(
   execContext: ExecContext,
   schemaHash: string,
@@ -41,13 +49,12 @@ export async function processDocumentsForContext(
   gqlRelPaths: string[],
   gqlContents?: string[],
 ) {
-  const tsxContents: Record<
-    /*gqlRelPath*/ string,
-    /*tsxContent*/ string
-  > = Object.create(null);
+  const tsxContents: ProcessDocumentsForContextReturnType = Object.create(null);
   if (!gqlRelPaths.length) return tsxContents;
 
-  const { cwd, config, codegenOpts } = execContext;
+  const documentCodegenContext: CodegenContext[] = [];
+
+  const { cwd } = execContext;
   for (const [i, gqlRelPath] of gqlRelPaths.entries()) {
     // Loader passes gqlContent directly
     const gqlContent = gqlContents
@@ -73,22 +80,31 @@ export async function processDocumentsForContext(
       skip: !shouldUpdate,
     };
     codegenContext.push(context);
+    documentCodegenContext.push(context);
 
-    if (shouldUpdate) {
-      // We don't delete tsxFullPath and dtsFullPath here because:
-      // 1. We'll overwrite them so deleting is not necessary
-      // 2. Windows throws EPERM error for the deleting and creating file process.
-      const tsxContent = await processGraphQLCodegen({
-        cwd,
-        filename: tsxFullPath,
-        gqlHash,
-        schema: config.schema,
-        documents: gqlRelPath,
-        plugins: config.plugins,
-        config: codegenOpts.config,
-      });
-      tsxContents[gqlRelPath] = tsxContent;
-    }
+    // if (shouldUpdate) {
+    //   // We don't delete tsxFullPath and dtsFullPath here because:
+    //   // 1. We'll overwrite them so deleting is not necessary
+    //   // 2. Windows throws EPERM error for the deleting and creating file process.
+    //   const tsxContent = await processGraphQLCodegen({
+    //     cwd,
+    //     filename: tsxFullPath,
+    //     gqlHash,
+    //     schema: config.schema,
+    //     documents: gqlRelPath,
+    //     plugins: config.plugins,
+    //     config: codegenOpts.config,
+    //   });
+    //   tsxContents[gqlRelPath] = tsxContent;
+    // }
+  }
+  const results = await processGraphQLCodegenNew(
+    execContext,
+    documentCodegenContext,
+  );
+  for (const [i, { content }] of results.entries()) {
+    const { gqlRelPath } = codegenContext[i]! as FileCodegenContext;
+    tsxContents[gqlRelPath] = content;
   }
   return tsxContents;
 }

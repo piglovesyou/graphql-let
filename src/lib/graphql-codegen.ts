@@ -72,10 +72,8 @@ export async function processGraphQLCodegen(
 }
 
 class GraphQLLetConfig extends CodegenConfig {
-  cwd: string;
-
   constructor(execContext: ExecContext, codegenContext: CodegenContext[]) {
-    const { cwd, config } = execContext;
+    const { cwd, config, codegenOpts } = execContext;
 
     // In our config, "documents" should always be empty
     // since "generates" should take care of them.
@@ -85,18 +83,20 @@ class GraphQLLetConfig extends CodegenConfig {
       config,
     );
     super({
-      config: { ...config, generates },
+      config: {
+        ...config,
+        cwd,
+        config: {
+          // TODO: Quit using codegenOpts
+          ...codegenOpts.config,
+          ...config.config,
+        },
+        // schema: path.join(cwd, config.schema as any),
+        documents: undefined,
+        generates,
+      },
     });
     this.cwd = cwd;
-  }
-
-  // from graphql-file-loader
-  static isGraphQLImportFile(rawSDL: string) {
-    const trimmedRawSDL = rawSDL.trim();
-    return (
-      trimmedRawSDL.startsWith('# import') ||
-      trimmedRawSDL.startsWith('#import')
-    );
   }
 
   static buildGenerates(
@@ -122,7 +122,17 @@ class GraphQLLetConfig extends CodegenConfig {
     return generates;
   }
 
-  async loadDocuments(pointer: any) {
+  // from graphql-file-loader
+  static isGraphQLImportFile(rawSDL: string) {
+    const trimmedRawSDL = rawSDL.trim();
+    return (
+      trimmedRawSDL.startsWith('# import') ||
+      trimmedRawSDL.startsWith('#import')
+    );
+  }
+
+  async loadDocuments(pointers: any) {
+    const [pointer] = pointers;
     if (GraphQLLetConfig.isGraphQLImportFile(pointer)) {
       // GraphQLFileLoader only allows "# import" when passing file paths.
       // But we want it even in gql(`query {}`), don't we?
@@ -133,7 +143,7 @@ class GraphQLLetConfig extends CodegenConfig {
       );
       return [resolved];
     }
-    return super.loadDocuments(pointer);
+    return super.loadDocuments(pointers); // , this.getConfig());
   }
 }
 

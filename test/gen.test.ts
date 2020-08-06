@@ -23,58 +23,62 @@ describe('"graphql-let" command', () => {
     // await cleanup();
   });
 
-  test(`generates number of .d.ts ignoring specified files as expected
+  test(
+    `generates number of .d.ts ignoring specified files as expected
 * ignoring "!" paths in "schema" and "documents" of graphql-let.yml
 * ignoring files specified in .gitignore
-`, async () => {
-    await gen({ cwd });
+`,
+    async () => {
+      await gen({ cwd });
 
-    const docDtsGlobResults = await glob('**/*.graphql.d.ts', { cwd });
-    deepStrictEqual(
-      docDtsGlobResults.find((r) => r.includes('shouldBeIgnored1')),
-      undefined,
-    );
-    const docDtsGlobContents = await Promise.all(
-      docDtsGlobResults.map((filename) =>
-        readFile(rel(filename)).then((content) => ({ filename, content })),
-      ),
-    );
-    docDtsGlobContents.forEach(({ filename, content }) => {
-      expect(content).toMatchSnapshot(filename);
-    });
+      const docDtsGlobResults = await glob('**/*.graphql.d.ts', { cwd });
+      deepStrictEqual(
+        docDtsGlobResults.find((r) => r.includes('shouldBeIgnored1')),
+        undefined,
+      );
+      const docDtsGlobContents = await Promise.all(
+        docDtsGlobResults.map((filename) =>
+          readFile(rel(filename)).then((content) => ({ filename, content })),
+        ),
+      );
+      docDtsGlobContents.forEach(({ filename, content }) => {
+        expect(content).toMatchSnapshot(filename);
+      });
 
-    const schemaDtsGlobResults = await glob('**/*.graphqls.d.ts', { cwd });
-    deepStrictEqual(schemaDtsGlobResults.length, 1);
+      const schemaDtsGlobResults = await glob('**/*.graphqls.d.ts', { cwd });
+      deepStrictEqual(schemaDtsGlobResults.length, 1);
 
-    const schemaDtsGlobContents = await Promise.all(
-      schemaDtsGlobResults.map((filename) =>
-        readFile(rel(filename)).then((content) => ({ filename, content })),
-      ),
-    );
-    schemaDtsGlobContents.forEach(({ filename, content }) => {
-      expect(content).toMatchSnapshot(filename);
-    });
+      const schemaDtsGlobContents = await Promise.all(
+        schemaDtsGlobResults.map((filename) =>
+          readFile(rel(filename)).then((content) => ({ filename, content })),
+        ),
+      );
+      schemaDtsGlobContents.forEach(({ filename, content }) => {
+        expect(content).toMatchSnapshot(filename);
+      });
 
-    const tsxResults = await glob('__generated__/**/*.tsx', {
-      cwd,
-    });
-    deepStrictEqual(tsxResults.length, 3);
-    deepStrictEqual(
-      tsxResults.find((r) => r.includes('shouldBeIgnored1')),
-      undefined,
-    );
-    const tsxContents = await Promise.all(
-      tsxResults.map((filename) =>
-        readFile(pathJoin(cwd, filename)).then((content) => ({
-          filename,
-          content,
-        })),
-      ),
-    );
-    tsxContents.forEach(({ filename, content }) => {
-      expect(content).toMatchSnapshot(filename);
-    });
-  });
+      const tsxResults = await glob('__generated__/**/*.tsx', {
+        cwd,
+      });
+      deepStrictEqual(tsxResults.length, 3);
+      deepStrictEqual(
+        tsxResults.find((r) => r.includes('shouldBeIgnored1')),
+        undefined,
+      );
+      const tsxContents = await Promise.all(
+        tsxResults.map((filename) =>
+          readFile(pathJoin(cwd, filename)).then((content) => ({
+            filename,
+            content,
+          })),
+        ),
+      );
+      tsxContents.forEach(({ filename, content }) => {
+        expect(content).toMatchSnapshot(filename);
+      });
+    },
+    1000 * 1000,
+  );
 
   test(`runs twice and keeps valid caches`, async () => {
     assertObjectsInclude(await gen({ cwd }), [
