@@ -70,18 +70,12 @@ describe('"graphql-let" command', () => {
 * "useIndexSignature: true" in config effect to result having "WithIndex<TObject>" type
 `, async () => {
     await gen({ cwd });
-
-    const actual = await readFile(rel('schema/type-defs.graphqls.d.ts'));
-    expect(actual).toMatchSnapshot();
+    await matchPathsAndContents('schema/type-defs.graphqls.d.ts', cwd);
   });
 
   test(`documents: **/*.tsx generates .d.ts for babel`, async () => {
     await gen({ cwd, configFilePath: '.graphql-let-babel.yml' });
-
-    const files = await globby(['__generated__', 'node_modules'], { cwd });
-    expect(files.sort()).toMatchSnapshot('paths');
-
-    for (const file of files)
-      expect(await readFile(pathJoin(cwd, file))).toMatchSnapshot(file);
+    await matchPathsAndContents('__generated__', cwd);
+    await matchPathsAndContents('node_modules', cwd);
   });
 });

@@ -5,6 +5,11 @@ import { join } from 'path';
 export async function matchPathsAndContents(globPatterns: string, cwd: string) {
   const files = (await glob(globPatterns, { cwd })).sort();
   expect(files).toMatchSnapshot(globPatterns);
-  for (const file of files)
-    expect(await readFile(join(cwd, file))).toMatchSnapshot(file);
+  await Promise.all(
+    files.map((file) => {
+      return readFile(join(cwd, file)).then((content) => {
+        expect(content).toMatchSnapshot(file);
+      });
+    }),
+  );
 }
