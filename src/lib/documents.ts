@@ -90,7 +90,9 @@ class GraphQLLetConfig extends CodegenConfig {
     for (const context of codegenContext) {
       const { tsxFullPath } = context;
       const documents = isLiteralContext(context)
-        ? (context as LiteralCodegenContext).strippedGqlContent
+        ? // XXX: We want to pass shorter `strippedGqlContent`,
+          // but `# import` also disappears!
+          (context as LiteralCodegenContext).gqlContent
         : (context as FileCodegenContext).gqlRelPath;
       generates[tsxFullPath] = {
         ...config.generateOptions,
