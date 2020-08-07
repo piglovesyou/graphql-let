@@ -7,6 +7,7 @@ import gen from '../src/gen';
 import glob from 'globby';
 import { cleanup, readFile, rename } from './__tools/file';
 import pick from 'lodash.pick';
+import { matchPathsAndContents } from './__tools/match-paths-and-contents';
 
 const cwd = pathJoin(__dirname, '__fixtures/gen');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
@@ -31,43 +32,11 @@ describe('"graphql-let" command', () => {
     async () => {
       await gen({ cwd });
 
-      const docDtsGlobResults = await glob('**/*.graphql.d.ts', { cwd });
-      deepStrictEqual(
-        docDtsGlobResults.find((r) => r.includes('shouldBeIgnored1')),
-        undefined,
-      );
-      const docDtsGlobContents = await Promise.all(
-        docDtsGlobResults.map((filename) =>
-          readFile(rel(filename)).then((content) => ({ filename, content })),
-        ),
-      );
-      docDtsGlobContents.forEach(({ filename, content }) => {
-        expect(content).toMatchSnapshot(filename);
-      });
+      await matchPathsAndContents('**/*.graphql.d.ts', cwd);
 
-      const schemaDtsGlobResults = await glob('**/*.graphqls.d.ts', { cwd });
-      deepStrictEqual(schemaDtsGlobResults.length, 1);
+      await matchPathsAndContents('**/*.graphqls.d.ts', cwd);
 
-      const schemaDtsGlobContents = await Promise.all(
-        schemaDtsGlobResults.map((filename) =>
-          readFile(rel(filename)).then((content) => ({ filename, content })),
-        ),
-      );
-      schemaDtsGlobContents.forEach(({ filename, content }) => {
-        expect(content).toMatchSnapshot(filename);
-      });
-
-      const tsxResults = (
-        await glob('__generated__/**/*.tsx', {
-          cwd,
-        })
-      ).sort();
-      deepStrictEqual(tsxResults.length, 4);
-      expect(tsxResults).toMatchSnapshot('tsxResults');
-      for (const tsxRelPath of tsxResults)
-        expect(await readFile(pathJoin(cwd, tsxRelPath))).toMatchSnapshot(
-          tsxRelPath,
-        );
+      await matchPathsAndContents('__generated__/**/*.tsx', cwd);
     },
     1000 * 1000,
   );
