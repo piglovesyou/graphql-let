@@ -4,12 +4,13 @@ import { processGraphQLCodegenForFiles } from '../../src/lib/documents';
 import createExecContext from '../../src/lib/exec-context';
 import { createPaths } from '../../src/lib/paths';
 import { FileCodegenContext } from '../../src/lib/types';
+import { matchPathsAndContents } from '../__tools/match-paths-and-contents';
 
 const cwd = pathJoin(__dirname, '../__fixtures/graphql-codegen');
 
 describe('graphql-codegen.ts', () => {
   test(
-    'xx',
+    'works',
     async () => {
       const [config, configHash] = await loadConfig(cwd);
 
@@ -23,11 +24,8 @@ describe('graphql-codegen.ts', () => {
           dtsContentDecorator: (_) => _,
         },
       ];
-      const result = await processGraphQLCodegenForFiles(
-        execContext,
-        codegenContext,
-      );
-      console.log(result);
+      await processGraphQLCodegenForFiles(execContext, codegenContext);
+      await matchPathsAndContents(['__generated__'], cwd);
     },
     1000 * 1000,
   );
