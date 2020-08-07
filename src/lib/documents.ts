@@ -69,7 +69,7 @@ function buildCodegenConfig(
     ...config,
     // @ts-ignore
     cwd,
-    // @ts-ignore This allows recognizing "#import" in GraphQL schema and documents
+    // @ts-ignore This allows recognizing "#import" in GraphQL documents
     skipGraphQLImport: false,
     config: {
       // TODO: Quit using codegenOpts
