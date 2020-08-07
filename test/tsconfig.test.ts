@@ -6,16 +6,16 @@ import {
   createVirtualCompilerHost,
 } from '@typescript/vfs';
 import fs from 'fs';
+import makeDir from 'make-dir';
 import ts from 'typescript';
 import { ok } from 'assert';
 import { join as pathJoin, dirname } from 'path';
 import gen from '../src/gen';
+import { fetch } from 'cross-fetch';
+import { cleanup } from './__tools/file';
 
 jest.mock('cross-fetch');
 
-import { fetch } from 'cross-fetch';
-
-import { rimraf } from './__tools/file';
 const cwd = pathJoin(__dirname, '__fixtures/tsconfig');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
 const getLib = (name: string) => {
@@ -26,13 +26,9 @@ const getLib = (name: string) => {
 const filenames = fs.readdirSync(cwd, { withFileTypes: true });
 
 describe('"graphql-let" command', () => {
-  beforeAll(async () => {
-    await rimraf(pathJoin(__dirname, '../__generated__'));
-    await rimraf(rel('**/*.graphql.d.ts'));
-    await rimraf(rel('**/*.graphqls.d.ts'));
-  }, 60 * 1000);
-
-  beforeEach(() => {
+  beforeEach(async () => {
+    await cleanup(cwd);
+    await makeDir(rel('__generated__'));
     const fsMap = createDefaultMapFromNodeModules({});
     filenames.forEach((file) => {
       if (file.isFile()) {
