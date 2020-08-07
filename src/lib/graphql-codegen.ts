@@ -16,9 +16,13 @@ export async function processGraphQLCodegen(
   try {
     const results: Types.FileOutput[] = await generate(generateArg, false);
     if (codegenContext.length !== results.length) throw new Error('never');
-    for (const [index, result] of results.entries()) {
+    // Object option "generates" in codegen obviously doesn't guarantee result's order.
+    const tsxPathTable = new Map<string, CodegenContext>(
+      codegenContext.map((c) => [c.tsxFullPath, c]),
+    );
+    for (const result of results) {
       const { filename, content } = result;
-      const context = codegenContext[index];
+      const context = tsxPathTable.get(filename);
       if (!context) throw new Error('never');
       await makeDir(path.dirname(filename));
       await writeFile(filename, withHash(context.gqlHash, content));

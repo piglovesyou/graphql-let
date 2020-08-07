@@ -41,14 +41,16 @@ describe('"graphql-let" command', () => {
     const properties = ['gqlRelPath', 'tsxRelPath', 'dtsRelPath', 'gqlHash'];
 
     const result1 = await gen({ cwd });
-    for (const { skip } of result1) ok(!skip);
+    for (const { skip, dtsRelPath } of result1)
+      ok(!skip, `${dtsRelPath} should be newly created!`);
     expect(
       result1.map((context) => pick(context, properties)),
     ).toMatchSnapshot();
     await matchPathsAndContents(['__generated__/**/*.tsx'], cwd);
 
     const result2 = await gen({ cwd });
-    for (const { skip } of result1) ok(skip);
+    for (const { skip, dtsRelPath } of result1)
+      ok(skip, `${dtsRelPath} should be cached!`);
     expect(
       result2.map((context) => pick(context, properties)),
     ).toMatchSnapshot();
