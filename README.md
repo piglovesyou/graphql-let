@@ -80,7 +80,7 @@ Note graphql-let is `devDependencies`.
 
 ```bash
 yarn add -D graphql-let @graphql-codegen/cli @graphql-codegen/plugin-helpers @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo
-yarn add @apollo/react-common @apollo/react-components @apollo/react-hooks
+yarn add @apollo/client
 ```
 
 ### 2. Configure .graphql-let.yml
