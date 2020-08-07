@@ -1,6 +1,6 @@
 import { join as pathJoin } from 'path';
 import loadConfig from '../../src/lib/config';
-import { processGraphQLCodegenForDocuments } from '../../src/lib/documents';
+import { processGraphQLCodegenForFiles } from '../../src/lib/documents';
 import createExecContext from '../../src/lib/exec-context';
 import { createPaths } from '../../src/lib/paths';
 import { FileCodegenContext } from '../../src/lib/types';
@@ -23,7 +23,7 @@ describe('graphql-codegen.ts', () => {
           dtsContentDecorator: (_) => _,
         },
       ];
-      const result = await processGraphQLCodegenForDocuments(
+      const result = await processGraphQLCodegenForFiles(
         execContext,
         codegenContext,
       );

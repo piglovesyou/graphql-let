@@ -57,9 +57,11 @@ describe('"graphql-let" command', () => {
         expect(content).toMatchSnapshot(filename);
       });
 
-      const tsxResults = await glob('__generated__/**/*.tsx', {
-        cwd,
-      });
+      const tsxResults = (
+        await glob('__generated__/**/*.tsx', {
+          cwd,
+        })
+      ).sort();
       deepStrictEqual(tsxResults.length, 4);
       expect(tsxResults).toMatchSnapshot('tsxResults');
       for (const tsxRelPath of tsxResults)

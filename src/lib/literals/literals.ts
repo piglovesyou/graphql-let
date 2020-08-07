@@ -10,7 +10,10 @@ import {
   visitLiteralCalls,
 } from '../../babel';
 import loadConfig from '../config';
-import { processGraphQLCodegenForDocuments } from '../documents';
+import {
+  processGraphQLCodegenForFiles,
+  processGraphQLCodegenForLiterals,
+} from '../documents';
 import { processDtsForContext } from '../dts';
 import createExecContext, { ExecContext } from '../exec-context';
 import { rimraf } from '../file';
@@ -54,6 +57,7 @@ export async function processLiterals(
   const { cwd, config, cacheFullDir } = execContext;
   const dtsRelDir = dirname(config.gqlDtsEntrypoint);
 
+  const literalCodegenContext: LiteralCodegenContext[] = [];
   const oldGqlHashes = new Set(Object.keys(partialCache));
 
   // Prepare
@@ -72,14 +76,16 @@ export async function processLiterals(
       cacheFullDir,
       cwd,
     );
-    codegenContext.push({
+    const context: LiteralCodegenContext = {
       ...createdPaths,
       gqlContent,
       strippedGqlContent,
       gqlHash,
       skip: Boolean(partialCache[gqlHash]),
       dtsContentDecorator: appendExportAsObject,
-    });
+    };
+    codegenContext.push(context);
+    literalCodegenContext.push(context);
 
     // Note: Non-stripped gqlContent is necessary
     // to write dtsEntrypoint.
@@ -90,7 +96,11 @@ export async function processLiterals(
   }
 
   // Run codegen to write .tsx
-  await processGraphQLCodegenForDocuments(execContext, codegenContext);
+  await processGraphQLCodegenForLiterals(
+    execContext,
+    literalCodegenContext,
+    sourceRelPath,
+  );
 
   // Remove old caches
   for (const oldGqlHash of oldGqlHashes) {
