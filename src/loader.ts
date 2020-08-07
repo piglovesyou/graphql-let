@@ -42,7 +42,7 @@ const processGraphQLLetLoader = memoize(
     const gqlRelPath = pathRelative(cwd, gqlFullPath);
     const codegenContext: CodegenContext[] = [];
 
-    const tsxContents = await processDocumentsForContext(
+    const [result] = await processDocumentsForContext(
       execContext,
       schemaHash,
       codegenContext,
@@ -51,7 +51,8 @@ const processGraphQLLetLoader = memoize(
     );
 
     // Cache was obsolete
-    if (tsxContents[gqlRelPath]) {
+    if (result) {
+      const { content } = result;
       updateLog('Generating .d.ts...');
       await processDtsForContext(execContext, codegenContext);
       updateLog(`${gqlRelPath} was generated.`);
@@ -59,7 +60,7 @@ const processGraphQLLetLoader = memoize(
       // Hack to prevent duplicated logs for simultaneous build, in SSR app for an example.
       await new Promise((resolve) => setTimeout(resolve, 0));
       logUpdate.done();
-      return tsxContents[gqlRelPath];
+      return content;
     } else {
       // When cache is fresh, just load it
       if (codegenContext.length !== 1) throw new Error('never');

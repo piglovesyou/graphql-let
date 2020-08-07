@@ -43,11 +43,6 @@ export async function findTargetDocuments({
   return { graphqlRelPaths, tsSourceRelPaths };
 }
 
-type ProcessDocumentsForContextReturnType = Record<
-  /*gqlRelPath*/ string,
-  /*tsxContent*/ string
->;
-
 class GraphQLLetConfig extends CodegenConfig {
   constructor(execContext: ExecContext, codegenContext: CodegenContext[]) {
     const { cwd, config, codegenOpts } = execContext;
@@ -125,7 +120,7 @@ class GraphQLLetConfig extends CodegenConfig {
       );
       return [resolved];
     }
-    return super.loadDocuments(pointers); // , this.getConfig());
+    return super.loadDocuments(pointers);
   }
 }
 
@@ -146,13 +141,12 @@ export async function processDocumentsForContext(
   codegenContext: CodegenContext[],
   gqlRelPaths: string[],
   gqlContents?: string[],
-) {
-  const tsxContents: ProcessDocumentsForContextReturnType = Object.create(null);
-  if (!gqlRelPaths.length) return tsxContents;
-
-  const documentCodegenContext: CodegenContext[] = [];
+): Promise<Types.FileOutput[]> {
+  if (!gqlRelPaths.length) return [];
 
   const { cwd } = execContext;
+  const documentCodegenContext: CodegenContext[] = [];
+
   for (const [i, gqlRelPath] of gqlRelPaths.entries()) {
     // Loader passes gqlContent directly
     const gqlContent = gqlContents
@@ -180,13 +174,11 @@ export async function processDocumentsForContext(
     codegenContext.push(context);
     documentCodegenContext.push(context);
   }
-  const results = await processGraphQLCodegenForDocuments(
+
+  if (documentCodegenContext.every(({ skip }) => skip)) return [];
+
+  return await processGraphQLCodegenForDocuments(
     execContext,
     documentCodegenContext,
   );
-  for (const [i, { content }] of results.entries()) {
-    const { gqlRelPath } = codegenContext[i]! as FileCodegenContext;
-    tsxContents[gqlRelPath] = content;
-  }
-  return tsxContents;
 }
