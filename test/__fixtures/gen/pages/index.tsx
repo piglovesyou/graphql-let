@@ -1,8 +1,18 @@
 import gql from 'graphql-let';
-const { useViewerQuery } = gql(`
+
+gql(`
   query ViewerX {
     viewer {
       name
+    }
+  }
+`);
+
+gql(`
+  # import Partial from './partial.graphql'
+  query ViewerY {
+    viewer {
+      ...Partial
     }
   }
 `);
