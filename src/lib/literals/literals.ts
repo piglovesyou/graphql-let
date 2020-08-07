@@ -10,10 +10,7 @@ import {
   visitLiteralCalls,
 } from '../../babel';
 import loadConfig from '../config';
-import {
-  processGraphQLCodegenForFiles,
-  processGraphQLCodegenForLiterals,
-} from '../documents';
+import { processGraphQLCodegenForLiterals } from '../documents';
 import { processDtsForContext } from '../dts';
 import createExecContext, { ExecContext } from '../exec-context';
 import { rimraf } from '../file';

@@ -1,16 +1,8 @@
 import { CodegenContext as CodegenConfig } from '@graphql-codegen/cli';
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
 import glob from 'globby';
-import * as graphql from 'graphql';
 import { join as pathJoin } from 'path';
-import { doc } from 'prettier';
-// import {
-//   ConfigTypes,
-//   GraphQLLetAdditionalOptions,
-//   PartialGraphqlCodegenOptions,
-// } from './config';
-// import { PartialCodegenOpts } from './create-codegen-opts';
+import { processImport } from '@graphql-tools/import';
 import { ExecContext } from './exec-context';
 import { readFile, readHash } from './file';
 import { processGraphQLCodegen } from './graphql-codegen';
@@ -91,9 +83,6 @@ function buildCodegenConfig(
   };
 }
 
-import { processImport } from '@graphql-tools/import';
-import utils = doc.utils;
-
 // GraphQLFileLoader only allows "# import" when passing file paths.
 // But we want it even in gql(`query {}`), don't we?
 // TODO: It turns out we should do Custom Loader instead of extending CodegenConfig..!
@@ -126,35 +115,10 @@ class CodegenConfigForLiteralDocuments extends CodegenConfig {
     const [pointer] = pointers;
     if (CodegenConfigForLiteralDocuments.isGraphQLImportFile(pointer)) {
       const sourceFullPath = pathJoin(this.cwd, this.sourceRelPath);
-      // const resolved = GraphQLFileLoader.prototype.handleFileContent(
-      //   pointer,
-      //   this.sourceRelPath,
-      //   { cwd: this.cwd },
-      // );
-      // return [resolved];
-
-      // if (!options.skipGraphQLImport && isGraphQLImportFile(rawSDL)) {
       const document = processImport(sourceFullPath, this.cwd, {
         [sourceFullPath]: pointer,
       });
       return [{ document }];
-      // const typeSystemDefinitions = document.definitions
-      //   .filter(d => !graphql.isExecutableDefinitionNode(d))
-      //   .map(definition => ({
-      //     kind: graphql.Kind.DOCUMENT,
-      //     definitions: [definition],
-      //   }));
-      // const mergedTypeDefs = mergeTypeDefs(typeSystemDefinitions, { useSchemaDefinition: false });
-      // const executableDefinitions = document.definitions.filter(graphql.isExecutableDefinitionNode);
-      // return {
-      //   location: pointer,
-      //   document: {
-      //     ...mergedTypeDefs,
-      //     definitions: [...mergedTypeDefs.definitions, ...executableDefinitions],
-      //   },
-      // };
-      // }
-      // return utils.parseGraphQLSDL(pointer, rawSDL.trim(), options);
     }
     return super.loadDocuments(pointers);
   }

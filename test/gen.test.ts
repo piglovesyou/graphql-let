@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import globby from 'globby';
 import { join as pathJoin } from 'path';
-import { deepStrictEqual } from 'assert';
 import gen from '../src/gen';
 import glob from 'globby';
-import { cleanup, readFile, rename } from './__tools/file';
+import { cleanup, rename } from './__tools/file';
 import pick from 'lodash.pick';
 import { matchPathsAndContents } from './__tools/match-paths-and-contents';
 
