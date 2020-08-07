@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import { ok } from 'assert';
 import { join as pathJoin } from 'path';
 import gen from '../src/gen';
-import glob from 'globby';
 import { cleanup, rename } from './__tools/file';
 import pick from 'lodash.pick';
 import { matchPathsAndContents } from './__tools/match-paths-and-contents';
@@ -29,51 +29,41 @@ describe('"graphql-let" command', () => {
 `,
     async () => {
       await gen({ cwd });
-
-      await matchPathsAndContents('**/*.graphql.d.ts', cwd);
-
-      await matchPathsAndContents('**/*.graphqls.d.ts', cwd);
-
-      await matchPathsAndContents('__generated__/**/*.tsx', cwd);
+      await matchPathsAndContents(
+        ['**/*.graphql.d.ts', '**/*.graphqls.d.ts', '__generated__/**/*.tsx'],
+        cwd,
+      );
     },
     1000 * 1000,
   );
 
   test(`runs twice and keeps valid caches`, async () => {
-    const properties = [
-      'gqlRelPath',
-      'tsxRelPath',
-      'dtsRelPath',
-      'gqlHash',
-      'skip',
-    ];
-    const result1 = await gen({ cwd });
-    expect(result1.map((context) => pick(context, properties))).toMatchSnapshot(
-      'skip: false',
-    );
+    const properties = ['gqlRelPath', 'tsxRelPath', 'dtsRelPath', 'gqlHash'];
 
-    const files1 = await glob('__generated__/**/*.tsx', { cwd });
-    expect(files1.sort()).toMatchSnapshot('should same');
+    const result1 = await gen({ cwd });
+    for (const { skip } of result1) ok(!skip);
+    expect(
+      result1.map((context) => pick(context, properties)),
+    ).toMatchSnapshot();
+    await matchPathsAndContents(['__generated__/**/*.tsx'], cwd);
 
     const result2 = await gen({ cwd });
-    expect(result2.map((context) => pick(context, properties))).toMatchSnapshot(
-      'skip: true',
-    );
-
-    const files2 = await glob('__generated__/**/*.tsx', { cwd });
-    expect(files2.sort()).toMatchSnapshot('should same');
+    for (const { skip } of result1) ok(skip);
+    expect(
+      result2.map((context) => pick(context, properties)),
+    ).toMatchSnapshot();
+    await matchPathsAndContents(['__generated__/**/*.tsx'], cwd);
   });
 
   test(`passes config to graphql-codegen as expected
 * "useIndexSignature: true" in config effect to result having "WithIndex<TObject>" type
 `, async () => {
     await gen({ cwd });
-    await matchPathsAndContents('schema/type-defs.graphqls.d.ts', cwd);
+    await matchPathsAndContents(['schema/type-defs.graphqls.d.ts'], cwd);
   });
 
   test(`documents: **/*.tsx generates .d.ts for babel`, async () => {
     await gen({ cwd, configFilePath: '.graphql-let-babel.yml' });
-    await matchPathsAndContents('__generated__', cwd);
-    await matchPathsAndContents('node_modules', cwd);
+    await matchPathsAndContents(['__generated__', 'node_modules'], cwd);
   });
 });

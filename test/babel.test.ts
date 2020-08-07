@@ -10,5 +10,5 @@ beforeAll(() => cleanup(cwd));
 runner(cwd, 'gql', {}, { sourceType: 'unambiguous' });
 
 test(`Generated files are okay`, async () => {
-  await matchPathsAndContents('fixtures/*/node_modules/**', cwd);
+  await matchPathsAndContents(['fixtures/*/node_modules/**'], cwd);
 });
