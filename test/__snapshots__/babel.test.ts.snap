@@ -18,6 +18,24 @@ Array [
 ]
 `;
 
+exports[`Generated files are okay: fixtures/*/node_modules/** 1`] = `
+Array [
+  "fixtures/basic/node_modules/@types/graphql-let/index.d.ts",
+  "fixtures/basic/node_modules/@types/graphql-let/input-3daf5b4311465bd8566d77d548e135871cc11646.d.ts",
+  "fixtures/basic/node_modules/@types/graphql-let/store.json",
+  "fixtures/basic/node_modules/graphql-let/__generated__/input-3daf5b4311465bd8566d77d548e135871cc11646.tsx",
+  "fixtures/tagged-template-call/node_modules/@types/graphql-let/index.d.ts",
+  "fixtures/tagged-template-call/node_modules/@types/graphql-let/input-3daf5b4311465bd8566d77d548e135871cc11646.d.ts",
+  "fixtures/tagged-template-call/node_modules/@types/graphql-let/store.json",
+  "fixtures/tagged-template-call/node_modules/graphql-let/__generated__/input-3daf5b4311465bd8566d77d548e135871cc11646.tsx",
+  "fixtures/with-fragments/node_modules/@types/graphql-let/index.d.ts",
+  "fixtures/with-fragments/node_modules/@types/graphql-let/input-6500e855ce0d4683a1e6e953a93084b382d7a765.d.ts",
+  "fixtures/with-fragments/node_modules/@types/graphql-let/store.json",
+  "fixtures/with-fragments/node_modules/graphql-let/__generated__/input-3daf5b4311465bd8566d77d548e135871cc11646.tsx",
+  "fixtures/with-fragments/node_modules/graphql-let/__generated__/input-6500e855ce0d4683a1e6e953a93084b382d7a765.tsx",
+]
+`;
+
 exports[`Generated files are okay: fixtures/basic/node_modules/@types/graphql-let/index.d.ts 1`] = `
 "import T3daf5b4311465bd8566d77d548e135871cc11646 from './input-3daf5b4311465bd8566d77d548e135871cc11646.d.ts';
 export default function gql(gql: \`query Viewer { viewer { name } }\`): T3daf5b4311465bd8566d77d548e135871cc11646.__AllExports;
