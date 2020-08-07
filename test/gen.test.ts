@@ -3,6 +3,7 @@
 import { ok } from 'assert';
 import { join as pathJoin } from 'path';
 import gen from '../src/gen';
+import { CodegenContext } from '../src/lib/types';
 import { cleanup, rename } from './__tools/file';
 import pick from 'lodash.pick';
 import { matchPathsAndContents } from './__tools/match-paths-and-contents';
@@ -37,25 +38,26 @@ describe('"graphql-let" command', () => {
     1000 * 1000,
   );
 
-  test(`runs twice and keeps valid caches`, async () => {
-    const properties = ['gqlRelPath', 'tsxRelPath', 'dtsRelPath', 'gqlHash'];
+  test(
+    `runs twice and keeps valid caches`,
+    async () => {
+      const pickProperties = (context: CodegenContext) =>
+        pick(context, ['gqlRelPath', 'tsxRelPath', 'dtsRelPath', 'gqlHash']);
+      const result1 = await gen({ cwd });
+      for (const { skip, dtsRelPath } of result1)
+        ok(!skip, `${dtsRelPath} should be newly created!`);
+      expect(result1.map(pickProperties)).toMatchSnapshot();
+      await matchPathsAndContents(['__generated__/**/*.tsx'], cwd);
 
-    const result1 = await gen({ cwd });
-    for (const { skip, dtsRelPath } of result1)
-      ok(!skip, `${dtsRelPath} should be newly created!`);
-    expect(
-      result1.map((context) => pick(context, properties)),
-    ).toMatchSnapshot();
-    await matchPathsAndContents(['__generated__/**/*.tsx'], cwd);
+      const result2 = await gen({ cwd });
+      for (const { skip, dtsRelPath } of result2)
+        ok(skip, `${dtsRelPath} should be cached!`);
 
-    const result2 = await gen({ cwd });
-    for (const { skip, dtsRelPath } of result1)
-      ok(skip, `${dtsRelPath} should be cached!`);
-    expect(
-      result2.map((context) => pick(context, properties)),
-    ).toMatchSnapshot();
-    await matchPathsAndContents(['__generated__/**/*.tsx'], cwd);
-  });
+      expect(result2.map(pickProperties)).toMatchSnapshot();
+      await matchPathsAndContents(['__generated__/**/*.tsx'], cwd);
+    },
+    1000 * 1000,
+  );
 
   test(`passes config to graphql-codegen as expected
 * "useIndexSignature: true" in config effect to result having "WithIndex<TObject>" type
