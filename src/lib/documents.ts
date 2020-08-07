@@ -5,16 +5,14 @@ import { join as pathJoin } from 'path';
 import { processImport } from '@graphql-tools/import';
 import { ExecContext } from './exec-context';
 import { readFile, readHash } from './file';
-import { processGraphQLCodegen } from './graphql-codegen';
+import { buildCodegenConfig, processGraphQLCodegen } from './graphql-codegen';
 import { createHash } from './hash';
 import { createPaths, isTypeScriptPath } from './paths';
 import {
   CodegenContext,
   FileCodegenContext,
-  isLiteralContext,
   LiteralCodegenContext,
 } from './types';
-import ConfiguredOutput = Types.ConfiguredOutput;
 
 export async function findTargetDocuments({
   cwd,
@@ -40,47 +38,6 @@ export async function findTargetDocuments({
     isTypeScriptPath(p) ? tsSourceRelPaths.push(p) : graphqlRelPaths.push(p);
   }
   return { graphqlRelPaths, tsSourceRelPaths };
-}
-
-function buildCodegenConfig(
-  { cwd, config, codegenOpts }: ExecContext,
-  codegenContext: CodegenContext[],
-) {
-  const generates: {
-    [outputPath: string]: ConfiguredOutput;
-  } = Object.create(null);
-
-  for (const context of codegenContext) {
-    const { tsxFullPath } = context;
-    const documents = isLiteralContext(context)
-      ? // XXX: We want to pass shorter `strippedGqlContent`,
-        // but `# import` also disappears!
-        (context as LiteralCodegenContext).gqlContent
-      : (context as FileCodegenContext).gqlRelPath;
-    generates[tsxFullPath] = {
-      ...config.generateOptions,
-      // graphql-let -controlled fields:
-      documents,
-      plugins: config.plugins,
-    };
-  }
-
-  return {
-    ...config,
-    // @ts-ignore
-    cwd,
-    // @ts-ignore This allows recognizing "#import" in GraphQL documents
-    skipGraphQLImport: false,
-    config: {
-      // TODO: Quit using codegenOpts
-      ...codegenOpts.config,
-      ...config.config,
-    },
-    // In our config, "documents" should always be empty
-    // since "generates" should take care of them.
-    documents: undefined,
-    generates,
-  };
 }
 
 // GraphQLFileLoader only allows "# import" when passing file paths.

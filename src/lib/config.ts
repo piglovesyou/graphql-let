@@ -1,4 +1,4 @@
-import { Types } from '@graphql-codegen/plugin-helpers/types';
+import { Types } from '@graphql-codegen/plugin-helpers';
 import { join as pathJoin } from 'path';
 import { parse as parseYaml } from 'yaml';
 import { DEFAULT_CONFIG_FILENAME } from './consts';
