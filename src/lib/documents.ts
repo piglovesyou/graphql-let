@@ -64,6 +64,8 @@ class GraphQLLetConfig extends CodegenConfig {
         ...config,
         // @ts-ignore
         cwd,
+        // @ts-ignore
+        skipGraphQLImport: false,
         config: {
           // TODO: Quit using codegenOpts
           ...codegenOpts.config,

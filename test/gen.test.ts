@@ -6,7 +6,7 @@ import { deepStrictEqual } from 'assert';
 import gen from '../src/gen';
 import glob from 'globby';
 import { cleanup, readFile, rename } from './__tools/file';
-import { assertObjectsInclude } from './__tools/object';
+import pick from 'lodash.pick';
 
 const cwd = pathJoin(__dirname, '__fixtures/gen');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
@@ -60,83 +60,39 @@ describe('"graphql-let" command', () => {
       const tsxResults = await glob('__generated__/**/*.tsx', {
         cwd,
       });
-      deepStrictEqual(tsxResults.length, 3);
-      deepStrictEqual(
-        tsxResults.find((r) => r.includes('shouldBeIgnored1')),
-        undefined,
-      );
-      const tsxContents = await Promise.all(
-        tsxResults.map((filename) =>
-          readFile(pathJoin(cwd, filename)).then((content) => ({
-            filename,
-            content,
-          })),
-        ),
-      );
-      tsxContents.forEach(({ filename, content }) => {
-        expect(content).toMatchSnapshot(filename);
-      });
+      deepStrictEqual(tsxResults.length, 4);
+      expect(tsxResults).toMatchSnapshot('tsxResults');
+      for (const tsxRelPath of tsxResults)
+        expect(await readFile(pathJoin(cwd, tsxRelPath))).toMatchSnapshot(
+          tsxRelPath,
+        );
     },
     1000 * 1000,
   );
 
   test(`runs twice and keeps valid caches`, async () => {
-    assertObjectsInclude(await gen({ cwd }), [
-      {
-        gqlRelPath: 'schema/type-defs.graphqls',
-        tsxRelPath: 'schema/type-defs.graphqls.tsx',
-        dtsRelPath: 'schema/type-defs.graphqls.d.ts',
-        gqlHash: '14d70566f4d02e53323ea8c820b4a3edeecc4672',
-        skip: false,
-      },
-      {
-        gqlRelPath: 'pages/viewer.graphql',
-        tsxRelPath: 'pages/viewer.graphql.tsx',
-        dtsRelPath: 'pages/viewer.graphql.d.ts',
-        gqlHash: 'c4ffa0d4a98b9173e641f88cb713cbbaa35a8692',
-        skip: false,
-      },
-      {
-        gqlRelPath: 'pages/viewer2.graphql',
-        tsxRelPath: 'pages/viewer2.graphql.tsx',
-        dtsRelPath: 'pages/viewer2.graphql.d.ts',
-        gqlHash: 'b2463a5b834ec0328b95dd554ca377c66498827e',
-        skip: false,
-      },
-    ]);
+    const properties = [
+      'gqlRelPath',
+      'tsxRelPath',
+      'dtsRelPath',
+      'gqlHash',
+      'skip',
+    ];
+    const result1 = await gen({ cwd });
+    expect(result1.map((context) => pick(context, properties))).toMatchSnapshot(
+      'skip: false',
+    );
 
-    assertObjectsInclude(await gen({ cwd }), [
-      {
-        gqlRelPath: 'schema/type-defs.graphqls',
-        tsxRelPath: 'schema/type-defs.graphqls.tsx',
-        dtsRelPath: 'schema/type-defs.graphqls.d.ts',
-        gqlHash: '14d70566f4d02e53323ea8c820b4a3edeecc4672',
-        skip: true,
-      },
-      {
-        gqlRelPath: 'pages/viewer.graphql',
-        tsxRelPath: 'pages/viewer.graphql.tsx',
-        dtsRelPath: 'pages/viewer.graphql.d.ts',
-        gqlHash: 'c4ffa0d4a98b9173e641f88cb713cbbaa35a8692',
-        skip: true,
-      },
-      {
-        gqlRelPath: 'pages/viewer2.graphql',
-        tsxRelPath: 'pages/viewer2.graphql.tsx',
-        dtsRelPath: 'pages/viewer2.graphql.d.ts',
-        gqlHash: 'b2463a5b834ec0328b95dd554ca377c66498827e',
-        skip: true,
-      },
-    ]);
+    const files1 = await glob('__generated__/**/*.tsx', { cwd });
+    expect(files1.sort()).toMatchSnapshot('should same');
 
-    const actual = await glob('__generated__/**/*.tsx', {
-      cwd,
-    });
-    deepStrictEqual(actual.sort(), [
-      '__generated__/pages/viewer.graphql.tsx',
-      '__generated__/pages/viewer2.graphql.tsx',
-      '__generated__/schema/type-defs.graphqls.tsx',
-    ]);
+    const result2 = await gen({ cwd });
+    expect(result2.map((context) => pick(context, properties))).toMatchSnapshot(
+      'skip: true',
+    );
+
+    const files2 = await glob('__generated__/**/*.tsx', { cwd });
+    expect(files2.sort()).toMatchSnapshot('should same');
   });
 
   test(`passes config to graphql-codegen as expected
@@ -149,26 +105,12 @@ describe('"graphql-let" command', () => {
   });
 
   test(`documents: **/*.tsx generates .d.ts for babel`, async () => {
-    const expectedFiles = [
-      '__generated__/pages/index-c307b608d6f3bd4130e526f0de83cbe05bff54cd.tsx',
-      '__generated__/pages/viewer.graphql.tsx',
-      '__generated__/pages/viewer2.graphql.tsx',
-      '__generated__/schema/type-defs.graphqls.tsx',
-      'node_modules/@types/graphql-let/index.d.ts',
-      'node_modules/@types/graphql-let/pages/index-c307b608d6f3bd4130e526f0de83cbe05bff54cd.d.ts',
-      'node_modules/@types/graphql-let/store.json',
-    ];
     await gen({ cwd, configFilePath: '.graphql-let-babel.yml' });
 
     const files = await globby(['__generated__', 'node_modules'], { cwd });
-    deepStrictEqual(files.sort(), expectedFiles.sort());
+    expect(files.sort()).toMatchSnapshot('paths');
 
-    const contents = await Promise.all(
-      files.map((file) => {
-        return readFile(rel(file)).then((content) => [file, content]);
-      }),
-    );
-    for (const [file, content] of contents)
-      expect(content).toMatchSnapshot(file);
+    for (const file of files)
+      expect(await readFile(pathJoin(cwd, file))).toMatchSnapshot(file);
   });
 });
