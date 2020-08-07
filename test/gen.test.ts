@@ -14,7 +14,7 @@ const rel = (relPath: string) => pathJoin(cwd, relPath);
 describe('"graphql-let" command', () => {
   beforeAll(async () => {
     await rename(rel('_gitignore'), rel('.gitignore'));
-  }, 60 * 1000);
+  });
 
   beforeEach(() => cleanup(cwd));
 
@@ -23,41 +23,33 @@ describe('"graphql-let" command', () => {
     // await cleanup();
   });
 
-  test(
-    `generates number of .d.ts ignoring specified files as expected
+  test(`generates number of .d.ts ignoring specified files as expected
 * ignoring "!" paths in "schema" and "documents" of graphql-let.yml
 * ignoring files specified in .gitignore
-`,
-    async () => {
-      await gen({ cwd });
-      await matchPathsAndContents(
-        ['**/*.graphql.d.ts', '**/*.graphqls.d.ts', '__generated__/**/*.tsx'],
-        cwd,
-      );
-    },
-    1000 * 1000,
-  );
+`, async () => {
+    await gen({ cwd });
+    await matchPathsAndContents(
+      ['**/*.graphql.d.ts', '**/*.graphqls.d.ts', '__generated__/**/*.tsx'],
+      cwd,
+    );
+  });
 
-  test(
-    `runs twice and keeps valid caches`,
-    async () => {
-      const pickProperties = (context: CodegenContext) =>
-        pick(context, ['gqlRelPath', 'tsxRelPath', 'dtsRelPath', 'gqlHash']);
-      const result1 = await gen({ cwd });
-      for (const { skip, dtsRelPath } of result1)
-        ok(!skip, `${dtsRelPath} should be newly created!`);
-      expect(result1.map(pickProperties)).toMatchSnapshot();
-      await matchPathsAndContents(['__generated__/**/*.tsx'], cwd);
+  test(`runs twice and keeps valid caches`, async () => {
+    const pickProperties = (context: CodegenContext) =>
+      pick(context, ['gqlRelPath', 'tsxRelPath', 'dtsRelPath', 'gqlHash']);
+    const result1 = await gen({ cwd });
+    for (const { skip, dtsRelPath } of result1)
+      ok(!skip, `${dtsRelPath} should be newly created!`);
+    expect(result1.map(pickProperties)).toMatchSnapshot();
+    await matchPathsAndContents(['__generated__/**/*.tsx'], cwd);
 
-      const result2 = await gen({ cwd });
-      for (const { skip, dtsRelPath } of result2)
-        ok(skip, `${dtsRelPath} should be cached!`);
+    const result2 = await gen({ cwd });
+    for (const { skip, dtsRelPath } of result2)
+      ok(skip, `${dtsRelPath} should be cached!`);
 
-      expect(result2.map(pickProperties)).toMatchSnapshot();
-      await matchPathsAndContents(['__generated__/**/*.tsx'], cwd);
-    },
-    1000 * 1000,
-  );
+    expect(result2.map(pickProperties)).toMatchSnapshot();
+    await matchPathsAndContents(['__generated__/**/*.tsx'], cwd);
+  });
 
   test(`passes config to graphql-codegen as expected
 * "useIndexSignature: true" in config effect to result having "WithIndex<TObject>" type

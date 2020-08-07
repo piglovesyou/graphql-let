@@ -69,7 +69,7 @@ function buildCodegenConfig(
     ...config,
     // @ts-ignore
     cwd,
-    // @ts-ignore
+    // @ts-ignore This allows recognizing "#import" in GraphQL schema and documents
     skipGraphQLImport: false,
     config: {
       // TODO: Quit using codegenOpts
@@ -85,7 +85,6 @@ function buildCodegenConfig(
 
 // GraphQLFileLoader only allows "# import" when passing file paths.
 // But we want it even in gql(`query {}`), don't we?
-// TODO: It turns out we should do Custom Loader instead of extending CodegenConfig..!
 class CodegenConfigForLiteralDocuments extends CodegenConfig {
   sourceRelPath: string;
   constructor(
@@ -93,34 +92,26 @@ class CodegenConfigForLiteralDocuments extends CodegenConfig {
     codegenContext: CodegenContext[],
     sourceRelPath: string,
   ) {
-    const { cwd } = execContext;
-
     super({
       config: buildCodegenConfig(execContext, codegenContext),
     });
+    const { cwd } = execContext;
     this.cwd = cwd;
     this.sourceRelPath = sourceRelPath;
   }
 
-  // from graphql-file-loader
-  static isGraphQLImportFile(rawSDL: string) {
-    const trimmedRawSDL = rawSDL.trim();
-    return (
-      trimmedRawSDL.startsWith('# import') ||
-      trimmedRawSDL.startsWith('#import')
-    );
-  }
-
   async loadDocuments(pointers: any) {
-    const [pointer] = pointers;
-    if (CodegenConfigForLiteralDocuments.isGraphQLImportFile(pointer)) {
-      const sourceFullPath = pathJoin(this.cwd, this.sourceRelPath);
-      const document = processImport(sourceFullPath, this.cwd, {
-        [sourceFullPath]: pointer,
-      });
-      return [{ document }];
-    }
-    return super.loadDocuments(pointers);
+    const sourceFullPath = pathJoin(this.cwd, this.sourceRelPath);
+    return pointers.map((pointer: string) => {
+      // This allows to start from content of GraphQL document, not file path
+      const predefinedImports = { [sourceFullPath]: pointer };
+      const document = processImport(
+        sourceFullPath,
+        this.cwd,
+        predefinedImports,
+      );
+      return { document };
+    });
   }
 }
 

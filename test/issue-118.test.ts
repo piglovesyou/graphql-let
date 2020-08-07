@@ -10,13 +10,9 @@ describe('"baseUrl" and "mappers" combo', () => {
     await rimraf(rel('__generated__'));
     await rimraf(rel('**/*.graphql.d.ts'));
     await rimraf(rel('**/*.graphqls.d.ts'));
-  }, 60 * 1000);
+  });
 
-  it(
-    'should run graphql-let command properly',
-    async () => {
-      await gen({ cwd });
-    },
-    1000 * 1000,
-  );
+  it('should run graphql-let command properly', async () => {
+    await gen({ cwd });
+  });
 });

@@ -65,91 +65,75 @@ describe('"graphql-let" command', () => {
     });
     ts.createCompilerHost = mock;
   });
-  test(
-    'fails when ts is not configured correctly',
-    async () => {
-      let error;
-      try {
-        await gen({
-          cwd,
-          configFilePath: 'graphql-let.yml',
-        });
-      } catch (e) {
-        error = e;
-      }
-      ok(error.message.indexOf('Failed to generate .d.ts.') >= 0);
-    },
-    60 * 1000,
-  );
-  test(
-    'passes with the correct tsconfig',
-    async () => {
-      let error = null;
-      try {
-        await gen({
-          cwd,
-          configFilePath: 'graphql-let2.yml',
-        });
-      } catch (e) {
-        error = e;
-      }
-      ok(error === null);
-    },
-    60 * 1000,
-  );
-  test(
-    'reads default tsconfig',
-    async () => {
-      const findConfigFileMock = jest.spyOn(ts, 'findConfigFile');
-      let error = null;
-      try {
-        await gen({
-          cwd,
-          configFilePath: 'graphql-let3.yml',
-        });
-      } catch (e) {
-        error = e;
-      }
-      ok(error === null);
-      expect(findConfigFileMock).toBeCalledWith(
-        expect.any(String),
-        expect.any(Function),
-        'tsconfig.json',
-      );
-    },
-    60 * 1000,
-  );
-  test(
-    'handles schema objects',
-    async () => {
-      // eslint-disable-next-line
-      const schemaJson = require('./__fixtures/tsconfig/schema.json');
-      (fetch as any).mockReturnValue({
-        json() {
-          return { data: schemaJson };
-        },
+  test('fails when ts is not configured correctly', async () => {
+    let error;
+    try {
+      await gen({
+        cwd,
+        configFilePath: 'graphql-let.yml',
       });
-      let error = null;
-      try {
-        await gen({
-          cwd,
-          configFilePath: 'graphql-let4.yml',
-        });
-      } catch (e) {
-        console.log(e);
-        error = e;
-      }
-      ok(error === null, error);
-      expect(fetch).toHaveBeenCalledTimes(1);
-      expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:3000/graphql',
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: 'GRAPHQL-LET',
-          }),
+    } catch (e) {
+      error = e;
+    }
+    ok(error.message.indexOf('Failed to generate .d.ts.') >= 0);
+  });
+  test('passes with the correct tsconfig', async () => {
+    let error = null;
+    try {
+      await gen({
+        cwd,
+        configFilePath: 'graphql-let2.yml',
+      });
+    } catch (e) {
+      error = e;
+    }
+    ok(error === null);
+  });
+  test('reads default tsconfig', async () => {
+    const findConfigFileMock = jest.spyOn(ts, 'findConfigFile');
+    let error = null;
+    try {
+      await gen({
+        cwd,
+        configFilePath: 'graphql-let3.yml',
+      });
+    } catch (e) {
+      error = e;
+    }
+    ok(error === null);
+    expect(findConfigFileMock).toBeCalledWith(
+      expect.any(String),
+      expect.any(Function),
+      'tsconfig.json',
+    );
+  });
+  test('handles schema objects', async () => {
+    // eslint-disable-next-line
+      const schemaJson = require('./__fixtures/tsconfig/schema.json');
+    (fetch as any).mockReturnValue({
+      json() {
+        return { data: schemaJson };
+      },
+    });
+    let error = null;
+    try {
+      await gen({
+        cwd,
+        configFilePath: 'graphql-let4.yml',
+      });
+    } catch (e) {
+      console.log(e);
+      error = e;
+    }
+    ok(error === null, error);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledWith(
+      'http://localhost:3000/graphql',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: 'GRAPHQL-LET',
         }),
-      );
-    },
-    60 * 1000,
-  );
+      }),
+    );
+  });
 });

@@ -13,54 +13,46 @@ describe('graphql-let/loader', () => {
     await rimraf(pathJoin(cwd, '__generated__'));
   });
 
-  test(
-    'generates .tsx and .d.ts',
-    async () => {
-      const fixture = 'pages/viewer.graphql';
-      const stats = await compiler(cwd, fixture, 'node');
+  test('generates .tsx and .d.ts', async () => {
+    const fixture = 'pages/viewer.graphql';
+    const stats = await compiler(cwd, fixture, 'node');
+    const { 0: actual, length } = stats
+      .toJson()
+      .modules!.map((m) => m.source)
+      .filter(Boolean);
+
+    deepStrictEqual(length, 1);
+    expect(actual).toMatchSnapshot();
+  });
+
+  test('runs well for simultaneous execution, assuming SSR', async () => {
+    const expectedTargets: [string, 'node' | 'web'][] = [
+      ['pages/viewer.graphql', 'node'],
+      ['pages/viewer.graphql', 'web'],
+      ['pages/viewer2.graphql', 'node'],
+      ['pages/viewer2.graphql', 'web'],
+    ];
+    const results = await Promise.all(
+      expectedTargets.map(([file, target]) => compiler(cwd, file, target)),
+    );
+    for (const [i, stats] of results.entries()) {
+      const [file] = expectedTargets[i];
       const { 0: actual, length } = stats
         .toJson()
         .modules!.map((m) => m.source)
         .filter(Boolean);
 
       deepStrictEqual(length, 1);
-      expect(actual).toMatchSnapshot();
-    },
-    60 * 1000,
-  );
-
-  test(
-    'runs well for simultaneous execution, assuming SSR',
-    async () => {
-      const expectedTargets: [string, 'node' | 'web'][] = [
-        ['pages/viewer.graphql', 'node'],
-        ['pages/viewer.graphql', 'web'],
-        ['pages/viewer2.graphql', 'node'],
-        ['pages/viewer2.graphql', 'web'],
-      ];
-      const results = await Promise.all(
-        expectedTargets.map(([file, target]) => compiler(cwd, file, target)),
-      );
-      for (const [i, stats] of results.entries()) {
-        const [file] = expectedTargets[i];
-        const { 0: actual, length } = stats
-          .toJson()
-          .modules!.map((m) => m.source)
-          .filter(Boolean);
-
-        deepStrictEqual(length, 1);
-        switch (file) {
-          case 'pages/viewer.graphql':
-            ok(actual!.includes('export function useViewerQuery('));
-            break;
-          case 'pages/viewer2.graphql':
-            ok(actual!.includes('export function useViewer2Query('));
-            break;
-        }
+      switch (file) {
+        case 'pages/viewer.graphql':
+          ok(actual!.includes('export function useViewerQuery('));
+          break;
+        case 'pages/viewer2.graphql':
+          ok(actual!.includes('export function useViewer2Query('));
+          break;
       }
-      const globResults = await glob('**/*.graphql.d.ts', { cwd });
-      strictEqual(globResults.length, 2);
-    },
-    60 * 1000,
-  );
+    }
+    const globResults = await glob('**/*.graphql.d.ts', { cwd });
+    strictEqual(globResults.length, 2);
+  });
 });
