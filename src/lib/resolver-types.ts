@@ -1,5 +1,6 @@
 import { Types } from '@graphql-codegen/plugin-helpers/types';
 import globby from 'globby';
+import slash from 'slash';
 import { ConfigTypes } from './config';
 import { ExecContext } from './exec-context';
 import { readFile, readHash } from './file';
@@ -51,11 +52,14 @@ export async function createSchemaHash(execContext: ExecContext) {
   const { config, configHash, cwd } = execContext;
   const schemaPointers = getSchemaPointers(config.schema!);
   const filePointers = schemaPointers.filter((p) => !isURL(p));
-  const files = await globby(filePointers, { cwd, absolute: true });
+
   // XXX: Should stream?
-  const contents = await pMap(files, (file) => readFile(file), {
-    concurrency: 100,
-  });
+  const files = await globby(filePointers, { cwd, absolute: true });
+  const contents = await pMap(
+    files.map(slash).sort(),
+    (file) => readFile(file),
+    { concurrency: 10 },
+  );
   return createHashFromBuffers([configHash, ...contents]);
 }
 
