@@ -72,12 +72,12 @@ const ensureOutputDts = async (message: string): Promise<ResultType> => {
 describe('HMR', () => {
   let app: execa.ExecaChildProcess;
 
-  beforeAll(async () => await spawn('yarn', ['install']), 60 * 1000);
+  beforeAll(async () => await spawn('yarn', ['install']));
   beforeEach(async () => {
     await restoreFixtures();
     await rimraf(rel('__generated__'));
     await spawn('node', ['../../../bin/graphql-let.js']);
-  }, 60 * 1000);
+  });
   afterEach(async () => {
     await killApp(app);
     await restoreFixtures();

@@ -1,12 +1,18 @@
-// Take care of `.graphql`s
+import { CodegenContext as CodegenConfig } from '@graphql-codegen/cli';
+import { Types } from '@graphql-codegen/plugin-helpers';
 import glob from 'globby';
 import { join as pathJoin } from 'path';
+import { processImport } from '@graphql-tools/import';
 import { ExecContext } from './exec-context';
 import { readFile, readHash } from './file';
-import { processGraphQLCodegen } from './graphql-codegen';
+import { buildCodegenConfig, processGraphQLCodegen } from './graphql-codegen';
 import { createHash } from './hash';
 import { createPaths, isTypeScriptPath } from './paths';
-import { CodegenContext, FileCodegenContext } from './types';
+import {
+  CodegenContext,
+  FileCodegenContext,
+  LiteralCodegenContext,
+} from './types';
 
 export async function findTargetDocuments({
   cwd,
@@ -34,20 +40,77 @@ export async function findTargetDocuments({
   return { graphqlRelPaths, tsSourceRelPaths };
 }
 
+// GraphQLFileLoader only allows "# import" when passing file paths.
+// But we want it even in gql(`query {}`), don't we?
+class CodegenConfigForLiteralDocuments extends CodegenConfig {
+  sourceRelPath: string;
+  constructor(
+    execContext: ExecContext,
+    codegenContext: CodegenContext[],
+    sourceRelPath: string,
+  ) {
+    super({
+      config: buildCodegenConfig(execContext, codegenContext),
+    });
+    const { cwd } = execContext;
+    this.cwd = cwd;
+    this.sourceRelPath = sourceRelPath;
+  }
+
+  async loadDocuments(pointers: any) {
+    const sourceFullPath = pathJoin(this.cwd, this.sourceRelPath);
+    return pointers.map((pointer: string) => {
+      // This allows to start from content of GraphQL document, not file path
+      const predefinedImports = { [sourceFullPath]: pointer };
+      const document = processImport(
+        sourceFullPath,
+        this.cwd,
+        predefinedImports,
+      );
+      return { document };
+    });
+  }
+}
+
+export function processGraphQLCodegenForFiles(
+  execContext: ExecContext,
+  codegenContext: FileCodegenContext[],
+) {
+  return processGraphQLCodegen(
+    execContext,
+    codegenContext,
+    buildCodegenConfig(execContext, codegenContext),
+  );
+}
+
+export function processGraphQLCodegenForLiterals(
+  execContext: ExecContext,
+  codegenContext: LiteralCodegenContext[],
+  sourceRelPath: string,
+) {
+  return processGraphQLCodegen(
+    execContext,
+    codegenContext,
+    new CodegenConfigForLiteralDocuments(
+      execContext,
+      codegenContext,
+      sourceRelPath,
+    ),
+  );
+}
+
 export async function processDocumentsForContext(
   execContext: ExecContext,
   schemaHash: string,
   codegenContext: CodegenContext[],
   gqlRelPaths: string[],
   gqlContents?: string[],
-) {
-  const tsxContents: Record<
-    /*gqlRelPath*/ string,
-    /*tsxContent*/ string
-  > = Object.create(null);
-  if (!gqlRelPaths.length) return tsxContents;
+): Promise<Types.FileOutput[]> {
+  if (!gqlRelPaths.length) return [];
 
-  const { cwd, config, codegenOpts } = execContext;
+  const { cwd } = execContext;
+  const documentCodegenContext: FileCodegenContext[] = [];
+
   for (const [i, gqlRelPath] of gqlRelPaths.entries()) {
     // Loader passes gqlContent directly
     const gqlContent = gqlContents
@@ -73,22 +136,13 @@ export async function processDocumentsForContext(
       skip: !shouldUpdate,
     };
     codegenContext.push(context);
-
-    if (shouldUpdate) {
-      // We don't delete tsxFullPath and dtsFullPath here because:
-      // 1. We'll overwrite them so deleting is not necessary
-      // 2. Windows throws EPERM error for the deleting and creating file process.
-      const tsxContent = await processGraphQLCodegen({
-        cwd,
-        filename: tsxFullPath,
-        gqlHash,
-        schema: config.schema,
-        documents: gqlRelPath,
-        plugins: config.plugins,
-        config: codegenOpts.config,
-      });
-      tsxContents[gqlRelPath] = tsxContent;
-    }
+    documentCodegenContext.push(context);
   }
-  return tsxContents;
+
+  if (documentCodegenContext.every(({ skip }) => skip)) return [];
+
+  return await processGraphQLCodegenForFiles(
+    execContext,
+    documentCodegenContext,
+  );
 }

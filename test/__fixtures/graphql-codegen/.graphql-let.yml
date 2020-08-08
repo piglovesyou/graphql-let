@@ -1,5 +1,7 @@
 schema: "schema/type-defs.graphqls"
-documents: "**/*.graphql"
+documents:
+    - "**/*.graphql"
+    - "!shouldBeIgnored1"
 plugins:
     - typescript
     - typescript-operations
@@ -7,3 +9,4 @@ plugins:
 respectGitIgnore: true
 config:
     useIndexSignature: true
+cacheDir: __generated__

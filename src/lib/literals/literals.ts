@@ -1,5 +1,4 @@
 import { loadOptions } from '@babel/core';
-import { generate } from '@graphql-codegen/cli';
 import traverse, { NodePath } from '@babel/traverse';
 import makeDir from 'make-dir';
 import { join as pathJoin, dirname } from 'path';
@@ -10,22 +9,23 @@ import {
   modifyLiteralCalls,
   visitLiteralCalls,
 } from '../../babel';
+import loadConfig from '../config';
+import { processGraphQLCodegenForLiterals } from '../documents';
 import { processDtsForContext } from '../dts';
-import { ExecContext } from '../exec-context';
+import createExecContext, { ExecContext } from '../exec-context';
 import { rimraf } from '../file';
 import { stripIgnoredCharacters } from 'graphql';
 import { parse } from '@babel/parser';
 import { readFile } from '../file';
 import { join } from 'path';
-import { writeFile } from '../file';
 import { createHash } from '../hash';
 import * as t from '@babel/types';
-import { LiteralCache, PartialCacheStore } from './cache';
 import {
-  CodegenContext,
-  isLiteralContext,
-  LiteralCodegenContext,
-} from '../types';
+  prepareGenResolverTypes,
+  shouldGenResolverTypes,
+} from '../resolver-types';
+import { LiteralCache, PartialCacheStore } from './cache';
+import { CodegenContext, LiteralCodegenContext } from '../types';
 import { appendExportAsObject, createPaths, parserOption } from './fns';
 
 export type VisitLiteralCallResults = {
@@ -43,35 +43,6 @@ export type VisitLiteralCallResults = {
   hasError: boolean;
 };
 
-async function processCodegenForLiterals(
-  execContext: ExecContext,
-  codegenContext: CodegenContext[],
-) {
-  const { cwd, config } = execContext;
-
-  for (const { strippedGqlContent, tsxFullPath } of codegenContext.filter(
-    isLiteralContext,
-  ) as LiteralCodegenContext[]) {
-    const [{ content }] = await generate(
-      {
-        silent: true, // Necessary to pass stdout to the parent process
-        cwd,
-        schema: config.schema,
-        documents: [strippedGqlContent],
-        generates: {
-          [tsxFullPath]: {
-            plugins: config.plugins,
-            config: execContext.codegenOpts.config,
-          },
-        },
-      },
-      false,
-    );
-    await makeDir(dirname(tsxFullPath));
-    await writeFile(tsxFullPath, content);
-  }
-}
-
 export async function processLiterals(
   execContext: ExecContext,
   sourceRelPath: string,
@@ -83,6 +54,7 @@ export async function processLiterals(
   const { cwd, config, cacheFullDir } = execContext;
   const dtsRelDir = dirname(config.gqlDtsEntrypoint);
 
+  const literalCodegenContext: LiteralCodegenContext[] = [];
   const oldGqlHashes = new Set(Object.keys(partialCache));
 
   // Prepare
@@ -101,14 +73,16 @@ export async function processLiterals(
       cacheFullDir,
       cwd,
     );
-    codegenContext.push({
+    const context: LiteralCodegenContext = {
       ...createdPaths,
       gqlContent,
       strippedGqlContent,
       gqlHash,
       skip: Boolean(partialCache[gqlHash]),
       dtsContentDecorator: appendExportAsObject,
-    });
+    };
+    codegenContext.push(context);
+    literalCodegenContext.push(context);
 
     // Note: Non-stripped gqlContent is necessary
     // to write dtsEntrypoint.
@@ -119,7 +93,11 @@ export async function processLiterals(
   }
 
   // Run codegen to write .tsx
-  await processCodegenForLiterals(execContext, codegenContext);
+  await processGraphQLCodegenForLiterals(
+    execContext,
+    literalCodegenContext,
+    sourceRelPath,
+  );
 
   // Remove old caches
   for (const oldGqlHash of oldGqlHashes) {
@@ -138,8 +116,10 @@ export async function processLiterals(
 }
 
 export type LiteralsArgs = {
-  execContext: ExecContext;
-  schemaHash: string;
+  // execContext: ExecContext;
+  cwd: string;
+  configFilePath?: string;
+  // schemaHash: string;
   sourceRelPath: string;
   gqlContents: string[];
 };
@@ -148,7 +128,17 @@ export type LiteralsArgs = {
 export async function processLiteralsWithDtsGenerate(
   literalsArgs: LiteralsArgs,
 ): Promise<LiteralCodegenContext[]> {
-  const { execContext, sourceRelPath, schemaHash, gqlContents } = literalsArgs;
+  const { cwd, configFilePath, sourceRelPath, gqlContents } = literalsArgs;
+
+  const [config, configHash] = await loadConfig(cwd, configFilePath);
+  const execContext = createExecContext(cwd, config, configHash);
+  let schemaHash = configHash;
+  if (shouldGenResolverTypes(config)) {
+    const { schemaHash: _schemaHash } = await prepareGenResolverTypes(
+      execContext,
+    );
+    schemaHash = _schemaHash;
+  }
 
   const codegenContext: LiteralCodegenContext[] = [];
 

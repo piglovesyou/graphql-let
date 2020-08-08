@@ -44,6 +44,7 @@ function createOpts(): CommandOpts {
 }
 
 function command(command: string) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const fn = require(`./${command}`).default;
   return Promise.resolve(fn(createOpts()));
 }

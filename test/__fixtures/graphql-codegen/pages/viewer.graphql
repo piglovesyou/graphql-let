@@ -1,4 +1,4 @@
-query Viewer2 {
+query Viewer {
     viewer {
         id
         name
