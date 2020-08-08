@@ -531,8 +531,29 @@ loaders with fewer pitfalls. Another reason for `.graphqls` is that it's one of
 
 #### How to import `.graphql` from another document, especially GraphQL Fragment?
 
-You can't, yet.
-[Please watch the progress.](https://github.com/piglovesyou/graphql-let/issues/65)
+Thanks to `graphql-tools/import`, the syntax
+`# import X from './fragment.graphql'` is supported.
+
+Define your fragment named as `partial.graphql`
+
+```graphql
+fragment Partial on User {
+    id
+    name
+}
+```
+
+and import it.
+
+```graphql
+# import Partial from './partial.graphql'
+
+query Viewer {
+    viewer {
+        ...Partial
+    }
+}
+```
 
 ## Contribution
 
