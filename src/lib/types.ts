@@ -35,7 +35,7 @@ export type LiteralCreatedPaths = CreatedPathsBase & {
   srcFullPath: string;
 };
 
-export type FileCodegenContext = {} & CodegenContextBase & FileCreatedPaths;
+export type FileCodegenContext = CodegenContextBase & FileCreatedPaths;
 
 export type LiteralCodegenContext = {
   gqlContent: string;
