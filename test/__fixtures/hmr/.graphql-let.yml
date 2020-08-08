@@ -1,4 +1,5 @@
 schema: "src/type-defs.graphqls"
+schemaEntrypoint: "src/type-defs.graphqls"
 documents: "src/**/*.graphql"
 plugins:
     - typescript

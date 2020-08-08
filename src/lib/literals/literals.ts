@@ -20,10 +20,7 @@ import { readFile } from '../file';
 import { join } from 'path';
 import { createHash } from '../hash';
 import * as t from '@babel/types';
-import {
-  prepareGenResolverTypes,
-  shouldGenResolverTypes,
-} from '../resolver-types';
+import { createSchemaHash, shouldGenResolverTypes } from '../resolver-types';
 import { LiteralCache, PartialCacheStore } from './cache';
 import { CodegenContext, LiteralCodegenContext } from '../types';
 import { appendExportAsObject, createPaths, parserOption } from './fns';
@@ -134,10 +131,7 @@ export async function processLiteralsWithDtsGenerate(
   const execContext = createExecContext(cwd, config, configHash);
   let schemaHash = configHash;
   if (shouldGenResolverTypes(config)) {
-    const { schemaHash: _schemaHash } = await prepareGenResolverTypes(
-      execContext,
-    );
-    schemaHash = _schemaHash;
+    schemaHash = await createSchemaHash(execContext);
   }
 
   const codegenContext: LiteralCodegenContext[] = [];

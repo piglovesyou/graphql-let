@@ -1,44 +1,62 @@
-import { extname, join as pathJoin } from 'path';
+import { Types } from '@graphql-codegen/plugin-helpers/types';
+import globby from 'globby';
 import { ConfigTypes } from './config';
 import { ExecContext } from './exec-context';
 import { readFile, readHash } from './file';
-import { createHash } from './hash';
-import { createPaths } from './paths';
-import { PRINT_PREFIX, updateLog } from './print';
+import { createHashFromBuffers } from './hash';
+import { createPaths, isURL } from './paths';
+import { printError, updateLog } from './print';
 import { processGraphQLCodegen } from './graphql-codegen';
 import { CodegenContext, FileCodegenContext } from './types';
-
-// Currently glob for schema is not allowed.
-function isLocalFilePathWithExtension(s: any): boolean {
-  if (typeof s !== 'string') return false;
-  if (extname(s).length) return true;
-  return false;
-}
+import pMap from 'p-map';
 
 export function shouldGenResolverTypes(config: ConfigTypes): boolean {
   try {
+    if (!config.schemaEntrypoint) return false;
     require('@graphql-codegen/typescript');
     require('@graphql-codegen/typescript-resolvers');
-
-    if (isLocalFilePathWithExtension(config.schema)) return true;
-    console.info(
-      PRINT_PREFIX +
-        'Failed to generate Resolver Types. You have to specify at least one schema (glob) path WITH an extension, such as "**/*.graphqls"',
+    const hasFilePointer = getSchemaPointers(config.schema!).some(
+      (p) => !isURL(p),
     );
-    return false;
+    if (!hasFilePointer) {
+      printError(
+        new Error(
+          `To use Resolver Types, you should have at least one file in "schema".`,
+        ),
+      );
+      return false;
+    }
+    return true;
   } catch (e) {
     // Just skip.
     return false;
   }
 }
 
-export async function prepareGenResolverTypes(execContext: ExecContext) {
-  const { cwd, config, configHash } = execContext;
-  const fileSchema = config.schema as string;
-  const schemaFullPath = pathJoin(cwd, fileSchema);
-  const content = await readFile(schemaFullPath);
-  const schemaHash = createHash(configHash + content);
-  return { schemaFullPath, schemaHash };
+function getSchemaPointers(
+  schema: Types.InstanceOrArray<Types.Schema>,
+  _acc: string[] = [],
+): string[] {
+  if (typeof schema === 'string') {
+    _acc.push(schema);
+  } else if (Array.isArray(schema)) {
+    for (const s of schema) getSchemaPointers(s, _acc);
+  } else if (typeof schema === 'object') {
+    for (const s of Object.keys(schema)) getSchemaPointers(s, _acc);
+  }
+  return _acc;
+}
+
+export async function createSchemaHash(execContext: ExecContext) {
+  const { config, cwd } = execContext;
+  const schemaPointers = getSchemaPointers(config.schema!);
+  const filePointers = schemaPointers.filter((p) => !isURL(p));
+  const files = await globby(filePointers, { cwd, absolute: true });
+  // XXX: Should stream?
+  const contents = await pMap(files, (file) => readFile(file), {
+    concurrency: 100,
+  });
+  return createHashFromBuffers(contents);
 }
 
 export async function processResolverTypesIfNeeded(
@@ -51,11 +69,8 @@ export async function processResolverTypesIfNeeded(
   let schemaHash = configHash;
 
   if (shouldGenResolverTypes(config)) {
-    const fileSchema = config.schema as string;
-    const schemaFullPath = pathJoin(cwd, fileSchema);
-    const content = await readFile(schemaFullPath);
-    schemaHash = createHash(schemaHash + content);
-    const createdPaths = createPaths(execContext, fileSchema);
+    schemaHash = await createSchemaHash(execContext);
+    const createdPaths = createPaths(execContext, config.schemaEntrypoint);
 
     const shouldUpdate =
       schemaHash !== (await readHash(createdPaths.tsxFullPath)) ||

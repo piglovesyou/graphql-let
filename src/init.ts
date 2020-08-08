@@ -10,7 +10,6 @@ const DEFAULT_CONFIG: UserConfigTypes = {
   schema: 'lib/type-defs.graphqls',
   documents: '**/*.graphql',
   plugins: ['typescript'],
-  respectGitIgnore: true,
 };
 
 const defaultYamlContent = yamlStringify(DEFAULT_CONFIG);
