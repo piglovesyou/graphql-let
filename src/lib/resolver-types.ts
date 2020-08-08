@@ -48,7 +48,7 @@ function getSchemaPointers(
 }
 
 export async function createSchemaHash(execContext: ExecContext) {
-  const { config, cwd } = execContext;
+  const { config, configHash, cwd } = execContext;
   const schemaPointers = getSchemaPointers(config.schema!);
   const filePointers = schemaPointers.filter((p) => !isURL(p));
   const files = await globby(filePointers, { cwd, absolute: true });
@@ -56,7 +56,7 @@ export async function createSchemaHash(execContext: ExecContext) {
   const contents = await pMap(files, (file) => readFile(file), {
     concurrency: 100,
   });
-  return createHashFromBuffers(contents);
+  return createHashFromBuffers([configHash, ...contents]);
 }
 
 export async function processResolverTypesIfNeeded(
