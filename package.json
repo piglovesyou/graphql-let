@@ -31,6 +31,7 @@
     "log-update": "^4.0.0",
     "make-dir": "^3.1.0",
     "minimist": "^1.2.5",
+    "p-map": "^4.0.0",
     "rimraf": "^3.0.2",
     "slash": "^3.0.0",
     "yaml": "^1.10.0"
@@ -155,7 +156,7 @@
     "typecheck": "tsc --noEmit",
     "compile": "tsc --project tsconfig.compile.json",
     "compile-develop": "tsc --project tsconfig.develop.json",
-    "clean": "rimraf \"**/__generated__\" dist",
+    "clean": "rimraf dist",
     "test": "jest",
     "build": "yarn clean && yarn compile",
     "prepublishOnly": "yarn lint && yarn typecheck && yarn build && yarn test"

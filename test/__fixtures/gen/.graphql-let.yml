@@ -1,4 +1,5 @@
-schema: "schema/type-defs.graphqls"
+schema: schema/type-defs.graphqls
+schemaEntrypoint: schema/type-defs.graphqls
 documents:
     - "**/*.graphql"
     - "!shouldBeIgnored1"

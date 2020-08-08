@@ -11,7 +11,7 @@ that integrates graphql-let.
 -   [Why it exists](#why-it-exists)
 -   [How it works](#how-it-works)
 -   [Get started with webpack loader](#get-started-with-webpack-loader)
--   [Configuration options are mosly same as `codegen.yml` except:](#configuration-options-are-mosly-same-as-codegenyml-except)
+-   [Configuration options are mosly same as `codegen.yml` except:](#configuration-options-are-mosly-same-as-codegenyml-except)
 -   [Setup Babel Plugin for inline GraphQL documents](#setup-babel-plugin-for-inline-graphql-documents)
 -   [Jest Transformer](#jest-transformer)
 -   [Experimental feature: Resolver Types](#experimental-feature-resolver-types)
@@ -194,7 +194,7 @@ const News: React.FC = () => {
 }
 ```
 
-## Configuration options are mosly same as `codegen.yml` except:
+## Configuration options are mosly same as `codegen.yml` except:
 
 graphql-let passes most of options to GraphQL code generator, so
 **`.graphql-let.yml` is mostly compatible to `codegen.yml`. However**, some of
@@ -269,17 +269,32 @@ cacheDir: __generated__
 TSConfigFile: tsconfig.json
 TSConfigFile: tsconfig.compile.json
 
-# #gqlDtsEntrypoint", optional.
+# "gqlDtsEntrypoint", optional.
 # `node_modules/@types/graphql-let/index.d.ts` by default. Needs to end with ".d.ts".
 # Used as an entrypoint and directory of generated type declarations for `gql()` calls.
 gqlDtsEntrypoint: node_modules/@types/graphql-let/index.d.ts
 
+# "schemaEntrypoint", optional. You need this if you want to use Resolver Types.
+# Since you could point to multiple schemas, this path is
+# used to generate `.d.ts` to generate `*.graphqls.d.ts`. If you do this,
+#
+#   schema: **/*.graphqls
+#   schemaEntrypoint: schema.graphqls
+#
+# you can import the generated resolver types like below.
+#
+#   import { Resolvers } from '../schema.graphqls'
+#
+# It doesn't matter if the file of the path exists. I recommend
+# you to specify a normal relative path without glob symbols (`**`) like this.
+schemaEntrypoint: schema.graphqls
+schemaEntrypoint: lib/schema.graphqls
 ```
 
 Simple example:
 
 ```yaml
-schema: schema/type-defs.graphqls
+schema: "schema/**/*.graphqls"
 documents:
     - "**/*.graphql"
     - "!shouldBeIgnored1"
@@ -431,16 +446,17 @@ schema. Just use what you need, it's most likely to be `jest-transform-graphql`.
 
 ## Experimental feature: Resolver Types
 
-If:
+If you meed the following conditions, graphql-let generates Resolver Types.
 
--   your `schema` in .graphql-let.yml points to a single local GraphQL schema
-    file (`.graphqls`)
--   you have installed
+-   You have `schemaEntrypoint` in the config
+-   You have file paths including glob patterns in `schema`
+-   You have
     [`@graphql-codegen/typescript-resolvers`](https://graphql-code-generator.com/docs/plugins/typescript-resolvers)
-    in dependencies
+    installed
+-   your `schemaEntrypoint` in .graphql-let.yml points to a single local GraphQL
+    schema file (`.graphqls`)
 
-, graphql-let will generate `.graphqls.d.ts` to help you type your GraphQL
-resolvers. Run:
+Run:
 
 ```bash
 yarn add -D @graphql-codegen/typescript-resolvers
@@ -448,10 +464,10 @@ yarn add -D @graphql-codegen/typescript-resolvers
 yarn graphql-let
 ```
 
-then you will get `Resolver` type from the schema file.
+Then you will get `${schemaEntrypoint}.d.ts`. Import the types from it.
 
 ```typescript
-import { Resolvers } from "./type-defs.graphqls";
+import { Resolvers } from "../schema.graphqls";
 
 const resolvers: Resolvers = {
   Query: {
@@ -465,8 +481,9 @@ const resolvers: Resolvers = {
 export default resolvers;
 ```
 
-`graphql-let/schema/loader` is also available. It just pass GraphQL Content to
-the next loader but it updates resolver types in HMR. Set it up as below:
+`graphql-let/schema/loader` is also available. It generates/updates
+`${schemaEntrypoint}.d.ts` but it doesn't transpile anything; just passes the
+file content to the next webpack loader. Set it up as below:
 
 ```diff
  const config: Configuration = {
@@ -500,13 +517,14 @@ my attention🍩🍦
 
 These are the states/tools for the syntaxes.
 
-| states/tools for syntax                            | File import as<br>`import './a.graphql';`                            | Inline GraphQL as<br>`import gql from 'graphql-tag';`<br>`` gql(`query {}` ); `` |
-| -------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| generating `.d.ts`s by command `graphql-let`       | ✅                                                                   | ✅                                                                               |
-| webpack loader `graphql-let/loader`                | ✅                                                                   | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues)             |
-| Bable Plugin `graphql-let/babel`                   | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues) | ✅                                                                               |
-| Jest Transformer `graphql-let/jestTransfomer`      | ✅                                                                   | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues)             |
-| Experimental: Resolver Types for<br>GraphQL schema | ✅ by<br>`import './schema.graphqls'`                                | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues)             |
+| states/tools for syntax                                                      | File import as<br>`import './a.graphql';`                            | Inline GraphQL as<br>`import gql from 'graphql-tag';`<br>`` gql(`query {}` ); `` |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| generating `.d.ts`s by command `graphql-let`                                 | ✅                                                                   | ✅                                                                               |
+| importing GraphQL content from another as<br>`# import A from './a.graphql'` | ✅                                                                   | ✅                                                                               |
+| webpack loader `graphql-let/loader`                                          | ✅                                                                   | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues)             |
+| Bable Plugin `graphql-let/babel`                                             | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues) | ✅                                                                               |
+| Jest Transformer `graphql-let/jestTransfomer`                                | ✅                                                                   | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues)             |
+| Experimental: Resolver Types for<br>GraphQL schema                           | ✅ by<br>`import './schema.graphqls'`                                | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues)             |
 
 #### Is this a tool only for React?
 
@@ -531,8 +549,9 @@ loaders with fewer pitfalls. Another reason for `.graphqls` is that it's one of
 
 #### How to import `.graphql` from another document, especially GraphQL Fragment?
 
-Thanks to `graphql-tools/import`, the syntax
-`# import X from './fragment.graphql'` is supported.
+Thanks to
+[`graphql-tools/import`](https://www.graphql-tools.com/docs/schema-loading/#using-import-expression),
+the syntax `# import X from './fragment.graphql'` is supported.
 
 Define your fragment named as `partial.graphql`
 

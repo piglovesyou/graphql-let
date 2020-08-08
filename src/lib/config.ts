@@ -9,18 +9,12 @@ import { printError } from './print';
 export type PartialGraphqlCodegenOptions = Omit<Types.Config, 'generates'>;
 
 export type GraphQLLetAdditionalOptions = {
-  // Required. Goes to `codegen.generates[outFile].plugins`.
   plugins: Array<string | Record<string, any>>;
-  // Optional. "true" is the default value.
   respectGitIgnore?: boolean;
-  // Optional. "node_modules/graphql-let/__generated__" is the default value.
+  schemaEntrypoint?: string;
   cacheDir?: string;
-  // Optional. "tsconfig.json" is the default value.
   TSConfigFile?: string;
-  // Optional. "node_modules/@types/graphql-let/index.d.ts" is the default value.
-  // Necessary if you use Babel Plugin "graphql-let/babel".
   gqlDtsEntrypoint?: string;
-  // Optional.
   generateOptions?: Types.ConfiguredOutput;
 };
 
@@ -52,12 +46,13 @@ export function buildConfig(raw: UserConfigTypes): ConfigTypes {
     // Normalized codegen options
     documents,
     // Set graphql-let default values
-    respectGitIgnore: true,
+    respectGitIgnore: raw.respectGitIgnore || true,
     cacheDir: raw.cacheDir || 'node_modules/graphql-let/__generated__',
     TSConfigFile: raw.TSConfigFile || 'tsconfig.json',
     gqlDtsEntrypoint:
       raw.gqlDtsEntrypoint || 'node_modules/@types/graphql-let/index.d.ts',
     generateOptions: raw.generateOptions || Object.create(null),
+    schemaEntrypoint: raw.schemaEntrypoint || '',
   };
 }
 
