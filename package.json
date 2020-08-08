@@ -156,7 +156,7 @@
     "typecheck": "tsc --noEmit",
     "compile": "tsc --project tsconfig.compile.json",
     "compile-develop": "tsc --project tsconfig.develop.json",
-    "clean": "rimraf \"**/__generated__\" dist",
+    "clean": "rimraf dist",
     "test": "jest",
     "build": "yarn clean && yarn compile",
     "prepublishOnly": "yarn lint && yarn typecheck && yarn build && yarn test"
