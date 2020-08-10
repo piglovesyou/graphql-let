@@ -1,4 +1,4 @@
-import gql from "graphql-let";
+import gql from 'graphql-let';
 
 const { useViewerQuery } = gql(`
 query Viewer {
@@ -7,5 +7,5 @@ query Viewer {
 
 export default function Viewer() {
   const { data } = useViewerQuery();
-  if (data) return <div>{ data.viewer.name }</div>;
+  if (data) return <div>{data.viewer.name}</div>;
 }
