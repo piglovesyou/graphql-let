@@ -1,5 +1,7 @@
 schema: schema/type-defs.graphqls
-documents: "**/*.graphql"
+documents:
+    - "**/*.graphql"
+    - "**/*.tsx"
 plugins:
     - typescript
     - typescript-operations

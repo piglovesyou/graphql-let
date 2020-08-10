@@ -21,7 +21,7 @@ export default function compile(
     module: {
       rules: [
         {
-          test: /\.graphql$/,
+          test: /\.(graphql|tsx)$/,
           use: [
             {
               loader: 'babel-loader',
@@ -31,7 +31,9 @@ export default function compile(
                 presets: ['@babel/preset-react', '@babel/preset-typescript'],
               },
             },
-            { loader: path.resolve(__dirname, '../../src/loader.ts') },
+            {
+              loader: path.resolve(__dirname, '../../src/loader.ts'),
+            },
           ],
         },
       ],

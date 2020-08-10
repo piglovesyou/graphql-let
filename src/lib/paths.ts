@@ -35,7 +35,7 @@ export function isURL(p: string): boolean {
   }
 }
 
-export function isTypeScriptPath(path: string) {
-  const x = extname(path);
+export function isTypeScriptPath(path: string, ext?: string) {
+  const x = ext || extname(path);
   return x === '.ts' || x === '.tsx';
 }
