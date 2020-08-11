@@ -17,7 +17,7 @@ const {
   valueToNode,
 } = types;
 
-const processLiteralsWithDtsGenerateSync = doSync(
+const processLiteralsInSubProcessSync = doSync(
   ({
     hostDirname,
     ...gqlCompileArgs
@@ -28,8 +28,8 @@ const processLiteralsWithDtsGenerateSync = doSync(
     const { join } = require('path');
     const modulePath = join(hostDirname, '../dist/lib/literals/literals');
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { processLiteralsWithDtsGenerate } = require(modulePath);
-    return processLiteralsWithDtsGenerate(gqlCompileArgs);
+    const { processLiteralsInSubProcess } = require(modulePath);
+    return processLiteralsInSubProcess(gqlCompileArgs);
   },
 );
 
@@ -234,7 +234,7 @@ const configFunction = (
 
         if (!literalCallExpressionPaths.length) return;
 
-        const literalCodegenContext: LiteralCodegenContext[] = processLiteralsWithDtsGenerateSync(
+        const literalCodegenContext: LiteralCodegenContext[] = processLiteralsInSubProcessSync(
           {
             hostDirname: __dirname,
             cwd,

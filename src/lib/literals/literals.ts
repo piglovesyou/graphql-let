@@ -9,7 +9,7 @@ import {
   modifyLiteralCalls,
   visitLiteralCalls,
 } from '../../babel';
-import loadConfig from '../config';
+import loadConfig, { ConfigTypes } from '../config';
 import { processGraphQLCodegenForLiterals } from '../documents';
 import { processDtsForContext } from '../dts';
 import createExecContext, { ExecContext } from '../exec-context';
@@ -121,24 +121,20 @@ export type LiteralsArgs = {
   gqlContents: string[];
 };
 
-// Used in babel.ts
 export async function processLiteralsWithDtsGenerate(
-  literalsArgs: LiteralsArgs,
-): Promise<LiteralCodegenContext[]> {
-  const { cwd, configFilePath, sourceRelPath, gqlContents } = literalsArgs;
-
-  const [config, configHash] = await loadConfig(cwd, configFilePath);
-  const execContext = createExecContext(cwd, config, configHash);
+  execContext: ExecContext,
+  sourceRelPath: string,
+  gqlContents: string[],
+) {
+  const { config, configHash } = execContext;
   let schemaHash = configHash;
-  if (shouldGenResolverTypes(config)) {
+  if (shouldGenResolverTypes(config))
     schemaHash = await createSchemaHash(execContext);
-  }
 
   const codegenContext: LiteralCodegenContext[] = [];
 
   const cache = new LiteralCache(execContext);
   await cache.load();
-
   await processLiterals(
     execContext,
     sourceRelPath,
@@ -152,6 +148,20 @@ export async function processLiteralsWithDtsGenerate(
   await processDtsForContext(execContext, codegenContext);
 
   return codegenContext;
+}
+
+// Used in babel.ts
+export async function processLiteralsInSubProcessSync(
+  literalsArgs: LiteralsArgs,
+): Promise<LiteralCodegenContext[]> {
+  const { cwd, configFilePath, sourceRelPath, gqlContents } = literalsArgs;
+  const [config, configHash] = await loadConfig(cwd, configFilePath);
+  const execContext = createExecContext(cwd, config, configHash);
+  return await processLiteralsWithDtsGenerate(
+    execContext,
+    sourceRelPath,
+    gqlContents,
+  );
 }
 
 export async function processLiteralsForContext(
