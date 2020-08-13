@@ -16,24 +16,23 @@ describe('graphql-let/loader', () => {
   test('generates files by .graphql', async () => {
     const fixture = 'pages/viewer.graphql';
     const stats = await compiler(cwd, fixture, 'node');
-    const { 0: actual, length } = stats
+    const actual = stats
       .toJson()
       .modules!.map((m) => m.source)
       .filter(Boolean);
 
-    deepStrictEqual(length, 1);
     expect(actual).toMatchSnapshot();
   });
 
   test('generates files by .tsx', async () => {
     const fixture = 'pages/index.tsx';
     const stats = await compiler(cwd, fixture, 'node');
-    const { 0: actual, length } = stats
+    // console.log(stats);
+    const actual = stats
       .toJson()
-      .modules!.map((m) => m.source)
+      .modules![1].modules!.map((m) => m.source)
       .filter(Boolean);
 
-    deepStrictEqual(length, 1);
     expect(actual).toMatchSnapshot();
   });
 
@@ -46,10 +45,10 @@ describe('graphql-let/loader', () => {
       ['pages/viewer2.graphql', 'web'],
       ['pages/index.tsx', 'web'],
     ];
-    const results = await Promise.all(
+    const actual = await Promise.all(
       expectedTargets.map(([file, target]) => compiler(cwd, file, target)),
     );
-    for (const [i, stats] of results.entries()) {
+    for (const [i, stats] of actual.entries()) {
       const [file] = expectedTargets[i];
       const { 0: actual, length } = stats
         .toJson()

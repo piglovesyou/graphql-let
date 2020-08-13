@@ -3,6 +3,15 @@ import webpack from 'webpack';
 import memoryfs from 'memory-fs';
 import nodeExternals from 'webpack-node-externals';
 
+const babelLoader = {
+  loader: 'babel-loader',
+  options: {
+    babelrc: false,
+    configFile: false,
+    presets: ['@babel/preset-react', '@babel/preset-typescript'],
+  },
+};
+
 export default function compile(
   cwd: string,
   fixture: string,
@@ -21,18 +30,20 @@ export default function compile(
     module: {
       rules: [
         {
-          test: /\.(graphql|tsx)$/,
+          test: /\.graphql$/,
           use: [
-            {
-              loader: 'babel-loader',
-              options: {
-                babelrc: false,
-                configFile: false,
-                presets: ['@babel/preset-react', '@babel/preset-typescript'],
-              },
-            },
+            babelLoader,
             {
               loader: path.resolve(__dirname, '../../src/loader.ts'),
+            },
+          ],
+        },
+        {
+          test: /\.tsx$/,
+          use: [
+            babelLoader,
+            {
+              loader: path.resolve(__dirname, '../../src/literalLoader.ts'),
             },
           ],
         },
