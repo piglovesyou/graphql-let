@@ -151,7 +151,7 @@ export async function processLiteralsWithDtsGenerate(
 }
 
 // Used in babel.ts
-export async function processLiteralsInSubProcessSync(
+export async function processLiteralsInSubProcess(
   literalsArgs: LiteralsArgs,
 ): Promise<LiteralCodegenContext[]> {
   const { cwd, configFilePath, sourceRelPath, gqlContents } = literalsArgs;
