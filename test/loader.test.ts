@@ -13,7 +13,7 @@ describe('graphql-let/loader', () => {
     await rimraf(pathJoin(cwd, '__generated__'));
   });
 
-  test('generates .tsx and .d.ts by .graphql', async () => {
+  test('generates files by .graphql', async () => {
     const fixture = 'pages/viewer.graphql';
     const stats = await compiler(cwd, fixture, 'node');
     const { 0: actual, length } = stats
@@ -25,7 +25,7 @@ describe('graphql-let/loader', () => {
     expect(actual).toMatchSnapshot();
   });
 
-  test('generates .tsx and .d.ts by .tsx', async () => {
+  test('generates files by .tsx', async () => {
     const fixture = 'pages/index.tsx';
     const stats = await compiler(cwd, fixture, 'node');
     const { 0: actual, length } = stats
