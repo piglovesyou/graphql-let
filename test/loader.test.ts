@@ -2,42 +2,57 @@
 
 import { deepStrictEqual, ok, strictEqual } from 'assert';
 import glob from 'globby';
+import webpack, { Stats } from 'webpack';
 import compiler from './__tools/compile';
 import { join as pathJoin } from 'path';
-import { rimraf } from './__tools/file';
+import { cleanup, rimraf } from './__tools/file';
+import { matchPathsAndContents } from './__tools/match-paths-and-contents';
+import FnModules = webpack.Stats.FnModules;
 
 const cwd = pathJoin(__dirname, '__fixtures/loader');
 
-describe('graphql-let/loader', () => {
-  beforeEach(async () => {
-    await rimraf(pathJoin(cwd, '__generated__'));
-  });
+type ResultSource = Record</*name*/ string, /*source*/ string>;
+function collectResultSource(obj: any, acc: ResultSource = {}): ResultSource {
+  if (Array.isArray(obj)) {
+    for (const o of obj as Stats[]) collectResultSource(o, acc);
+    return acc;
+  }
+  if (Array.isArray(obj.modules)) {
+    for (const o of obj.modules as FnModules[]) collectResultSource(o, acc);
+    return acc;
+  }
+  if (typeof obj.toJson === 'function') {
+    return collectResultSource((obj as Stats).toJson(), acc);
+  }
+  if (typeof obj.name === 'string' && typeof obj.source === 'string') {
+    const { name, source }: Stats.FnModules = obj;
+    acc[name] = source;
+    return acc;
+  }
+  return acc;
+}
 
-  test('generates files by .graphql', async () => {
+describe('graphql-let/loader', () => {
+  beforeEach(() => cleanup(cwd));
+
+  test('runs with GraphQL document files (.graphql)', async () => {
     const fixture = 'pages/viewer.graphql';
     const stats = await compiler(cwd, fixture, 'node');
-    const actual = stats
-      .toJson()
-      .modules!.map((m) => m.source)
-      .filter(Boolean);
-
+    const actual = collectResultSource(stats);
     expect(actual).toMatchSnapshot();
+    await matchPathsAndContents(['**/*.d.ts'], cwd);
   });
 
-  test('generates files by .tsx', async () => {
+  test('runs with GraphQL document literals in .tsx', async () => {
     const fixture = 'pages/index.tsx';
     const stats = await compiler(cwd, fixture, 'node');
-    // console.log(stats);
-    const actual = stats
-      .toJson()
-      .modules![1].modules!.map((m) => m.source)
-      .filter(Boolean);
-
+    const actual = collectResultSource(stats);
     expect(actual).toMatchSnapshot();
+    await matchPathsAndContents(['**/*.d.ts'], cwd);
   });
 
   test('runs well for simultaneous execution, assuming SSR', async () => {
-    const expectedTargets: [string, 'node' | 'web'][] = [
+    const targetFiles: [string, 'node' | 'web'][] = [
       ['pages/viewer.graphql', 'node'],
       ['pages/viewer2.graphql', 'node'],
       ['pages/index.tsx', 'node'],
@@ -45,27 +60,11 @@ describe('graphql-let/loader', () => {
       ['pages/viewer2.graphql', 'web'],
       ['pages/index.tsx', 'web'],
     ];
-    const actual = await Promise.all(
-      expectedTargets.map(([file, target]) => compiler(cwd, file, target)),
+    const stats = await Promise.all(
+      targetFiles.map(([file, target]) => compiler(cwd, file, target)),
     );
-    for (const [i, stats] of actual.entries()) {
-      const [file] = expectedTargets[i];
-      const { 0: actual, length } = stats
-        .toJson()
-        .modules!.map((m) => m.source)
-        .filter(Boolean);
-
-      deepStrictEqual(length, 1);
-      switch (file) {
-        case 'pages/viewer.graphql':
-          ok(actual!.includes('export function useViewerQuery('));
-          break;
-        case 'pages/viewer2.graphql':
-          ok(actual!.includes('export function useViewer2Query('));
-          break;
-      }
-    }
-    const globResults = await glob('**/*.graphql.d.ts', { cwd });
-    strictEqual(globResults.length, 2);
+    const actual = collectResultSource(stats);
+    expect(actual).toMatchSnapshot();
+    await matchPathsAndContents(['**/*.d.ts'], cwd);
   });
 });
