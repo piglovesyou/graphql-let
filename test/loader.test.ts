@@ -1,11 +1,7 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
-import { deepStrictEqual, ok, strictEqual } from 'assert';
-import glob from 'globby';
 import webpack, { Stats } from 'webpack';
 import compiler from './__tools/compile';
 import { join as pathJoin } from 'path';
-import { cleanup, rimraf } from './__tools/file';
+import { cleanup } from './__tools/file';
 import { matchPathsAndContents } from './__tools/match-paths-and-contents';
 import FnModules = webpack.Stats.FnModules;
 

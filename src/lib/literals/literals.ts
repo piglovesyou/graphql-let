@@ -9,7 +9,7 @@ import {
   modifyLiteralCalls,
   visitLiteralCalls,
 } from '../../babel';
-import loadConfig, { ConfigTypes } from '../config';
+import loadConfig from '../config';
 import { processGraphQLCodegenForLiterals } from '../documents';
 import { processDtsForContext } from '../dts';
 import createExecContext, { ExecContext } from '../exec-context';

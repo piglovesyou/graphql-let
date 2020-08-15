@@ -1,25 +1,15 @@
-// import { generate } from "@graphql-codegen/cli";
-import generator from '@babel/generator';
 import logUpdate from 'log-update';
 import { loader } from 'webpack';
-import { relative as pathRelative, join, extname } from 'path';
-import { modifyLiteralCalls, visitLiteralCalls } from './babel';
-import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
+import { relative as pathRelative, join } from 'path';
 import { processDocumentsForContext } from './lib/documents';
 import { processDtsForContext } from './lib/dts';
 import createExecContext from './lib/exec-context';
 import loadConfig from './lib/config';
-import { parserOption } from './lib/literals/fns';
-import { processLiteralsWithDtsGenerate } from './lib/literals/literals';
 import memoize from './lib/memoize';
-import { isTypeScriptPath } from './lib/paths';
 import { createSchemaHash, shouldGenResolverTypes } from './lib/resolver-types';
 import { PRINT_PREFIX, updateLog } from './lib/print';
 import { readFile } from './lib/file';
-import { CodegenContext, LiteralCodegenContext } from './lib/types';
-import * as t from '@babel/types';
-import { parse, ParserOptions } from '@babel/parser';
-import traverse, { NodePath } from '@babel/traverse';
+import { CodegenContext } from './lib/types';
 
 const processGraphQLLetLoader = memoize(
   async (
@@ -45,51 +35,7 @@ const processGraphQLLetLoader = memoize(
     }
 
     const codegenContext: CodegenContext[] = [];
-    const ext = extname(resourceFullPath);
 
-    if (isTypeScriptPath(resourceFullPath, ext)) {
-      const ast = parse(String(resourceContent), parserOption);
-      const content: string = await new Promise((resolve) => {
-        traverse(ast, {
-          Program(programPath: NodePath<t.Program>) {
-            // TODO: refactor
-            const importName = 'graphql-let';
-            const onlyMatchImportSuffix = false;
-
-            const visitLiteralCallResults = visitLiteralCalls(
-              programPath,
-              importName,
-              onlyMatchImportSuffix,
-            );
-            const { literalCallExpressionPaths } = visitLiteralCallResults;
-
-            // TODO: Handle error
-
-            if (!literalCallExpressionPaths.length) return;
-
-            const gqlContents = literalCallExpressionPaths.map(
-              ([, value]) => value,
-            );
-            processLiteralsWithDtsGenerate(
-              execContext,
-              resourceRelPath,
-              gqlContents,
-            ).then((literalCodegenContext: LiteralCodegenContext[]) => {
-              modifyLiteralCalls(
-                programPath,
-                resourceFullPath,
-                visitLiteralCallResults,
-                literalCodegenContext,
-              );
-              const { code } = generator(ast);
-              resolve(code);
-            });
-          },
-        });
-      });
-      if (!content) throw Error('never');
-      return { resourceFullPath, content };
-    }
     // is GraphQL document
     const tsxFullPath = `${resourceFullPath}.tsx`;
 
@@ -120,7 +66,6 @@ const processGraphQLLetLoader = memoize(
       content = await readFile(tsxFullPath, 'utf-8');
     }
     return { resourceFullPath: tsxFullPath, content };
-    // }
   },
   (gqlFullPath: string) => gqlFullPath,
 );
