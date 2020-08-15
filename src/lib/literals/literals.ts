@@ -199,9 +199,13 @@ export async function processLiteralsForContext(
           importName,
           onlyMatchImportSuffix,
         );
-        // TODO: Handle error
+
+        const {
+          hasError,
+          literalCallExpressionPaths,
+        } = visitLiteralCallResults;
         // There's no `gql(`query {}`)` in the source
-        if (!visitLiteralCallResults.literalCallExpressionPaths.length) return;
+        if (hasError || !literalCallExpressionPaths.length) return;
 
         visitedSources.push({
           visitLiteralCallResults,

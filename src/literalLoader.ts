@@ -45,11 +45,12 @@ const processGraphQLLetLoader = memoize(
             importName,
             onlyMatchImportSuffix,
           );
-          const { literalCallExpressionPaths } = visitLiteralCallResults;
+          const {
+            hasError,
+            literalCallExpressionPaths,
+          } = visitLiteralCallResults;
 
-          // TODO: Handle error
-
-          if (!literalCallExpressionPaths.length) return;
+          if (hasError || !literalCallExpressionPaths.length) return;
 
           const gqlContents = literalCallExpressionPaths.map(
             ([, value]) => value,

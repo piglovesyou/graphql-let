@@ -228,11 +228,12 @@ const configFunction = (
           importName,
           onlyMatchImportSuffix,
         );
-        const { literalCallExpressionPaths } = visitLiteralCallResults;
+        const {
+          literalCallExpressionPaths,
+          hasError,
+        } = visitLiteralCallResults;
 
-        // TODO: Handle error
-
-        if (!literalCallExpressionPaths.length) return;
+        if (hasError || !literalCallExpressionPaths.length) return;
 
         const literalCodegenContext: LiteralCodegenContext[] = processLiteralsInSubProcessSync(
           {
