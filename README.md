@@ -11,7 +11,7 @@ that integrates graphql-let.
 -   [Why it exists](#why-it-exists)
 -   [How it works](#how-it-works)
 -   [Get started with webpack loader](#get-started-with-webpack-loader)
--   [Configuration options are mostly same as `codegen.yml`, except](#configuration-options-are-mostly-same-as-codegenyml-except)
+-   [Configuration options in .graphql-let.yml](#configuration-options-in-graphql-letyml)
 -   [Setup Babel Plugin for inline GraphQL documents](#setup-babel-plugin-for-inline-graphql-documents)
 -   [Jest Transformer](#jest-transformer)
 -   [Experimental feature: Resolver Types](#experimental-feature-resolver-types)
@@ -74,8 +74,10 @@ There are a few things graphql-let works on to make it happen fast and stable.
 
 ## Get started with webpack loader
 
-This is an example of **TypeScript + React + Apollo Client on webpack**. Please
-replace the corresponding lines depending on your needs.
+This is an example of **TypeScript + React + Apollo Client on webpack**
+targeting both independent files as `.graphql` and string literals as
+`` gql(`query{}`) `` in `.ts(x)` of GraphQL documents. Please replace the
+corresponding lines depending on your needs.
 
 ### 1. Install dependencies
 
@@ -104,7 +106,10 @@ Edit it like this:
 
 ```diff
  schema: lib/type-defs.graphqls
- documents: '**/*.graphql'
+-documents: '**/*.graphql'
++documents:
++   - '**/*.tsx'			# For string literals as gql(`query {}`)
++   - '**/*.graphql'	# For independent files as viewer.graphql
  plugins:
    - typescript
 +  - typescript-operations
@@ -123,21 +128,30 @@ these lines in your .gitignore.
 
 ### 4. Configure webpack.config.ts
 
-The webpack loader also needs to be configured. Note that the content that
+The webpack loader needs to be configured like this. Note that the content that
 `graphql-let/loader` generates is JSX-TypeScript. You have to compile it to
 JavaScript with an additional loader such as `babel-loader`.
 
 ```diff
++const babelLoader = { loader: 'babel-loader', options: { presets: ['@babel/preset-typescript', '@babel/preset-react'] } };
+
  const config: Configuration = {
    module: {
      rules: [
 +      {
 +        test: /\.graphql$/,
 +        use: [
-+          { loader: 'babel-loader', options: { presets: ['@babel/preset-typescript', '@babel/preset-react'] } },
++          babelLoader,
 +          { loader: 'graphql-let/loader' },
 +        ]
-+      }
++      },
++      {
++        test: /\.tsx?$/,
++        use: [
++          babelLoader,
++          { loader: 'graphql-let/literal-loader' },
++        ]
++      },
      ]
    }
  }
@@ -145,7 +159,7 @@ JavaScript with an additional loader such as `babel-loader`.
 
 ### 5. Generate type declarations
 
-Run this to generate `.d.ts`.
+Run this to generate `.d.ts`s.
 
 ```bash
 yarn graphql-let
@@ -153,12 +167,14 @@ yarn graphql-let
 # This will generate files such as:
 #   - src/query.graphql.d.ts
 #   - src/schema.graphqls.d.ts
+#   - node_modules/@types/graphql-let/pages/index-2345.d.ts
 ```
 
 By `--config` option you can specify the custom path to the `.graphql-let.yml`.
-The directory .graphql-let.yml is located at is the basepath of the relative
-paths in .grpahql-let.yml. Also, the basepath should be identical to **webpack's
-`config.context`** so the loader can find the config file.
+
+The directory .graphql-let.yml is located at is recognized as the basepath of
+the relative paths in .grpahql-let.yml. Also, the basepath should be identical
+to **webpack's `config.context`** so the loader can find the config file.
 
 ```bash
 pwd # "/app"
@@ -169,8 +185,9 @@ yarn graphql-let --config custom/path/.graphql-let.yml
 # /app/custom/path/src/schema.graphqls.d.ts
 ```
 
-You may want to run it every time calling `tsc`. Please check your
-`package.json` and modify like this.
+Because graphql-let generates necessary type declarations for the source, you
+may want them every time before calling `tsc`. Please check your `package.json`
+and modify it like this.
 
 ```diff
    "scripts": {
@@ -186,6 +203,9 @@ hooks and IDE code assists.
 
 ```typescript jsx
 import { useNewsQuery } from './news.graphql'
+// or
+import gql from 'graphql-let'
+const { useNewsQuery } = gql(`query News { ... }`)
 
 const News: React.FC = () => {
     // Already typed⚡️
@@ -194,25 +214,38 @@ const News: React.FC = () => {
 }
 ```
 
-## Configuration options are mostly same as `codegen.yml`, except
+## Configuration options in .graphql-let.yml
 
-graphql-let passes most of the options to GraphQL code generator, so
+graphql-let passes most of the options to API of GraphQL code generator, so
 **`.graphql-let.yml` is mostly compatible with `codegen.yml`. However**, some of
 they are strictly controlled by graphql-let where you can't decide what to
 generate.
 
-### Exception: `generates`
+Below, we'll explain the core difference of `.graphql-let.yml` and
+`codegen.yml` as **exceptions** and what we don't support right now as
+**limitaions**.
 
-`generates` is strictly controlled under graphql-let. Rather, think graphql-let
-as a tool to let you forget intermediate outputs and import/call GraphQL
-directly.
+### Exception: `documents` and `plugins` are required in .graphql-let.yml
 
-Therefore, we don't support output-file level configuration such as
+graphql-let will hook your source codes such as `.graphql` and `.tsx` and the
+`documents` field tells which files are considered to be handled.
+
+`plugins` field is also necessary to tell GraphQL code generator how to handle
+these soruces.
+
+### Exception: `generates` shoudn't appear
+
+`generates` is strictly controlled under graphql-let since basically it decides
+what to generate. Rather, think graphql-let as a tool to let you forget
+intermediate outputs and let you import/call GraphQL directly.
+
+Related to that, currently we don't support output-file level configuration such
+as
 [Output-file level schema](https://graphql-code-generator.com/docs/getting-started/schema-field#output-file-level),
 [Output-file level documents](https://graphql-code-generator.com/docs/getting-started/documents-field#output-file-level)
 and
 [Output Level config](https://graphql-code-generator.com/docs/getting-started/config-field#output-level)
-right now. But this could be changed logically, so, please
+right now. This is rather a limitaion and could be improved logically, so please
 [vote by issuing](https://github.com/piglovesyou/graphql-let/issues) if you'd
 like.
 
@@ -224,31 +257,43 @@ are not supported.
 
 ### Limitation: `` gql(`query{}`) `` is allowed only in `.ts(x)`s
 
-Currently, `` gql(`query{}`) `` can be handled only for files with extensions
-`.ts` and `.tsx`.
+`` gql(`query{}`) `` can appear anyware as `.flow` or `.vue`, but currently we
+only support `.ts` and `.tsx`.
 
-graphql-tag-pluck, which GraphQL code generator uses under the hood, plucks
-GraphQL documents/schema from sources such as `.flow` and `.vue`. graphql-let
-doesn't use it since it focuses on plucking and graphql-let has to modify each
-`gql` calls in the source. Also,
+As a side story,
+[graphql-tag-pluck](https://www.graphql-tools.com/docs/graphql-tag-pluck/),
+which GraphQL code generator uses under the hood, plucks GraphQL
+documents/schema from sources such as `.flow` and `.vue`. It's amazing but
+graphql-let doesn't use it since it focuses only on plucking and graphql-let has
+to modify each `gql()` calls in the source. Also,
 [graphql-tag-pluck -related configuration](https://graphql-code-generator.com/docs/getting-started/documents-field#graphql-tag-pluck)
-will be ignored. If you're a Vue user, please
-[vote](https://github.com/piglovesyou/graphql-let/issues).
+will be ignored. If we support sources like `.vue`, we need a little more
+effort. Please [vote](https://github.com/piglovesyou/graphql-let/issues), Vue
+users.
 
 ### graphql-let specific options
 
 In addition to `codegen.yml` options, graphql-let accepts these.
 
 ```yaml
-# "plugins", required. The plugins for GraphQL documents to run GraphQL code
-# generator with. Please note that you need to generate a TypeScript source here.
+# "schema", required as GraphQL code generator does.
+schema: "**/*.graphqls"
+
+# "documents", required, while not in codegen.yml.
+# string | string[] are only supported right now.
+documents:
+    - "**/*.graphql"
+    - "**/*.tsx"
+
+# "plugins", required, while codegen.yml doesn't have this field.
+# These are for GraphQL documents to run GraphQL code generator with.
+# Please note that you need to generate a TypeScript source here.
 # See here for more information. https://graphql-code-generator.com/docs/plugins/index
 # Example:
 plugins:
     - typescript
     - typescript-operations
     - typescript-react-apollo
-    - add: "/* eslint-disable */"
 
 # "respectGitIgnore", optional. `true` by default.
 # If true, graphql-let will ignore files in .gitignore.
