@@ -87,7 +87,7 @@ export async function processResolverTypesIfNeeded(
         return `${s}
           
 // This is an extra code in addition to what graphql-codegen makes.
-// Users are likely to use 'graphql-tag/loader' with 'graphql-tag/schema/loader'
+// Users are likely to use 'graphql-tag/loader' with 'graphql-let/schema-loader'
 // in webpack. This code enables the result to be typed.
 import { DocumentNode } from 'graphql'
 export default typeof DocumentNode

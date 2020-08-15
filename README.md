@@ -431,7 +431,7 @@ The option `subsequentTransformer` is available. If you use `ts-jest`, your
 
 ### Transform `.graphqls` in Jest
 
-If you use `graphql-let/schema/loader`, you may want a corresponding
+If you use `graphql-let/schema-loader`, you may want a corresponding
 transformer, but remember graphql-let does not transform the content of GraphQL
 schema. Just use what you need, it's most likely to be `jest-transform-graphql`.
 
@@ -481,7 +481,7 @@ const resolvers: Resolvers = {
 export default resolvers;
 ```
 
-`graphql-let/schema/loader` is also available. It generates/updates
+`graphql-let/schema-loader` is also available. It generates/updates
 `${schemaEntrypoint}.d.ts` but it doesn't transpile anything; just passes the
 file content to the next webpack loader. Set it up as below:
 
@@ -493,7 +493,7 @@ file content to the next webpack loader. Set it up as below:
 +        test: /\.graphqls$/,
 +        use: [
 +          { loader: 'graphql-tag/loader' },
-+          { loader: 'graphql-let/schema/loader' },
++          { loader: 'graphql-let/schema-loader' },
 +        ]
 +      }
      ]
@@ -521,7 +521,7 @@ These are the states/tools for the syntaxes.
 | ---------------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | generating `.d.ts`s by command `graphql-let`                                 | ✅                                                                   | ✅                                                                               |
 | importing GraphQL content from another as<br>`# import A from './a.graphql'` | ✅                                                                   | ✅                                                                               |
-| webpack loader `graphql-let/loader`                                          | ✅                                                                   | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues)             |
+| webpack loader                                                               | ✅ by<br>`graphql-let/loader`                                        | ✅ by<br>`graphql-let/literal-loader`                                            |
 | Bable Plugin `graphql-let/babel`                                             | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues) | ✅                                                                               |
 | Jest Transformer `graphql-let/jestTransfomer`                                | ✅                                                                   | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues)             |
 | Experimental: Resolver Types for<br>GraphQL schema                           | ✅ by<br>`import './schema.graphqls'`                                | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues)             |

@@ -15,8 +15,9 @@
   "files": [
     "bin",
     "dist",
-    "schema",
     "loader.js",
+    "literal-loader.js",
+    "schema-loader.js",
     "jestTransformer.js",
     "babel.js"
   ],

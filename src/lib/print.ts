@@ -6,6 +6,10 @@ export function printInfo(message: string): void {
   console.info(PRINT_PREFIX + message);
 }
 
+export function printWarn(message: string): void {
+  console.warn(PRINT_PREFIX + message);
+}
+
 export function printError(err: Error): void {
   console.error(PRINT_PREFIX + err.message + err.stack);
 }
