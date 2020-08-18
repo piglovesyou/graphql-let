@@ -1,10 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`graphql-let/loader generates .tsx and .d.ts 1`] = `
-"import * as Apollo from '@apollo/client';
-const gql = Apollo.gql;
-/** All built-in and custom scalars, mapped to their actual values */
-
+"import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export const ViewerDocument = gql\`
     query Viewer {
   viewer {
