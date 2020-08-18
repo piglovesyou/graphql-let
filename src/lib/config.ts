@@ -47,7 +47,8 @@ export function buildConfig(raw: UserConfigTypes): ConfigTypes {
     // Normalized codegen options
     documents,
     // Set graphql-let default values
-    respectGitIgnore: raw.respectGitIgnore || true,
+    respectGitIgnore:
+      raw.respectGitIgnore !== undefined ? raw.respectGitIgnore : true,
     cacheDir: raw.cacheDir || 'node_modules/graphql-let/__generated__',
     TSConfigFile: raw.TSConfigFile || 'tsconfig.json',
     gqlDtsEntrypoint:
