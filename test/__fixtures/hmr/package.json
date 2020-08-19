@@ -3,10 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "license": "ISC",
-  "dependencies": {
-    "graphql-tag": "^2.10.3",
-    "raw-loader": "^4.0.0",
-    "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
+  "scripts": {
+    "webpack-dev-server": "../../../node_modules/.bin/webpack-dev-server"
   }
 }
