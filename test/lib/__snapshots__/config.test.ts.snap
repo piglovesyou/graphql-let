@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`config.ts interpolates environment variables 1`] = `
+Array [
+  Object {
+    "https://yeah/graphql": Object {
+      "headers": Object {
+        "Authorization": "blaa",
+      },
+    },
+  },
+]
+`;
+
+exports[`config.ts interpolates environment variables asynchronously 1`] = `
+Array [
+  Object {
+    "https://yeah/graphql": Object {
+      "headers": Object {
+        "Authorization": "blaa",
+      },
+    },
+  },
+]
+`;
