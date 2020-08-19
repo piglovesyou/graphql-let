@@ -23,3 +23,50 @@ Array [
   },
 ]
 `;
+
+exports[`config.ts loads config with default values 1`] = `
+Array [
+  Object {
+    "TSConfigFile": "tsconfig.json",
+    "cacheDir": "node_modules/graphql-let/__generated__",
+    "documents": Array [
+      "**/*.graphql",
+    ],
+    "generateOptions": Object {},
+    "gqlDtsEntrypoint": "node_modules/@types/graphql-let/index.d.ts",
+    "plugins": Array [
+      "typescript",
+    ],
+    "respectGitIgnore": true,
+    "schema": Array [
+      Object {
+        "https://yeah/graphql": Object {
+          "headers": Object {
+            "Authorization": "blaa",
+          },
+        },
+      },
+    ],
+    "schemaEntrypoint": "",
+  },
+  "6134bbfa2c25f64acb7c526097ecc4e4014c2aa4",
+]
+`;
+
+exports[`config.ts overwrite default values 1`] = `
+Object {
+  "TSConfigFile": "tsconfig.yeah.json;",
+  "cacheDir": "__yeah__;",
+  "documents": Array [
+    "**/*.graphql",
+  ],
+  "generateOptions": Object {},
+  "gqlDtsEntrypoint": "typings/yeah.d.ts;",
+  "plugins": Array [
+    "typescript",
+  ],
+  "respectGitIgnore": false,
+  "schema": "**/*.graphql",
+  "schemaEntrypoint": "yeah.graphqls",
+}
+`;

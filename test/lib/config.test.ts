@@ -14,13 +14,23 @@ describe('config.ts', () => {
     delete process.env.GRAPHQL_SERVER_TOKEN;
   });
 
+  test('loads config with default values', async () => {
+    const actual = await loadConfig(cwd, '.graphql-let-simple.yml');
+    expect(actual).toMatchSnapshot();
+  });
+
   test('interpolates environment variables', () => {
-    const [{ schema }] = loadConfigSync(cwd);
+    const [{ schema }] = loadConfigSync(cwd, '.graphql-let-envvar.yml');
     expect(schema).toMatchSnapshot();
   });
 
   test('interpolates environment variables asynchronously', async () => {
-    const [{ schema }] = await loadConfig(cwd);
+    const [{ schema }] = await loadConfig(cwd, '.graphql-let-envvar.yml');
     expect(schema).toMatchSnapshot();
+  });
+
+  test('overwrite default values', async () => {
+    const [actual] = await loadConfig(cwd, '.graphql-let-overwrite.yml');
+    expect(actual).toMatchSnapshot();
   });
 });
