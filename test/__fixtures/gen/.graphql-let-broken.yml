@@ -1,0 +1,10 @@
+schema: "broken/**/*.graphqls"
+schemaEntrypoint: schema/type-defs.graphqls
+documents:
+    - "**/*.graphql"
+    - "!shouldBeIgnored1"
+plugins:
+    - typescript
+    - typescript-operations
+    - typescript-react-apollo
+cacheDir: __generated__

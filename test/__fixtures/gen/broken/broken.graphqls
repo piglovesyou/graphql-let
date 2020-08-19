@@ -1,0 +1,9 @@
+type Broken {
+    id: ID!
+    name: String!
+    status: String!
+}
+
+type Query {
+    viewer: Broke
+}

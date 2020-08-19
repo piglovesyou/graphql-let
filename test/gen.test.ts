@@ -7,6 +7,7 @@ import { CodegenContext } from '../src/lib/types';
 import { cleanup, rename } from './__tools/file';
 import pick from 'lodash.pick';
 import { matchPathsAndContents } from './__tools/match-paths-and-contents';
+import * as prints from '../src/lib/print';
 
 const cwd = pathJoin(__dirname, '__fixtures/gen');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
@@ -16,11 +17,14 @@ describe('"graphql-let" command', () => {
     await rename(rel('_gitignore'), rel('.gitignore'));
   });
 
-  beforeEach(() => cleanup(cwd));
+  const origConsoleError = console.error;
+  beforeEach(async () => {
+    console.error = origConsoleError;
+    await cleanup(cwd);
+  });
 
   afterAll(async () => {
     await rename(rel('.gitignore'), rel('_gitignore'));
-    // await cleanup();
   });
 
   test(`generates number of .d.ts ignoring specified files as expected
@@ -61,5 +65,23 @@ describe('"graphql-let" command', () => {
   test(`documents: **/*.tsx generates .d.ts for babel`, async () => {
     await gen({ cwd, configFilePath: '.graphql-let-babel.yml' });
     await matchPathsAndContents(['__generated__', 'node_modules'], cwd);
+  });
+
+  test(`fails with detailed message on codegen error`, async () => {
+    const printedMessages: string[] = [];
+    const printError = jest.spyOn(prints, 'printError');
+    printError.mockImplementation((err: Error) => {
+      printedMessages.push(err.message);
+    });
+    try {
+      await gen({ cwd, configFilePath: '.graphql-let-broken.yml' });
+    } catch (e) {
+      expect(printedMessages.length).toBe(1);
+      expect(printedMessages[0]).toContain(`Failed to load schema
+        Failed to load schema from broken/**/*.graphqls:
+
+        Type "Broke" not found in document.
+        Error: Type "Broke" not found in document.`);
+    }
   });
 });

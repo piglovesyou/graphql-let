@@ -62,10 +62,12 @@ export async function processGraphQLCodegen(
     results = await generate(generateArg, false);
   } catch (error) {
     if (error.name === 'ListrError' && error.errors != null) {
-      for (const e of error.errors) printError(e);
-      throw error.errors[0];
+      for (const err of error.errors) {
+        err.message = `${err.message}${err.details}`;
+        printError(err);
+      }
     } else {
-      console.log('Error:', error);
+      printError(error);
     }
     throw error;
   }
