@@ -21,8 +21,5 @@ dist
 *.tgz
 a.js
 
-# To develop with closer deps version that users will use
-yarn.lock
-
 test/**/*.graphql.d.ts
 test/**/*.graphqls.d.ts
