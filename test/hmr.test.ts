@@ -72,7 +72,6 @@ const ensureOutputDts = async (message: string): Promise<ResultType> => {
 describe('HMR', () => {
   let app: execa.ExecaChildProcess;
 
-  beforeAll(async () => await spawn('yarn', ['install']));
   beforeEach(async () => {
     await restoreFixtures();
     await rimraf(rel('__generated__'));
