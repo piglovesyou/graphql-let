@@ -23,7 +23,7 @@
   "dependencies": {
     "@babel/core": "^7.11.1",
     "@babel/helper-plugin-utils": "^7.10.4",
-    "@babel/parser": "^7.11.3",
+    "@babel/parser": "^7.11.4",
     "@babel/traverse": "^7.11.0",
     "do-sync": "^2.2.0",
     "globby": "^11.0.1",
