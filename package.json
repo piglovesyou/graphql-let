@@ -60,7 +60,7 @@
     "@types/babel__core": "^7.1.9",
     "@types/babel__preset-env": "^7.9.0",
     "@types/babel__traverse": "7.0.13",
-    "@types/eslint": "^7.2.1",
+    "@types/eslint": "^7.2.2",
     "@types/eslint-plugin-prettier": "^3.1.0",
     "@types/jest": "^26.0.10",
     "@types/loader-utils": "^2.0.1",
