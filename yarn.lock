@@ -1317,13 +1317,22 @@
     fs-extra "9.0.1"
     resolve-from "5.0.0"
 
-"@graphql-tools/import@6.1.0", "@graphql-tools/import@^6.1.0":
+"@graphql-tools/import@6.1.0":
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/@graphql-tools/import/-/import-6.1.0.tgz#82994007a99ba93db3ad95a5c51a59d9c9e84439"
   integrity sha512-MuW9v8w8hc6GvsWQH41NnOAr1f7bkV4E6AWMYpndAHPcuwwGHiLHizLCEjbNovzdoA8N9h3sMenhQyRpCAiEzg==
   dependencies:
     fs-extra "9.0.1"
     resolve-from "5.0.0"
+
+"@graphql-tools/import@^6.2.1":
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/import/-/import-6.2.1.tgz#e5c197f9726d0cdf98ad3b4d1c9af36e4198a11e"
+  integrity sha512-10mMCB8x4s0P010n8HHiUExg5m2NMr3Hm30WRSoP3P0m8Q0l8AmwXVwHUtykEaWhu+4xvFZ5Hl3fS+Wm0f7jdg==
+  dependencies:
+    fs-extra "9.0.1"
+    resolve-from "5.0.0"
+    tslib "~2.0.1"
 
 "@graphql-tools/json-file-loader@^6.0.0", "@graphql-tools/json-file-loader@^6.0.18":
   version "6.0.18"
