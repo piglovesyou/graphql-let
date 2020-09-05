@@ -446,7 +446,7 @@ schema. Just use what you need, it's most likely to be `jest-transform-graphql`.
 
 ## Experimental feature: Resolver Types
 
-If you meed the following conditions, graphql-let generates Resolver Types.
+If you meet the following conditions, graphql-let generates Resolver Types.
 
 -   You have `schemaEntrypoint` in the config
 -   You have file paths including glob patterns in `schema`
