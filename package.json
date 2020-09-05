@@ -62,7 +62,7 @@
     "@types/babel__traverse": "7.0.13",
     "@types/eslint": "^7.2.2",
     "@types/eslint-plugin-prettier": "^3.1.0",
-    "@types/jest": "^26.0.10",
+    "@types/jest": "^26.0.13",
     "@types/loader-utils": "^2.0.1",
     "@types/lodash.pick": "^4.4.6",
     "@types/memory-fs": "^0.3.2",
