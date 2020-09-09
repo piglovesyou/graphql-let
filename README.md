@@ -11,7 +11,7 @@ that integrates graphql-let.
 -   [Why it exists](#why-it-exists)
 -   [How it works](#how-it-works)
 -   [Get started with webpack loader](#get-started-with-webpack-loader)
--   [Configuration options are mostly same as `codegen.yml`, except](#configuration-options-are-mostly-same-as-codegenyml-except)
+-   [Configuration is compatible with `codegen.yml`, except:](#configuration-is-compatible-with-codegenyml-except)
 -   [Setup Babel Plugin for inline GraphQL documents](#setup-babel-plugin-for-inline-graphql-documents)
 -   [Jest Transformer](#jest-transformer)
 -   [Experimental feature: Resolver Types](#experimental-feature-resolver-types)
@@ -30,17 +30,14 @@ code with rich IDE assists.
 
 To enhance that development pattern, we should move on to the more specific
 use-case than what GraphQL code generator allows; Consider TypeScript as a
-first-class citizen and forget intermediate artifacts to get Hot Module
-Replacement (HMR) work.
+first-class citizen and forget intermediate artifacts to let HMR (hot module
+replacement) work.
 
-graphql-let lets you `import` and call `gql` to get results of GraphQL code
-generator per GraphQL documents with TypeScript type definitions.
+graphql-let lets you `import` to get results of GraphQL code generator per
+GraphQL documents with TypeScript type definitions.
 
 ```typescript jsx
 import { useNewsQuery } from './news.graphql'
-// or
-import gql from 'graphql-let'
-const { useNewsQuery } = gql(`query News { ... }`)
 
 const News: React.FC = () => {
     // Typed already️⚡️
@@ -51,8 +48,13 @@ const News: React.FC = () => {
 
 ## How it works
 
-There are three entry points to graphql-let: CLI, webpack loader, and Babel
-plugin. Mostly, all do the same as below.
+There are three entry points to graphql-let:
+
+-   CLI
+-   webpack loader
+-   Babel plugin (still partial support)
+
+Mostly, all do the same as below.
 
 1.  It loads configurations from `.graphql-let.yml`
 2.  It builds codegen context from glob patterns from the config, a file content
@@ -194,12 +196,25 @@ const News: React.FC = () => {
 }
 ```
 
-## Configuration options are mostly same as `codegen.yml`, except
+## Configuration is compatible with `codegen.yml`, except:
 
 graphql-let passes most of the options to GraphQL code generator, so
-**`.graphql-let.yml` is mostly compatible with `codegen.yml`. However**, some of
-they are strictly controlled by graphql-let where you can't decide what to
-generate.
+**`.graphql-let.yml` is mostly compatible with `codegen.yml`. However**, there
+are differences you should know. In short, the below diff is the quick migration
+guide.
+
+```diff
+ schema: https://api.github.com/graphql
+ documents: "**/*.graphql"
+-generates:
+-    ./__generated__/types.ts:
+-        plugins:
+-            - typescript
+-            - typescript-operations
++plugins:
++    - typescript
++    - typescript-operations
+```
 
 ### Exception: `generates`
 
@@ -222,7 +237,7 @@ Documen-pointer level options such as `noRequire: true` or
 [Custom Document Loader](https://graphql-code-generator.com/docs/getting-started/documents-field#custom-document-loader)
 are not supported.
 
-### Limitation: `` gql(`query{}`) `` is allowed only in `.ts(x)`s
+### Babel Plugin Limitation: `` gql(`query{}`) `` is allowed only in `.ts(x)`s
 
 Currently, `` gql(`query{}`) `` can be handled only for files with extensions
 `.ts` and `.tsx`.
@@ -320,7 +335,6 @@ plugins:
     - typescript-react-apollo
 respectGitIgnore: true
 config:
-    useIndexSignature: true
     reactApolloVersion: 3
     apolloReactComponentsImportFrom: "@apollo/client/react/components"
     useIndexSignature: true
