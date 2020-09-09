@@ -3,10 +3,13 @@ import webpack from 'webpack';
 import memoryfs from 'memory-fs';
 import nodeExternals from 'webpack-node-externals';
 
+type GqlLetLoaderOptions = Record<string, unknown> | undefined; // todo
+
 export default function compile(
   cwd: string,
   fixture: string,
   target: 'node' | 'web',
+  gqlLetLoaderOptions: GqlLetLoaderOptions = undefined,
 ): Promise<webpack.Stats> {
   const compiler = webpack({
     mode: 'production',
@@ -31,7 +34,10 @@ export default function compile(
                 presets: ['@babel/preset-react', '@babel/preset-typescript'],
               },
             },
-            { loader: path.resolve(__dirname, '../../src/loader.ts') },
+            {
+              loader: path.resolve(__dirname, '../../src/loader.ts'),
+              options: gqlLetLoaderOptions,
+            },
           ],
         },
       ],

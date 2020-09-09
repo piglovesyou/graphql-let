@@ -2,24 +2,31 @@
 
 import { deepStrictEqual, ok, strictEqual } from 'assert';
 import glob from 'globby';
-import compiler from './__tools/compile';
+import webpack from 'webpack';
 import { join as pathJoin } from 'path';
+
+import compiler from './__tools/compile';
 import { rimraf } from './__tools/file';
 
-const cwd = pathJoin(__dirname, '__fixtures/loader');
+function getModuleSources(stats: webpack.Stats) {
+  return stats
+    .toJson()
+    .modules!.map((m) => m.source)
+    .filter(Boolean);
+}
+
+const fixturePath1 = pathJoin(__dirname, '__fixtures/loader/usual');
+const fixturePath2 = pathJoin(__dirname, '__fixtures/loader/monorepo');
 
 describe('graphql-let/loader', () => {
   beforeEach(async () => {
-    await rimraf(pathJoin(cwd, '__generated__'));
+    await rimraf(pathJoin(fixturePath1, '__generated__'));
   });
 
   test('generates .tsx and .d.ts', async () => {
     const fixture = 'pages/viewer.graphql';
-    const stats = await compiler(cwd, fixture, 'node');
-    const { 0: actual, length } = stats
-      .toJson()
-      .modules!.map((m) => m.source)
-      .filter(Boolean);
+    const stats = await compiler(fixturePath1, fixture, 'node');
+    const { 0: actual, length } = getModuleSources(stats);
 
     deepStrictEqual(length, 1);
     expect(actual).toMatchSnapshot();
@@ -33,14 +40,13 @@ describe('graphql-let/loader', () => {
       ['pages/viewer2.graphql', 'web'],
     ];
     const results = await Promise.all(
-      expectedTargets.map(([file, target]) => compiler(cwd, file, target)),
+      expectedTargets.map(([file, target]) =>
+        compiler(fixturePath1, file, target),
+      ),
     );
     for (const [i, stats] of results.entries()) {
       const [file] = expectedTargets[i];
-      const { 0: actual, length } = stats
-        .toJson()
-        .modules!.map((m) => m.source)
-        .filter(Boolean);
+      const { 0: actual, length } = getModuleSources(stats);
 
       deepStrictEqual(length, 1);
       switch (file) {
@@ -52,7 +58,19 @@ describe('graphql-let/loader', () => {
           break;
       }
     }
-    const globResults = await glob('**/*.graphql.d.ts', { cwd });
+    const globResults = await glob('**/*.graphql.d.ts', { cwd: fixturePath1 });
     strictEqual(globResults.length, 2);
+  });
+
+  test('accepts config path in `options.configFile`', async () => {
+    const stats = await compiler(
+      pathJoin(fixturePath2, 'packages/app'),
+      'src/index.ts',
+      'web',
+      { configFile: '../../../config/.graphql-let.yml' },
+    );
+
+    const x = getModuleSources(stats);
+    console.dir({ x }, { depth: Infinity });
   });
 });
