@@ -1,6 +1,10 @@
 import logUpdate from 'log-update';
 import { loader } from 'webpack';
 import { relative as pathRelative, join } from 'path';
+import { getOptions } from 'loader-utils';
+import validateOptions from 'schema-utils';
+import type { Schema as JsonSchema } from 'schema-utils/declarations/validate';
+
 import { processDocumentsForContext } from './lib/documents';
 import { processDtsForContext } from './lib/dts';
 import createExecContext from './lib/exec-context';
@@ -11,14 +15,36 @@ import { PRINT_PREFIX, updateLog } from './lib/print';
 import { readFile } from './lib/file';
 import { CodegenContext } from './lib/types';
 
+const optionsSchema: JsonSchema = {
+  type: 'object',
+  properties: {
+    configFile: {
+      type: 'string',
+    },
+  },
+  required: [],
+};
+export interface GraphQLLetLoaderOptions {
+  configFile?: string;
+}
+
+function parseOptions(ctx: loader.LoaderContext): GraphQLLetLoaderOptions {
+  const options = getOptions(ctx);
+
+  validateOptions(optionsSchema, options);
+
+  return (options as unknown) as GraphQLLetLoaderOptions;
+}
+
 const processGraphQLLetLoader = memoize(
   async (
     gqlFullPath: string,
     gqlContent: string | Buffer,
     addDependency: (path: string) => void,
     cwd: string,
+    options: GraphQLLetLoaderOptions,
   ): Promise<string> => {
-    const [config, configHash] = await loadConfig(cwd);
+    const [config, configHash] = await loadConfig(cwd, options.configFile);
     const execContext = createExecContext(cwd, config, configHash);
 
     // To pass config change on subsequent generation,
@@ -68,12 +94,14 @@ const processGraphQLLetLoader = memoize(
 const graphQLLetLoader: loader.Loader = function (gqlContent) {
   const callback = this.async()!;
   const { resourcePath: gqlFullPath, rootContext: cwd } = this;
+  const options = parseOptions(this);
 
   processGraphQLLetLoader(
     gqlFullPath,
     gqlContent,
     this.addDependency.bind(this),
     cwd,
+    options,
   )
     .then((tsxContent: string) => {
       // Pretend .tsx for later loaders.

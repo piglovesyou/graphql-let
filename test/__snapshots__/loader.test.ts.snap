@@ -1,5 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`graphql-let/loader accepts config path in \`options.configFile\` 1`] = `
+"
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
+export const GetFruitsDocument = gql\`
+    query GetFruits {
+  fruits {
+    id
+    name
+    flavor
+  }
+}
+    \`;
+
+
+export function useGetFruitsQuery(baseOptions) {
+  return Apollo.useQuery(GetFruitsDocument, baseOptions);
+}
+export function useGetFruitsLazyQuery(baseOptions) {
+  return Apollo.useLazyQuery(GetFruitsDocument, baseOptions);
+}"
+`;
+
 exports[`graphql-let/loader generates .tsx and .d.ts 1`] = `
 "import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';

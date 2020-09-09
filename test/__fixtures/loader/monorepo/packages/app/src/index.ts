@@ -1,7 +1,7 @@
-import { useViewerQuery } from './viewer.graphql';
+import { useGetFruitsQuery } from './fruits.graphql';
 
 export function App() {
-  const { data, loading } = useViewerQuery();
+  const { data, loading } = useGetFruitsQuery();
 
   if (loading) {
     return 'Loading...';

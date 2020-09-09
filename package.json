@@ -33,6 +33,7 @@
     "minimist": "^1.2.5",
     "p-map": "^4.0.0",
     "rimraf": "^3.0.2",
+    "schema-utils": "^2.7.1",
     "slash": "^3.0.0",
     "string-env-interpolation": "^1.0.1",
     "yaml": "^1.10.0"

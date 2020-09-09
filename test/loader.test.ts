@@ -2,18 +2,10 @@
 
 import { deepStrictEqual, ok, strictEqual } from 'assert';
 import glob from 'globby';
-import webpack from 'webpack';
 import { join as pathJoin } from 'path';
 
 import compiler from './__tools/compile';
 import { rimraf } from './__tools/file';
-
-function getModuleSources(stats: webpack.Stats) {
-  return stats
-    .toJson()
-    .modules!.map((m) => m.source)
-    .filter(Boolean);
-}
 
 const fixturePath1 = pathJoin(__dirname, '__fixtures/loader/usual');
 const fixturePath2 = pathJoin(__dirname, '__fixtures/loader/monorepo');
@@ -26,7 +18,10 @@ describe('graphql-let/loader', () => {
   test('generates .tsx and .d.ts', async () => {
     const fixture = 'pages/viewer.graphql';
     const stats = await compiler(fixturePath1, fixture, 'node');
-    const { 0: actual, length } = getModuleSources(stats);
+    const { 0: actual, length } = stats
+      .toJson()
+      .modules!.map((m) => m.source)
+      .filter(Boolean);
 
     deepStrictEqual(length, 1);
     expect(actual).toMatchSnapshot();
@@ -46,7 +41,10 @@ describe('graphql-let/loader', () => {
     );
     for (const [i, stats] of results.entries()) {
       const [file] = expectedTargets[i];
-      const { 0: actual, length } = getModuleSources(stats);
+      const { 0: actual, length } = stats
+        .toJson()
+        .modules!.map((m) => m.source)
+        .filter(Boolean);
 
       deepStrictEqual(length, 1);
       switch (file) {
@@ -67,10 +65,17 @@ describe('graphql-let/loader', () => {
       pathJoin(fixturePath2, 'packages/app'),
       'src/index.ts',
       'web',
-      { configFile: '../../../config/.graphql-let.yml' },
+      { configFile: '../../config/.graphql-let.yml' },
     );
 
-    const x = getModuleSources(stats);
-    console.dir({ x }, { depth: Infinity });
+    const generated = stats
+      .toJson()
+      .modules?.flatMap((m) => m.modules)
+      .find((m) => m?.name === './src/fruits.graphql');
+
+    expect(generated?.source).toContain('export function useGetFruitsQuery');
+    expect(
+      generated?.source?.replace(/\/\*[\s\S]*?\*\//g, ''),
+    ).toMatchSnapshot();
   });
 });
