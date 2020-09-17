@@ -3,6 +3,7 @@
 import { deepStrictEqual, ok, strictEqual } from 'assert';
 import glob from 'globby';
 import { join as pathJoin } from 'path';
+import 'core-js/es/array';
 
 import compiler from './__tools/compile';
 import { rimraf } from './__tools/file';
