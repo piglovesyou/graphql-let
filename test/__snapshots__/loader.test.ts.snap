@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`graphql-let/loader accepts config path in \`options.configFile\` 1`] = `
+exports[`graphql-let/loader accepts config path in \`options.configFile\` 2`] = `
 "
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';

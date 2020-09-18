@@ -69,14 +69,25 @@ describe('graphql-let/loader', () => {
       { configFile: '../../config/.graphql-let.yml' },
     );
 
-    const generated = stats
+    const modules = stats
       .toJson()
       .modules?.flatMap((m) => m.modules)
-      .find((m) => m?.name === './src/fruits.graphql');
+      ?.filter(Boolean);
 
-    expect(generated?.source).toContain('export function useGetFruitsQuery');
+    ok(modules);
+    expect(modules.map((m) => m.name)).toMatchInlineSnapshot(`
+      Array [
+        "./src/index.ts",
+        "./src/fruits.graphql",
+      ]
+    `);
+
+    const generated = modules.find((m) => m?.name === './src/fruits.graphql');
+
+    ok(generated);
+    expect(generated.source).toContain('export function useGetFruitsQuery');
     expect(
-      generated?.source?.replace(/\/\*[\s\S]*?\*\//g, ''),
+      generated.source?.replace(/\/\*[\s\S]*?\*\//g, ''),
     ).toMatchSnapshot();
   });
 });
