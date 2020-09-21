@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { deepStrictEqual, ok, strictEqual } from 'assert';
-import * as fs from 'fs/promises';
+import * as fs from 'fs';
 import glob from 'globby';
 import { join as pathJoin } from 'path';
 import 'core-js/es/array';
@@ -9,6 +9,9 @@ import 'core-js/es/array';
 import compiler from './__tools/compile';
 import { rimraf } from './__tools/file';
 import waitOn from 'wait-on';
+import { promisify } from 'util';
+
+const unlink = promisify(fs.unlink);
 
 const fixturePath1 = pathJoin(__dirname, '__fixtures/loader/usual');
 const fixturePath2 = pathJoin(__dirname, '__fixtures/loader/monorepo');
@@ -100,10 +103,10 @@ describe('graphql-let/loader', () => {
     ).toMatchSnapshot();
 
     await Promise.all([
-      fs.unlink(
+      unlink(
         `${fixturePath2}/packages/app/__generated__/src/fruits.graphql.tsx`,
       ),
-      fs.unlink(`${fixturePath2}/packages/app/src/fruits.graphql.d.ts`),
+      unlink(`${fixturePath2}/packages/app/src/fruits.graphql.d.ts`),
     ]).catch(() => {
       /* discard error */
     });
