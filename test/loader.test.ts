@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { deepStrictEqual, ok, strictEqual } from 'assert';
+import * as fs from 'fs/promises';
 import glob from 'globby';
 import { join as pathJoin } from 'path';
 import 'core-js/es/array';
 
 import compiler from './__tools/compile';
 import { rimraf } from './__tools/file';
+import waitOn from 'wait-on';
 
 const fixturePath1 = pathJoin(__dirname, '__fixtures/loader/usual');
 const fixturePath2 = pathJoin(__dirname, '__fixtures/loader/monorepo');
@@ -61,7 +63,7 @@ describe('graphql-let/loader', () => {
     strictEqual(globResults.length, 2);
   });
 
-  test('accepts config path in `options.configFile`', async () => {
+  test('accepts config path in options.configFile', async () => {
     const stats = await compiler(
       pathJoin(fixturePath2, 'packages/app'),
       'src/index.ts',
@@ -85,9 +87,25 @@ describe('graphql-let/loader', () => {
     const generated = modules.find((m) => m?.name === './src/fruits.graphql');
 
     ok(generated);
+
+    await waitOn({
+      resources: [
+        `${fixturePath2}/packages/app/__generated__/src/fruits.graphql.tsx`,
+      ],
+    });
+
     expect(generated.source).toContain('export function useGetFruitsQuery');
     expect(
       generated.source?.replace(/\/\*[\s\S]*?\*\//g, ''),
     ).toMatchSnapshot();
+
+    await Promise.all([
+      fs.unlink(
+        `${fixturePath2}/packages/app/__generated__/src/fruits.graphql.tsx`,
+      ),
+      fs.unlink(`${fixturePath2}/packages/app/src/fruits.graphql.d.ts`),
+    ]).catch(() => {
+      /* discard error */
+    });
   });
 });
