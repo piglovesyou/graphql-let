@@ -1,21 +1,29 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { deepStrictEqual, ok, strictEqual } from 'assert';
+import * as fs from 'fs';
 import glob from 'globby';
-import compiler from './__tools/compile';
 import { join as pathJoin } from 'path';
-import { rimraf } from './__tools/file';
+import 'core-js/es/array';
 
-const cwd = pathJoin(__dirname, '__fixtures/loader');
+import compiler from './__tools/compile';
+import { rimraf } from './__tools/file';
+import waitOn from 'wait-on';
+import { promisify } from 'util';
+
+const unlink = promisify(fs.unlink);
+
+const fixturePath1 = pathJoin(__dirname, '__fixtures/loader/usual');
+const fixturePath2 = pathJoin(__dirname, '__fixtures/loader/monorepo');
 
 describe('graphql-let/loader', () => {
   beforeEach(async () => {
-    await rimraf(pathJoin(cwd, '__generated__'));
+    await rimraf(pathJoin(fixturePath1, '__generated__'));
   });
 
   test('generates .tsx and .d.ts', async () => {
     const fixture = 'pages/viewer.graphql';
-    const stats = await compiler(cwd, fixture, 'node');
+    const stats = await compiler(fixturePath1, fixture, 'node');
     const { 0: actual, length } = stats
       .toJson()
       .modules!.map((m) => m.source)
@@ -33,7 +41,9 @@ describe('graphql-let/loader', () => {
       ['pages/viewer2.graphql', 'web'],
     ];
     const results = await Promise.all(
-      expectedTargets.map(([file, target]) => compiler(cwd, file, target)),
+      expectedTargets.map(([file, target]) =>
+        compiler(fixturePath1, file, target),
+      ),
     );
     for (const [i, stats] of results.entries()) {
       const [file] = expectedTargets[i];
@@ -52,7 +62,53 @@ describe('graphql-let/loader', () => {
           break;
       }
     }
-    const globResults = await glob('**/*.graphql.d.ts', { cwd });
+    const globResults = await glob('**/*.graphql.d.ts', { cwd: fixturePath1 });
     strictEqual(globResults.length, 2);
+  });
+
+  test('accepts config path in options.configFile', async () => {
+    const stats = await compiler(
+      pathJoin(fixturePath2, 'packages/app'),
+      'src/index.ts',
+      'web',
+      { configFile: '../../config/.graphql-let.yml' },
+    );
+
+    const modules = stats
+      .toJson()
+      .modules?.flatMap((m) => m.modules)
+      ?.filter(Boolean);
+
+    ok(modules);
+    expect(modules.map((m) => m.name)).toMatchInlineSnapshot(`
+      Array [
+        "./src/index.ts",
+        "./src/fruits.graphql",
+      ]
+    `);
+
+    const generated = modules.find((m) => m?.name === './src/fruits.graphql');
+
+    ok(generated);
+
+    await waitOn({
+      resources: [
+        `${fixturePath2}/packages/app/__generated__/src/fruits.graphql.tsx`,
+      ],
+    });
+
+    expect(generated.source).toContain('export function useGetFruitsQuery');
+    expect(
+      generated.source?.replace(/\/\*[\s\S]*?\*\//g, ''),
+    ).toMatchSnapshot();
+
+    await Promise.all([
+      unlink(
+        `${fixturePath2}/packages/app/__generated__/src/fruits.graphql.tsx`,
+      ),
+      unlink(`${fixturePath2}/packages/app/src/fruits.graphql.d.ts`),
+    ]).catch(() => {
+      /* discard error */
+    });
   });
 });
