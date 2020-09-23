@@ -107,7 +107,7 @@
     "terminate": "^2.1.2",
     "ts-jest": "^26.4.0",
     "tslib": "^2.0.1",
-    "typescript": "^3.7.5",
+    "typescript": "^4.0.3",
     "wait-on": "^5.2.0",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
