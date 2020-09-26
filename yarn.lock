@@ -1908,10 +1908,10 @@
   dependencies:
     "@babel/types" "^7.0.0"
 
-"@types/babel__preset-env@^7.9.0":
-  version "7.9.0"
-  resolved "https://registry.yarnpkg.com/@types/babel__preset-env/-/babel__preset-env-7.9.0.tgz#9498eeb833ce9bd8324dd8a26a45886bc4426aa8"
-  integrity sha512-0W1P7wGyx1dSYFtwUoqc7IbtB50brA249GdfhwHbnPbrHM/aOM1NIMbzp290DaCowSnnRNnpMR8O4HU4dxYx0Q==
+"@types/babel__preset-env@^7.9.1":
+  version "7.9.1"
+  resolved "https://registry.yarnpkg.com/@types/babel__preset-env/-/babel__preset-env-7.9.1.tgz#ba6bc73bfaa2050ca5459235fb73e146d0f66aa6"
+  integrity sha512-kkCHo5fk24m3gcH7oVhRLdw6xGF2tog5rc8/CbXIyTSYSO0NhStjEYCaEmRjs5VB5Jy5Wbj+0QvuGdxuGdvAfQ==
 
 "@types/babel__template@*":
   version "7.0.2"
