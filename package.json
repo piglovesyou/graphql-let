@@ -105,7 +105,7 @@
     "remark-cli": "^8.0.1",
     "remark-toc": "^7.0.0",
     "terminate": "^2.1.2",
-    "ts-jest": "^26.4.0",
+    "ts-jest": "^26.4.1",
     "tslib": "^2.0.1",
     "typescript": "^3.7.5",
     "wait-on": "^5.2.0",
