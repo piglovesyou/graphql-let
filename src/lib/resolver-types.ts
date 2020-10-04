@@ -107,6 +107,7 @@ export default typeof DocumentNode
       );
 
       await processGraphQLCodegen(execContext, [context], {
+        silent: true,
         ...config,
         cwd,
         generates: {
