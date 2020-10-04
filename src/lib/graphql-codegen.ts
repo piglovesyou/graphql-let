@@ -38,6 +38,7 @@ export function buildCodegenConfig(
   }
 
   return {
+    silent: true,
     ...config,
     // @ts-ignore
     cwd,
