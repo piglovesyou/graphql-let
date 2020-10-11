@@ -56,7 +56,7 @@
     "@graphql-codegen/typescript-resolvers": "^1.17.9",
     "@graphql-tools/graphql-file-loader": "^6.2.4",
     "@graphql-tools/import": "^6.2.4",
-    "@jest/transform": "^26.3.0",
+    "@jest/transform": "^26.5.2",
     "@jest/types": "^26.3.0",
     "@types/babel__core": "^7.1.10",
     "@types/babel__preset-env": "^7.9.1",
