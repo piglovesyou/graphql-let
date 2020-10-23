@@ -57,7 +57,7 @@
     "@graphql-tools/graphql-file-loader": "^6.2.4",
     "@graphql-tools/import": "^6.2.4",
     "@jest/transform": "^26.3.0",
-    "@jest/types": "^26.3.0",
+    "@jest/types": "^26.6.1",
     "@types/babel__core": "^7.1.10",
     "@types/babel__preset-env": "^7.9.1",
     "@types/babel__traverse": "^7.0.15",
