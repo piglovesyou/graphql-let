@@ -1,5 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { join as pathJoin } from 'path';
+import { resolve as pathResolve } from 'path';
 import { parse as parseYaml } from 'yaml';
 import { env } from 'string-env-interpolation';
 import { DEFAULT_CONFIG_FILENAME } from './consts';
@@ -59,7 +59,7 @@ export function buildConfig(raw: UserConfigTypes): ConfigTypes {
 }
 
 export const getConfigPath = (cwd: string, configFilePath?: string) =>
-  pathJoin(cwd, configFilePath || DEFAULT_CONFIG_FILENAME);
+  pathResolve(cwd, configFilePath || DEFAULT_CONFIG_FILENAME);
 
 const getConfigFromContent = (content: string): [ConfigTypes, string] => {
   content = env(content);

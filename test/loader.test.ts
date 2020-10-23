@@ -66,49 +66,65 @@ describe('graphql-let/loader', () => {
     strictEqual(globResults.length, 2);
   });
 
-  test('accepts config path in options.configFile', async () => {
-    const stats = await compiler(
-      pathJoin(fixturePath2, 'packages/app'),
-      'src/index.ts',
-      'web',
-      { configFile: '../../config/.graphql-let.yml' },
-    );
+  describe('options', () => {
+    async function acceptsConfigPathInOptionsConfigFile(
+      configFilePath: string,
+    ) {
+      const stats = await compiler(
+        pathJoin(fixturePath2, 'packages/app'),
+        'src/index.ts',
+        'web',
+        { configFile: configFilePath },
+      );
 
-    const modules = stats
-      .toJson()
-      .modules?.flatMap((m) => m.modules)
-      ?.filter(Boolean);
+      const modules = stats
+        .toJson()
+        .modules?.flatMap((m) => m.modules)
+        ?.filter(Boolean);
 
-    ok(modules);
-    expect(modules.map((m) => m.name)).toMatchInlineSnapshot(`
-      Array [
-        "./src/index.ts",
-        "./src/fruits.graphql",
-      ]
-    `);
+      ok(modules);
+      expect(modules.map((m) => m.name)).toMatchInlineSnapshot(`
+        Array [
+          "./src/index.ts",
+          "./src/fruits.graphql",
+        ]
+      `);
 
-    const generated = modules.find((m) => m?.name === './src/fruits.graphql');
+      const generated = modules.find((m) => m?.name === './src/fruits.graphql');
 
-    ok(generated);
+      ok(generated);
 
-    await waitOn({
-      resources: [
-        `${fixturePath2}/packages/app/__generated__/src/fruits.graphql.tsx`,
-      ],
+      await waitOn({
+        resources: [
+          `${fixturePath2}/packages/app/__generated__/src/fruits.graphql.tsx`,
+        ],
+      });
+
+      expect(generated.source).toContain('export function useGetFruitsQuery');
+      expect(
+        generated.source?.replace(/\/\*[\s\S]*?\*\//g, ''),
+      ).toMatchSnapshot();
+
+      await Promise.all([
+        unlink(
+          `${fixturePath2}/packages/app/__generated__/src/fruits.graphql.tsx`,
+        ),
+        unlink(`${fixturePath2}/packages/app/src/fruits.graphql.d.ts`),
+      ]).catch(() => {
+        /* discard error */
+      });
+    }
+
+    test('accept relative config path in options.configFile', async () => {
+      await acceptsConfigPathInOptionsConfigFile(
+        '../../config/.graphql-let.yml',
+      );
     });
 
-    expect(generated.source).toContain('export function useGetFruitsQuery');
-    expect(
-      generated.source?.replace(/\/\*[\s\S]*?\*\//g, ''),
-    ).toMatchSnapshot();
-
-    await Promise.all([
-      unlink(
-        `${fixturePath2}/packages/app/__generated__/src/fruits.graphql.tsx`,
-      ),
-      unlink(`${fixturePath2}/packages/app/src/fruits.graphql.d.ts`),
-    ]).catch(() => {
-      /* discard error */
+    test('accept absolute config path in options.configFile', async () => {
+      await acceptsConfigPathInOptionsConfigFile(
+        require.resolve('./__fixtures/loader/monorepo/config/.graphql-let.yml'),
+      );
     });
   });
 });
