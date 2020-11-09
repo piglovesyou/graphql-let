@@ -2,7 +2,7 @@ import logUpdate from 'log-update';
 import { loader } from 'webpack';
 import { relative as pathRelative, join } from 'path';
 import { getOptions } from 'loader-utils';
-import validateOptions from 'schema-utils';
+import { validate } from 'schema-utils';
 import type { Schema as JsonSchema } from 'schema-utils/declarations/validate';
 
 import { processDocumentsForContext } from './lib/documents';
@@ -31,7 +31,7 @@ export interface GraphQLLetLoaderOptions {
 function parseOptions(ctx: loader.LoaderContext): GraphQLLetLoaderOptions {
   const options = getOptions(ctx);
 
-  validateOptions(optionsSchema, options);
+  validate(optionsSchema, options);
 
   return (options as unknown) as GraphQLLetLoaderOptions;
 }
