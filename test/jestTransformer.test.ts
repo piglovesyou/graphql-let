@@ -21,11 +21,16 @@ describe('graphql-let/jestTransformer', () => {
       .filter(Boolean);
 
     const fullPath = pathJoin(cwd, fileName);
-    const transformedContent = jestTransformer.process(
+    const { code: transformedContent } = jestTransformer.process(
       fileData!,
       fullPath,
       jestConfig,
-    );
-    expect(transformedContent).toMatchSnapshot();
+    ) as { code: string };
+    expect(removeSourcemapReference(transformedContent)).toMatchSnapshot();
   });
 });
+
+function removeSourcemapReference(code: string) {
+  // XXX: I couldn't find the better way to suppress sourcemaps
+  return code.replace(/\n\/\/# sourceMappingURL=[\s\S]*/, '');
+}
