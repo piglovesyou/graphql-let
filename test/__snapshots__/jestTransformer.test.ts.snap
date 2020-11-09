@@ -1,8 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`graphql-let/jestTransformer transforms .graphql 1`] = `
-Object {
-  "code": "\\"use strict\\";
+"\\"use strict\\";
 
 function _typeof(obj) { \\"@babel/helpers - typeof\\"; if (typeof Symbol === \\"function\\" && typeof Symbol.iterator === \\"symbol\\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \\"function\\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \\"symbol\\" : typeof obj; }; } return _typeof(obj); }
 
@@ -56,100 +55,5 @@ function useViewerQuery(baseOptions) {
 
 function useViewerLazyQuery(baseOptions) {
   return Apollo.useLazyQuery(ViewerDocument, baseOptions);
-}
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInZpZXdlci5ncmFwaHFsLnRzeCJdLCJuYW1lcyI6WyJWaWV3ZXJEb2N1bWVudCIsImdxbCIsInVzZVZpZXdlclF1ZXJ5IiwiYmFzZU9wdGlvbnMiLCJBcG9sbG8iLCJ1c2VRdWVyeSIsInVzZVZpZXdlckxhenlRdWVyeSIsInVzZUxhenlRdWVyeSJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7QUFHQTs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBcUNPLElBQU1BLGNBQWMsT0FBR0MsVUFBSCxvQkFBcEI7QUFVUDs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBZU8sU0FBU0MsY0FBVCxDQUF3QkMsV0FBeEIsRUFBa0c7QUFDakcsU0FBT0MsTUFBTSxDQUFDQyxRQUFQLENBQW1ETCxjQUFuRCxFQUFtRUcsV0FBbkUsQ0FBUDtBQUNEOztBQUNBLFNBQVNHLGtCQUFULENBQTRCSCxXQUE1QixFQUEwRztBQUN2RyxTQUFPQyxNQUFNLENBQUNHLFlBQVAsQ0FBdURQLGNBQXZELEVBQXVFRyxXQUF2RSxDQUFQO0FBQ0QiLCJzb3VyY2VzQ29udGVudCI6WyIvKiA2NTE4MWZmOGNhNTAyZjhkY2RmODI4ZjAzZjkwYjdlMDQ4ZDNmNmE5XG4gKiBUaGlzIGZpbGUgaXMgYXV0b21hdGljYWxseSBnZW5lcmF0ZWQgYnkgZ3JhcGhxbC1sZXQuICovXG5cbmltcG9ydCB7IGdxbCB9IGZyb20gJ0BhcG9sbG8vY2xpZW50JztcbmltcG9ydCAqIGFzIEFwb2xsbyBmcm9tICdAYXBvbGxvL2NsaWVudCc7XG5leHBvcnQgdHlwZSBNYXliZTxUPiA9IFQgfCBudWxsO1xuZXhwb3J0IHR5cGUgRXhhY3Q8VCBleHRlbmRzIHsgW2tleTogc3RyaW5nXTogdW5rbm93biB9PiA9IHsgW0sgaW4ga2V5b2YgVF06IFRbS10gfTtcbi8qKiBBbGwgYnVpbHQtaW4gYW5kIGN1c3RvbSBzY2FsYXJzLCBtYXBwZWQgdG8gdGhlaXIgYWN0dWFsIHZhbHVlcyAqL1xuZXhwb3J0IHR5cGUgU2NhbGFycyA9IHtcbiAgSUQ6IHN0cmluZztcbiAgU3RyaW5nOiBzdHJpbmc7XG4gIEJvb2xlYW46IGJvb2xlYW47XG4gIEludDogbnVtYmVyO1xuICBGbG9hdDogbnVtYmVyO1xufTtcblxuZXhwb3J0IHR5cGUgUXVlcnkgPSB7XG4gIF9fdHlwZW5hbWU/OiAnUXVlcnknO1xuICB2aWV3ZXI/OiBNYXliZTxVc2VyPjtcbn07XG5cbmV4cG9ydCB0eXBlIFVzZXIgPSB7XG4gIF9fdHlwZW5hbWU/OiAnVXNlcic7XG4gIGlkOiBTY2FsYXJzWydJRCddO1xuICBuYW1lOiBTY2FsYXJzWydTdHJpbmcnXTtcbiAgc3RhdHVzOiBTY2FsYXJzWydTdHJpbmcnXTtcbn07XG5cbmV4cG9ydCB0eXBlIFZpZXdlclF1ZXJ5VmFyaWFibGVzID0gRXhhY3Q8eyBba2V5OiBzdHJpbmddOiBuZXZlcjsgfT47XG5cblxuZXhwb3J0IHR5cGUgVmlld2VyUXVlcnkgPSAoXG4gIHsgX190eXBlbmFtZT86ICdRdWVyeScgfVxuICAmIHsgdmlld2VyPzogTWF5YmU8KFxuICAgIHsgX190eXBlbmFtZT86ICdVc2VyJyB9XG4gICAgJiBQaWNrPFVzZXIsICdpZCcgfCAnbmFtZScgfCAnc3RhdHVzJz5cbiAgKT4gfVxuKTtcblxuXG5leHBvcnQgY29uc3QgVmlld2VyRG9jdW1lbnQgPSBncWxgXG4gICAgcXVlcnkgVmlld2VyIHtcbiAgdmlld2VyIHtcbiAgICBpZFxuICAgIG5hbWVcbiAgICBzdGF0dXNcbiAgfVxufVxuICAgIGA7XG5cbi8qKlxuICogX191c2VWaWV3ZXJRdWVyeV9fXG4gKlxuICogVG8gcnVuIGEgcXVlcnkgd2l0aGluIGEgUmVhY3QgY29tcG9uZW50LCBjYWxsIGB1c2VWaWV3ZXJRdWVyeWAgYW5kIHBhc3MgaXQgYW55IG9wdGlvbnMgdGhhdCBmaXQgeW91ciBuZWVkcy5cbiAqIFdoZW4geW91ciBjb21wb25lbnQgcmVuZGVycywgYHVzZVZpZXdlclF1ZXJ5YCByZXR1cm5zIGFuIG9iamVjdCBmcm9tIEFwb2xsbyBDbGllbnQgdGhhdCBjb250YWlucyBsb2FkaW5nLCBlcnJvciwgYW5kIGRhdGEgcHJvcGVydGllc1xuICogeW91IGNhbiB1c2UgdG8gcmVuZGVyIHlvdXIgVUkuXG4gKlxuICogQHBhcmFtIGJhc2VPcHRpb25zIG9wdGlvbnMgdGhhdCB3aWxsIGJlIHBhc3NlZCBpbnRvIHRoZSBxdWVyeSwgc3VwcG9ydGVkIG9wdGlvbnMgYXJlIGxpc3RlZCBvbjogaHR0cHM6Ly93d3cuYXBvbGxvZ3JhcGhxbC5jb20vZG9jcy9yZWFjdC9hcGkvcmVhY3QtaG9va3MvI29wdGlvbnM7XG4gKlxuICogQGV4YW1wbGVcbiAqIGNvbnN0IHsgZGF0YSwgbG9hZGluZywgZXJyb3IgfSA9IHVzZVZpZXdlclF1ZXJ5KHtcbiAqICAgdmFyaWFibGVzOiB7XG4gKiAgIH0sXG4gKiB9KTtcbiAqL1xuZXhwb3J0IGZ1bmN0aW9uIHVzZVZpZXdlclF1ZXJ5KGJhc2VPcHRpb25zPzogQXBvbGxvLlF1ZXJ5SG9va09wdGlvbnM8Vmlld2VyUXVlcnksIFZpZXdlclF1ZXJ5VmFyaWFibGVzPikge1xuICAgICAgICByZXR1cm4gQXBvbGxvLnVzZVF1ZXJ5PFZpZXdlclF1ZXJ5LCBWaWV3ZXJRdWVyeVZhcmlhYmxlcz4oVmlld2VyRG9jdW1lbnQsIGJhc2VPcHRpb25zKTtcbiAgICAgIH1cbmV4cG9ydCBmdW5jdGlvbiB1c2VWaWV3ZXJMYXp5UXVlcnkoYmFzZU9wdGlvbnM/OiBBcG9sbG8uTGF6eVF1ZXJ5SG9va09wdGlvbnM8Vmlld2VyUXVlcnksIFZpZXdlclF1ZXJ5VmFyaWFibGVzPikge1xuICAgICAgICAgIHJldHVybiBBcG9sbG8udXNlTGF6eVF1ZXJ5PFZpZXdlclF1ZXJ5LCBWaWV3ZXJRdWVyeVZhcmlhYmxlcz4oVmlld2VyRG9jdW1lbnQsIGJhc2VPcHRpb25zKTtcbiAgICAgICAgfVxuZXhwb3J0IHR5cGUgVmlld2VyUXVlcnlIb29rUmVzdWx0ID0gUmV0dXJuVHlwZTx0eXBlb2YgdXNlVmlld2VyUXVlcnk+O1xuZXhwb3J0IHR5cGUgVmlld2VyTGF6eVF1ZXJ5SG9va1Jlc3VsdCA9IFJldHVyblR5cGU8dHlwZW9mIHVzZVZpZXdlckxhenlRdWVyeT47XG5leHBvcnQgdHlwZSBWaWV3ZXJRdWVyeVJlc3VsdCA9IEFwb2xsby5RdWVyeVJlc3VsdDxWaWV3ZXJRdWVyeSwgVmlld2VyUXVlcnlWYXJpYWJsZXM+OyJdfQ==",
-  "map": Object {
-    "mappings": ";;;;;;;;;;;AAGA;;;;;;;;;;;;;;;;;;AAqCO,IAAMA,cAAc,OAAGC,UAAH,oBAApB;AAUP;;;;;;;;;;;;;;;;;;AAeO,SAASC,cAAT,CAAwBC,WAAxB,EAAkG;AACjG,SAAOC,MAAM,CAACC,QAAP,CAAmDL,cAAnD,EAAmEG,WAAnE,CAAP;AACD;;AACA,SAASG,kBAAT,CAA4BH,WAA5B,EAA0G;AACvG,SAAOC,MAAM,CAACG,YAAP,CAAuDP,cAAvD,EAAuEG,WAAvE,CAAP;AACD",
-    "names": Array [
-      "ViewerDocument",
-      "gql",
-      "useViewerQuery",
-      "baseOptions",
-      "Apollo",
-      "useQuery",
-      "useViewerLazyQuery",
-      "useLazyQuery",
-    ],
-    "sources": Array [
-      "viewer.graphql.tsx",
-    ],
-    "sourcesContent": Array [
-      "/* 65181ff8ca502f8dcdf828f03f90b7e048d3f6a9
- * This file is automatically generated by graphql-let. */
-
-import { gql } from '@apollo/client';
-import * as Apollo from '@apollo/client';
-export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-/** All built-in and custom scalars, mapped to their actual values */
-export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-};
-
-export type Query = {
-  __typename?: 'Query';
-  viewer?: Maybe<User>;
-};
-
-export type User = {
-  __typename?: 'User';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  status: Scalars['String'];
-};
-
-export type ViewerQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ViewerQuery = (
-  { __typename?: 'Query' }
-  & { viewer?: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'name' | 'status'>
-  )> }
-);
-
-
-export const ViewerDocument = gql\`
-    query Viewer {
-  viewer {
-    id
-    name
-    status
-  }
-}
-    \`;
-
-/**
- * __useViewerQuery__
- *
- * To run a query within a React component, call \`useViewerQuery\` and pass it any options that fit your needs.
- * When your component renders, \`useViewerQuery\` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useViewerQuery({
- *   variables: {
- *   },
- * });
- */
-export function useViewerQuery(baseOptions?: Apollo.QueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-        return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, baseOptions);
-      }
-export function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-          return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, baseOptions);
-        }
-export type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
-export type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
-export type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;",
-    ],
-    "version": 3,
-  },
-}
+}"
 `;
