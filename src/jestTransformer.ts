@@ -8,6 +8,7 @@ import { createPaths } from './lib/paths';
 import { createHash } from './lib/hash';
 
 type JestTransformerOptions = {
+  configFile?: string;
   subsequentTransformer?: string;
 };
 
@@ -25,7 +26,8 @@ const jestTransformer: Transformer = {
   },
   process(input, filePath, jestConfig, transformOptions) {
     const { rootDir: cwd } = jestConfig;
-    const [config, configHash] = loadConfigSync(cwd);
+    const { configFile, subsequentTransformer } = getOption(jestConfig);
+    const [config, configHash] = loadConfigSync(cwd, configFile);
     const execContext = createExecContext(cwd, config, configHash);
 
     const { tsxFullPath } = createPaths(
@@ -35,7 +37,6 @@ const jestTransformer: Transformer = {
     const tsxContent = readFileSync(tsxFullPath, 'utf-8');
 
     // Let users customize a subsequent transformer
-    const { subsequentTransformer } = getOption(jestConfig);
     if (subsequentTransformer) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       return require(subsequentTransformer).process(
