@@ -32,6 +32,8 @@ export declare type Maybe<T> = T | null;
 export declare type Exact<T extends {
   [key: string]: unknown;
 }> = { [K in keyof T]: T[K] };
+export declare type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export declare type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 
 export declare type Scalars = {
@@ -90,6 +92,8 @@ export declare type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQu
 export declare type __AllExports = {
   Maybe: Maybe;
   Exact: Exact;
+  MakeOptional: MakeOptional;
+  MakeMaybe: MakeMaybe;
   Scalars: Scalars;
   Query: Query;
   User: User;
@@ -123,6 +127,8 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -211,6 +217,8 @@ export declare type Maybe<T> = T | null;
 export declare type Exact<T extends {
   [key: string]: unknown;
 }> = { [K in keyof T]: T[K] };
+export declare type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export declare type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 
 export declare type Scalars = {
@@ -269,6 +277,8 @@ export declare type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQu
 export declare type __AllExports = {
   Maybe: Maybe;
   Exact: Exact;
+  MakeOptional: MakeOptional;
+  MakeMaybe: MakeMaybe;
   Scalars: Scalars;
   Query: Query;
   User: User;
@@ -302,6 +312,8 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -391,6 +403,8 @@ export declare type Maybe<T> = T | null;
 export declare type Exact<T extends {
   [key: string]: unknown;
 }> = { [K in keyof T]: T[K] };
+export declare type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export declare type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 
 export declare type Scalars = {
@@ -453,6 +467,8 @@ export declare type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQu
 export declare type __AllExports = {
   Maybe: Maybe;
   Exact: Exact;
+  MakeOptional: MakeOptional;
+  MakeMaybe: MakeMaybe;
   Scalars: Scalars;
   Query: Query;
   User: User;
@@ -488,6 +504,8 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
