@@ -2184,10 +2184,10 @@
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.3.tgz#9c088679876f374eb5983f150d4787aa6fb32d7e"
   integrity sha512-FvUupuM3rlRsRtCN+fDudtmytGO6iHJuuRKS1Ss0pG5z8oX0diNEw94UEL7hgDbpN94rgaK5R7sWm6RrSkZuAQ==
 
-"@types/wait-on@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@types/wait-on/-/wait-on-4.0.0.tgz#fb6fa2854b592f7344f1dd9836b5655795510dce"
-  integrity sha512-Cj2jcMOzrdvWMP+Vl+qlz942eQfJk96S9kRnB1ejVMl+w9/9mUn0+pF4J+v0Iv+6zCrmBBODZAXKsRo6Y91Cfw==
+"@types/wait-on@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/@types/wait-on/-/wait-on-5.2.0.tgz#f9096b7bd0c9c03052d6d402ae5cd51714480b2d"
+  integrity sha512-3+jsMyPm8aot1mqDUDLOl+dejPvpysUUoUXD6CCRY20MNNhcjEfvdcBnGdnk7DEYs9Hr16ubGJA/9/QW0Df/9g==
 
 "@types/webpack-node-externals@^2.5.0":
   version "2.5.0"
