@@ -102,7 +102,7 @@
     "raw-loader": "^4.0.2",
     "react": "^16.14.0",
     "react-dom": "^16.13.1",
-    "remark-cli": "^8.0.1",
+    "remark-cli": "^9.0.0",
     "remark-toc": "^7.0.0",
     "terminate": "^2.1.2",
     "ts-jest": "^26.4.1",
