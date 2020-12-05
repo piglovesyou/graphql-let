@@ -46,7 +46,7 @@
     "@babel/helper-transform-fixture-test-runner": "^7.12.1",
     "@babel/plugin-syntax-jsx": ">=7.10.4",
     "@babel/preset-env": "^7.12.7",
-    "@babel/preset-react": ">=7.10.4",
+    "@babel/preset-react": ">=7.12.7",
     "@babel/preset-typescript": "^7.10.4",
     "@graphql-codegen/cli": "^1.17.10",
     "@graphql-codegen/plugin-helpers": "^1.18.2",
