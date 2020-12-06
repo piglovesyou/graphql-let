@@ -6,7 +6,7 @@ export async function killApp(app: ExecaChildProcess) {
   await new Promise((resolve, reject) => {
     terminate(app.pid, (err: any) => {
       if (err) return reject(err);
-      return resolve();
+      return resolve(undefined);
     });
   });
   console.info(`App ${app.pid} was terminated`);
