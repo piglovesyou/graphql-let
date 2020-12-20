@@ -3,13 +3,13 @@ import gen from '../src/gen';
 import { rimraf } from './__tools/file';
 
 const cwd = pathJoin(__dirname, '__fixtures/issue-118');
-const rel = (relPath: string) => pathJoin(cwd, relPath);
+const abs = (relPath: string) => pathJoin(cwd, relPath);
 
 describe('"baseUrl" and "mappers" combo', () => {
   beforeAll(async () => {
-    await rimraf(rel('__generated__'));
-    await rimraf(rel('**/*.graphql.d.ts'));
-    await rimraf(rel('**/*.graphqls.d.ts'));
+    await rimraf(abs('__generated__'));
+    await rimraf(abs('**/*.graphql.d.ts'));
+    await rimraf(abs('**/*.graphqls.d.ts'));
   });
 
   it('should run graphql-let command properly', async () => {
