@@ -17,7 +17,7 @@ import { cleanup } from './__tools/file';
 jest.mock('cross-fetch');
 
 const cwd = pathJoin(__dirname, '__fixtures/tsconfig');
-const rel = (relPath: string) => pathJoin(cwd, relPath);
+const abs = (relPath: string) => pathJoin(cwd, relPath);
 const getLib = (name: string) => {
   const lib = dirname(require.resolve('typescript'));
   return fs.readFileSync(pathJoin(lib, name), 'utf8');
@@ -28,18 +28,18 @@ const filenames = fs.readdirSync(cwd, { withFileTypes: true });
 describe('"graphql-let" command', () => {
   beforeEach(async () => {
     await cleanup(cwd);
-    await makeDir(rel('__generated__'));
+    await makeDir(abs('__generated__'));
     const fsMap = createDefaultMapFromNodeModules({});
     filenames.forEach((file) => {
       if (file.isFile()) {
-        fsMap.set(rel(file.name), fs.readFileSync(rel(file.name)).toString());
+        fsMap.set(abs(file.name), fs.readFileSync(abs(file.name)).toString());
       } else if (file.isDirectory()) {
-        const subFiles = fs.readdirSync(rel(file.name), {
+        const subFiles = fs.readdirSync(abs(file.name), {
           withFileTypes: true,
         });
         subFiles.forEach((subfile) => {
           if (subfile.isFile()) {
-            const fullPath = rel(pathJoin(file.name, subfile.name));
+            const fullPath = abs(pathJoin(file.name, subfile.name));
             fsMap.set(fullPath, fs.readFileSync(fullPath).toString());
           }
         });

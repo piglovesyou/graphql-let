@@ -10,11 +10,11 @@ import { cleanup, rename } from './__tools/file';
 import { matchPathsAndContents } from './__tools/match-paths-and-contents';
 
 const cwd = pathJoin(__dirname, '__fixtures/gen');
-const rel = (relPath: string) => pathJoin(cwd, relPath);
+const abs = (relPath: string) => pathJoin(cwd, relPath);
 
 describe('"graphql-let" command', () => {
   beforeAll(async () => {
-    await rename(rel('_gitignore'), rel('.gitignore'));
+    await rename(abs('_gitignore'), abs('.gitignore'));
   });
 
   const origConsoleError = console.error;
@@ -24,7 +24,7 @@ describe('"graphql-let" command', () => {
   });
 
   afterAll(async () => {
-    await rename(rel('.gitignore'), rel('_gitignore'));
+    await rename(abs('.gitignore'), abs('_gitignore'));
   });
 
   test(`generates number of .d.ts ignoring specified files as expected

@@ -25,8 +25,8 @@ type ResultType = {
 const WAIT_FOR_HMR = 90 * 1000;
 
 const cwd = pathJoin(__dirname, '__fixtures/hmr');
-const rel = (relPath: string) => pathJoin(cwd, relPath);
-const read = (relPath: string) => readFile(rel(relPath));
+const abs = (relPath: string) => pathJoin(cwd, relPath);
+const read = (relPath: string) => readFile(abs(relPath));
 const spawn = (
   command: string,
   args: string[],
@@ -74,7 +74,7 @@ describe('HMR', () => {
 
   beforeEach(async () => {
     await restoreFixtures();
-    await rimraf(rel('__generated__'));
+    await rimraf(abs('__generated__'));
     await spawn('node', ['../../../bin/graphql-let.js']);
   });
   afterEach(async () => {
@@ -155,7 +155,7 @@ export declare type User = {
        */
       await timeout(3 * 1000);
       await writeFile(
-        rel('src/viewer.graphql'),
+        abs('src/viewer.graphql'),
         `
 # Add "status" field for testing
 query Viewer {
@@ -214,7 +214,7 @@ export declare type ViewerQuery = ({
        */
       await timeout(3 * 1000);
       await writeFile(
-        rel('src/type-defs.graphqls'),
+        abs('src/type-defs.graphqls'),
         `
 # Add "age" field for testing
 type User {
@@ -302,7 +302,7 @@ export declare type User = {
 
       await timeout(3 * 1000);
       await writeFile(
-        rel('src/type-defs.graphqls'),
+        abs('src/type-defs.graphqls'),
         `
 type User {
     id: ID!
@@ -339,7 +339,7 @@ type Query {
 
       await timeout(3 * 1000);
       await writeFile(
-        rel('src/type-defs.graphqls'),
+        abs('src/type-defs.graphqls'),
         `
 type User {
     id: ID!
