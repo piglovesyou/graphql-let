@@ -48,7 +48,7 @@
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": ">=7.12.10",
     "@babel/preset-typescript": "^7.12.7",
-    "@graphql-codegen/cli": "^1.19.4",
+    "@graphql-codegen/cli": "^1.20.0",
     "@graphql-codegen/plugin-helpers": "^1.18.2",
     "@graphql-codegen/typescript": "^1.19.0",
     "@graphql-codegen/typescript-operations": "^1.17.12",
@@ -115,7 +115,7 @@
     "webpack-node-externals": "^2.5.2"
   },
   "peerDependencies": {
-    "@graphql-codegen/cli": "^1.19.4",
+    "@graphql-codegen/cli": "^1.20.0",
     "@graphql-codegen/plugin-helpers": "^1.18.2",
     "graphql": "*",
     "graphql-tag": "*",
