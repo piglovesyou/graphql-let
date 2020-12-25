@@ -24,7 +24,7 @@
     "@babel/core": "^7.12.10",
     "@babel/helper-plugin-utils": "^7.10.4",
     "@babel/parser": "^7.12.11",
-    "@babel/traverse": "^7.12.10",
+    "@babel/traverse": "^7.12.12",
     "do-sync": "^2.2.0",
     "globby": "^11.0.1",
     "loader-utils": "^2.0.0",
