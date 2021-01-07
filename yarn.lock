@@ -169,10 +169,10 @@
   dependencies:
     "@babel/types" "^7.12.1"
 
-"@babel/helper-fixtures@^7.12.10":
-  version "7.12.10"
-  resolved "https://registry.yarnpkg.com/@babel/helper-fixtures/-/helper-fixtures-7.12.10.tgz#deab3e078e147c1624eb640938be302a226be9f8"
-  integrity sha512-ZT2uwpcfKFP40MovyAYXqMEOzUqZRBmQjX9wo/SjF2yFu6iaBrQ6uq4LiOJllg9DZ0aYMo8xQhS2hSFZguRfFg==
+"@babel/helper-fixtures@^7.12.12":
+  version "7.12.12"
+  resolved "https://registry.yarnpkg.com/@babel/helper-fixtures/-/helper-fixtures-7.12.12.tgz#bfa1621f765c65d70e7a756f02902c6c978f5dc9"
+  integrity sha512-u94dik8GruoxS3M+0xLpPc8fckgMOuvGu0Pr3N9BpW/8bFk08iKGLj0V5nIIpFE9QfAuPDvu3no5ADt4OGuVgg==
   dependencies:
     lodash "^4.17.19"
     semver "^5.3.0"
@@ -281,19 +281,19 @@
   dependencies:
     "@babel/types" "^7.12.11"
 
-"@babel/helper-transform-fixture-test-runner@^7.12.10":
-  version "7.12.10"
-  resolved "https://registry.yarnpkg.com/@babel/helper-transform-fixture-test-runner/-/helper-transform-fixture-test-runner-7.12.10.tgz#37e080fe83d1a38fa2af24e1c530b711b23a6a6b"
-  integrity sha512-koh7AWX19ynPTQSmkD1eeYDpHDUuYYNjrUaYGDIL1jINEASzU6GUGvlmhSKaYZ//C70ufJL8N/lsTYo0kVlBJg==
+"@babel/helper-transform-fixture-test-runner@^7.12.12":
+  version "7.12.12"
+  resolved "https://registry.yarnpkg.com/@babel/helper-transform-fixture-test-runner/-/helper-transform-fixture-test-runner-7.12.12.tgz#80e59ddaf8c8520db9572cb2d52b582cc831ed52"
+  integrity sha512-mlZ5okzM28mI8sx/JMnz4Va4+hRck4EqOVHzPHQP41sf3tdO382ArXdSBrDS7zgceiDJmT5DK+2jHDHJkLZTvQ==
   dependencies:
-    "@babel/code-frame" "^7.10.4"
+    "@babel/code-frame" "^7.12.11"
     "@babel/core" "^7.12.10"
-    "@babel/helper-fixtures" "^7.12.10"
-    "@babel/polyfill" "^7.12.1"
+    "@babel/helper-fixtures" "^7.12.12"
     babel-check-duplicated-nodes "^1.0.0"
     jest-diff "^24.8.0"
     lodash "^4.17.19"
     quick-lru "5.1.0"
+    regenerator-runtime "^0.13.7"
     source-map "^0.5.0"
 
 "@babel/helper-validator-identifier@^7.10.4", "@babel/helper-validator-identifier@^7.12.11":
@@ -869,14 +869,6 @@
   dependencies:
     "@babel/helper-create-regexp-features-plugin" "^7.12.1"
     "@babel/helper-plugin-utils" "^7.10.4"
-
-"@babel/polyfill@^7.12.1":
-  version "7.12.1"
-  resolved "https://registry.yarnpkg.com/@babel/polyfill/-/polyfill-7.12.1.tgz#1f2d6371d1261bbd961f3c5d5909150e12d0bd96"
-  integrity sha512-X0pi0V6gxLi6lFZpGmeNa4zxtwEmCs42isWLNjZZDE0Y8yVfgu0T2OAHlzBbdYlqbW/YXVvoBHpATEM+goCj8g==
-  dependencies:
-    core-js "^2.6.5"
-    regenerator-runtime "^0.13.4"
 
 "@babel/preset-env@^7.12.11":
   version "7.12.11"
@@ -4081,7 +4073,7 @@ core-js-compat@^3.8.0:
     browserslist "^4.15.0"
     semver "7.0.0"
 
-core-js@^2.4.0, core-js@^2.6.5:
+core-js@^2.4.0:
   version "2.6.12"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
   integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
@@ -8925,7 +8917,7 @@ regenerator-runtime@^0.11.0:
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
   integrity sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==
 
-regenerator-runtime@^0.13.4:
+regenerator-runtime@^0.13.4, regenerator-runtime@^0.13.7:
   version "0.13.7"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.7.tgz#cac2dacc8a1ea675feaabaeb8ae833898ae46f55"
   integrity sha512-a54FxoJDIr27pgf7IgeQGxmqUNYrcV338lf/6gH456HZ/PhX+5BcwHXG9ajESmwe6WRO0tAzRUrRmNONWgkrew==
