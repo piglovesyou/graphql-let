@@ -536,7 +536,7 @@ These are the states/tools for the syntaxes.
 | generating `.d.ts`s by command `graphql-let`                                 | ✅                                                                   | ✅                                                                               |
 | importing GraphQL content from another as<br>`# import A from './a.graphql'` | ✅                                                                   | ✅                                                                               |
 | webpack loader `graphql-let/loader`                                          | ✅                                                                   | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues)             |
-| Bable Plugin `graphql-let/babel`                                             | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues) | ✅                                                                               |
+| Babel Plugin `graphql-let/babel`                                             | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues) | ✅                                                                               |
 | Jest Transformer `graphql-let/jestTransfomer`                                | ✅                                                                   | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues)             |
 | Experimental: Resolver Types for<br>GraphQL schema                           | ✅ by<br>`import './schema.graphqls'`                                | [Vote by issuing](https://github.com/piglovesyou/graphql-let/issues)             |
 
