@@ -4539,10 +4539,10 @@ dns-txt@^2.0.2:
   dependencies:
     buffer-indexof "^1.0.0"
 
-do-sync@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/do-sync/-/do-sync-2.2.0.tgz#663e78d9e60391141dba8e63cb6f710b50fbd219"
-  integrity sha512-2+QpOyDXuqWJNi3PsrG9cAYc1YIUpRJfWuYivqAOYTgS/T5/5G9p0kgqjpl6wcHPWMjUFvMEGyXFbYsKI8x3Tw==
+do-sync@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/do-sync/-/do-sync-3.0.2.tgz#d6f7c501262aa96439f4f4c04eb2ee5795714092"
+  integrity sha512-CvevkFUHh3ybmlO16jT5eFUHr8Ew/AIRmopUoROwYI+tAIjHeBuRhymIHy7CygZbfkLlqSjQT0G8kfnNHkJI9Q==
   dependencies:
     cross-spawn "^7.0.2"
 
