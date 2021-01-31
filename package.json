@@ -55,7 +55,7 @@
     "@graphql-codegen/typescript-react-apollo": "^2.2.1",
     "@graphql-codegen/typescript-resolvers": "^1.18.1",
     "@graphql-tools/graphql-file-loader": "^6.2.6",
-    "@graphql-tools/import": "^6.2.5",
+    "@graphql-tools/import": "^6.2.6",
     "@jest/transform": "^26.6.2",
     "@jest/types": "^26.6.2",
     "@types/babel__core": "^7.1.12",
