@@ -1,4 +1,4 @@
-# graphql-let [![](https://github.com/piglovesyou/graphql-let/workflows/Node%20CI/badge.svg)](https://github.com/piglovesyou/graphql-let/actions) [![npm version](https://badge.fury.io/js/graphql-let.svg)](https://badge.fury.io/js/graphql-let)
+# graphql-let [![](https://github.com/piglovesyou/graphql-let/workflows/Node%20CI/badge.svg)](https://github.com/piglovesyou/graphql-let/actions) [![npm version](https://badgen.net/npm/v/graphql-let)](https://www.npmjs.com/package/graphql-let) [![downloads](https://badgen.net/npm/dm/graphql-let)](https://www.npmjs.com/package/graphql-let) 
 
 A tool to get results of GraphQL code generator closer to you with types.
 
@@ -521,7 +521,7 @@ file content to the next webpack loader. Set it up as below:
 
 _Yes._
 
-#### Supported combination? / x + y don't work!
+#### Supported combination of tools? / x + y don't work!
 
 Basically both syntax `import './a.graphql'` and `` gql(`query {}` ) `` are
 suposed to just work, but currently some of combinations require more effort.
