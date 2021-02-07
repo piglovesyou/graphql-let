@@ -89,32 +89,7 @@ describe('HMR', () => {
        * Ensure the command result
        */
       const result1 = await ensureOutputDts('Ensure the initial state');
-      ok(
-        result1.schema.includes(
-          `
-export declare type User = {
-    __typename?: 'User';
-    id: Scalars['ID'];
-    name: Scalars['String'];
-    status: Scalars['String'];
-};
-`,
-        ),
-        `"${result1.schema}" is something wrong`,
-      );
-      ok(
-        result1.document.includes(
-          `
-export declare type User = {
-    __typename?: 'User';
-    id: Scalars['ID'];
-    name: Scalars['String'];
-    status: Scalars['String'];
-};
-`,
-        ),
-        `${result1.document} is something wrong`,
-      );
+      expect(result1).toMatchSnapshot();
 
       /************************************************************************
        * Start dev server
@@ -191,23 +166,11 @@ query Viewer {
             result1.document,
             'Document should be renewed.',
           );
-          ok(
-            result3.document.includes(
-              `
-export declare type ViewerQuery = ({
-    __typename?: 'Query';
-} & {
-    viewer?: Maybe<({
-        __typename?: 'User';
-    } & Pick<User, 'id' | 'name' | 'status'>)>;
-});
-`,
-            ),
-          );
         },
         1000,
         WAIT_FOR_HMR,
       );
+      expect(result3!).toMatchSnapshot();
 
       /************************************************************************
        * Verify HMR on schema modification - add "age" field
@@ -232,9 +195,10 @@ type Query {
       );
       await timeout(3 * 1000);
 
+      let result4: ResultType;
       await retryable(
         async () => {
-          const result4 = await ensureOutputDts(
+          result4 = await ensureOutputDts(
             'Verify HMR on schema modification - add "age" field',
           );
           notStrictEqual(
@@ -247,36 +211,11 @@ type Query {
             result3.document,
             'Document should be renewed.',
           );
-          ok(
-            result4.schema.includes(
-              `
-export declare type User = {
-    __typename?: 'User';
-    id: Scalars['ID'];
-    name: Scalars['String'];
-    status: Scalars['String'];
-    age: Scalars['Int'];
-};
-`,
-            ),
-          );
-          ok(
-            result4.document.includes(
-              `
-export declare type User = {
-    __typename?: 'User';
-    id: Scalars['ID'];
-    name: Scalars['String'];
-    status: Scalars['String'];
-    age: Scalars['Int'];
-};
-`,
-            ),
-          );
         },
         1000,
         WAIT_FOR_HMR,
       );
+      expect(result4!).toMatchSnapshot();
     },
     5 * 60 * 1000,
   );
@@ -284,12 +223,20 @@ export declare type User = {
   test(
     'should recover after GraphQL Error properly',
     async () => {
-      let stderrContent = '';
+      const initialSchemaContent = await readFile(
+        abs('src/type-defs.graphqls'),
+      );
 
       /************************************************************************
        * Start dev server
        */
-      app = spawn('yarn', ['webpack-dev-server'], { stderr: undefined });
+      let stdoutContent = '';
+      let stderrContent = '';
+      app = spawn('yarn', ['webpack-dev-server'], {
+        stdout: undefined,
+        stderr: undefined,
+      });
+      app.stdout!.on('data', (data) => (stdoutContent += String(data)));
       app.stderr!.on('data', (err) => (stderrContent += String(err)));
       await waitOn({
         resources: ['http://localhost:3000/main.js'],
@@ -297,7 +244,7 @@ export declare type User = {
       });
 
       /************************************************************************
-       * Make an error to write wrong GraphQL schema
+       * Make an error by writing wrong GraphQL schema
        */
 
       await timeout(3 * 1000);
@@ -320,71 +267,37 @@ type Query {
 
       await retryable(
         async () => {
-          ok(
-            stderrContent.includes(
-              'GraphQLDocumentError: Cannot query field "name" on type "User".',
-            ),
-          );
+          expect(stderrContent).toBeTruthy();
           const globResults = await glob('__generated__/types/**', { cwd });
           strictEqual(globResults.length, 0);
         },
         1000,
         60 * 1000,
       );
-      stderrContent = '';
+      ok(
+        stderrContent.includes(
+          'GraphQLDocumentError: Cannot query field "name" on type "User".',
+        ),
+      );
 
       /************************************************************************
-       * Modifying GraphQL schema should re-generate d.ts properly
+       * Restoring schema should recover the error state and re-generate d.ts
        */
 
+      stderrContent = '';
+      stdoutContent = '';
       await timeout(3 * 1000);
       await writeFile(
         abs('src/type-defs.graphqls'),
-        `
-type User {
-    id: ID!
-    name: String!
-    status: String!
-}
-
-type Query {
-    viewer: User
-}
-      `.trim(),
+        initialSchemaContent,
         'utf-8',
       );
       await timeout(3 * 1000);
 
       await retryable(
         async () => {
-          const result = await ensureOutputDts('');
-          ok(
-            result.schema.includes(
-              `
-export declare type User = {
-    __typename?: 'User';
-    id: Scalars['ID'];
-    name: Scalars['String'];
-    status: Scalars['String'];
-};
-`,
-            ),
-            `"${result.schema}" is something wrong`,
-          );
-          ok(
-            result.document.includes(
-              `
-export declare type ViewerQuery = ({
-    __typename?: 'Query';
-} & {
-    viewer?: Maybe<({
-        __typename?: 'User';
-    } & Pick<User, 'id' | 'name'>)>;
-});
-`,
-            ),
-            `${result.document} is something wrong`,
-          );
+          expect(stderrContent).toBeFalsy();
+          ok(stdoutContent.trim().endsWith('Compiled successfully.'));
         },
         1000,
         30 * 1000,
