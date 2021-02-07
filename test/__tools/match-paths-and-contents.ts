@@ -1,6 +1,6 @@
 import glob from 'globby';
-import { readFile } from './file';
 import { join } from 'path';
+import { readFile } from './file';
 
 export async function matchPathsAndContents(
   globPatterns: string[],

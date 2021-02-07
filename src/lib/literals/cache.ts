@@ -1,8 +1,7 @@
 import { existsSync } from 'fs';
 import { dirname, join as pathJoin } from 'path';
 import { ExecContext } from '../exec-context';
-import { readFile, writeFile } from '../file';
-import { statSync } from '../file';
+import { readFile, statSync, writeFile } from '../file';
 
 /**
  * Cache manager for literal GraphQL documents as gql(`query {}`).

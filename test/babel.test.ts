@@ -1,5 +1,5 @@
-import { join } from 'path';
 import runner from '@babel/helper-transform-fixture-test-runner';
+import { join } from 'path';
 import { cleanup } from './__tools/file';
 import { matchPathsAndContents } from './__tools/match-paths-and-contents';
 

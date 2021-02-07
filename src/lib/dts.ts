@@ -2,18 +2,18 @@ import makeDir from 'make-dir';
 import { dirname } from 'path';
 import slash from 'slash';
 import {
+  CompilerOptions,
+  convertCompilerOptionsFromJson,
   createCompilerHost,
   createProgram,
-  CompilerOptions,
-  flattenDiagnosticMessageText,
-  sys,
-  convertCompilerOptionsFromJson,
   findConfigFile,
+  flattenDiagnosticMessageText,
   readConfigFile,
+  sys,
 } from 'typescript';
+import { ConfigTypes } from './config';
 import { ExecContext } from './exec-context';
 import { withHash, writeFile } from './file';
-import { ConfigTypes } from './config';
 import { CodegenContext, FileCodegenContext } from './types';
 
 const essentialCompilerOptions: CompilerOptions = {

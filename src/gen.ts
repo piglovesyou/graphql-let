@@ -1,18 +1,18 @@
 import globby from 'globby';
 import logUpdate from 'log-update';
+import { join } from 'path';
+import loadConfig from './lib/config';
 import {
   findTargetDocuments,
   processDocumentsForContext,
 } from './lib/documents';
 import { processDtsForContext } from './lib/dts';
 import createExecContext, { ExecContext } from './lib/exec-context';
-import loadConfig from './lib/config';
+import { rimraf } from './lib/file';
 import { processLiteralsForContext } from './lib/literals/literals';
 import { updateLog } from './lib/print';
 import { processResolverTypesIfNeeded } from './lib/resolver-types';
-import { CommandOpts, CodegenContext } from './lib/types';
-import { rimraf } from './lib/file';
-import { join } from 'path';
+import { CodegenContext, CommandOpts } from './lib/types';
 
 async function removeOldTsxCaches(
   execContext: ExecContext,

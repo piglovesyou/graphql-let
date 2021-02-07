@@ -1,9 +1,9 @@
 import { join as pathJoin } from 'path';
+import gen from '../src/gen';
 import { rimraf } from './__tools/file';
 
 const cwd = pathJoin(__dirname, '__fixtures/issue-118');
 const rel = (relPath: string) => pathJoin(cwd, relPath);
-import gen from '../src/gen';
 
 describe('"baseUrl" and "mappers" combo', () => {
   beforeAll(async () => {

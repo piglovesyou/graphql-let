@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion,  @typescript-eslint/no-var-requires */
 
-import { join as pathJoin } from 'path';
-import { ok, strictEqual, notStrictEqual } from 'assert';
-import glob from 'globby';
+import { notStrictEqual, ok, strictEqual } from 'assert';
 import execa from 'execa';
+import glob from 'globby';
+import { join as pathJoin } from 'path';
 import waitOn from 'wait-on';
 import { killApp, timeout } from './__tools/child-process';
+import { readFile, rimraf, writeFile } from './__tools/file';
 import retryable from './__tools/retryable';
-import { readFile, writeFile, rimraf } from './__tools/file';
 
 // TODO: Test loader value
 // const loadModule = () => {

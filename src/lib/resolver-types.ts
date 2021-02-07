@@ -1,15 +1,15 @@
 import { Types } from '@graphql-codegen/plugin-helpers/types';
 import globby from 'globby';
+import pMap from 'p-map';
 import slash from 'slash';
 import { ConfigTypes } from './config';
 import { ExecContext } from './exec-context';
 import { readFile, readHash } from './file';
+import { processGraphQLCodegen } from './graphql-codegen';
 import { createHashFromBuffers } from './hash';
 import { createPaths, isURL } from './paths';
 import { printError, updateLog } from './print';
-import { processGraphQLCodegen } from './graphql-codegen';
 import { CodegenContext, FileCodegenContext } from './types';
-import pMap from 'p-map';
 
 export function shouldGenResolverTypes(config: ConfigTypes): boolean {
   try {

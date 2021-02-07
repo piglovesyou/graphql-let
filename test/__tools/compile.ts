@@ -1,8 +1,7 @@
+import memoryfs from 'memory-fs';
 import path from 'path';
 import webpack from 'webpack';
-import memoryfs from 'memory-fs';
 import nodeExternals from 'webpack-node-externals';
-
 import type { GraphQLLetLoaderOptions } from '../../src/loader';
 
 export default function compile(

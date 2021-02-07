@@ -1,8 +1,8 @@
 import { CodegenContext as CodegenConfig } from '@graphql-codegen/cli';
 import { Types } from '@graphql-codegen/plugin-helpers';
+import { processImport } from '@graphql-tools/import';
 import glob from 'globby';
 import { join as pathJoin } from 'path';
-import { processImport } from '@graphql-tools/import';
 import { ExecContext } from './exec-context';
 import { readFile, readHash } from './file';
 import { buildCodegenConfig, processGraphQLCodegen } from './graphql-codegen';
