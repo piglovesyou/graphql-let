@@ -1,6 +1,6 @@
-import { readHash } from '../../src/lib/file';
-import { join as pathJoin } from 'path';
 import { ok, strictEqual } from 'assert';
+import { join as pathJoin } from 'path';
+import { readHash } from '../../src/lib/file';
 
 describe('file.ts', () => {
   test('readHash reads file from generated file', async () => {

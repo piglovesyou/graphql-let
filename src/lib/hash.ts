@@ -1,5 +1,5 @@
-import { EOL } from 'os';
 import crypto from 'crypto';
+import { EOL } from 'os';
 
 const shouldCareNewline = EOL !== '\n';
 const RegexCRLF = /\r\n/g;

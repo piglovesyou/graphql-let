@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import {
-  createSystem,
   createDefaultMapFromNodeModules,
+  createSystem,
   createVirtualCompilerHost,
 } from '@typescript/vfs';
+import { ok } from 'assert';
+import { fetch } from 'cross-fetch';
 import fs from 'fs';
 import makeDir from 'make-dir';
+import { dirname, join as pathJoin } from 'path';
 import ts from 'typescript';
-import { ok } from 'assert';
-import { join as pathJoin, dirname } from 'path';
 import gen from '../src/gen';
-import { fetch } from 'cross-fetch';
 import { cleanup } from './__tools/file';
 
 jest.mock('cross-fetch');

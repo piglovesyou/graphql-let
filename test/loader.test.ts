@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { deepStrictEqual, ok, strictEqual } from 'assert';
+import 'core-js/es/array';
 import * as fs from 'fs';
 import glob from 'globby';
 import { join as pathJoin } from 'path';
-import 'core-js/es/array';
-
+import { promisify } from 'util';
+import waitOn from 'wait-on';
 import compiler from './__tools/compile';
 import { rimraf } from './__tools/file';
-import waitOn from 'wait-on';
-import { promisify } from 'util';
 
 const unlink = promisify(fs.unlink);
 

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { ok } from 'assert';
+import pick from 'lodash.pick';
 import { join as pathJoin } from 'path';
 import gen from '../src/gen';
+import * as prints from '../src/lib/print';
 import { CodegenContext } from '../src/lib/types';
 import { cleanup, rename } from './__tools/file';
-import pick from 'lodash.pick';
 import { matchPathsAndContents } from './__tools/match-paths-and-contents';
-import * as prints from '../src/lib/print';
 
 const cwd = pathJoin(__dirname, '__fixtures/gen');
 const rel = (relPath: string) => pathJoin(cwd, relPath);

@@ -1,4 +1,4 @@
-# graphql-let [![](https://github.com/piglovesyou/graphql-let/workflows/Node%20CI/badge.svg)](https://github.com/piglovesyou/graphql-let/actions) [![npm version](https://badgen.net/npm/v/graphql-let)](https://www.npmjs.com/package/graphql-let) [![downloads](https://badgen.net/npm/dm/graphql-let)](https://www.npmjs.com/package/graphql-let) 
+# graphql-let [![](https://github.com/piglovesyou/graphql-let/workflows/Node%20CI/badge.svg)](https://github.com/piglovesyou/graphql-let/actions) [![npm version](https://badgen.net/npm/v/graphql-let)](https://www.npmjs.com/package/graphql-let) [![downloads](https://badgen.net/npm/dm/graphql-let)](https://www.npmjs.com/package/graphql-let)
 
 A tool to get results of GraphQL code generator closer to you with types.
 

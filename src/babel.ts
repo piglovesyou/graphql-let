@@ -1,8 +1,8 @@
-import { types, ConfigAPI, PluginObj, NodePath } from '@babel/core';
-import * as t from '@babel/types';
-import { relative, dirname } from 'path';
+import { ConfigAPI, NodePath, PluginObj, types } from '@babel/core';
 import { declare } from '@babel/helper-plugin-utils';
+import * as t from '@babel/types';
 import doSync from 'do-sync';
+import { dirname, relative } from 'path';
 import slash from 'slash';
 import { LiteralsArgs } from './lib/literals/literals';
 import { printError } from './lib/print';

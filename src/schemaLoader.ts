@@ -1,12 +1,12 @@
 import logUpdate from 'log-update';
 import { loader } from 'webpack';
+import loadConfig from './lib/config';
 import {
   findTargetDocuments,
   processDocumentsForContext,
 } from './lib/documents';
 import { processDtsForContext } from './lib/dts';
 import createExecContext from './lib/exec-context';
-import loadConfig from './lib/config';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX, updateLog } from './lib/print';
 import { processResolverTypesIfNeeded } from './lib/resolver-types';

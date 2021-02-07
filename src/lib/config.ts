@@ -1,7 +1,7 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { resolve as pathResolve } from 'path';
-import { parse as parseYaml } from 'yaml';
 import { env } from 'string-env-interpolation';
+import { parse as parseYaml } from 'yaml';
 import { DEFAULT_CONFIG_FILENAME } from './consts';
 import { readFile, readFileSync } from './file';
 import { createHash } from './hash';

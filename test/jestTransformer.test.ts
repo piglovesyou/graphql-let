@@ -1,7 +1,7 @@
 import { Config } from '@jest/types';
+import { join as pathJoin } from 'path';
 import jestTransformer from '../src/jestTransformer';
 import compiler from './__tools/compile';
-import { join as pathJoin } from 'path';
 import { rimraf } from './__tools/file';
 
 const cwd = pathJoin(__dirname, '__fixtures/jestTransformer');

@@ -1,8 +1,8 @@
+import { writeFileSync } from 'fs';
 import { join as pathJoin } from 'path';
 import { stringify as yamlStringify } from 'yaml';
-import { writeFileSync } from 'fs';
-import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 import { UserConfigTypes } from './lib/config';
+import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
 import { printInfo } from './lib/print';
 import { CommandOpts } from './lib/types';
 
