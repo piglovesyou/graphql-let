@@ -19,31 +19,38 @@ export function readFile(file: string) {
 }
 
 export function cleanup(cwd: string) {
-  return Promise.all([
-    rimraf(pathJoin(cwd, '**/__generated__')),
-    rimraf(pathJoin(cwd, '**/node_modules')),
-    rimraf(pathJoin(cwd, '**/dist')),
-    rimraf(pathJoin(cwd, '**/*.graphql.d.ts')),
-    rimraf(pathJoin(cwd, '**/*.graphqls.d.ts')),
-  ]);
+  return Promise.all(
+    [
+      '**/.__fixtures',
+      '**/__generated__',
+      '**/node_modules',
+      '**/dist',
+      '**/*.graphql.d.ts',
+      '**/*.graphqls.d.ts',
+    ].map((rel) => rimraf(pathJoin(cwd, rel))),
+  );
 }
 
-export function copyDir(baseFullDir: string, targetRelDir: string) {
+export function copyDirWithDot(
+  baseFullDir: string,
+  targetRelDir: string,
+): Promise<string> {
   // baseFullDir: /Users/a/b/c
   // targetRelDir: d/e
   // resultDir: .d/e
+  // return: /Users/a/b/c/.d/e
   const up = pathJoin(baseFullDir).split('/').length + 1;
   const [relRoot] = targetRelDir.split('/');
-  return new Promise<void>((resolve, rejects) => {
+  return new Promise<string>((resolve, rejects) => {
     copyfiles(
       [
         pathJoin(baseFullDir, targetRelDir, '**'),
         pathJoin(baseFullDir, '.' + relRoot),
       ],
-      { error: true, up },
+      { error: true, up, all: true },
       (err) => {
-        if (err) throw err;
-        resolve();
+        if (err) return rejects(err);
+        resolve(pathJoin(baseFullDir, '.' + targetRelDir));
       },
     );
   });

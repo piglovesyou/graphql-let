@@ -6,18 +6,23 @@ import { join as pathJoin } from 'path';
 import gen from '../src/gen';
 import * as prints from '../src/lib/print';
 import { CodegenContext } from '../src/lib/types';
-import { cleanup, rename } from './__tools/file';
+import { cleanup, copyDirWithDot, rename } from './__tools/file';
 import { matchPathsAndContents } from './__tools/match-paths-and-contents';
 
-const cwd = pathJoin(__dirname, '__fixtures/gen');
-const abs = (relPath: string) => pathJoin(cwd, relPath);
-
 describe('"graphql-let" command', () => {
-  beforeAll(() => rename(abs('_gitignore'), abs('.gitignore')));
+  let cwd: string;
+  const abs = (relPath: string) => pathJoin(cwd, relPath);
+
+  beforeAll(async () => {
+    cwd = await copyDirWithDot(__dirname, '__fixtures/gen');
+    await rename(abs('_gitignore'), abs('.gitignore'));
+  });
 
   beforeEach(() => cleanup(cwd));
 
-  afterAll(() => rename(abs('.gitignore'), abs('_gitignore')));
+  afterAll(() => {
+    return rename(abs('.gitignore'), abs('_gitignore'));
+  });
 
   test(`generates number of .d.ts ignoring specified files as expected
 * ignoring "!" paths in "schema" and "documents" of graphql-let.yml
