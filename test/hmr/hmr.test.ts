@@ -104,26 +104,7 @@ describe('HMR', () => {
        * Verify initial loader behavior
        */
       const result2 = await ensureOutputDts('Verify initial loader behavior');
-      strictEqual(
-        result2.schemaDtsPath,
-        result1.schemaDtsPath,
-        'Initially Loader should respect cache.',
-      );
-      strictEqual(
-        result2.schema,
-        result1.schema,
-        'Initially Loader should respect cache.',
-      );
-      strictEqual(
-        result2.documentDtsPath,
-        result1.documentDtsPath,
-        'Initially Loader should respect cache.',
-      );
-      strictEqual(
-        result2.document,
-        result1.document,
-        'Initially Loader should respect cache.',
-      );
+      expect(result2).toMatchObject(result1);
 
       /************************************************************************
        * Verify HMR on document modification
