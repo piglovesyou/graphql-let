@@ -8,7 +8,8 @@ import { CodegenContext } from '../src/lib/types';
 import { AbsFn, cleanup, prepareFixtures, rename } from './__tools/file';
 import { matchPathsAndContents } from './__tools/match-paths-and-contents';
 
-let cwd: string, abs: AbsFn;
+let cwd: string;
+let abs: AbsFn;
 
 describe('"graphql-let" command', () => {
   beforeAll(async () => {
