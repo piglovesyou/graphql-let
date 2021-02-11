@@ -6,7 +6,13 @@ import glob from 'globby';
 import { join as pathJoin } from 'path';
 import waitOn from 'wait-on';
 import { killApp, timeout } from '../__tools/child-process';
-import { cleanup, readFile, writeFile } from '../__tools/file';
+import {
+  AbsFn,
+  cleanup,
+  prepareFixtures,
+  readFile,
+  writeFile,
+} from '../__tools/file';
 import retryable from '../__tools/retryable';
 
 // TODO: Test loader value
@@ -24,11 +30,13 @@ type ResultType = {
 
 const WAIT_FOR_HMR = 90 * 1000;
 
-// let cwd: string;
-// let abs: AbsFn;
-const cwd = pathJoin(__dirname, '__fixtures/hmr');
-const abs = (relPath: string) => pathJoin(cwd, relPath);
-const read = (relPath: string) => readFile(abs(relPath));
+let cwd: string;
+let abs: AbsFn;
+let app: execa.ExecaChildProcess;
+// const cwd = pathJoin(__dirname, '__fixtures/hmr');
+// const abs = (relPath: string) => pathJoin(cwd, relPath);
+// const read = (relPath: string) => readFile(abs(relPath));
+
 const spawn = (
   command: string,
   args: string[],
@@ -41,7 +49,7 @@ const spawn = (
     stderr: 'inherit',
     ...opts,
   });
-const restoreFixtures = () => spawn('git', ['checkout', '.']);
+// const restoreFixtures = () => spawn('git', ['checkout', '.']);
 
 const ensureOutputDts = async (message: string): Promise<ResultType> => {
   const globResults = await glob(['**/*.graphql.d.ts', '**/*.graphqls.d.ts'], {
@@ -72,7 +80,9 @@ const ensureOutputDts = async (message: string): Promise<ResultType> => {
 };
 
 describe('HMR', () => {
-  let app: execa.ExecaChildProcess;
+  beforeAll(async () => {
+    [cwd, abs] = await prepareFixtures(__dirname, '__fixtures/hmr');
+  });
 
   beforeEach(async () => {
     // await restoreFixtures();
@@ -81,7 +91,7 @@ describe('HMR', () => {
   });
   afterEach(async () => {
     await killApp(app);
-    await restoreFixtures();
+    // await restoreFixtures();
   });
 
   test(
