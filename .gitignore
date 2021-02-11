@@ -23,4 +23,5 @@ a.js
 
 test/**/*.graphql.d.ts
 test/**/*.graphqls.d.ts
-test/**/.__fixtures
+.__fixtures
+.__fixtures__
