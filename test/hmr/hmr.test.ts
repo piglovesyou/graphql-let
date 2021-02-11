@@ -5,9 +5,9 @@ import execa from 'execa';
 import glob from 'globby';
 import { join as pathJoin } from 'path';
 import waitOn from 'wait-on';
-import { killApp, timeout } from './__tools/child-process';
-import { readFile, writeFile } from './__tools/file';
-import retryable from './__tools/retryable';
+import { killApp, timeout } from '../__tools/child-process';
+import { readFile, writeFile } from '../__tools/file';
+import retryable from '../__tools/retryable';
 
 // TODO: Test loader value
 // const loadModule = () => {
@@ -24,7 +24,7 @@ type ResultType = {
 
 const WAIT_FOR_HMR = 90 * 1000;
 
-const cwd = pathJoin(__dirname, '__fixtures/hmr');
+const cwd = pathJoin(__dirname, '__fixtures');
 const abs = (relPath: string) => pathJoin(cwd, relPath);
 const read = (relPath: string) => readFile(abs(relPath));
 const spawn = (
@@ -73,12 +73,12 @@ describe('HMR', () => {
   let app: execa.ExecaChildProcess;
 
   beforeEach(async () => {
-    await restoreFixtures();
+    // await restoreFixtures();
     await spawn('node', ['../../../bin/graphql-let.js']);
   });
   afterEach(async () => {
     await killApp(app);
-    await restoreFixtures();
+    // await restoreFixtures();
   });
 
   test(
