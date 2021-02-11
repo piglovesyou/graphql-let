@@ -8,7 +8,6 @@ import { join as pathJoin } from 'path';
 import { promisify } from 'util';
 import waitOn from 'wait-on';
 import compiler from './__tools/compile';
-import { cleanup } from './__tools/file';
 
 const unlink = promisify(fs.unlink);
 
@@ -16,8 +15,6 @@ const fixturePath1 = pathJoin(__dirname, '__fixtures/loader/usual');
 const fixturePath2 = pathJoin(__dirname, '__fixtures/loader/monorepo');
 
 describe('graphql-let/loader', () => {
-  beforeAll(() => cleanup(fixturePath1));
-
   test('generates .tsx and .d.ts', async () => {
     const fixture = 'pages/viewer.graphql';
     const stats = await compiler(fixturePath1, fixture, 'node');

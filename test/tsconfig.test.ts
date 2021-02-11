@@ -12,7 +12,6 @@ import makeDir from 'make-dir';
 import { dirname, join as pathJoin } from 'path';
 import ts from 'typescript';
 import gen from '../src/gen';
-import { cleanup } from './__tools/file';
 
 jest.mock('cross-fetch');
 
@@ -27,7 +26,6 @@ const filenames = fs.readdirSync(cwd, { withFileTypes: true });
 
 describe('"graphql-let" command', () => {
   beforeEach(async () => {
-    await cleanup(cwd);
     await makeDir(abs('__generated__'));
     const fsMap = createDefaultMapFromNodeModules({});
     filenames.forEach((file) => {
@@ -110,7 +108,7 @@ describe('"graphql-let" command', () => {
   });
   test('handles schema objects', async () => {
     // eslint-disable-next-line
-      const schemaJson = require('./__fixtures/tsconfig/schema.json');
+    const schemaJson = require('./__fixtures/tsconfig/schema.json');
     (fetch as any).mockReturnValue({
       json() {
         return { data: schemaJson };

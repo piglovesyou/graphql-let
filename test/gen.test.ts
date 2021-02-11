@@ -19,6 +19,7 @@ describe('"graphql-let" command', () => {
 
   const origConsoleError = console.error;
   beforeEach(async () => {
+    // TODO: What?
     console.error = origConsoleError;
     await cleanup(cwd);
   });
