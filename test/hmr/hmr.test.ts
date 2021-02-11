@@ -24,6 +24,8 @@ type ResultType = {
 
 const WAIT_FOR_HMR = 90 * 1000;
 
+// let cwd: string;
+// let abs: AbsFn;
 const cwd = pathJoin(__dirname, '__fixtures/hmr');
 const abs = (relPath: string) => pathJoin(cwd, relPath);
 const read = (relPath: string) => readFile(abs(relPath));
@@ -63,9 +65,9 @@ const ensureOutputDts = async (message: string): Promise<ResultType> => {
   );
   return {
     schemaDtsPath: schemaDtsPath,
-    schema: await read(schemaDtsPath),
+    schema: await readFile(abs(schemaDtsPath)),
     documentDtsPath: documentDtsPath,
-    document: await read(documentDtsPath),
+    document: await readFile(abs(documentDtsPath)),
   };
 };
 
@@ -79,7 +81,7 @@ describe('HMR', () => {
   });
   afterEach(async () => {
     await killApp(app);
-    // await restoreFixtures();
+    await restoreFixtures();
   });
 
   test(
