@@ -1,0 +1,9 @@
+schema: "**/*.graphql"
+documents: "**/*.graphql"
+plugins:
+    - typescript
+respectGitIgnore: false
+schemaEntrypoint: yeah.graphqls
+cacheDir: __yeah__;
+TSConfigFile: tsconfig.yeah.json;
+gqlDtsEntrypoint: typings/yeah.d.ts;
