@@ -8,13 +8,25 @@ import { join as pathJoin } from 'path';
 import { promisify } from 'util';
 import waitOn from 'wait-on';
 import compiler from './__tools/compile';
+import { prepareFixtures } from './__tools/file';
 
 const unlink = promisify(fs.unlink);
 
-const fixturePath1 = pathJoin(__dirname, '__fixtures/loader/usual');
-const fixturePath2 = pathJoin(__dirname, '__fixtures/loader/monorepo');
+let fixturePath1: string;
+let fixturePath2: string;
 
 describe('graphql-let/loader', () => {
+  beforeAll(async () => {
+    [fixturePath1] = await prepareFixtures(
+      __dirname,
+      '__fixtures/loader/usual',
+    );
+    [fixturePath2] = await prepareFixtures(
+      __dirname,
+      '__fixtures/loader/monorepo',
+    );
+  });
+
   test('generates .tsx and .d.ts', async () => {
     const fixture = 'pages/viewer.graphql';
     const stats = await compiler(fixturePath1, fixture, 'node');
