@@ -5,15 +5,15 @@ import execa from 'execa';
 import glob from 'globby';
 import { join as pathJoin } from 'path';
 import waitOn from 'wait-on';
-import { killApp, timeout } from '../__tools/child-process';
+import { killApp, timeout } from './__tools/child-process';
 import {
   AbsFn,
   cleanup,
   prepareFixtures,
   readFile,
   writeFile,
-} from '../__tools/file';
-import retryable from '../__tools/retryable';
+} from './__tools/file';
+import retryable from './__tools/retryable';
 
 // TODO: Test loader value
 // const loadModule = () => {
@@ -33,9 +33,6 @@ const WAIT_FOR_HMR = 90 * 1000;
 let cwd: string;
 let abs: AbsFn;
 let app: execa.ExecaChildProcess;
-// const cwd = pathJoin(__dirname, '__fixtures/hmr');
-// const abs = (relPath: string) => pathJoin(cwd, relPath);
-// const read = (relPath: string) => readFile(abs(relPath));
 
 const spawn = (
   command: string,
@@ -49,7 +46,6 @@ const spawn = (
     stderr: 'inherit',
     ...opts,
   });
-// const restoreFixtures = () => spawn('git', ['checkout', '.']);
 
 const ensureOutputDts = async (message: string): Promise<ResultType> => {
   const globResults = await glob(['**/*.graphql.d.ts', '**/*.graphqls.d.ts'], {
@@ -85,13 +81,12 @@ describe('HMR', () => {
   });
 
   beforeEach(async () => {
-    // await restoreFixtures();
     await cleanup(cwd);
-    await spawn('node', [pathJoin(__dirname, '../../bin/graphql-let.js')]);
+    // Simulate "$ yarn graphql-let"
+    await spawn('node', [pathJoin(__dirname, '../bin/graphql-let.js')]);
   });
   afterEach(async () => {
     await killApp(app);
-    // await restoreFixtures();
   });
 
   test(

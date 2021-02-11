@@ -1,6 +1,0 @@
-{
-  "private": true,
-  "scripts": {
-    "webpack-dev-server": "../../../../node_modules/.bin/webpack-dev-server"
-  }
-}
