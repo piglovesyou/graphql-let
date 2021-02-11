@@ -11,14 +11,14 @@ module.exports = {
       {
         test: /\.graphql$/,
         exclude: /node_modules/,
-        rules: [{ loader: 'raw-loader' }, { loader: '../../../../loader.js' }],
+        rules: [{ loader: 'raw-loader' }, { loader: '../../../loader.js' }],
       },
       {
         test: /\.graphqls$/,
         exclude: /node_modules/,
         rules: [
           { loader: 'raw-loader' },
-          { loader: '../../../../schema/loader.js' },
+          { loader: '../../../schema/loader.js' },
         ],
       },
     ],
