@@ -1,6 +1,6 @@
 import copyfiles from 'copyfiles';
 import { promises } from 'fs';
-import { join as pathJoin } from 'path';
+import { join as pathJoin, sep } from 'path';
 import _rimraf from 'rimraf';
 import { promisify } from 'util';
 
@@ -39,7 +39,7 @@ export function copyDirWithDot(
   // targetRelDir: d/e
   // resultDir: .d/e
   // return: /Users/a/b/c/.d/e
-  const up = pathJoin(baseFullDir).split('/').length + 1;
+  const up = pathJoin(baseFullDir).split(sep).length + 1;
   const [relRoot] = targetRelDir.split('/');
   return new Promise<string>((resolve, rejects) => {
     copyfiles(
