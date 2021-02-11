@@ -12,6 +12,6 @@ runner(cwd, 'gql', {}, { sourceType: 'unambiguous' });
 // Needs "describe", otherwise the order of running another "describe" in @babel/helper-transform-fixture-test-runner switches.
 describe('babel-plugin', () => {
   test(`Generated files are okay`, async () => {
-    await matchPathsAndContents(['fixtures/*/node_modules/**'], cwd);
+    await matchPathsAndContents(['suite/*/node_modules/**'], cwd);
   });
 });
