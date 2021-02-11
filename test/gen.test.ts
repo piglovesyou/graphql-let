@@ -9,20 +9,18 @@ import { CodegenContext } from '../src/lib/types';
 import { cleanup, copyDirWithDot, rename } from './__tools/file';
 import { matchPathsAndContents } from './__tools/match-paths-and-contents';
 
-describe('"graphql-let" command', () => {
-  let cwd: string;
-  const abs = (relPath: string) => pathJoin(cwd, relPath);
+const fixtureSrcRelDir = '__fixtures/gen';
+const fixtureDestRelDir = '.__fixtures/gen';
+const cwd = pathJoin(__dirname, fixtureDestRelDir);
+const abs = (relPath: string) => pathJoin(cwd, relPath);
 
+describe('"graphql-let" command', () => {
   beforeAll(async () => {
-    cwd = await copyDirWithDot(__dirname, '__fixtures/gen');
+    await copyDirWithDot(__dirname, fixtureSrcRelDir, fixtureDestRelDir);
     await rename(abs('_gitignore'), abs('.gitignore'));
   });
 
   beforeEach(() => cleanup(cwd));
-
-  afterAll(() => {
-    return rename(abs('.gitignore'), abs('_gitignore'));
-  });
 
   test(`generates number of .d.ts ignoring specified files as expected
 * ignoring "!" paths in "schema" and "documents" of graphql-let.yml
