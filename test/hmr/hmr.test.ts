@@ -6,7 +6,7 @@ import glob from 'globby';
 import { join as pathJoin } from 'path';
 import waitOn from 'wait-on';
 import { killApp, timeout } from '../__tools/child-process';
-import { readFile, writeFile } from '../__tools/file';
+import { cleanup, readFile, writeFile } from '../__tools/file';
 import retryable from '../__tools/retryable';
 
 // TODO: Test loader value
@@ -73,12 +73,13 @@ describe('HMR', () => {
   let app: execa.ExecaChildProcess;
 
   beforeEach(async () => {
-    // await restoreFixtures();
+    await restoreFixtures();
+    await cleanup(cwd);
     await spawn('node', ['../../../bin/graphql-let.js']);
   });
   afterEach(async () => {
     await killApp(app);
-    // await restoreFixtures();
+    await restoreFixtures();
   });
 
   test(
