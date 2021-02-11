@@ -2,11 +2,18 @@ import { Config } from '@jest/types';
 import { join as pathJoin } from 'path';
 import jestTransformer from '../src/jestTransformer';
 import compiler from './__tools/compile';
+import { AbsFn, prepareFixtures } from './__tools/file';
 
-const cwd = pathJoin(__dirname, '__fixtures/jestTransformer');
-const jestConfig = { rootDir: cwd } as Config.ProjectConfig;
+let cwd: string;
+let abs: AbsFn;
+let jestConfig: Config.ProjectConfig;
 
 describe('graphql-let/jestTransformer', () => {
+  beforeAll(async () => {
+    [cwd, abs] = await prepareFixtures(__dirname, '__fixtures/jestTransformer');
+    jestConfig = { rootDir: cwd } as Config.ProjectConfig;
+  });
+
   test('transforms .graphql', async () => {
     const fileName = 'pages/viewer.graphql';
     const stats = await compiler(cwd, fileName, 'node');
