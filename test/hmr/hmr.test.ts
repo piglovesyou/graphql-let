@@ -24,7 +24,7 @@ type ResultType = {
 
 const WAIT_FOR_HMR = 90 * 1000;
 
-const cwd = pathJoin(__dirname, '__fixtures');
+const cwd = pathJoin(__dirname, '__fixtures/hmr');
 const abs = (relPath: string) => pathJoin(cwd, relPath);
 const read = (relPath: string) => readFile(abs(relPath));
 const spawn = (
