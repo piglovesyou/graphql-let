@@ -33,24 +33,23 @@ export function cleanup(cwd: string) {
 
 export function copyDirWithDot(
   baseFullDir: string,
-  targetRelDir: string,
-): Promise<string> {
+  srcRelDir: string,
+  destRelDir: string,
+): Promise<void> {
   // baseFullDir: /Users/a/b/c
-  // targetRelDir: d/e
-  // resultDir: .d/e
-  // return: /Users/a/b/c/.d/e
+  // srcRelDir: d/e
+  // destRelDir: .d/e
+  // It generates /Users/a/b/c/.d/e
+  if (srcRelDir === destRelDir) throw new Error('Kidding me?');
   const up = pathJoin(baseFullDir).split(sep).length + 1;
-  const [relRoot] = targetRelDir.split('/');
-  return new Promise<string>((resolve, rejects) => {
+  const [relRoot] = destRelDir.split('/');
+  return new Promise<void>((resolve, rejects) => {
     copyfiles(
-      [
-        pathJoin(baseFullDir, targetRelDir, '**'),
-        pathJoin(baseFullDir, '.' + relRoot),
-      ],
+      [pathJoin(baseFullDir, srcRelDir, '**'), pathJoin(baseFullDir, relRoot)],
       { error: true, up, all: true },
       (err) => {
         if (err) return rejects(err);
-        resolve(pathJoin(baseFullDir, '.' + targetRelDir));
+        resolve();
       },
     );
   });
