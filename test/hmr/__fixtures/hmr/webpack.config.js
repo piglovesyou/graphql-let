@@ -3,7 +3,7 @@ module.exports = {
   entry: './src/main',
   output: {
     filename: 'main.js',
-    libraryTarget: 'commonjs'
+    libraryTarget: 'commonjs',
   },
   target: 'node',
   module: {
@@ -11,26 +11,23 @@ module.exports = {
       {
         test: /\.graphql$/,
         exclude: /node_modules/,
-        rules: [
-          {loader: 'raw-loader'},
-          {loader: '../../../loader.js'}
-        ]
+        rules: [{ loader: 'raw-loader' }, { loader: '../../../../loader.js' }],
       },
       {
         test: /\.graphqls$/,
         exclude: /node_modules/,
         rules: [
-          {loader: 'raw-loader'},
-          {loader: '../../../schema/loader.js'}
-        ]
-      }
-    ]
+          { loader: 'raw-loader' },
+          { loader: '../../../../schema/loader.js' },
+        ],
+      },
+    ],
   },
   stats: { colors: false },
   devtool: 'eval',
-  devServer:  {
+  devServer: {
     writeToDisk: true,
     port: 3000,
     hot: true,
-  }
+  },
 };
