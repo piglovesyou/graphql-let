@@ -31,7 +31,7 @@ export function cleanup(cwd: string) {
   );
 }
 
-export function copyDirWithDot(
+export function copyDir(
   baseFullDir: string,
   srcRelDir: string,
   destRelDir: string,
@@ -53,4 +53,17 @@ export function copyDirWithDot(
       },
     );
   });
+}
+
+export type AbsFn = (rel: string) => string;
+
+export async function prepareFixtures(
+  baseFullDir: string,
+  fixtureSrcRelDir: string,
+): Promise<[cwd: string, abs: AbsFn]> {
+  const fixtureDestRelDir = '.' + fixtureSrcRelDir;
+  const cwd = pathJoin(baseFullDir, fixtureDestRelDir);
+  const abs = (relPath: string) => pathJoin(cwd, relPath);
+  await copyDir(baseFullDir, fixtureSrcRelDir, fixtureDestRelDir);
+  return [cwd, abs];
 }

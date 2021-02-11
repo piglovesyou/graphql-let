@@ -2,21 +2,17 @@
 
 import { ok } from 'assert';
 import pick from 'lodash.pick';
-import { join as pathJoin } from 'path';
 import gen from '../src/gen';
 import * as prints from '../src/lib/print';
 import { CodegenContext } from '../src/lib/types';
-import { cleanup, copyDirWithDot, rename } from './__tools/file';
+import { AbsFn, cleanup, prepareFixtures, rename } from './__tools/file';
 import { matchPathsAndContents } from './__tools/match-paths-and-contents';
 
-const fixtureSrcRelDir = '__fixtures/gen';
-const fixtureDestRelDir = '.__fixtures/gen';
-const cwd = pathJoin(__dirname, fixtureDestRelDir);
-const abs = (relPath: string) => pathJoin(cwd, relPath);
+let cwd: string, abs: AbsFn;
 
 describe('"graphql-let" command', () => {
   beforeAll(async () => {
-    await copyDirWithDot(__dirname, fixtureSrcRelDir, fixtureDestRelDir);
+    [cwd, abs] = await prepareFixtures(__dirname, '__fixtures/gen');
     await rename(abs('_gitignore'), abs('.gitignore'));
   });
 
