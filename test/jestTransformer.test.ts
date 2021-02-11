@@ -2,15 +2,13 @@ import { Config } from '@jest/types';
 import { join as pathJoin } from 'path';
 import jestTransformer from '../src/jestTransformer';
 import compiler from './__tools/compile';
-import { rimraf } from './__tools/file';
+import { cleanup } from './__tools/file';
 
 const cwd = pathJoin(__dirname, '__fixtures/jestTransformer');
 const jestConfig = { rootDir: cwd } as Config.ProjectConfig;
 
 describe('graphql-let/jestTransformer', () => {
-  beforeAll(async () => {
-    await rimraf(pathJoin(cwd, '__generated__'));
-  });
+  beforeAll(() => cleanup(cwd));
 
   test('transforms .graphql', async () => {
     const fileName = 'pages/viewer.graphql';

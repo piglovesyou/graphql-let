@@ -6,7 +6,7 @@ import glob from 'globby';
 import { join as pathJoin } from 'path';
 import waitOn from 'wait-on';
 import { killApp, timeout } from './__tools/child-process';
-import { readFile, rimraf, writeFile } from './__tools/file';
+import { cleanup, readFile, writeFile } from './__tools/file';
 import retryable from './__tools/retryable';
 
 // TODO: Test loader value
@@ -74,7 +74,7 @@ describe('HMR', () => {
 
   beforeEach(async () => {
     await restoreFixtures();
-    await rimraf(abs('__generated__'));
+    await cleanup(cwd);
     await spawn('node', ['../../../bin/graphql-let.js']);
   });
   afterEach(async () => {
