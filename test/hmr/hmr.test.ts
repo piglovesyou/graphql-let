@@ -73,13 +73,13 @@ describe('HMR', () => {
   let app: execa.ExecaChildProcess;
 
   beforeEach(async () => {
-    await restoreFixtures();
+    // await restoreFixtures();
     await cleanup(cwd);
-    await spawn('node', ['../../../bin/graphql-let.js']);
+    await spawn('node', [pathJoin(__dirname, '../../bin/graphql-let.js')]);
   });
   afterEach(async () => {
     await killApp(app);
-    await restoreFixtures();
+    // await restoreFixtures();
   });
 
   test(
