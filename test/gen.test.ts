@@ -13,20 +13,11 @@ const cwd = pathJoin(__dirname, '__fixtures/gen');
 const abs = (relPath: string) => pathJoin(cwd, relPath);
 
 describe('"graphql-let" command', () => {
-  beforeAll(async () => {
-    await rename(abs('_gitignore'), abs('.gitignore'));
-  });
+  beforeAll(() => rename(abs('_gitignore'), abs('.gitignore')));
 
-  const origConsoleError = console.error;
-  beforeEach(async () => {
-    // TODO: What?
-    console.error = origConsoleError;
-    await cleanup(cwd);
-  });
+  beforeEach(() => cleanup(cwd));
 
-  afterAll(async () => {
-    await rename(abs('.gitignore'), abs('_gitignore'));
-  });
+  afterAll(() => rename(abs('.gitignore'), abs('_gitignore')));
 
   test(`generates number of .d.ts ignoring specified files as expected
 * ignoring "!" paths in "schema" and "documents" of graphql-let.yml
