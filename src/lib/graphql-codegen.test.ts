@@ -6,7 +6,7 @@ import createExecContext from './exec-context';
 import { createPaths } from './paths';
 import { FileCodegenContext } from './types';
 
-const cwd = pathJoin(__dirname, '__fixtures__/graphql-codegen');
+const cwd = pathJoin(__dirname, '__fixtures/graphql-codegen');
 
 describe('graphql-codegen.ts', () => {
   test('works', async () => {

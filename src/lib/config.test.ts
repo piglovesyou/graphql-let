@@ -5,7 +5,7 @@ let cwd: string;
 
 describe('config.ts', () => {
   beforeAll(async () => {
-    [cwd] = await prepareFixtures(__dirname, '__fixtures__/config');
+    [cwd] = await prepareFixtures(__dirname, '__fixtures/config');
     process.env.GRAPHQL_SERVER_ENDPOINT = 'https://yeah/graphql';
     process.env.GRAPHQL_SERVER_TOKEN = 'blaa';
   });
