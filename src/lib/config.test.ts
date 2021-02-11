@@ -1,11 +1,11 @@
-import loadConfig, { loadConfigSync } from '../src/lib/config';
-import { prepareFixtures } from './__tools/file';
+import { prepareFixtures } from '../../test/__tools/file';
+import loadConfig, { loadConfigSync } from './config';
 
 let cwd: string;
 
 describe('config.ts', () => {
   beforeAll(async () => {
-    [cwd] = await prepareFixtures(__dirname, '__fixtures/config');
+    [cwd] = await prepareFixtures(__dirname, '__fixtures__/config');
     process.env.GRAPHQL_SERVER_ENDPOINT = 'https://yeah/graphql';
     process.env.GRAPHQL_SERVER_TOKEN = 'blaa';
   });
