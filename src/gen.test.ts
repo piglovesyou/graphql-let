@@ -2,11 +2,11 @@
 
 import { ok } from 'assert';
 import pick from 'lodash.pick';
-import gen from '../src/gen';
-import * as prints from '../src/lib/print';
-import { CodegenContext } from '../src/lib/types';
-import { AbsFn, cleanup, prepareFixtures, rename } from './__tools/file';
-import { matchPathsAndContents } from './__tools/match-paths-and-contents';
+import { AbsFn, cleanup, prepareFixtures, rename } from '../test/__tools/file';
+import { matchPathsAndContents } from '../test/__tools/match-paths-and-contents';
+import gen from './gen';
+import * as prints from './lib/print';
+import { CodegenContext } from './lib/types';
 
 let cwd: string;
 let abs: AbsFn;
