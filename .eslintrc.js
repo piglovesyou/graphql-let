@@ -14,8 +14,8 @@ module.exports = {
 
   ignorePatterns: [
     'test/__fixtures/gen/pages/index.tsx',
-    'test/__fixtures/babel/**/input.tsx',
-    'test/__fixtures/babel/**/output.mjs',
+    'test/babel-plugin/**/input.tsx',
+    'test/babel-plugin/**/output.mjs',
   ],
 
   env: {
@@ -29,5 +29,5 @@ module.exports = {
     '@typescript-eslint/ban-ts-ignore': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-  }
+  },
 };
