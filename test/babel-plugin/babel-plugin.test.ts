@@ -9,6 +9,8 @@ beforeAll(() => cleanup(cwd));
 
 runner(cwd, 'gql', {}, { sourceType: 'unambiguous' });
 
-test(`Generated files are okay`, async () => {
-  await matchPathsAndContents(['fixtures/*/node_modules/**'], cwd);
+describe('babel-plugin', () => {
+  test(`Generated files are okay`, async () => {
+    await matchPathsAndContents(['fixtures/*/node_modules/**'], cwd);
+  });
 });
