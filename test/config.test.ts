@@ -1,10 +1,11 @@
-import { join as pathJoin } from 'path';
-import loadConfig, { loadConfigSync } from '../../src/lib/config';
+import loadConfig, { loadConfigSync } from '../src/lib/config';
+import { prepareFixtures } from './__tools/file';
 
-const cwd = pathJoin(__dirname, '../__fixtures/config');
+let cwd: string;
 
 describe('config.ts', () => {
-  beforeAll(() => {
+  beforeAll(async () => {
+    [cwd] = await prepareFixtures(__dirname, '__fixtures/config');
     process.env.GRAPHQL_SERVER_ENDPOINT = 'https://yeah/graphql';
     process.env.GRAPHQL_SERVER_TOKEN = 'blaa';
   });

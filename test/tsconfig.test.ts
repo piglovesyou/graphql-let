@@ -7,24 +7,30 @@ import {
 } from '@typescript/vfs';
 import { ok } from 'assert';
 import { fetch } from 'cross-fetch';
-import fs from 'fs';
+import fs, { Dirent } from 'fs';
 import makeDir from 'make-dir';
 import { dirname, join as pathJoin } from 'path';
 import ts from 'typescript';
 import gen from '../src/gen';
+import { AbsFn, prepareFixtures } from './__tools/file';
 
 jest.mock('cross-fetch');
 
-const cwd = pathJoin(__dirname, '__fixtures/tsconfig');
-const abs = (relPath: string) => pathJoin(cwd, relPath);
 const getLib = (name: string) => {
   const lib = dirname(require.resolve('typescript'));
   return fs.readFileSync(pathJoin(lib, name), 'utf8');
 };
 
-const filenames = fs.readdirSync(cwd, { withFileTypes: true });
+let cwd: string;
+let abs: AbsFn;
+let filenames: Dirent[];
 
 describe('"graphql-let" command', () => {
+  beforeAll(async () => {
+    [cwd, abs] = await prepareFixtures(__dirname, '__fixtures/tsconfig');
+    filenames = fs.readdirSync(cwd, { withFileTypes: true });
+  });
+
   beforeEach(async () => {
     await makeDir(abs('__generated__'));
     const fsMap = createDefaultMapFromNodeModules({});

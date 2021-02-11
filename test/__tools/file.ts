@@ -61,6 +61,10 @@ export async function prepareFixtures(
   baseFullDir: string,
   fixtureSrcRelDir: string,
 ): Promise<[cwd: string, abs: AbsFn]> {
+  if (fixtureSrcRelDir.startsWith('..'))
+    throw new Error(
+      `It doesn't support backward relative paths like ${fixtureSrcRelDir}`,
+    );
   const fixtureDestRelDir = '.' + fixtureSrcRelDir;
   const cwd = pathJoin(baseFullDir, fixtureDestRelDir);
   const abs = (relPath: string) => pathJoin(cwd, relPath);
