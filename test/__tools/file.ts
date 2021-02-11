@@ -1,3 +1,4 @@
+import copyfiles from 'copyfiles';
 import { promises } from 'fs';
 import { join as pathJoin } from 'path';
 import _rimraf from 'rimraf';
@@ -25,4 +26,25 @@ export function cleanup(cwd: string) {
     rimraf(pathJoin(cwd, '**/*.graphql.d.ts')),
     rimraf(pathJoin(cwd, '**/*.graphqls.d.ts')),
   ]);
+}
+
+export function copyDir(baseFullDir: string, targetRelDir: string) {
+  // baseFullDir: /Users/a/b/c
+  // targetRelDir: d/e
+  // resultDir: .d/e
+  const up = pathJoin(baseFullDir).split('/').length + 1;
+  const [relRoot] = targetRelDir.split('/');
+  return new Promise<void>((resolve, rejects) => {
+    copyfiles(
+      [
+        pathJoin(baseFullDir, targetRelDir, '**'),
+        pathJoin(baseFullDir, '.' + relRoot),
+      ],
+      { error: true, up },
+      (err) => {
+        if (err) throw err;
+        resolve();
+      },
+    );
+  });
 }
