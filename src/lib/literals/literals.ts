@@ -11,7 +11,7 @@ import {
   getGraphQLLetBabelOption,
   modifyLiteralCalls,
   visitLiteralCalls,
-} from '../../babel';
+} from '../../babel-plugin';
 import loadConfig from '../config';
 import { processGraphQLCodegenForLiterals } from '../documents';
 import { processDtsForContext } from '../dts';
