@@ -167,7 +167,6 @@
     "fix": "yarn fix-js && yarn fix-nonjs '**/*.{md,yml,graphql,graphqls}'",
     "typecheck": "tsc --noEmit",
     "compile": "tsc --project tsconfig.compile.json",
-    "compile-develop": "tsc --project tsconfig.develop.json",
     "clean": "rimraf dist",
     "test": "jest",
     "build": "yarn clean && yarn compile",
