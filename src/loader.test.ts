@@ -16,7 +16,7 @@ let fixturePath1: string;
 let fixturePath2: string;
 
 describe('graphql-let/loader', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     [fixturePath1] = await prepareFixtures(
       __dirname,
       '__fixtures/loader/usual',
