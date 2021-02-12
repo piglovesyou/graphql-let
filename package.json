@@ -170,6 +170,6 @@
     "clean": "rimraf dist",
     "test": "jest",
     "build": "yarn clean && yarn compile",
-    "prepublishOnly": "yarn lint && yarn typecheck && yarn build && yarn tests"
+    "prepublishOnly": "yarn lint && yarn typecheck && yarn build && yarn test"
   }
 }

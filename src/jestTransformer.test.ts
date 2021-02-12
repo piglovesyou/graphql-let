@@ -2,15 +2,14 @@ import { Config } from '@jest/types';
 import { join as pathJoin } from 'path';
 import jestTransformer from './jestTransformer';
 import compiler from './lib/__tools/compile';
-import { AbsFn, prepareFixtures } from './lib/__tools/file';
+import { prepareFixtures } from './lib/__tools/file';
 
 let cwd: string;
-let abs: AbsFn;
 let jestConfig: Config.ProjectConfig;
 
 describe('graphql-let/jestTransformer', () => {
   beforeAll(async () => {
-    [cwd, abs] = await prepareFixtures(__dirname, '__fixtures/jestTransformer');
+    [cwd] = await prepareFixtures(__dirname, '__fixtures/jestTransformer');
     jestConfig = { rootDir: cwd } as Config.ProjectConfig;
   });
 
