@@ -22,11 +22,11 @@ export function cleanup(cwd: string) {
   return Promise.all(
     [
       '**/.__fixtures',
-      '**/__generated__',
-      '**/node_modules',
-      '**/dist',
-      '**/*.graphql.d.ts',
-      '**/*.graphqls.d.ts',
+      // '**/__generated__',
+      // '**/node_modules',
+      // '**/dist',
+      // '**/*.graphql.d.ts',
+      // '**/*.graphqls.d.ts',
     ].map((rel) => rimraf(pathJoin(cwd, rel))),
   );
 }
