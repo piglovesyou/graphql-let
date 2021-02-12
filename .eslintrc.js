@@ -12,7 +12,8 @@ module.exports = {
     'plugin:prettier/recommended',
   ],
 
-  ignorePatterns: ['test/**/__fixtures/**/*'],
+  // tsconfig.json, .eslintrc, jest.config.js should look same
+  ignorePatterns: ['**/__fixtures', '**/.__fixtures'],
 
   env: {
     jest: true,
