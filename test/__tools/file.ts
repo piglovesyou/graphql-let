@@ -18,17 +18,8 @@ export function readFile(file: string) {
   return _readFile(file, 'utf-8').then(normalizeNewLine);
 }
 
-export function cleanup(cwd: string) {
-  return Promise.all(
-    [
-      '**/.__fixtures',
-      // '**/__generated__',
-      // '**/node_modules',
-      // '**/dist',
-      // '**/*.graphql.d.ts',
-      // '**/*.graphqls.d.ts',
-    ].map((rel) => rimraf(pathJoin(cwd, rel))),
-  );
+export function cleanup(cwd: string, relPaths: string[]) {
+  return Promise.all(relPaths.map((rel) => rimraf(pathJoin(cwd, rel))));
 }
 
 export function copyDir(

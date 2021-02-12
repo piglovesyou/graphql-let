@@ -81,7 +81,11 @@ describe('HMR', () => {
   });
 
   beforeEach(async () => {
-    await cleanup(cwd);
+    await cleanup(cwd, [
+      '**/__generated__',
+      '**/*.graphql.d.ts',
+      '**/*.graphqls.d.ts',
+    ]);
     // Simulate "$ yarn graphql-let"
     await spawn('node', [pathJoin(__dirname, '../bin/graphql-let.js')]);
   });

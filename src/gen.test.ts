@@ -17,7 +17,13 @@ describe('"graphql-let" command', () => {
     await rename(abs('_gitignore'), abs('.gitignore'));
   });
 
-  beforeEach(() => cleanup(cwd));
+  beforeEach(() =>
+    cleanup(cwd, [
+      '**/__generated__',
+      '**/*.graphql.d.ts',
+      '**/*.graphqls.d.ts',
+    ]),
+  );
 
   test(`generates number of .d.ts ignoring specified files as expected
 * ignoring "!" paths in "schema" and "documents" of graphql-let.yml
