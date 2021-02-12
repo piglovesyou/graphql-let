@@ -1,8 +1,8 @@
 import { Config } from '@jest/types';
 import { join as pathJoin } from 'path';
-import jestTransformer from '../src/jestTransformer';
-import compiler from './__tools/compile';
-import { AbsFn, prepareFixtures } from './__tools/file';
+import compiler from '../test/__tools/compile';
+import { AbsFn, prepareFixtures } from '../test/__tools/file';
+import jestTransformer from './jestTransformer';
 
 let cwd: string;
 let abs: AbsFn;
