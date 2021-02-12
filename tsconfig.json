@@ -64,5 +64,6 @@
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
   },
-  "exclude": ["**/__fixtures", "**/.__fixtures"]
+  // tsconfig.json, .eslintrc, jest.config.js should look same
+  "exclude": [ "**/__fixtures", "**/.__fixtures" ]
 }
