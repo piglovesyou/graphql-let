@@ -1,10 +1,10 @@
 import { join as pathJoin } from 'path';
-import { matchPathsAndContents } from '../../test/__tools/match-paths-and-contents';
 import loadConfig from './config';
 import { processGraphQLCodegenForFiles } from './documents';
 import createExecContext from './exec-context';
 import { createPaths } from './paths';
 import { FileCodegenContext } from './types';
+import { matchPathsAndContents } from './__tools/match-paths-and-contents';
 
 const cwd = pathJoin(__dirname, '__fixtures/graphql-codegen');
 

@@ -1,5 +1,5 @@
-import { prepareFixtures } from '../../test/__tools/file';
 import loadConfig, { loadConfigSync } from './config';
+import { prepareFixtures } from './__tools/file';
 
 let cwd: string;
 
