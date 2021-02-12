@@ -4,5 +4,5 @@ import { cleanup } from './file';
 const projRoot = join(__dirname, '../..');
 
 export default function setup() {
-  return cleanup(projRoot);
+  return cleanup(projRoot, ['**/.__fixtures']);
 }
