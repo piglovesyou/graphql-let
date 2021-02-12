@@ -8,7 +8,7 @@ import { join as pathJoin } from 'path';
 import { promisify } from 'util';
 import waitOn from 'wait-on';
 import compiler from '../test/__tools/compile';
-import { prepareFixtures } from '../test/__tools/file';
+import { cleanup, prepareFixtures } from '../test/__tools/file';
 
 const unlink = promisify(fs.unlink);
 
@@ -16,7 +16,9 @@ let fixturePath1: string;
 let fixturePath2: string;
 
 describe('graphql-let/loader', () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
+    if (fixturePath1) await cleanup(fixturePath1);
+    if (fixturePath2) await cleanup(fixturePath2);
     [fixturePath1] = await prepareFixtures(
       __dirname,
       '__fixtures/loader/usual',
