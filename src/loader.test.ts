@@ -7,8 +7,8 @@ import glob from 'globby';
 import { join as pathJoin } from 'path';
 import { promisify } from 'util';
 import waitOn from 'wait-on';
-import compiler from '../test/__tools/compile';
-import { prepareFixtures } from '../test/__tools/file';
+import compiler from './lib/__tools/compile';
+import { prepareFixtures } from './lib/__tools/file';
 
 const unlink = promisify(fs.unlink);
 

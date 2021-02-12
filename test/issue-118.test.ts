@@ -1,5 +1,5 @@
 import gen from '../src/gen';
-import { prepareFixtures } from './__tools/file';
+import { prepareFixtures } from '../src/lib/__tools/file';
 
 let cwd: string;
 

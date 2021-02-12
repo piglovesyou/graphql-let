@@ -5,15 +5,15 @@ import execa from 'execa';
 import glob from 'globby';
 import { join as pathJoin } from 'path';
 import waitOn from 'wait-on';
-import { killApp, timeout } from './__tools/child-process';
+import { killApp, timeout } from '../src/lib/__tools/child-process';
 import {
   AbsFn,
   cleanup,
   prepareFixtures,
   readFile,
   writeFile,
-} from './__tools/file';
-import retryable from './__tools/retryable';
+} from '../src/lib/__tools/file';
+import retryable from '../src/lib/__tools/retryable';
 
 // TODO: Test loader value
 // const loadModule = () => {

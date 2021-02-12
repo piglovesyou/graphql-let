@@ -2,7 +2,7 @@ import memoryfs from 'memory-fs';
 import path from 'path';
 import webpack from 'webpack';
 import nodeExternals from 'webpack-node-externals';
-import type { GraphQLLetLoaderOptions } from '../../src/loader';
+import type { GraphQLLetLoaderOptions } from '../../loader';
 
 export default function compile(
   cwd: string,
@@ -34,7 +34,7 @@ export default function compile(
               },
             },
             {
-              loader: path.resolve(__dirname, '../../src/loader.ts'),
+              loader: path.resolve(__dirname, '../../loader.ts'),
               options: gqlLetLoaderOptions,
             },
           ],

@@ -12,7 +12,7 @@ import makeDir from 'make-dir';
 import { dirname, join as pathJoin } from 'path';
 import ts from 'typescript';
 import gen from '../src/gen';
-import { AbsFn, prepareFixtures } from './__tools/file';
+import { AbsFn, prepareFixtures } from '../src/lib/__tools/file';
 
 jest.mock('cross-fetch');
 

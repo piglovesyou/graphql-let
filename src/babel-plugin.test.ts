@@ -1,7 +1,7 @@
 import runner from '@babel/helper-transform-fixture-test-runner';
 import { join } from 'path';
-import { cleanup } from '../test/__tools/file';
-import { matchPathsAndContents } from '../test/__tools/match-paths-and-contents';
+import { cleanup } from './lib/__tools/file';
+import { matchPathsAndContents } from './lib/__tools/match-paths-and-contents';
 
 const cwd = join(__dirname, '__fixtures/babel-plugin');
 
