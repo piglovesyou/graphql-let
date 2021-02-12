@@ -1,4 +1,7 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["test", "**/*.test.ts", "**/__*__"]
+  "compilerOptions": {
+    "noEmit": false,
+  },
+  "exclude": ["test", "**/*.test.ts", "**/__*"]
 }
