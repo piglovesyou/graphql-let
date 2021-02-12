@@ -1,5 +1,4 @@
-import { promises as fsPromises } from 'fs';
-import { createReadStream, existsSync } from 'fs';
+import { createReadStream, existsSync, promises as fsPromises } from 'fs';
 import glob from 'globby';
 import _rimraf from 'rimraf';
 import { promisify } from 'util';

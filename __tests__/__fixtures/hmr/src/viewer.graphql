@@ -1,0 +1,7 @@
+# Add "status" field for testing
+query Viewer {
+    viewer {
+        id
+        name
+    }
+}

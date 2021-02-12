@@ -12,11 +12,8 @@ module.exports = {
     'plugin:prettier/recommended',
   ],
 
-  ignorePatterns: [
-    'test/__fixtures/gen/pages/index.tsx',
-    'test/__fixtures/babel/**/input.tsx',
-    'test/__fixtures/babel/**/output.mjs',
-  ],
+  // tsconfig.json, .eslintrc, jest.config.js should look same
+  ignorePatterns: ['**/__fixtures', '**/.__fixtures'],
 
   env: {
     jest: true,
@@ -29,5 +26,5 @@ module.exports = {
     '@typescript-eslint/ban-ts-ignore': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-  }
+  },
 };

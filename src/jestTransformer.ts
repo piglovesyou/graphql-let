@@ -1,11 +1,11 @@
-import { ProjectConfig } from '@jest/types/build/Config';
 import { Transformer } from '@jest/transform';
-import { relative as pathRelative } from 'path';
+import { ProjectConfig } from '@jest/types/build/Config';
 import { readFileSync } from 'fs';
-import createExecContext from './lib/exec-context';
+import { relative as pathRelative } from 'path';
 import { loadConfigSync } from './lib/config';
-import { createPaths } from './lib/paths';
+import createExecContext from './lib/exec-context';
 import { createHash } from './lib/hash';
+import { createPaths } from './lib/paths';
 
 type JestTransformerOptions = {
   configFile?: string;

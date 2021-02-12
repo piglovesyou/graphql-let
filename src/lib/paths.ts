@@ -1,4 +1,4 @@
-import { isAbsolute, join, extname } from 'path';
+import { extname, isAbsolute, join } from 'path';
 import { ExecContext } from './exec-context';
 import { FileCreatedPaths } from './types';
 

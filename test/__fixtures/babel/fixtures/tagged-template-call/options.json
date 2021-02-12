@@ -1,6 +1,0 @@
-{
-  "plugins": [
-    "../../../../../src/babel.ts",
-    "@babel/plugin-syntax-jsx"
-  ]
-}

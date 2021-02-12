@@ -1,28 +1,26 @@
 import { loadOptions } from '@babel/core';
+import { parse } from '@babel/parser';
 import traverse, { NodePath } from '@babel/traverse';
-import makeDir from 'make-dir';
-import { join as pathJoin, dirname } from 'path';
+import * as t from '@babel/types';
 import { existsSync } from 'fs';
+import { stripIgnoredCharacters } from 'graphql';
+import makeDir from 'make-dir';
+import { dirname, join, join as pathJoin } from 'path';
 import slash from 'slash';
 import {
   getGraphQLLetBabelOption,
   modifyLiteralCalls,
   visitLiteralCalls,
-} from '../../babel';
+} from '../../babel-plugin';
 import loadConfig from '../config';
 import { processGraphQLCodegenForLiterals } from '../documents';
 import { processDtsForContext } from '../dts';
 import createExecContext, { ExecContext } from '../exec-context';
-import { rimraf } from '../file';
-import { stripIgnoredCharacters } from 'graphql';
-import { parse } from '@babel/parser';
-import { readFile } from '../file';
-import { join } from 'path';
+import { readFile, rimraf } from '../file';
 import { createHash } from '../hash';
-import * as t from '@babel/types';
 import { createSchemaHash, shouldGenResolverTypes } from '../resolver-types';
-import { LiteralCache, PartialCacheStore } from './cache';
 import { CodegenContext, LiteralCodegenContext } from '../types';
+import { LiteralCache, PartialCacheStore } from './cache';
 import { appendExportAsObject, createPaths, parserOption } from './fns';
 
 export type VisitLiteralCallResults = {

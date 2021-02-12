@@ -1,18 +1,17 @@
-import logUpdate from 'log-update';
-import { loader } from 'webpack';
-import { relative as pathRelative, join } from 'path';
 import { getOptions } from 'loader-utils';
+import logUpdate from 'log-update';
+import { join, relative as pathRelative } from 'path';
 import { validate } from 'schema-utils';
 import type { Schema as JsonSchema } from 'schema-utils/declarations/validate';
-
+import { loader } from 'webpack';
+import loadConfig from './lib/config';
 import { processDocumentsForContext } from './lib/documents';
 import { processDtsForContext } from './lib/dts';
 import createExecContext from './lib/exec-context';
-import loadConfig from './lib/config';
-import memoize from './lib/memoize';
-import { createSchemaHash, shouldGenResolverTypes } from './lib/resolver-types';
-import { PRINT_PREFIX, updateLog } from './lib/print';
 import { readFile } from './lib/file';
+import memoize from './lib/memoize';
+import { PRINT_PREFIX, updateLog } from './lib/print';
+import { createSchemaHash, shouldGenResolverTypes } from './lib/resolver-types';
 import { CodegenContext } from './lib/types';
 
 const optionsSchema: JsonSchema = {

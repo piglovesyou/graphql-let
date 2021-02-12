@@ -1,5 +1,8 @@
+import {
+  CodegenContext as CodegenConfig,
+  generate,
+} from '@graphql-codegen/cli';
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { generate } from '@graphql-codegen/cli';
 import makeDir from 'make-dir';
 import path from 'path';
 import { ExecContext } from './exec-context';
@@ -11,7 +14,6 @@ import {
   isLiteralContext,
   LiteralCodegenContext,
 } from './types';
-import { CodegenContext as CodegenConfig } from '@graphql-codegen/cli';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
 export function buildCodegenConfig(
