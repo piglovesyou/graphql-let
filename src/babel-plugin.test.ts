@@ -1,9 +1,9 @@
 import runner from '@babel/helper-transform-fixture-test-runner';
 import { join } from 'path';
-import { cleanup } from '../__tools/file';
-import { matchPathsAndContents } from '../__tools/match-paths-and-contents';
+import { cleanup } from '../test/__tools/file';
+import { matchPathsAndContents } from '../test/__tools/match-paths-and-contents';
 
-const cwd = join(__dirname, '__fixtures');
+const cwd = join(__dirname, '__fixtures/babel-plugin');
 
 beforeAll(async () => {
   await cleanup(cwd, ['**/node_modules']);
