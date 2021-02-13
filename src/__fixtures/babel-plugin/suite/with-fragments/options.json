@@ -1,6 +1,8 @@
 {
+  "presets": [
+    "@babel/preset-typescript"
+  ],
   "plugins": [
-    "../../../../../src/babel-plugin.ts",
-    "@babel/plugin-syntax-jsx"
+    "../../../../../src/babel-plugin.ts"
   ]
 }
