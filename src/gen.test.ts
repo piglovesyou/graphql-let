@@ -5,6 +5,7 @@ import pick from 'lodash.pick';
 import gen from './gen';
 import * as prints from './lib/print';
 import { CodegenContext } from './lib/types';
+import { spawn } from './lib/__tools/child-process';
 import { AbsFn, cleanup, prepareFixtures, rename } from './lib/__tools/file';
 import { matchPathsAndContents } from './lib/__tools/match-paths-and-contents';
 
@@ -24,6 +25,12 @@ describe('"graphql-let" command', () => {
       '**/*.graphqls.d.ts',
     ]),
   );
+
+  test('basic', async () => {
+    const [cwd] = await prepareFixtures(__dirname, '__fixtures/gen/basic');
+    await gen({ cwd });
+    await spawn('yarn', ['tsc'], { cwd });
+  });
 
   test(`generates number of .d.ts ignoring specified files as expected
 * ignoring "!" paths in "schema" and "documents" of graphql-let.yml

@@ -1,4 +1,4 @@
-import { ExecaChildProcess } from 'execa';
+import execa, { ExecaChildProcess } from 'execa';
 import terminate from 'terminate';
 
 export async function killApp(app: ExecaChildProcess) {
@@ -14,4 +14,17 @@ export async function killApp(app: ExecaChildProcess) {
 
 export function timeout(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function spawn(
+  command: string,
+  args: string[],
+  opts?: execa.CommonOptions<'utf-8'>,
+) {
+  return execa(command, args, {
+    stdin: 'ignore',
+    stdout: 'inherit',
+    stderr: 'inherit',
+    ...opts,
+  });
 }
