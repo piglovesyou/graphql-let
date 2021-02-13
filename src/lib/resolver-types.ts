@@ -90,7 +90,7 @@ export async function processResolverTypesIfNeeded(
 // Users are likely to use 'graphql-tag/loader' with 'graphql-tag/schema/loader'
 // in webpack. This code enables the result to be typed.
 import { DocumentNode } from 'graphql'
-export default typeof DocumentNode
+export default DocumentNode
 `;
       },
       skip: !shouldUpdate,
