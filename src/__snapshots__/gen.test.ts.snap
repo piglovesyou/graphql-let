@@ -804,6 +804,40 @@ Array [
 ]
 `;
 
+exports[`"graphql-let" command keep caches 1`] = `
+Array [
+  Object {
+    "dtsRelPath": "schema/type-defs.graphqls.d.ts",
+    "gqlHash": "7969f53526f17d0fbe150fa8d043d04c1fc5ce3e",
+    "gqlRelPath": "schema/type-defs.graphqls",
+    "tsxRelPath": "schema/type-defs.graphqls.tsx",
+  },
+  Object {
+    "dtsRelPath": "pages/viewer.graphql.d.ts",
+    "gqlHash": "7210e1120779f99e5c55e782e5a24c6f0af8b78b",
+    "gqlRelPath": "pages/viewer.graphql",
+    "tsxRelPath": "pages/viewer.graphql.tsx",
+  },
+]
+`;
+
+exports[`"graphql-let" command keep caches 2`] = `
+Array [
+  Object {
+    "dtsRelPath": "schema/type-defs.graphqls.d.ts",
+    "gqlHash": "7969f53526f17d0fbe150fa8d043d04c1fc5ce3e",
+    "gqlRelPath": "schema/type-defs.graphqls",
+    "tsxRelPath": "schema/type-defs.graphqls.tsx",
+  },
+  Object {
+    "dtsRelPath": "pages/viewer.graphql.d.ts",
+    "gqlHash": "7210e1120779f99e5c55e782e5a24c6f0af8b78b",
+    "gqlRelPath": "pages/viewer.graphql",
+    "tsxRelPath": "pages/viewer.graphql.tsx",
+  },
+]
+`;
+
 exports[`"graphql-let" command passes config to graphql-codegen as expected
 * "useIndexSignature: true" in config effect to result having "WithIndex<TObject>" type
 : schema/type-defs.graphqls.d.ts 1`] = `
@@ -925,38 +959,4 @@ export declare type IResolvers<ContextType = any> = Resolvers<ContextType>;
 import { DocumentNode } from 'graphql'
 export default DocumentNode
 "
-`;
-
-exports[`"graphql-let" command runs twice and keeps valid caches 1`] = `
-Array [
-  Object {
-    "dtsRelPath": "schema/type-defs.graphqls.d.ts",
-    "gqlHash": "7969f53526f17d0fbe150fa8d043d04c1fc5ce3e",
-    "gqlRelPath": "schema/type-defs.graphqls",
-    "tsxRelPath": "schema/type-defs.graphqls.tsx",
-  },
-  Object {
-    "dtsRelPath": "pages/viewer.graphql.d.ts",
-    "gqlHash": "7210e1120779f99e5c55e782e5a24c6f0af8b78b",
-    "gqlRelPath": "pages/viewer.graphql",
-    "tsxRelPath": "pages/viewer.graphql.tsx",
-  },
-]
-`;
-
-exports[`"graphql-let" command runs twice and keeps valid caches 2`] = `
-Array [
-  Object {
-    "dtsRelPath": "schema/type-defs.graphqls.d.ts",
-    "gqlHash": "7969f53526f17d0fbe150fa8d043d04c1fc5ce3e",
-    "gqlRelPath": "schema/type-defs.graphqls",
-    "tsxRelPath": "schema/type-defs.graphqls.tsx",
-  },
-  Object {
-    "dtsRelPath": "pages/viewer.graphql.d.ts",
-    "gqlHash": "7210e1120779f99e5c55e782e5a24c6f0af8b78b",
-    "gqlRelPath": "pages/viewer.graphql",
-    "tsxRelPath": "pages/viewer.graphql.tsx",
-  },
-]
 `;

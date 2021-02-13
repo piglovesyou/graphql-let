@@ -61,7 +61,7 @@ describe('"graphql-let" command', () => {
     expect(files).toMatchSnapshot();
   });
 
-  test(`runs twice and keeps valid caches`, async () => {
+  test(`keep caches`, async () => {
     const [cwd] = await prepareFixtures(
       __dirname,
       '__fixtures/gen/4_keep-caches',
