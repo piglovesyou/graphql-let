@@ -37,7 +37,7 @@ describe('"graphql-let" command', () => {
   });
 
   test('Glob pattern "!" in config excludes files', async () => {
-    const [cwd, abs] = await prepareFixtures(
+    const [cwd] = await prepareFixtures(
       __dirname,
       '__fixtures/gen/2_exclude-files',
     );
