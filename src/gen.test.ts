@@ -14,7 +14,7 @@ let abs: AbsFn;
 
 describe('"graphql-let" command', () => {
   beforeAll(async () => {
-    [cwd, abs] = await prepareFixtures(__dirname, '__fixtures/gen');
+    [cwd, abs] = await prepareFixtures(__dirname, '__fixtures/gen/99_mixed');
     await rename(abs('_gitignore'), abs('.gitignore'));
   });
 
