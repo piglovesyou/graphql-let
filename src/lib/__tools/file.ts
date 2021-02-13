@@ -32,7 +32,9 @@ export function copyDir(
   // destRelDir: .d/e
   // It generates /Users/a/b/c/.d/e
   if (srcRelDir === destRelDir) throw new Error('Kidding me?');
-  const up = pathJoin(baseFullDir).split(sep).length + 1;
+  const relPathOffset = 2;
+  const up =
+    pathJoin(baseFullDir).split(sep).filter(Boolean).length + relPathOffset;
   const [relRoot] = destRelDir.split('/');
   return new Promise<void>((resolve, rejects) => {
     copyfiles(

@@ -1,8 +1,11 @@
 import { join } from 'path';
-import { cleanup } from './file';
+import { cleanup, prepareFixtures } from './file';
 
 const projRoot = join(__dirname, '../..');
 
-export default function setup() {
-  return cleanup(projRoot, ['**/.__fixtures']);
+export default async function setup() {
+  await cleanup(projRoot, ['**/.__fixtures']);
+
+  // XXX: Hacky. @babel/helper-transform-fixture-test-runner wants this.
+  await prepareFixtures(join(__dirname, '../../'), '__fixtures/babel-plugin');
 }

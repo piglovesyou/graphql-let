@@ -5,7 +5,7 @@ import { spawn } from './lib/__tools/child-process';
 import { cleanup } from './lib/__tools/file';
 import { matchPathsAndContents } from './lib/__tools/match-paths-and-contents';
 
-const cwd = join(__dirname, '__fixtures/babel-plugin');
+const cwd = join(__dirname, '.__fixtures/babel-plugin');
 
 beforeAll(async () => {
   await cleanup(cwd, ['**/node_modules']);
