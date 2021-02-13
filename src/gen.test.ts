@@ -61,7 +61,7 @@ describe('"graphql-let" command', () => {
     expect(files).toMatchSnapshot();
   });
 
-  test(`generates number of .d.ts ignoring specified files as expected
+  test.skip(`generates number of .d.ts ignoring specified files as expected
 * ignoring "!" paths in "schema" and "documents" of graphql-let.yml
 * ignoring files specified in .gitignore
 `, async () => {
