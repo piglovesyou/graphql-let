@@ -1493,6 +1493,13 @@ export default DocumentNode
 "
 `;
 
+exports[`"graphql-let" command gitignore 1`] = `
+Array [
+  "pages/viewer.graphql.d.ts",
+  "schema/type-defs.graphqls.d.ts",
+]
+`;
+
 exports[`"graphql-let" command passes config to graphql-codegen as expected
 * "useIndexSignature: true" in config effect to result having "WithIndex<TObject>" type
 : schema/type-defs.graphqls.d.ts 1`] = `

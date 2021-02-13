@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { ok } from 'assert';
+import glob from 'globby';
 import pick from 'lodash.pick';
 import gen from './gen';
 import * as prints from './lib/print';
@@ -15,7 +16,6 @@ let abs: AbsFn;
 describe('"graphql-let" command', () => {
   beforeAll(async () => {
     [cwd, abs] = await prepareFixtures(__dirname, '__fixtures/gen/99_mixed');
-    await rename(abs('_gitignore'), abs('.gitignore'));
   });
 
   beforeEach(() =>
@@ -34,6 +34,19 @@ describe('"graphql-let" command', () => {
       cwd,
     );
     await spawn('yarn', ['tsc'], { cwd });
+  });
+
+  test('gitignore', async () => {
+    const [cwd, abs] = await prepareFixtures(
+      __dirname,
+      '__fixtures/gen/3_gitignore',
+    );
+    await rename(abs('_gitignore'), abs('.gitignore'));
+    await gen({ cwd });
+    const files = (
+      await glob(['**/*.graphql.d.ts', '**/*.graphqls.d.ts'], { cwd })
+    ).sort();
+    expect(files).toMatchSnapshot();
   });
 
   test(`generates number of .d.ts ignoring specified files as expected
