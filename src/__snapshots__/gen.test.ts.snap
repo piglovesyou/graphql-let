@@ -875,6 +875,43 @@ export type IResolvers<ContextType = any> = Resolvers<ContextType>;
 "
 `;
 
+exports[`"graphql-let" command fails with detailed message on codegen error 1`] = `
+Array [
+  "Failed to load schema
+        Failed to load schema from **/*.graphqls:
+
+        Type \\"Broke\\" not found in document.
+        Error: Type \\"Broke\\" not found in document.
+    at ASTDefinitionBuilder._resolveType (/Users/soichitakamura/IdeaProjects/graphql-let/node_modules/graphql/utilities/buildASTSchema.js:94:13)
+    at ASTDefinitionBuilder.getNamedType (/Users/soichitakamura/IdeaProjects/graphql-let/node_modules/graphql/utilities/buildASTSchema.js:171:37)
+    at ASTDefinitionBuilder.getWrappedType (/Users/soichitakamura/IdeaProjects/graphql-let/node_modules/graphql/utilities/buildASTSchema.js:183:17)
+    at ASTDefinitionBuilder.buildField (/Users/soichitakamura/IdeaProjects/graphql-let/node_modules/graphql/utilities/buildASTSchema.js:212:18)
+    at /Users/soichitakamura/IdeaProjects/graphql-let/node_modules/graphql/utilities/buildASTSchema.js:303:23
+    at /Users/soichitakamura/IdeaProjects/graphql-let/node_modules/graphql/jsutils/keyValMap.js:27:24
+    at Array.reduce (<anonymous>)
+    at keyValMap (/Users/soichitakamura/IdeaProjects/graphql-let/node_modules/graphql/jsutils/keyValMap.js:26:15)
+    at keyByNameNode (/Users/soichitakamura/IdeaProjects/graphql-let/node_modules/graphql/utilities/buildASTSchema.js:396:33)
+    at /Users/soichitakamura/IdeaProjects/graphql-let/node_modules/graphql/utilities/buildASTSchema.js:302:14
+    at resolveThunk (/Users/soichitakamura/IdeaProjects/graphql-let/node_modules/graphql/type/definition.js:438:40)
+    at defineFieldMap (/Users/soichitakamura/IdeaProjects/graphql-let/node_modules/graphql/type/definition.js:625:18)
+    at GraphQLObjectType.getFields (/Users/soichitakamura/IdeaProjects/graphql-let/node_modules/graphql/type/definition.js:579:27)
+    at typeMapReducer (/Users/soichitakamura/IdeaProjects/graphql-let/node_modules/graphql/type/schema.js:280:78)
+    at Array.reduce (<anonymous>)
+    at new GraphQLSchema (/Users/soichitakamura/IdeaProjects/graphql-let/node_modules/graphql/type/schema.js:145:28)
+    
+        GraphQL Code Generator supports:
+          - ES Modules and CommonJS exports (export as default or named export \\"schema\\")
+          - Introspection JSON File
+          - URL of GraphQL endpoint
+          - Multiple files with type definitions (glob expression)
+          - String in config file
+    
+        Try to use one of above options and run codegen again.
+    
+      ",
+]
+`;
+
 exports[`"graphql-let" command passes config to graphql-codegen as expected
 * "useIndexSignature: true" in config effect to result having "WithIndex<TObject>" type
 : schema/type-defs.graphqls.d.ts 1`] = `

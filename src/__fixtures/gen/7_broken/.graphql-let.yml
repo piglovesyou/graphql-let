@@ -1,13 +1,8 @@
-schema: schema/type-defs.graphqls
+schema: "**/*.graphqls"
 schemaEntrypoint: schema/type-defs.graphqls
 documents:
     - "**/*.graphql"
-    - "!shouldBeIgnored1"
 plugins:
     - typescript
     - typescript-operations
     - typescript-react-apollo
-respectGitIgnore: true
-config:
-    useIndexSignature: true
-cacheDir: __generated__
