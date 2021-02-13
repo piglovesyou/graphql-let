@@ -182,7 +182,7 @@ export declare type Resolvers<ContextType = any> = {
  */
 export declare type IResolvers<ContextType = any> = Resolvers<ContextType>;
 
-          
+
 // This is an extra code in addition to what graphql-codegen makes.
 // Users are likely to use 'graphql-tag/loader' with 'graphql-tag/schema/loader'
 // in webpack. This code enables the result to be typed.
@@ -261,7 +261,7 @@ export default function gql(gql: \`
       name
     }
   }
-\`): T12656902aa8c96b811dc9c27470eff81491324c5.__AllExports;
+\`): T12656902aa8c96b811dc9c27470eff81491324c5.__GraphQLLetTypeInjection;
 import Td738297246c242ee450e74f0c5291188c6018fa9 from './pages/index-d738297246c242ee450e74f0c5291188c6018fa9';
 export default function gql(gql: \`
   # import Partial from './partial.graphql'
@@ -270,7 +270,7 @@ export default function gql(gql: \`
       ...Partial
     }
   }
-\`): Td738297246c242ee450e74f0c5291188c6018fa9.__AllExports;
+\`): Td738297246c242ee450e74f0c5291188c6018fa9.__GraphQLLetTypeInjection;
 "
 `;
 
@@ -340,7 +340,7 @@ export declare function useViewerXLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export declare type ViewerXQueryHookResult = ReturnType<typeof useViewerXQuery>;
 export declare type ViewerXLazyQueryHookResult = ReturnType<typeof useViewerXLazyQuery>;
 export declare type ViewerXQueryResult = Apollo.QueryResult<ViewerXQuery, ViewerXQueryVariables>;
-export declare type __AllExports = {
+export declare type __GraphQLLetTypeInjection = {
   ViewerXDocument: typeof ViewerXDocument;
   useViewerXQuery: typeof useViewerXQuery;
   useViewerXLazyQuery: typeof useViewerXLazyQuery;
@@ -417,7 +417,7 @@ export declare function useViewerYLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export declare type ViewerYQueryHookResult = ReturnType<typeof useViewerYQuery>;
 export declare type ViewerYLazyQueryHookResult = ReturnType<typeof useViewerYLazyQuery>;
 export declare type ViewerYQueryResult = Apollo.QueryResult<ViewerYQuery, ViewerYQueryVariables>;
-export declare type __AllExports = {
+export declare type __GraphQLLetTypeInjection = {
   PartialFragmentDoc: typeof PartialFragmentDoc;
   ViewerYDocument: typeof ViewerYDocument;
   useViewerYQuery: typeof useViewerYQuery;
@@ -989,7 +989,7 @@ export declare type Resolvers<ContextType = any> = ResolversObject<{
  */
 export declare type IResolvers<ContextType = any> = Resolvers<ContextType>;
 
-          
+
 // This is an extra code in addition to what graphql-codegen makes.
 // Users are likely to use 'graphql-tag/loader' with 'graphql-tag/schema/loader'
 // in webpack. This code enables the result to be typed.

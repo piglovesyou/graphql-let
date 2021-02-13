@@ -56,7 +56,7 @@ export const parserOption: ParserOptions = {
 export function appendExportAsObject(dtsContent: string) {
   // TODO: Build ast?
 
-  let allExportsCode = `export declare type __AllExports = { `;
+  let allExportsCode = `export declare type __GraphQLLetTypeInjection = { `;
   function pushProps({
     node: {
       id: { name },

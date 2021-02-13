@@ -86,7 +86,7 @@ export class LiteralCache {
         basename(dtsRelPath, '.d.ts'),
       );
       dtsEntrypointContent += `import T${hash} from './${dtsRelPathWithoutExtension}';
-export default function gql(gql: \`${gqlContent}\`): T${hash}.__AllExports;
+export default function gql(gql: \`${gqlContent}\`): T${hash}.__GraphQLLetTypeInjection;
 `;
     }
     await writeFile(this.dtsEntrypointFullPath, dtsEntrypointContent);

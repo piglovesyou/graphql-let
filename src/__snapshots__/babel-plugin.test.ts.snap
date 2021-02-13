@@ -19,7 +19,7 @@ Array [
 
 exports[`Generated files are okay: suite/basic/node_modules/@types/graphql-let/index.d.ts 1`] = `
 "import T1ffee34aad94b8da4e33faf385ded9238d7affef from './input-1ffee34aad94b8da4e33faf385ded9238d7affef';
-export default function gql(gql: \`query Viewer { viewer { name } }\`): T1ffee34aad94b8da4e33faf385ded9238d7affef.__AllExports;
+export default function gql(gql: \`query Viewer { viewer { name } }\`): T1ffee34aad94b8da4e33faf385ded9238d7affef.__GraphQLLetTypeInjection;
 "
 `;
 
@@ -89,7 +89,7 @@ export declare function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export declare type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export declare type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
 export declare type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;
-export declare type __AllExports = {
+export declare type __GraphQLLetTypeInjection = {
   ViewerDocument: typeof ViewerDocument;
   useViewerQuery: typeof useViewerQuery;
   useViewerLazyQuery: typeof useViewerLazyQuery;
@@ -192,7 +192,7 @@ export default function gql(gql: \`
       name
     }
   }
-\`): T98fe64b5c1bccab885117fbeac3ea597d4f7e02d.__AllExports;
+\`): T98fe64b5c1bccab885117fbeac3ea597d4f7e02d.__GraphQLLetTypeInjection;
 "
 `;
 
@@ -262,7 +262,7 @@ export declare function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export declare type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export declare type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
 export declare type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;
-export declare type __AllExports = {
+export declare type __GraphQLLetTypeInjection = {
   ViewerDocument: typeof ViewerDocument;
   useViewerQuery: typeof useViewerQuery;
   useViewerLazyQuery: typeof useViewerLazyQuery;
@@ -366,7 +366,7 @@ export default function gql(gql: \`
       ...Partial
     }
   }
-\`): T3e81ed6254d58faa4d4bb8a12568fa59509c0acb.__AllExports;
+\`): T3e81ed6254d58faa4d4bb8a12568fa59509c0acb.__GraphQLLetTypeInjection;
 "
 `;
 
@@ -440,7 +440,7 @@ export declare function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export declare type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export declare type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
 export declare type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;
-export declare type __AllExports = {
+export declare type __GraphQLLetTypeInjection = {
   PartialFragmentDoc: typeof PartialFragmentDoc;
   ViewerDocument: typeof ViewerDocument;
   useViewerQuery: typeof useViewerQuery;
