@@ -5,6 +5,7 @@ module.exports = {
     filename: 'main.js',
     libraryTarget: 'commonjs',
   },
+  mode: 'production',
   target: 'node',
   module: {
     rules: [

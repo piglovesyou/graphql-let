@@ -105,7 +105,7 @@ describe('HMR', () => {
       /************************************************************************
        * Start dev server
        */
-      app = spawn('yarn', ['webpack-dev-server']);
+      app = spawn('yarn', ['webpack', 'serve']);
       await waitOn({
         resources: ['http://localhost:3000/main.js'],
         timeout: 60 * 1000,
@@ -224,7 +224,7 @@ type Query {
        */
       let stdoutContent = '';
       let stderrContent = '';
-      app = spawn('yarn', ['webpack-dev-server'], {
+      app = spawn('yarn', ['webpack', 'serve'], {
         stdout: undefined,
         stderr: undefined,
       });
