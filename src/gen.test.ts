@@ -36,6 +36,18 @@ describe('"graphql-let" command', () => {
     await spawn('yarn', ['tsc'], { cwd });
   });
 
+  test('exclude files', async () => {
+    const [cwd, abs] = await prepareFixtures(
+      __dirname,
+      '__fixtures/gen/2_exclude-files',
+    );
+    await gen({ cwd });
+    const files = (
+      await glob(['**/*.graphql.d.ts', '**/*.graphqls.d.ts'], { cwd })
+    ).sort();
+    expect(files).toMatchSnapshot();
+  });
+
   test('gitignore', async () => {
     const [cwd, abs] = await prepareFixtures(
       __dirname,

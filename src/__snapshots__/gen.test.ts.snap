@@ -790,6 +790,13 @@ exports[`"graphql-let" command documents: **/*.tsx generates .d.ts for babel: no
 }"
 `;
 
+exports[`"graphql-let" command exclude files 1`] = `
+Array [
+  "pages/viewer.graphql.d.ts",
+  "schema/type-defs.graphqls.d.ts",
+]
+`;
+
 exports[`"graphql-let" command generates number of .d.ts ignoring specified files as expected
 * ignoring "!" paths in "schema" and "documents" of graphql-let.yml
 * ignoring files specified in .gitignore
