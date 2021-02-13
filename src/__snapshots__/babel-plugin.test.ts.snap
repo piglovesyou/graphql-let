@@ -18,7 +18,7 @@ Array [
 `;
 
 exports[`Generated files are okay: suite/basic/node_modules/@types/graphql-let/index.d.ts 1`] = `
-"import T1ffee34aad94b8da4e33faf385ded9238d7affef from './input-1ffee34aad94b8da4e33faf385ded9238d7affef.d.ts';
+"import T1ffee34aad94b8da4e33faf385ded9238d7affef from './input-1ffee34aad94b8da4e33faf385ded9238d7affef';
 export default function gql(gql: \`query Viewer { viewer { name } }\`): T1ffee34aad94b8da4e33faf385ded9238d7affef.__AllExports;
 "
 `;
@@ -90,21 +90,9 @@ export declare type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export declare type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
 export declare type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;
 export declare type __AllExports = {
-  Maybe: Maybe;
-  Exact: Exact;
-  MakeOptional: MakeOptional;
-  MakeMaybe: MakeMaybe;
-  Scalars: Scalars;
-  Query: Query;
-  User: User;
-  ViewerQueryVariables: ViewerQueryVariables;
-  ViewerQuery: ViewerQuery;
-  ViewerDocument: ViewerDocument;
+  ViewerDocument: typeof ViewerDocument;
   useViewerQuery: typeof useViewerQuery;
   useViewerLazyQuery: typeof useViewerLazyQuery;
-  ViewerQueryHookResult: ViewerQueryHookResult;
-  ViewerLazyQueryHookResult: ViewerLazyQueryHookResult;
-  ViewerQueryResult: ViewerQueryResult;
 };"
 `;
 
@@ -197,7 +185,7 @@ export type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVaria
 `;
 
 exports[`Generated files are okay: suite/tagged-template-call/node_modules/@types/graphql-let/index.d.ts 1`] = `
-"import T98fe64b5c1bccab885117fbeac3ea597d4f7e02d from './input-98fe64b5c1bccab885117fbeac3ea597d4f7e02d.d.ts';
+"import T98fe64b5c1bccab885117fbeac3ea597d4f7e02d from './input-98fe64b5c1bccab885117fbeac3ea597d4f7e02d';
 export default function gql(gql: \`
   query Viewer {
     viewer {
@@ -275,21 +263,9 @@ export declare type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export declare type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
 export declare type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;
 export declare type __AllExports = {
-  Maybe: Maybe;
-  Exact: Exact;
-  MakeOptional: MakeOptional;
-  MakeMaybe: MakeMaybe;
-  Scalars: Scalars;
-  Query: Query;
-  User: User;
-  ViewerQueryVariables: ViewerQueryVariables;
-  ViewerQuery: ViewerQuery;
-  ViewerDocument: ViewerDocument;
+  ViewerDocument: typeof ViewerDocument;
   useViewerQuery: typeof useViewerQuery;
   useViewerLazyQuery: typeof useViewerLazyQuery;
-  ViewerQueryHookResult: ViewerQueryHookResult;
-  ViewerLazyQueryHookResult: ViewerLazyQueryHookResult;
-  ViewerQueryResult: ViewerQueryResult;
 };"
 `;
 
@@ -382,7 +358,7 @@ export type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVaria
 `;
 
 exports[`Generated files are okay: suite/with-fragments/node_modules/@types/graphql-let/index.d.ts 1`] = `
-"import T3e81ed6254d58faa4d4bb8a12568fa59509c0acb from './input-3e81ed6254d58faa4d4bb8a12568fa59509c0acb.d.ts';
+"import T3e81ed6254d58faa4d4bb8a12568fa59509c0acb from './input-3e81ed6254d58faa4d4bb8a12568fa59509c0acb';
 export default function gql(gql: \`
   # import Partial from './partial.graphql'
   query Viewer {
@@ -465,23 +441,10 @@ export declare type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export declare type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
 export declare type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;
 export declare type __AllExports = {
-  Maybe: Maybe;
-  Exact: Exact;
-  MakeOptional: MakeOptional;
-  MakeMaybe: MakeMaybe;
-  Scalars: Scalars;
-  Query: Query;
-  User: User;
-  ViewerQueryVariables: ViewerQueryVariables;
-  ViewerQuery: ViewerQuery;
-  PartialFragment: PartialFragment;
-  PartialFragmentDoc: PartialFragmentDoc;
-  ViewerDocument: ViewerDocument;
+  PartialFragmentDoc: typeof PartialFragmentDoc;
+  ViewerDocument: typeof ViewerDocument;
   useViewerQuery: typeof useViewerQuery;
   useViewerLazyQuery: typeof useViewerLazyQuery;
-  ViewerQueryHookResult: ViewerQueryHookResult;
-  ViewerLazyQueryHookResult: ViewerLazyQueryHookResult;
-  ViewerQueryResult: ViewerQueryResult;
 };"
 `;
 
