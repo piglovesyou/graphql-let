@@ -92,6 +92,10 @@ describe('"graphql-let" command', () => {
   test(`passes config to graphql-codegen as expected
 * "useIndexSignature: true" in config effect to result having "WithIndex<TObject>" type
 `, async () => {
+    const [cwd] = await prepareFixtures(
+      __dirname,
+      '__fixtures/gen/5_pass-config',
+    );
     await gen({ cwd });
     await matchPathsAndContents(['schema/type-defs.graphqls.d.ts'], cwd);
   });
