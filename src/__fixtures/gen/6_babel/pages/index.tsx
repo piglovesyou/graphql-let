@@ -1,14 +1,17 @@
 import gql from 'graphql-let';
 
-gql(`
+const { useViewerXQuery } = gql(`
   query ViewerX {
     viewer {
       name
     }
   }
 `);
+useViewerXQuery().data.viewer.name as string;
+// @ts-expect-error
+useViewerXQuery() as number;
 
-gql(`
+const { useViewerYQuery } = gql(`
   # import Partial from './partial.graphql'
   query ViewerY {
     viewer {
@@ -16,3 +19,6 @@ gql(`
     }
   }
 `);
+useViewerYQuery().data.viewer.name as string;
+// @ts-expect-error
+useViewerYQuery() as number;
