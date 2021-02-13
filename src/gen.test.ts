@@ -27,8 +27,12 @@ describe('"graphql-let" command', () => {
   );
 
   test('basic', async () => {
-    const [cwd] = await prepareFixtures(__dirname, '__fixtures/gen/basic');
+    const [cwd] = await prepareFixtures(__dirname, '__fixtures/gen/1_basic');
     await gen({ cwd });
+    await matchPathsAndContents(
+      ['**/*.graphql.d.ts', '**/*.graphqls.d.ts'],
+      cwd,
+    );
     await spawn('yarn', ['tsc'], { cwd });
   });
 
