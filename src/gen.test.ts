@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { ok } from 'assert';
+import { statSync } from 'fs';
 import glob from 'globby';
 import pick from 'lodash.pick';
 import gen from './gen';
 import * as prints from './lib/print';
-import { CodegenContext } from './lib/types';
+import { CodegenContext, FileCodegenContext } from './lib/types';
 import { spawn } from './lib/__tools/child-process';
 import { AbsFn, cleanup, prepareFixtures, rename } from './lib/__tools/file';
 import { matchPathsAndContents } from './lib/__tools/match-paths-and-contents';
@@ -61,32 +61,32 @@ describe('"graphql-let" command', () => {
     expect(files).toMatchSnapshot();
   });
 
-  test.skip(`generates number of .d.ts ignoring specified files as expected
-* ignoring "!" paths in "schema" and "documents" of graphql-let.yml
-* ignoring files specified in .gitignore
-`, async () => {
-    await gen({ cwd });
-    await matchPathsAndContents(
-      ['**/*.graphql.d.ts', '**/*.graphqls.d.ts', '__generated__/**/*.tsx'],
-      cwd,
-    );
-  });
-
   test(`runs twice and keeps valid caches`, async () => {
+    const [cwd] = await prepareFixtures(
+      __dirname,
+      '__fixtures/gen/4_keep-caches',
+    );
     const pickProperties = (context: CodegenContext) =>
       pick(context, ['gqlRelPath', 'tsxRelPath', 'dtsRelPath', 'gqlHash']);
-    const result1 = await gen({ cwd });
-    for (const { skip, dtsRelPath } of result1)
-      ok(!skip, `${dtsRelPath} should be newly created!`);
+
+    const result1 = (await gen({ cwd })) as FileCodegenContext[];
+    for (const r of result1) expect(r).toMatchObject({ skip: false });
     expect(result1.map(pickProperties)).toMatchSnapshot();
-    await matchPathsAndContents(['__generated__/**/*.tsx'], cwd);
 
-    const result2 = await gen({ cwd });
-    for (const { skip, dtsRelPath } of result2)
-      ok(skip, `${dtsRelPath} should be cached!`);
-
+    const result2 = (await gen({ cwd })) as FileCodegenContext[];
+    for (const r of result2) expect(r).toMatchObject({ skip: true });
     expect(result2.map(pickProperties)).toMatchSnapshot();
-    await matchPathsAndContents(['__generated__/**/*.tsx'], cwd);
+
+    const props = ['tsxFullPath', 'dtsFullPath', 'gqlFullPath'] as (
+      | 'tsxFullPath'
+      | 'dtsFullPath'
+      | 'gqlFullPath'
+    )[];
+    for (const prop of props)
+      for (const [i, r2] of result2.entries())
+        expect(statSync(r2[prop]).mtime).toStrictEqual(
+          statSync(result1[i][prop]).mtime,
+        );
   });
 
   test(`passes config to graphql-codegen as expected
