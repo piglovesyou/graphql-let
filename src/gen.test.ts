@@ -26,7 +26,7 @@ describe('"graphql-let" command', () => {
     ]),
   );
 
-  test('basic', async () => {
+  test(`Basic command usage results in generating d.ts and passing tsc type check`, async () => {
     const [cwd] = await prepareFixtures(__dirname, '__fixtures/gen/1_basic');
     await gen({ cwd });
     await matchPathsAndContents(
@@ -36,7 +36,7 @@ describe('"graphql-let" command', () => {
     await spawn('yarn', ['tsc'], { cwd });
   });
 
-  test('exclude files', async () => {
+  test('Glob pattern "!" in config excludes files', async () => {
     const [cwd, abs] = await prepareFixtures(
       __dirname,
       '__fixtures/gen/2_exclude-files',
@@ -48,7 +48,7 @@ describe('"graphql-let" command', () => {
     expect(files).toMatchSnapshot();
   });
 
-  test('gitignore', async () => {
+  test('Respect .gitignore to ignore from including', async () => {
     const [cwd, abs] = await prepareFixtures(
       __dirname,
       '__fixtures/gen/3_gitignore',
@@ -61,7 +61,7 @@ describe('"graphql-let" command', () => {
     expect(files).toMatchSnapshot();
   });
 
-  test(`keep caches`, async () => {
+  test(`Runs twice and keeps valid caches`, async () => {
     const [cwd] = await prepareFixtures(
       __dirname,
       '__fixtures/gen/4_keep-caches',
