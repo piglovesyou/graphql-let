@@ -101,8 +101,10 @@ describe('"graphql-let" command', () => {
   });
 
   test(`documents: **/*.tsx generates .d.ts for babel`, async () => {
-    await gen({ cwd, configFilePath: '.graphql-let-babel.yml' });
-    await matchPathsAndContents(['__generated__', 'node_modules'], cwd);
+    const [cwd] = await prepareFixtures(__dirname, '__fixtures/gen/6_babel');
+    await gen({ cwd });
+    await matchPathsAndContents(['node_modules'], cwd);
+    await spawn('yarn', ['tsc'], { cwd });
   });
 
   test(`fails with detailed message on codegen error`, async () => {
