@@ -1,5 +1,5 @@
 import { existsSync } from 'fs';
-import { dirname, join as pathJoin } from 'path';
+import { basename, dirname, join as pathJoin } from 'path';
 import { ExecContext } from '../exec-context';
 import { readFile, statSync, writeFile } from '../file';
 
@@ -80,7 +80,12 @@ export class LiteralCache {
     }
     let dtsEntrypointContent = '';
     for (const [hash, [dtsRelPath, gqlContent]] of accumulator) {
-      dtsEntrypointContent += `import T${hash} from './${dtsRelPath}';
+      // For TS2691
+      const dtsRelPathWithoutExtension = pathJoin(
+        dirname(dtsRelPath),
+        basename(dtsRelPath, '.d.ts'),
+      );
+      dtsEntrypointContent += `import T${hash} from './${dtsRelPathWithoutExtension}';
 export default function gql(gql: \`${gqlContent}\`): T${hash}.__AllExports;
 `;
     }

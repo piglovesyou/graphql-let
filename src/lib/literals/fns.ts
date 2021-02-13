@@ -55,22 +55,20 @@ export const parserOption: ParserOptions = {
 
 export function appendExportAsObject(dtsContent: string) {
   // TODO: Build ast?
+
   let allExportsCode = `export declare type __AllExports = { `;
-  const visitors: any = {
-    TSDeclareFunction({
-      node: {
-        id: { name },
-      },
-    }: any) {
-      allExportsCode += `${name}: typeof ${name},`;
-    },
-  };
-  visitors.VariableDeclarator = visitors.TSTypeAliasDeclaration = function pushProps({
+  function pushProps({
     node: {
       id: { name },
     },
   }: any) {
-    allExportsCode += `${name}: ${name},`;
+    allExportsCode += `${name}: typeof ${name},`;
+  }
+
+  const visitors: any = {
+    TSDeclareFunction: pushProps,
+    VariableDeclarator: pushProps,
+    // We cannot export TSTypeAliasDeclaration, since gql() cannot return type.
   };
 
   const dtsAST = parse(dtsContent, parserOption);
