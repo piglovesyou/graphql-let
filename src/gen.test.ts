@@ -7,25 +7,10 @@ import gen from './gen';
 import * as prints from './lib/print';
 import { CodegenContext, FileCodegenContext } from './lib/types';
 import { spawn } from './lib/__tools/child-process';
-import { AbsFn, cleanup, prepareFixtures, rename } from './lib/__tools/file';
+import { prepareFixtures, rename } from './lib/__tools/file';
 import { matchPathsAndContents } from './lib/__tools/match-paths-and-contents';
 
-let cwd: string;
-let abs: AbsFn;
-
 describe('"graphql-let" command', () => {
-  beforeAll(async () => {
-    [cwd, abs] = await prepareFixtures(__dirname, '__fixtures/gen/99_mixed');
-  });
-
-  beforeEach(() =>
-    cleanup(cwd, [
-      '**/__generated__',
-      '**/*.graphql.d.ts',
-      '**/*.graphqls.d.ts',
-    ]),
-  );
-
   test(`Basic command usage results in generating d.ts and passing tsc type check`, async () => {
     const [cwd] = await prepareFixtures(__dirname, '__fixtures/gen/1_basic');
     await gen({ cwd });
@@ -108,17 +93,18 @@ describe('"graphql-let" command', () => {
   });
 
   test(`fails with detailed message on codegen error`, async () => {
+    const [cwd] = await prepareFixtures(__dirname, '__fixtures/gen/7_broken');
     const printedMessages: string[] = [];
     const printError = jest.spyOn(prints, 'printError');
     printError.mockImplementation((err: Error) => {
       printedMessages.push(err.message);
     });
     try {
-      await gen({ cwd, configFilePath: '.graphql-let-broken.yml' });
+      await gen({ cwd });
     } catch (e) {
       expect(printedMessages.length).toBe(1);
       expect(printedMessages[0]).toContain(`Failed to load schema
-        Failed to load schema from broken/**/*.graphqls:
+        Failed to load schema from **/*.graphqls:
 
         Type "Broke" not found in document.
         Error: Type "Broke" not found in document.`);
