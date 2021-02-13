@@ -8,4 +8,5 @@ export default async function setup() {
 
   // XXX: Hacky. @babel/helper-transform-fixture-test-runner wants this.
   await prepareFixtures(join(__dirname, '../../'), '__fixtures/babel-plugin');
+  await prepareFixtures(join(__dirname, '../../'), '__fixtures/babel-macro');
 }
