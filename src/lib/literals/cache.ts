@@ -27,18 +27,17 @@ export type ProjectCacheStore = {
 };
 
 export class LiteralCache {
-  storeFullPath: string;
   dtsEntrypointFullPath: string;
+  storeFullPath: string;
+  macroFullPath: string;
   projectStore: ProjectCacheStore | null = null;
   lastModified: number | null = null;
   constructor(execContext: ExecContext) {
     const { cwd, config } = execContext;
     this.dtsEntrypointFullPath = pathJoin(cwd, config.gqlDtsEntrypoint);
-    this.storeFullPath = pathJoin(
-      cwd,
-      dirname(config.gqlDtsEntrypoint),
-      'store.json',
-    );
+    const typeFullDir = pathJoin(cwd, dirname(config.gqlDtsEntrypoint));
+    this.storeFullPath = pathJoin(typeFullDir, 'store.json');
+    this.macroFullPath = pathJoin(typeFullDir, 'macro.d.ts');
   }
   async load() {
     if (existsSync(this.storeFullPath)) {
@@ -90,6 +89,9 @@ export default function gql(gql: \`${gqlContent}\`): T${hash}.__GraphQLLetTypeIn
 `;
     }
     await writeFile(this.dtsEntrypointFullPath, dtsEntrypointContent);
+
+    // Make sure we have macro.d.ts aliasing to index.d.ts
+    await writeFile(this.macroFullPath, `export {default} from ".";`);
 
     // Invalidate the instance
     this.projectStore = null;
