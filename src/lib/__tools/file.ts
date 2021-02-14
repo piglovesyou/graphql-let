@@ -1,6 +1,6 @@
 import copyfiles from 'copyfiles';
 import { promises } from 'fs';
-import { join as pathJoin, sep } from 'path';
+import { join as pathJoin, resolve as pathResolve, sep } from 'path';
 import _rimraf from 'rimraf';
 import { promisify } from 'util';
 
@@ -22,6 +22,13 @@ export function cleanup(cwd: string, relPaths: string[]) {
   return Promise.all(relPaths.map((rel) => rimraf(pathJoin(cwd, rel))));
 }
 
+function getDirDepth(fullDir: string) {
+  let depth = 0;
+  const dirs = fullDir.split(sep);
+  for (let i = dirs.length - 1; i >= 0; i--) if (dirs[i].length) return i + 1;
+  throw new Error('Never');
+}
+
 export function copyDir(
   baseFullDir: string,
   srcRelDir: string,
@@ -32,9 +39,10 @@ export function copyDir(
   // destRelDir: .d/e
   // It generates /Users/a/b/c/.d/e
   if (srcRelDir === destRelDir) throw new Error('Kidding me?');
-  const relPathOffset = 2;
+  const relPathOffset = 1;
+  // strip empty dirs on sides
   const up =
-    pathJoin(baseFullDir).split(sep).filter(Boolean).length + relPathOffset;
+    pathResolve(baseFullDir).split(sep).filter(Boolean).length + relPathOffset;
   const [relRoot] = destRelDir.split('/');
   return new Promise<void>((resolve, rejects) => {
     copyfiles(
