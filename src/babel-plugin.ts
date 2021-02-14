@@ -203,7 +203,7 @@ export function modifyLiteralCalls(
 // https://github.com/gajus/babel-plugin-graphql-tag/blob/master/src/index.js
 export const configFunction = (
   options: BabelOptions = {},
-  shouldRemoveImportDeclaration: boolean = true,
+  shouldRemoveImportDeclaration = true,
 ): PluginObj<any> => {
   const {
     configFilePath,
