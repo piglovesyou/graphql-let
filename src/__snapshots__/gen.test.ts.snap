@@ -242,6 +242,7 @@ Array [
 exports[`"graphql-let" command documents: **/*.tsx generates .d.ts for babel: node_modules 1`] = `
 Array [
   "node_modules/@types/graphql-let/index.d.ts",
+  "node_modules/@types/graphql-let/macro.d.ts",
   "node_modules/@types/graphql-let/pages/index-12656902aa8c96b811dc9c27470eff81491324c5.d.ts",
   "node_modules/@types/graphql-let/pages/index-d738297246c242ee450e74f0c5291188c6018fa9.d.ts",
   "node_modules/@types/graphql-let/store.json",
@@ -273,6 +274,8 @@ export default function gql(gql: \`
 \`): Td738297246c242ee450e74f0c5291188c6018fa9.__GraphQLLetTypeInjection;
 "
 `;
+
+exports[`"graphql-let" command documents: **/*.tsx generates .d.ts for babel: node_modules/@types/graphql-let/macro.d.ts 1`] = `"export {default} from \\".\\";"`;
 
 exports[`"graphql-let" command documents: **/*.tsx generates .d.ts for babel: node_modules/@types/graphql-let/pages/index-12656902aa8c96b811dc9c27470eff81491324c5.d.ts 1`] = `
 "/* 12656902aa8c96b811dc9c27470eff81491324c5

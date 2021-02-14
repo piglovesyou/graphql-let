@@ -4,10 +4,12 @@ exports[`Generated files are okay: **/node_modules/** 1`] = `
 Array [
   "suite/basic/node_modules/@types/graphql-let/index.d.ts",
   "suite/basic/node_modules/@types/graphql-let/input-1ffee34aad94b8da4e33faf385ded9238d7affef.d.ts",
+  "suite/basic/node_modules/@types/graphql-let/macro.d.ts",
   "suite/basic/node_modules/@types/graphql-let/store.json",
   "suite/basic/node_modules/graphql-let/__generated__/input-1ffee34aad94b8da4e33faf385ded9238d7affef.ts",
   "suite/with-fragments/node_modules/@types/graphql-let/index.d.ts",
   "suite/with-fragments/node_modules/@types/graphql-let/input-3e81ed6254d58faa4d4bb8a12568fa59509c0acb.d.ts",
+  "suite/with-fragments/node_modules/@types/graphql-let/macro.d.ts",
   "suite/with-fragments/node_modules/@types/graphql-let/store.json",
   "suite/with-fragments/node_modules/graphql-let/__generated__/input-3e81ed6254d58faa4d4bb8a12568fa59509c0acb.ts",
 ]
@@ -91,6 +93,8 @@ export declare type __GraphQLLetTypeInjection = {
   useViewerLazyQuery: typeof useViewerLazyQuery;
 };"
 `;
+
+exports[`Generated files are okay: suite/basic/node_modules/@types/graphql-let/macro.d.ts 1`] = `"export {default} from \\".\\";"`;
 
 exports[`Generated files are okay: suite/basic/node_modules/@types/graphql-let/store.json 1`] = `
 "{
@@ -270,6 +274,8 @@ export declare type __GraphQLLetTypeInjection = {
   useViewerLazyQuery: typeof useViewerLazyQuery;
 };"
 `;
+
+exports[`Generated files are okay: suite/with-fragments/node_modules/@types/graphql-let/macro.d.ts 1`] = `"export {default} from \\".\\";"`;
 
 exports[`Generated files are okay: suite/with-fragments/node_modules/@types/graphql-let/store.json 1`] = `
 "{
