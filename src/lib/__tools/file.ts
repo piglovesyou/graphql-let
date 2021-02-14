@@ -23,8 +23,7 @@ export function cleanup(cwd: string, relPaths: string[]) {
 }
 
 function getDirDepth(fullDir: string) {
-  let depth = 0;
-  const dirs = fullDir.split(sep);
+  const dirs = pathResolve(fullDir).split(sep);
   for (let i = dirs.length - 1; i >= 0; i--) if (dirs[i].length) return i + 1;
   throw new Error('Never');
 }
@@ -40,9 +39,8 @@ export function copyDir(
   // It generates /Users/a/b/c/.d/e
   if (srcRelDir === destRelDir) throw new Error('Kidding me?');
   const relPathOffset = 1;
-  // strip empty dirs on sides
-  const up =
-    pathResolve(baseFullDir).split(sep).filter(Boolean).length + relPathOffset;
+  // pathResolve to strip empty dirs on right
+  const up = pathResolve(baseFullDir).split(sep).length + relPathOffset;
   const [relRoot] = destRelDir.split('/');
   return new Promise<void>((resolve, rejects) => {
     copyfiles(
