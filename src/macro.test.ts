@@ -4,7 +4,7 @@ import { join } from 'path';
 import { spawn } from './lib/__tools/child-process';
 import { cleanup } from './lib/__tools/file';
 
-const cwd = join(__dirname, '.__fixtures/babel-macro');
+const cwd = join(__dirname, '.__fixtures/macro');
 
 beforeAll(async () => {
   await cleanup(cwd, ['**/node_modules']);

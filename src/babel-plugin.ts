@@ -152,17 +152,29 @@ export function visitLiteralCalls(
   };
 }
 
+function removeImportDeclaration(
+  pendingDeletion: VisitLiteralCallResults['pendingDeletion'],
+) {
+  for (const { defaultSpecifier, path: pathToRemove } of pendingDeletion) {
+    if (pathToRemove.node.specifiers.length === 1) {
+      pathToRemove.remove();
+    } else {
+      pathToRemove.node.specifiers = pathToRemove.node.specifiers.filter(
+        (specifier) => {
+          return specifier !== defaultSpecifier;
+        },
+      );
+    }
+  }
+}
+
 export function modifyLiteralCalls(
   programPath: NodePath<t.Program>,
   sourceFullPath: string,
   visitLiteralCallResults: VisitLiteralCallResults,
   codegenContext: CodegenContext[],
 ) {
-  const {
-    literalCallExpressionPaths,
-    pendingDeletion,
-    hasError,
-  } = visitLiteralCallResults;
+  const { literalCallExpressionPaths } = visitLiteralCallResults;
 
   if (literalCallExpressionPaths.length !== codegenContext.length)
     throw new Error('what');
@@ -185,30 +197,14 @@ export function modifyLiteralCalls(
     programPath.unshiftContainer('body', importNode);
     callExpressionPath.replaceWithSourceString(localVarName);
   }
-
-  // Only delete import statement or specifier when there is no error
-  if (!hasError) {
-    for (const { defaultSpecifier, path: pathForDeletion } of pendingDeletion) {
-      if (pathForDeletion.node.specifiers.length === 1) {
-        pathForDeletion.remove();
-      } else {
-        pathForDeletion.node.specifiers = pathForDeletion.node.specifiers.filter(
-          (specifier) => {
-            return specifier !== defaultSpecifier;
-          },
-        );
-      }
-    }
-  }
 }
 
 // With all my respect, I cloned the source from
 // https://github.com/gajus/babel-plugin-graphql-tag/blob/master/src/index.js
-const configFunction = (
-  api: ConfigAPI,
-  options: BabelOptions,
+export const configFunction = (
+  options: BabelOptions = {},
+  shouldRemoveImportDeclaration: boolean = true,
 ): PluginObj<any> => {
-  api.assertVersion(7);
   const {
     configFilePath,
     importName = 'graphql-let',
@@ -228,7 +224,11 @@ const configFunction = (
           importName,
           onlyMatchImportSuffix,
         );
-        const { literalCallExpressionPaths } = visitLiteralCallResults;
+        const {
+          literalCallExpressionPaths,
+          hasError,
+          pendingDeletion,
+        } = visitLiteralCallResults;
 
         // TODO: Handle error
 
@@ -250,9 +250,17 @@ const configFunction = (
           visitLiteralCallResults,
           literalCodegenContext,
         );
+
+        // Only delete import statement or specifier when there is no error
+        if (shouldRemoveImportDeclaration && !hasError) {
+          removeImportDeclaration(pendingDeletion);
+        }
       },
     },
   };
 };
 
-export default declare(configFunction);
+export default declare((api: ConfigAPI, options: BabelOptions) => {
+  api.assertVersion(7);
+  return configFunction(options);
+});
