@@ -1,9 +1,9 @@
 import runner from '@babel/helper-transform-fixture-test-runner';
 import glob from 'globby';
 import { join } from 'path';
-import { spawn } from './lib/__tools/child-process';
-import { cleanup } from './lib/__tools/file';
-import { matchPathsAndContents } from './lib/__tools/match-paths-and-contents';
+import { spawn } from '../src/lib/__tools/child-process';
+import { cleanup } from '../src/lib/__tools/file';
+import { matchPathsAndContents } from '../src/lib/__tools/match-paths-and-contents';
 
 const cwd = join(__dirname, '.__fixtures/babel');
 
