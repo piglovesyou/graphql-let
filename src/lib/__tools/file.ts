@@ -22,12 +22,6 @@ export function cleanup(cwd: string, relPaths: string[]) {
   return Promise.all(relPaths.map((rel) => rimraf(pathJoin(cwd, rel))));
 }
 
-function getDirDepth(fullDir: string) {
-  const dirs = pathResolve(fullDir).split(sep);
-  for (let i = dirs.length - 1; i >= 0; i--) if (dirs[i].length) return i + 1;
-  throw new Error('Never');
-}
-
 export function copyDir(
   baseFullDir: string,
   srcRelDir: string,
