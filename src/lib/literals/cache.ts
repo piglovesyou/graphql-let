@@ -91,7 +91,7 @@ export default function gql(gql: \`${gqlContent}\`): T${hash}.__GraphQLLetTypeIn
     await writeFile(this.dtsEntrypointFullPath, dtsEntrypointContent);
 
     // Make sure we have macro.d.ts aliasing to index.d.ts
-    await writeFile(this.macroFullPath, `export {default} from ".";`);
+    await writeFile(this.macroFullPath, `export { default as gql } from ".";`);
 
     // Invalidate the instance
     this.projectStore = null;

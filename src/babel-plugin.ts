@@ -17,7 +17,7 @@ const {
   valueToNode,
 } = types;
 
-const processLiteralsWithDtsGenerateSync = doSync(
+export const processLiteralsWithDtsGenerateSync = doSync(
   ({
     hostDirname,
     ...gqlCompileArgs

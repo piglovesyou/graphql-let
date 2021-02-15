@@ -16,7 +16,7 @@ export default function gql(gql: \`query Viewer { viewer { name } }\`): T1ffee34
 "
 `;
 
-exports[`Generated files are okay: suite/macro/node_modules/@types/graphql-let/macro.d.ts 1`] = `"export {default} from \\".\\";"`;
+exports[`Generated files are okay: suite/macro/node_modules/@types/graphql-let/macro.d.ts 1`] = `"export { default as gql } from \\".\\";"`;
 
 exports[`Generated files are okay: suite/macro/node_modules/@types/graphql-let/proj-root/input-1ffee34aad94b8da4e33faf385ded9238d7affef.d.ts 1`] = `
 "/* 1ffee34aad94b8da4e33faf385ded9238d7affef

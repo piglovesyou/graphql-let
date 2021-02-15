@@ -1,4 +1,5 @@
-import gql from 'graphql-let/macro';
+import { gql } from 'graphql-let/macro';
+
 const { useViewerQuery } = gql(`query Viewer { viewer { name } }`);
 
 function nest1() {
