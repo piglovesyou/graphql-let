@@ -38,6 +38,9 @@ export type VisitLiteralCallResults = {
   hasError: boolean;
 };
 
+// To avoid conflicts of file names
+export const typesRootRelDir = 'proj-root';
+
 export async function processLiterals(
   execContext: ExecContext,
   sourceRelPath: string,
@@ -62,7 +65,7 @@ export async function processLiterals(
     const strippedGqlContent = stripIgnoredCharacters(gqlContent);
     const gqlHash = createHash(schemaHash + strippedGqlContent);
     const createdPaths = createPaths(
-      sourceRelPath,
+      pathJoin(typesRootRelDir, sourceRelPath),
       gqlHash,
       dtsRelDir,
       cacheFullDir,
