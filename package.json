@@ -7,6 +7,7 @@
   },
   "homepage": "https://github.com/piglovesyou/graphql-let#readme",
   "author": "Soichi Takamura <thepiglovesyou@gmail.com>",
+  "keywords": ["graphql","generator","codegen","webpack","webpack-loader","babel","babel-plugin-macros"],
   "license": "MIT",
   "bin": {
     "graphql-let": "bin/graphql-let.js"
