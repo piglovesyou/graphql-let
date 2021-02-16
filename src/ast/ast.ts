@@ -40,6 +40,12 @@ export function getPathsFromState(state: PluginPass) {
   return { cwd, sourceFullPath, sourceRelPath };
 }
 
+export function getProgramPath(p: NodePath<any>): NodePath<t.Program> {
+  if (!p) throw new Error('What?');
+  const ancestories = p.getAncestry() as any;
+  return ancestories[ancestories.length - 1]!;
+}
+
 export function getArgumentString(path: NodePath): string {
   let value = '';
   path.traverse({

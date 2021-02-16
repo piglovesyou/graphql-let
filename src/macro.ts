@@ -4,18 +4,12 @@ import { createMacro } from 'babel-plugin-macros';
 import { join } from 'path';
 import {
   getPathsFromState,
+  getProgramPath,
   modifyLiteralCalls,
   visitFromCallExpressionPaths,
 } from './ast/ast';
 import { processLiteralsWithDtsGenerateSync } from './lib/literals/literals';
 import { LiteralCodegenContext } from './lib/types';
-
-function getProgramPath(paths: NodePath<any>[]): NodePath<t.Program> {
-  const p = paths[0]!;
-  if (!p) throw new Error('What?');
-  const ancestories = p.getAncestry() as any;
-  return ancestories[ancestories.length - 1]!;
-}
 
 const macro = createMacro((params) => {
   const {
@@ -23,7 +17,7 @@ const macro = createMacro((params) => {
     state,
   } = params;
 
-  const programPath = getProgramPath(gqlCalleePaths);
+  const programPath = getProgramPath(gqlCalleePaths[0]);
   const { cwd, sourceFullPath, sourceRelPath } = getPathsFromState(state);
   const gqlCallExpressionPaths = gqlCalleePaths.map(
     (p) => p.parentPath,
