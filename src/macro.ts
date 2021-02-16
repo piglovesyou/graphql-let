@@ -6,7 +6,7 @@ import {
   getPathsFromState,
   modifyLiteralCalls,
   visitFromCallExpressionPaths,
-} from './lib/ast';
+} from './ast/ast';
 import { processLiteralsWithDtsGenerateSync } from './lib/literals/literals';
 import { LiteralCodegenContext } from './lib/types';
 

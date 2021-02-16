@@ -1,7 +1,8 @@
 import { ConfigAPI, NodePath, PluginObj, PluginPass } from '@babel/core';
 import { declare } from '@babel/helper-plugin-utils';
 import * as t from '@babel/types';
-import { getPathsFromState, manipulateFromProgramPath } from './lib/ast';
+import { getPathsFromState } from './ast/ast';
+import { manipulateFromProgramPath } from './ast/manip-from-program';
 
 export type BabelOptions = {
   configFilePath?: string;
