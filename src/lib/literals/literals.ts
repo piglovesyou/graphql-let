@@ -153,9 +153,6 @@ export async function processLiteralsForContext(
   const babelOptions = await loadOptions({ cwd });
   const {
     // configFilePath,
-    importName = 'graphql-let',
-    onlyMatchImportSuffix = false,
-    // strip = false,
   } = getGraphQLLetBabelOption(babelOptions);
 
   const visitedSources: {
@@ -171,11 +168,7 @@ export async function processLiteralsForContext(
     const sourceAST = parse(sourceContent, parserOption);
     traverse(sourceAST, {
       Program(programPath: NodePath<t.Program>) {
-        const visitLiteralCallResults = visitFromProgramPath(
-          programPath,
-          importName,
-          onlyMatchImportSuffix,
-        );
+        const visitLiteralCallResults = visitFromProgramPath(programPath);
         // TODO: Handle error
         // There's no `gql(`query {}`)` in the source
         if (!visitLiteralCallResults.literalCallExpressionPaths.length) return;

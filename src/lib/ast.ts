@@ -24,6 +24,8 @@ export type VisitLiteralCallResults = {
   hasError: boolean;
 };
 
+const IMPORT_NAME = 'graphql-let';
+
 export function getPathsFromState(state: PluginPass) {
   const { cwd } = state;
   const sourceFullPath = state.file.opts.filename;
@@ -117,8 +119,6 @@ export function modifyLiteralCalls(
 
 export function visitFromProgramPath(
   programPath: NodePath<t.Program>,
-  importName: string,
-  onlyMatchImportSuffix: boolean,
 ): VisitLiteralCallResults {
   const pendingDeletion: PendingDeletion = [];
   const literalCallExpressionPaths: LiteralCallExpressionPaths = [];
@@ -163,11 +163,7 @@ export function visitFromProgramPath(
   programPath.traverse({
     ImportDeclaration(path: NodePath<t.ImportDeclaration>) {
       const pathValue = path.node.source.value;
-      if (
-        onlyMatchImportSuffix
-          ? pathValue.endsWith(importName)
-          : pathValue === importName
-      ) {
+      if (pathValue === IMPORT_NAME) {
         for (const specifier of path.node.specifiers) {
           if (!t.isImportSpecifier(specifier)) continue;
           tagNames.push(specifier.local.name);
