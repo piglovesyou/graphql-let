@@ -1,12 +1,13 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
 import { createMacro } from 'babel-plugin-macros';
-import { processLiteralsWithDtsGenerateSync } from './babel-plugin';
+import { join } from 'path';
 import {
   getPathsFromState,
   modifyLiteralCalls,
   visitFromCallExpressionPaths,
 } from './lib/ast';
+import { processLiteralsWithDtsGenerateSync } from './lib/literals/literals';
 import { LiteralCodegenContext } from './lib/types';
 
 function getProgramPath(paths: NodePath<any>[]): NodePath<t.Program> {
@@ -35,7 +36,7 @@ const macro = createMacro((params) => {
 
   const literalCodegenContext: LiteralCodegenContext[] = processLiteralsWithDtsGenerateSync(
     {
-      hostDirname: __dirname,
+      libFullDir: join(__dirname, '..'),
       cwd,
       configFilePath: undefined, // TODO: Remove this arg from the signature.
       sourceRelPath,

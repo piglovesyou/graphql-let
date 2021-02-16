@@ -2,6 +2,7 @@ import { loadOptions } from '@babel/core';
 import { parse } from '@babel/parser';
 import traverse, { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
+import doSync from 'do-sync';
 import { existsSync } from 'fs';
 import { stripIgnoredCharacters } from 'graphql';
 import makeDir from 'make-dir';
@@ -217,3 +218,19 @@ export async function processLiteralsForContext(
 
   await cache.unload();
 }
+
+export const processLiteralsWithDtsGenerateSync = doSync(
+  ({
+    libFullDir,
+    ...gqlCompileArgs
+  }: LiteralsArgs & {
+    libFullDir: string;
+  }): /* Promise<LiteralCodegenContext[]> */ any => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { join } = require('path');
+    const modulePath = join(libFullDir, './dist/lib/literals/literals');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { processLiteralsWithDtsGenerate } = require(modulePath);
+    return processLiteralsWithDtsGenerate(gqlCompileArgs);
+  },
+);
