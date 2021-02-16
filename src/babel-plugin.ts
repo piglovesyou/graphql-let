@@ -1,4 +1,4 @@
-import { ConfigAPI, NodePath, PluginObj, types } from '@babel/core';
+import { ConfigAPI, NodePath, PluginObj, PluginPass, types } from '@babel/core';
 import { declare } from '@babel/helper-plugin-utils';
 import * as t from '@babel/types';
 import doSync from 'do-sync';
@@ -200,6 +200,20 @@ export function modifyLiteralCalls(
 }
 
 // With all my respect, I cloned the source from
+function getPathsFromState(state: PluginPass) {
+  const { cwd } = state;
+  const sourceFullPath = state.file.opts.filename;
+  if (!sourceFullPath)
+    throw new Error(
+      `Couldn't find source path to traversal. Check "${JSON.stringify(
+        state,
+      )}"`,
+    );
+
+  const sourceRelPath = relative(cwd, sourceFullPath);
+  return { cwd, sourceFullPath, sourceRelPath };
+}
+
 // https://github.com/gajus/babel-plugin-graphql-tag/blob/master/src/index.js
 export const configFunction = (
   options: BabelOptions = {},
@@ -214,10 +228,8 @@ export const configFunction = (
 
   return {
     visitor: {
-      Program(programPath: NodePath<t.Program>, state: any) {
-        const { cwd } = state;
-        const sourceFullPath = state.file.opts.filename;
-        const sourceRelPath = relative(cwd, sourceFullPath);
+      Program(programPath: NodePath<t.Program>, state: PluginPass) {
+        const { cwd, sourceFullPath, sourceRelPath } = getPathsFromState(state);
 
         const visitLiteralCallResults = visitLiteralCalls(
           programPath,
