@@ -8,6 +8,20 @@ export type LiteralCallExpressionPaths = [
   string,
 ][];
 
+export type PendingDeletion = {
+  specifier:
+    | t.ImportSpecifier
+    | t.ImportDefaultSpecifier
+    | t.ImportNamespaceSpecifier;
+  path: NodePath<t.ImportDeclaration>;
+}[];
+
+export type VisitLiteralCallResults = {
+  pendingDeletion: PendingDeletion;
+  literalCallExpressionPaths: LiteralCallExpressionPaths;
+  hasError: boolean;
+};
+
 export function getPathsFromState(state: PluginPass) {
   const { cwd } = state;
   const sourceFullPath = state.file.opts.filename;

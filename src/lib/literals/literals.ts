@@ -12,6 +12,7 @@ import {
   modifyLiteralCalls,
   visitFromProgramPath,
 } from '../../babel-plugin';
+import { VisitLiteralCallResults } from '../ast';
 import loadConfig from '../config';
 import { processGraphQLCodegenForLiterals } from '../documents';
 import { processDtsForContext } from '../dts';
@@ -22,21 +23,6 @@ import { createSchemaHash, shouldGenResolverTypes } from '../resolver-types';
 import { CodegenContext, LiteralCodegenContext } from '../types';
 import { LiteralCache, PartialCacheStore } from './cache';
 import { appendExportAsObject, createPaths, parserOption } from './fns';
-
-export type VisitLiteralCallResults = {
-  pendingDeletion: {
-    defaultSpecifier:
-      | t.ImportSpecifier
-      | t.ImportDefaultSpecifier
-      | t.ImportNamespaceSpecifier;
-    path: NodePath<t.ImportDeclaration>;
-  }[];
-  literalCallExpressionPaths: [
-    NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
-    string,
-  ][];
-  hasError: boolean;
-};
 
 // To avoid conflicts of file names
 export const typesRootRelDir = 'proj-root';

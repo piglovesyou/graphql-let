@@ -1,22 +1,18 @@
-import { ConfigAPI, NodePath, PluginObj, PluginPass, types } from '@babel/core';
+import { ConfigAPI, NodePath, PluginObj, PluginPass } from '@babel/core';
 import { declare } from '@babel/helper-plugin-utils';
 import * as t from '@babel/types';
 import doSync from 'do-sync';
 import { dirname, relative } from 'path';
 import slash from 'slash';
-import { getPathsFromState, LiteralCallExpressionPaths } from './lib/ast';
+import {
+  getPathsFromState,
+  LiteralCallExpressionPaths,
+  PendingDeletion,
+  VisitLiteralCallResults,
+} from './lib/ast';
 import { LiteralsArgs } from './lib/literals/literals';
 import { printError } from './lib/print';
 import { CodegenContext, LiteralCodegenContext } from './lib/types';
-
-const {
-  isIdentifier,
-  isImportDefaultSpecifier,
-  identifier,
-  importDeclaration,
-  importNamespaceSpecifier,
-  valueToNode,
-} = types;
 
 export const processLiteralsWithDtsGenerateSync = doSync(
   ({
@@ -49,30 +45,12 @@ export function getGraphQLLetBabelOption(babelOptions: any): BabelOptions {
   return {};
 }
 
-type VisitLiteralCallResults = {
-  pendingDeletion: {
-    defaultSpecifier:
-      | t.ImportSpecifier
-      | t.ImportDefaultSpecifier
-      | t.ImportNamespaceSpecifier;
-    path: NodePath<t.ImportDeclaration>;
-  }[];
-  literalCallExpressionPaths: LiteralCallExpressionPaths;
-  hasError: boolean;
-};
-
 export function visitFromProgramPath(
   programPath: NodePath<t.Program>,
   importName: string,
   onlyMatchImportSuffix: boolean,
 ): VisitLiteralCallResults {
-  const pendingDeletion: {
-    defaultSpecifier:
-      | t.ImportSpecifier
-      | t.ImportDefaultSpecifier
-      | t.ImportNamespaceSpecifier;
-    path: NodePath<t.ImportDeclaration>;
-  }[] = [];
+  const pendingDeletion: PendingDeletion = [];
   const literalCallExpressionPaths: LiteralCallExpressionPaths = [];
   let hasError = false;
 
@@ -84,7 +62,7 @@ export function visitFromProgramPath(
   ) {
     if (
       tagNames.some((name) => {
-        return isIdentifier((path.get(nodeName) as any).node, { name });
+        return t.isIdentifier((path.get(nodeName) as any).node, { name });
       })
     ) {
       try {
@@ -120,16 +98,10 @@ export function visitFromProgramPath(
           ? pathValue.endsWith(importName)
           : pathValue === importName
       ) {
-        const defaultSpecifier = path.node.specifiers.find((specifier) => {
-          return isImportDefaultSpecifier(specifier);
-        });
-
-        if (defaultSpecifier) {
-          tagNames.push(defaultSpecifier.local.name);
-          pendingDeletion.push({
-            defaultSpecifier,
-            path,
-          });
+        for (const specifier of path.node.specifiers) {
+          if (!t.isImportSpecifier(specifier)) continue;
+          tagNames.push(specifier.local.name);
+          pendingDeletion.push({ specifier, path });
         }
       }
     },
@@ -150,13 +122,13 @@ export function visitFromProgramPath(
 function removeImportDeclaration(
   pendingDeletion: VisitLiteralCallResults['pendingDeletion'],
 ) {
-  for (const { defaultSpecifier, path: pathToRemove } of pendingDeletion) {
+  for (const { path: pathToRemove } of pendingDeletion) {
     if (pathToRemove.node.specifiers.length === 1) {
       pathToRemove.remove();
     } else {
       pathToRemove.node.specifiers = pathToRemove.node.specifiers.filter(
         (specifier) => {
-          return specifier !== defaultSpecifier;
+          return specifier !== specifier;
         },
       );
     }
@@ -182,9 +154,9 @@ export function modifyLiteralCalls(
 
     const localVarName = `V${gqlHash}`;
 
-    const importNode = importDeclaration(
-      [importNamespaceSpecifier(identifier(localVarName))],
-      valueToNode(tsxRelPathFromSource),
+    const importNode = t.importDeclaration(
+      [t.importNamespaceSpecifier(t.identifier(localVarName))],
+      t.valueToNode(tsxRelPathFromSource),
     );
 
     programPath.unshiftContainer('body', importNode);

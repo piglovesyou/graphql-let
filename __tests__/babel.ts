@@ -11,7 +11,15 @@ beforeAll(async () => {
   await cleanup(cwd, ['**/node_modules']);
 });
 
-runner(cwd, 'gql', {}, { sourceType: 'unambiguous' });
+runner(
+  cwd,
+  'gql',
+  {},
+  // {
+  //   ignoreTasks: ['macro'],
+  // },
+  { sourceType: 'unambiguous' },
+);
 
 test(`Type checking for all fixtures`, async () => {
   const dirs = await glob(['*/*'], {
