@@ -42,7 +42,6 @@ export function getGraphQLLetBabelOption(babelOptions: any): BabelOptions {
   return {};
 }
 
-// With all my respect, I cloned the source from
 function manipulateFromProgramPath(
   cwd: string,
   programPath: NodePath<t.Program>,
@@ -84,7 +83,6 @@ function manipulateFromProgramPath(
   }
 }
 
-// https://github.com/gajus/babel-plugin-graphql-tag/blob/master/src/index.js
 export const configFunction = (options: BabelOptions = {}): PluginObj<any> => {
   const { configFilePath } = options;
 
