@@ -10,7 +10,7 @@ import slash from 'slash';
 import {
   getGraphQLLetBabelOption,
   modifyLiteralCalls,
-  visitLiteralCalls,
+  visitFromProgramPath,
 } from '../../babel-plugin';
 import loadConfig from '../config';
 import { processGraphQLCodegenForLiterals } from '../documents';
@@ -185,7 +185,7 @@ export async function processLiteralsForContext(
     const sourceAST = parse(sourceContent, parserOption);
     traverse(sourceAST, {
       Program(programPath: NodePath<t.Program>) {
-        const visitLiteralCallResults = visitLiteralCalls(
+        const visitLiteralCallResults = visitFromProgramPath(
           programPath,
           importName,
           onlyMatchImportSuffix,

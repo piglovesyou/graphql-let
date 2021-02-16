@@ -61,7 +61,7 @@ type VisitLiteralCallResults = {
   hasError: boolean;
 };
 
-export function visitLiteralCalls(
+export function visitFromProgramPath(
   programPath: NodePath<t.Program>,
   importName: string,
   onlyMatchImportSuffix: boolean,
@@ -212,7 +212,7 @@ export const configFunction = (
       Program(programPath: NodePath<t.Program>, state: PluginPass) {
         const { cwd, sourceFullPath, sourceRelPath } = getPathsFromState(state);
 
-        const visitLiteralCallResults = visitLiteralCalls(
+        const visitLiteralCallResults = visitFromProgramPath(
           programPath,
           importName,
           onlyMatchImportSuffix,

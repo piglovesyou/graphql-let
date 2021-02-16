@@ -4,31 +4,12 @@ import { createMacro } from 'babel-plugin-macros';
 import { dirname, relative } from 'path';
 import slash from 'slash';
 import { processLiteralsWithDtsGenerateSync } from './babel-plugin';
-import { getPathsFromState, LiteralCallExpressionPaths } from './lib/ast';
-import { printError } from './lib/print';
+import {
+  getPathsFromState,
+  LiteralCallExpressionPaths,
+  visitFromCallExpressionPaths,
+} from './lib/ast';
 import { CodegenContext, LiteralCodegenContext } from './lib/types';
-
-function getArgumentString(path: NodePath): string {
-  let value = '';
-  path.traverse({
-    TemplateLiteral(path: NodePath<t.TemplateLiteral>) {
-      if (path.node.quasis.length !== 1) {
-        printError(
-          new Error(
-            `TemplateLiteral of the argument must not contain arguments.`,
-          ),
-        );
-        return;
-      }
-      value = path.node.quasis[0].value.raw;
-    },
-    StringLiteral(path: NodePath<t.StringLiteral>) {
-      value = path.node.value;
-    },
-  });
-  if (!value) printError(new Error(`Argument Check the argument.`));
-  return value;
-}
 
 function getProgramPath(paths: NodePath<any>[]): NodePath<t.Program> {
   const p = paths[0]!;
@@ -77,12 +58,9 @@ const macro = createMacro((params) => {
   const gqlCallExpressionPaths = gqlCalleePaths.map(
     (p) => p.parentPath,
   ) as NodePath<t.CallExpression>[];
-
-  const literalCallExpressionPaths: LiteralCallExpressionPaths = [];
-  for (const path of gqlCallExpressionPaths) {
-    const value = getArgumentString(path.parentPath);
-    if (value) literalCallExpressionPaths.push([path, value]);
-  }
+  const literalCallExpressionPaths = visitFromCallExpressionPaths(
+    gqlCallExpressionPaths,
+  );
   if (!literalCallExpressionPaths.length) return;
 
   const literalCodegenContext: LiteralCodegenContext[] = processLiteralsWithDtsGenerateSync(
