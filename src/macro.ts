@@ -7,6 +7,7 @@ import {
   configFunction,
   processLiteralsWithDtsGenerateSync,
 } from './babel-plugin';
+import { getPathsFromState } from './lib/ast';
 import { printError } from './lib/print';
 import { CodegenContext, LiteralCodegenContext } from './lib/types';
 
@@ -90,9 +91,7 @@ const macro = createMacro((params) => {
     (p) => p.parentPath,
   ) as NodePath<t.CallExpression>[];
   const programPath = getProgramPath(gqlCallExpressionPaths);
-  const { cwd } = state;
-  const sourceFullPath = state.file.opts.filename!;
-  const sourceRelPath = relative(cwd, sourceFullPath);
+  const { cwd, sourceFullPath, sourceRelPath } = getPathsFromState(state);
 
   const literalCallExpressionPaths: LiteralCallExpressionPaths = [];
   for (const path of gqlCallExpressionPaths) {
