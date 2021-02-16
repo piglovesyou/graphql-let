@@ -26,7 +26,6 @@ export function modifyLiteralCalls(
 ) {
   if (literalCallExpressionPaths.length !== codegenContext.length)
     throw new Error('what');
-
   for (const [
     i,
     [callExpressionPath],
@@ -58,6 +57,7 @@ const macro = createMacro((params) => {
   const gqlCallExpressionPaths = gqlCalleePaths.map(
     (p) => p.parentPath,
   ) as NodePath<t.CallExpression>[];
+
   const literalCallExpressionPaths = visitFromCallExpressionPaths(
     gqlCallExpressionPaths,
   );

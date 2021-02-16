@@ -230,7 +230,7 @@ export async function processLiteralsForContext(
     modifyLiteralCalls(
       programPath,
       sourceFullPath,
-      visitLiteralCallResults,
+      literalCallExpressionPaths,
       scopedCodegenContext,
     );
     for (const context of scopedCodegenContext) codegenContext.push(context);

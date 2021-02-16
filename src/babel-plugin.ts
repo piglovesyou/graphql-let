@@ -166,11 +166,9 @@ function removeImportDeclaration(
 export function modifyLiteralCalls(
   programPath: NodePath<t.Program>,
   sourceFullPath: string,
-  visitLiteralCallResults: VisitLiteralCallResults,
+  literalCallExpressionPaths: LiteralCallExpressionPaths,
   codegenContext: CodegenContext[],
 ) {
-  const { literalCallExpressionPaths } = visitLiteralCallResults;
-
   if (literalCallExpressionPaths.length !== codegenContext.length)
     throw new Error('what');
 
@@ -240,7 +238,7 @@ export const configFunction = (
         modifyLiteralCalls(
           programPath,
           sourceFullPath,
-          visitLiteralCallResults,
+          literalCallExpressionPaths,
           literalCodegenContext,
         );
 
