@@ -4,6 +4,7 @@ import * as t from '@babel/types';
 import doSync from 'do-sync';
 import { dirname, relative } from 'path';
 import slash from 'slash';
+import { getPathsFromState } from './lib/ast';
 import { LiteralsArgs } from './lib/literals/literals';
 import { printError } from './lib/print';
 import { CodegenContext, LiteralCodegenContext } from './lib/types';
@@ -200,20 +201,6 @@ export function modifyLiteralCalls(
 }
 
 // With all my respect, I cloned the source from
-function getPathsFromState(state: PluginPass) {
-  const { cwd } = state;
-  const sourceFullPath = state.file.opts.filename;
-  if (!sourceFullPath)
-    throw new Error(
-      `Couldn't find source path to traversal. Check "${JSON.stringify(
-        state,
-      )}"`,
-    );
-
-  const sourceRelPath = relative(cwd, sourceFullPath);
-  return { cwd, sourceFullPath, sourceRelPath };
-}
-
 // https://github.com/gajus/babel-plugin-graphql-tag/blob/master/src/index.js
 export const configFunction = (
   options: BabelOptions = {},
