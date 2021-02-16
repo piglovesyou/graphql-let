@@ -2,17 +2,17 @@ import { ConfigAPI, NodePath, PluginObj, PluginPass } from '@babel/core';
 import { declare } from '@babel/helper-plugin-utils';
 import * as t from '@babel/types';
 import doSync from 'do-sync';
-import { dirname, relative } from 'path';
-import slash from 'slash';
 import {
   getPathsFromState,
   LiteralCallExpressionPaths,
+  modifyLiteralCalls,
   PendingDeletion,
+  removeImportDeclaration,
   VisitLiteralCallResults,
 } from './lib/ast';
 import { LiteralsArgs } from './lib/literals/literals';
 import { printError } from './lib/print';
-import { CodegenContext, LiteralCodegenContext } from './lib/types';
+import { LiteralCodegenContext } from './lib/types';
 
 export const processLiteralsWithDtsGenerateSync = doSync(
   ({
@@ -117,50 +117,6 @@ export function visitFromProgramPath(
     literalCallExpressionPaths: literalCallExpressionPaths,
     hasError,
   };
-}
-
-function removeImportDeclaration(
-  pendingDeletion: VisitLiteralCallResults['pendingDeletion'],
-) {
-  for (const { path: pathToRemove } of pendingDeletion) {
-    if (pathToRemove.node.specifiers.length === 1) {
-      pathToRemove.remove();
-    } else {
-      pathToRemove.node.specifiers = pathToRemove.node.specifiers.filter(
-        (specifier) => {
-          return specifier !== specifier;
-        },
-      );
-    }
-  }
-}
-
-export function modifyLiteralCalls(
-  programPath: NodePath<t.Program>,
-  sourceFullPath: string,
-  literalCallExpressionPaths: LiteralCallExpressionPaths,
-  codegenContext: CodegenContext[],
-) {
-  if (literalCallExpressionPaths.length !== codegenContext.length)
-    throw new Error('what');
-  for (const [
-    i,
-    [callExpressionPath],
-  ] of literalCallExpressionPaths.entries()) {
-    const { gqlHash, tsxFullPath } = codegenContext[i]!;
-    const tsxRelPathFromSource =
-      './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
-
-    const localVarName = `V${gqlHash}`;
-
-    const importNode = t.importDeclaration(
-      [t.importNamespaceSpecifier(t.identifier(localVarName))],
-      t.valueToNode(tsxRelPathFromSource),
-    );
-
-    programPath.unshiftContainer('body', importNode);
-    callExpressionPath.replaceWithSourceString(localVarName);
-  }
 }
 
 // With all my respect, I cloned the source from

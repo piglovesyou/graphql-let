@@ -9,10 +9,9 @@ import { dirname, join, join as pathJoin } from 'path';
 import slash from 'slash';
 import {
   getGraphQLLetBabelOption,
-  modifyLiteralCalls,
   visitFromProgramPath,
 } from '../../babel-plugin';
-import { VisitLiteralCallResults } from '../ast';
+import { modifyLiteralCalls, VisitLiteralCallResults } from '../ast';
 import loadConfig from '../config';
 import { processGraphQLCodegenForLiterals } from '../documents';
 import { processDtsForContext } from '../dts';

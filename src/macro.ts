@@ -1,11 +1,12 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
 import { createMacro } from 'babel-plugin-macros';
+import { processLiteralsWithDtsGenerateSync } from './babel-plugin';
 import {
+  getPathsFromState,
   modifyLiteralCalls,
-  processLiteralsWithDtsGenerateSync,
-} from './babel-plugin';
-import { getPathsFromState, visitFromCallExpressionPaths } from './lib/ast';
+  visitFromCallExpressionPaths,
+} from './lib/ast';
 import { LiteralCodegenContext } from './lib/types';
 
 function getProgramPath(paths: NodePath<any>[]): NodePath<t.Program> {
