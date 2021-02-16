@@ -7,11 +7,12 @@ import { stripIgnoredCharacters } from 'graphql';
 import makeDir from 'make-dir';
 import { dirname, join, join as pathJoin } from 'path';
 import slash from 'slash';
+import { getGraphQLLetBabelOption } from '../../babel-plugin';
 import {
-  getGraphQLLetBabelOption,
+  modifyLiteralCalls,
   visitFromProgramPath,
-} from '../../babel-plugin';
-import { modifyLiteralCalls, VisitLiteralCallResults } from '../ast';
+  VisitLiteralCallResults,
+} from '../ast';
 import loadConfig from '../config';
 import { processGraphQLCodegenForLiterals } from '../documents';
 import { processDtsForContext } from '../dts';
