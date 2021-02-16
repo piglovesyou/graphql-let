@@ -44,10 +44,7 @@ export function getGraphQLLetBabelOption(babelOptions: any): BabelOptions {
 
 // With all my respect, I cloned the source from
 // https://github.com/gajus/babel-plugin-graphql-tag/blob/master/src/index.js
-export const configFunction = (
-  options: BabelOptions = {},
-  shouldRemoveImportDeclaration = true,
-): PluginObj<any> => {
+export const configFunction = (options: BabelOptions = {}): PluginObj<any> => {
   const {
     configFilePath,
     importName = 'graphql-let',
@@ -93,7 +90,7 @@ export const configFunction = (
         );
 
         // Only delete import statement or specifier when there is no error
-        if (shouldRemoveImportDeclaration && !hasError) {
+        if (!hasError) {
           removeImportDeclaration(pendingDeletion);
         }
       },
