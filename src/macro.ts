@@ -3,10 +3,7 @@ import * as t from '@babel/types';
 import { createMacro } from 'babel-plugin-macros';
 import { dirname, relative } from 'path';
 import slash from 'slash';
-import {
-  configFunction,
-  processLiteralsWithDtsGenerateSync,
-} from './babel-plugin';
+import { processLiteralsWithDtsGenerateSync } from './babel-plugin';
 import { getPathsFromState } from './lib/ast';
 import { printError } from './lib/print';
 import { CodegenContext, LiteralCodegenContext } from './lib/types';
@@ -74,15 +71,6 @@ type LiteralCallExpressionPaths = [
   string,
 ][];
 const macro = createMacro((params) => {
-  // TODO: Receive options from user?
-  const graphqlLetVisitor = configFunction(
-    {
-      importName: '/macro',
-      onlyMatchImportSuffix: true,
-    },
-    false,
-  );
-
   const {
     references: { gql: _gqlCalleePaths },
     state,
