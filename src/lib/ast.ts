@@ -1,5 +1,11 @@
-import { PluginPass } from '@babel/core';
+import { NodePath, PluginPass } from '@babel/core';
+import * as t from '@babel/types';
 import { relative } from 'path';
+
+export type LiteralCallExpressionPaths = [
+  NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
+  string,
+][];
 
 export function getPathsFromState(state: PluginPass) {
   const { cwd } = state;

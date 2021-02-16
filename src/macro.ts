@@ -4,7 +4,7 @@ import { createMacro } from 'babel-plugin-macros';
 import { dirname, relative } from 'path';
 import slash from 'slash';
 import { processLiteralsWithDtsGenerateSync } from './babel-plugin';
-import { getPathsFromState } from './lib/ast';
+import { getPathsFromState, LiteralCallExpressionPaths } from './lib/ast';
 import { printError } from './lib/print';
 import { CodegenContext, LiteralCodegenContext } from './lib/types';
 
@@ -66,10 +66,6 @@ export function modifyLiteralCalls(
   }
 }
 
-type LiteralCallExpressionPaths = [
-  NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
-  string,
-][];
 const macro = createMacro((params) => {
   const {
     references: { gql: gqlCalleePaths },

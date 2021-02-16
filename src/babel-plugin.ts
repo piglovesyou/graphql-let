@@ -4,7 +4,7 @@ import * as t from '@babel/types';
 import doSync from 'do-sync';
 import { dirname, relative } from 'path';
 import slash from 'slash';
-import { getPathsFromState } from './lib/ast';
+import { getPathsFromState, LiteralCallExpressionPaths } from './lib/ast';
 import { LiteralsArgs } from './lib/literals/literals';
 import { printError } from './lib/print';
 import { CodegenContext, LiteralCodegenContext } from './lib/types';
@@ -57,10 +57,7 @@ type VisitLiteralCallResults = {
       | t.ImportNamespaceSpecifier;
     path: NodePath<t.ImportDeclaration>;
   }[];
-  literalCallExpressionPaths: [
-    NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
-    string,
-  ][];
+  literalCallExpressionPaths: LiteralCallExpressionPaths;
   hasError: boolean;
 };
 
