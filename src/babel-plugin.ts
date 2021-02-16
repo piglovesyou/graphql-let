@@ -73,10 +73,7 @@ export function visitLiteralCalls(
       | t.ImportNamespaceSpecifier;
     path: NodePath<t.ImportDeclaration>;
   }[] = [];
-  const literalCallExpressionPaths: [
-    NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
-    string,
-  ][] = [];
+  const literalCallExpressionPaths: LiteralCallExpressionPaths = [];
   let hasError = false;
 
   const tagNames: string[] = [];
