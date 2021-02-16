@@ -123,42 +123,7 @@ export function visitFromProgramPath(
   const pendingDeletion: PendingDeletion = [];
   const literalCallExpressionPaths: LiteralCallExpressionPaths = [];
   let hasError = false;
-
-  const tagNames: string[] = [];
-
-  function processTargetCalls(
-    path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
-    nodeName: string,
-  ) {
-    if (
-      tagNames.some((name) => {
-        return t.isIdentifier((path.get(nodeName) as any).node, { name });
-      })
-    ) {
-      try {
-        let value = '';
-        path.traverse({
-          TemplateLiteral(path: NodePath<t.TemplateLiteral>) {
-            if (path.node.quasis.length !== 1)
-              printError(
-                new Error(
-                  `TemplateLiteral of the argument must not contain arguments.`,
-                ),
-              );
-            value = path.node.quasis[0].value.raw;
-          },
-          StringLiteral(path: NodePath<t.StringLiteral>) {
-            value = path.node.value;
-          },
-        });
-        if (!value) printError(new Error(`Check argument.`));
-        literalCallExpressionPaths.push([path, value]);
-      } catch (error) {
-        printError(error);
-        hasError = true;
-      }
-    }
-  }
+  const localNames: string[] = [];
 
   programPath.traverse({
     ImportDeclaration(path: NodePath<t.ImportDeclaration>) {
@@ -166,18 +131,42 @@ export function visitFromProgramPath(
       if (pathValue === IMPORT_NAME) {
         for (const specifier of path.node.specifiers) {
           if (!t.isImportSpecifier(specifier)) continue;
-          tagNames.push(specifier.local.name);
+          localNames.push(specifier.local.name);
           pendingDeletion.push({ specifier, path });
         }
       }
     },
+  });
+
+  // If no use of our library, abort quickly.
+  if (!localNames.length)
+    return { literalCallExpressionPaths, hasError, pendingDeletion };
+
+  function processTargetCalls(
+    path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
+    nodeName: string,
+  ) {
+    if (
+      localNames.some((name) => {
+        return t.isIdentifier((path.get(nodeName) as any).node, { name });
+      })
+    ) {
+      const value = getArgumentString(path.parentPath);
+      if (!value) printError(new Error(`Check argument.`));
+      literalCallExpressionPaths.push([path, value]);
+    }
+  }
+
+  programPath.traverse({
     CallExpression(path: NodePath<t.CallExpression>) {
       processTargetCalls(path, 'callee');
     },
-    TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {
-      processTargetCalls(path, 'tag');
-    },
+    // We don't have to support taggedTemplate do we
+    // TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {
+    //   processTargetCalls(path, 'tag');
+    // },
   });
+
   return {
     pendingDeletion,
     literalCallExpressionPaths: literalCallExpressionPaths,
