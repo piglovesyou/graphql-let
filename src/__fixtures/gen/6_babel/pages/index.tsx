@@ -1,4 +1,4 @@
-import gql from 'graphql-let';
+import { gql } from 'graphql-let';
 
 const { useViewerXQuery } = gql(`
   query ViewerX {

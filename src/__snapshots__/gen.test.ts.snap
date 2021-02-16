@@ -256,7 +256,7 @@ Array [
 
 exports[`"graphql-let" command documents: **/*.tsx generates .d.ts for babel: node_modules/@types/graphql-let/index.d.ts 1`] = `
 "import T12656902aa8c96b811dc9c27470eff81491324c5 from './proj-root/pages/index-12656902aa8c96b811dc9c27470eff81491324c5';
-export default function gql(gql: \`
+export function gql(gql: \`
   query ViewerX {
     viewer {
       name
@@ -264,7 +264,7 @@ export default function gql(gql: \`
   }
 \`): T12656902aa8c96b811dc9c27470eff81491324c5.__GraphQLLetTypeInjection;
 import Td738297246c242ee450e74f0c5291188c6018fa9 from './proj-root/pages/index-d738297246c242ee450e74f0c5291188c6018fa9';
-export default function gql(gql: \`
+export function gql(gql: \`
   # import Partial from './partial.graphql'
   query ViewerY {
     viewer {
@@ -275,7 +275,7 @@ export default function gql(gql: \`
 "
 `;
 
-exports[`"graphql-let" command documents: **/*.tsx generates .d.ts for babel: node_modules/@types/graphql-let/macro.d.ts 1`] = `"export { default as gql } from \\".\\";"`;
+exports[`"graphql-let" command documents: **/*.tsx generates .d.ts for babel: node_modules/@types/graphql-let/macro.d.ts 1`] = `"export { gql } from \\".\\";"`;
 
 exports[`"graphql-let" command documents: **/*.tsx generates .d.ts for babel: node_modules/@types/graphql-let/proj-root/pages/index-12656902aa8c96b811dc9c27470eff81491324c5.d.ts 1`] = `
 "/* 12656902aa8c96b811dc9c27470eff81491324c5
