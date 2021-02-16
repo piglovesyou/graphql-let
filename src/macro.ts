@@ -72,14 +72,15 @@ type LiteralCallExpressionPaths = [
 ][];
 const macro = createMacro((params) => {
   const {
-    references: { gql: _gqlCalleePaths },
+    references: { gql: gqlCalleePaths },
     state,
   } = params;
-  const gqlCallExpressionPaths = _gqlCalleePaths.map(
+
+  const programPath = getProgramPath(gqlCalleePaths);
+  const { cwd, sourceFullPath, sourceRelPath } = getPathsFromState(state);
+  const gqlCallExpressionPaths = gqlCalleePaths.map(
     (p) => p.parentPath,
   ) as NodePath<t.CallExpression>[];
-  const programPath = getProgramPath(gqlCallExpressionPaths);
-  const { cwd, sourceFullPath, sourceRelPath } = getPathsFromState(state);
 
   const literalCallExpressionPaths: LiteralCallExpressionPaths = [];
   for (const path of gqlCallExpressionPaths) {
