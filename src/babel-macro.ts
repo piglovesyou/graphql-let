@@ -11,8 +11,8 @@ const babelMacro = createMacro((params) => {
   const { cwd, sourceFullPath, sourceRelPath } = getPathsFromState(state);
 
   manipulateFromCalleeExpressions(
-    gqlCalleePaths,
     cwd,
+    gqlCalleePaths,
     sourceRelPath,
     sourceFullPath,
   );

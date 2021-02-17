@@ -10,8 +10,8 @@ import {
 } from './ast';
 
 export function manipulateFromCalleeExpressions(
-  gqlCalleePaths: NodePath[],
   cwd: string,
+  gqlCalleePaths: NodePath[],
   sourceRelPath: string,
   sourceFullPath: string,
 ) {
