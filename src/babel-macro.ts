@@ -2,7 +2,7 @@ import { createMacro } from 'babel-plugin-macros';
 import { getPathsFromState } from './ast/ast';
 import { manipulateFromCalleeExpressions } from './ast/manip-from-callee-expressions';
 
-const macro = createMacro((params) => {
+const babelMacro = createMacro((params) => {
   const {
     references: { gql: gqlCalleePaths },
     state,
@@ -18,4 +18,4 @@ const macro = createMacro((params) => {
   );
 });
 
-export default macro;
+export default babelMacro;

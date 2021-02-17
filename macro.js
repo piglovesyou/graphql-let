@@ -1,1 +1,1 @@
-module.exports = require('./dist/macro').default;
+module.exports = require('./dist/babel-macro').default;
