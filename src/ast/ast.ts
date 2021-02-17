@@ -6,8 +6,8 @@ import { printError } from '../lib/print';
 import { CodegenContext } from '../lib/types';
 
 export type LiteralCallExpressionPaths = [
-  NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
-  string,
+  path: NodePath<t.CallExpression>,
+  value: string,
 ][];
 
 export type PendingDeletion = {
@@ -46,7 +46,7 @@ export function getProgramPath(p: NodePath<any>): NodePath<t.Program> {
   return ancestories[ancestories.length - 1]!;
 }
 
-export function getArgumentString(path: NodePath): string {
+export function getArgumentString(path: NodePath<t.CallExpression>): string {
   let value = '';
   path.traverse({
     TemplateLiteral(path: NodePath<t.TemplateLiteral>) {
@@ -73,7 +73,7 @@ export function visitFromCallExpressionPaths(
 ) {
   const literalCallExpressionPaths: LiteralCallExpressionPaths = [];
   for (const path of gqlCallExpressionPaths) {
-    const value = getArgumentString(path.parentPath);
+    const value = getArgumentString(path);
     if (value) literalCallExpressionPaths.push([path, value]);
   }
   return literalCallExpressionPaths;
@@ -154,7 +154,7 @@ export function visitFromProgramPath(
     return { literalCallExpressionPaths, hasError, pendingDeletion };
 
   function processTargetCalls(
-    path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
+    path: NodePath<t.CallExpression>,
     nodeName: string,
   ) {
     if (
@@ -162,7 +162,7 @@ export function visitFromProgramPath(
         return t.isIdentifier((path.get(nodeName) as any).node, { name });
       })
     ) {
-      const value = getArgumentString(path.parentPath);
+      const value = getArgumentString(path);
       if (!value) printError(new Error(`Check argument.`));
       literalCallExpressionPaths.push([path, value]);
     }
@@ -177,10 +177,6 @@ export function visitFromProgramPath(
         hasError = true;
       }
     },
-    // We don't have to support taggedTemplate do we
-    // TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {
-    //   processTargetCalls(path, 'tag');
-    // },
   });
 
   return {
