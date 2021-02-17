@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { cleanup, prepareFixtures } from './file';
 
-const projRoot = join(__dirname, '../..');
+const projRoot = join(__dirname, '../../..');
 
 export default async function setup() {
   await cleanup(projRoot, ['**/.__fixtures']);
