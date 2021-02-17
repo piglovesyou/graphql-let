@@ -1,0 +1,16 @@
+{
+  "presets": [
+    "@babel/preset-typescript"
+  ],
+  "plugins": [
+    [
+      "babel-plugin-module-resolver",
+      {
+        "alias": {
+          "graphql-let": "./"
+        }
+      }
+    ],
+    "babel-plugin-macros"
+  ]
+}
