@@ -6,6 +6,7 @@ import { cleanup } from '../src/lib/__tools/file';
 import { matchPathsAndContents } from '../src/lib/__tools/match-paths-and-contents';
 
 const cwd = join(__dirname, '.__fixtures/babel');
+const ignoreDirs = ['macro-load'];
 
 beforeAll(async () => {
   await cleanup(cwd, ['**/node_modules']);
@@ -14,15 +15,15 @@ beforeAll(async () => {
 runner(
   cwd,
   'gql',
-  {},
-  // {
-  //   ignoreTasks: ['macro'],
-  // },
+  // {},
+  {
+    ignoreTasks: ignoreDirs.map((d) => d.split('-').join(' ')),
+  },
   { sourceType: 'unambiguous' },
 );
 
 test(`Type checking for all fixtures`, async () => {
-  const dirs = await glob(['*/*'], {
+  const dirs = await glob(['*/*', ...ignoreDirs.map((d) => `!*/${d}`)], {
     cwd,
     onlyDirectories: true,
     absolute: true,
