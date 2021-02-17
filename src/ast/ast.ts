@@ -133,13 +133,18 @@ export function visitFromProgramPath(
 
   programPath.traverse({
     ImportDeclaration(path: NodePath<t.ImportDeclaration>) {
-      const pathValue = path.node.source.value;
-      if (pathValue === IMPORT_NAME) {
-        for (const specifier of path.node.specifiers) {
-          if (!t.isImportSpecifier(specifier)) continue;
-          localNames.push(specifier.local.name);
-          pendingDeletion.push({ specifier, path });
+      try {
+        const pathValue = path.node.source.value;
+        if (pathValue === IMPORT_NAME) {
+          for (const specifier of path.node.specifiers) {
+            if (!t.isImportSpecifier(specifier)) continue;
+            localNames.push(specifier.local.name);
+            pendingDeletion.push({ specifier, path });
+          }
         }
+      } catch (e) {
+        printError(e);
+        hasError = true;
       }
     },
   });
@@ -165,7 +170,12 @@ export function visitFromProgramPath(
 
   programPath.traverse({
     CallExpression(path: NodePath<t.CallExpression>) {
-      processTargetCalls(path, 'callee');
+      try {
+        processTargetCalls(path, 'callee');
+      } catch (e) {
+        printError(e);
+        hasError = true;
+      }
     },
     // We don't have to support taggedTemplate do we
     // TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {

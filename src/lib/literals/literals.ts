@@ -1,4 +1,3 @@
-import { loadOptions } from '@babel/core';
 import { parse } from '@babel/parser';
 import traverse, { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
@@ -13,7 +12,6 @@ import {
   visitFromProgramPath,
   VisitLiteralCallResults,
 } from '../../ast/ast';
-import { getGraphQLLetBabelOption } from '../../babel-plugin';
 import loadConfig from '../config';
 import { processGraphQLCodegenForLiterals } from '../documents';
 import { processDtsForContext } from '../dts';
@@ -109,7 +107,6 @@ export type LiteralsArgs = {
   gqlContents: string[];
 };
 
-// Used in babel.ts
 export async function processLiteralsWithDtsGenerate(
   literalsArgs: LiteralsArgs,
 ): Promise<LiteralCodegenContext[]> {
@@ -151,10 +148,6 @@ export async function processLiteralsForContext(
   if (!sourceRelPaths.length) return;
 
   const { cwd } = execContext;
-  const babelOptions = await loadOptions({ cwd });
-  const {
-    // configFilePath,
-  } = getGraphQLLetBabelOption(babelOptions);
 
   const visitedSources: {
     visitLiteralCallResults: VisitLiteralCallResults;

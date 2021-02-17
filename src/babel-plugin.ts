@@ -6,8 +6,6 @@ import { manipulateFromProgramPath } from './ast/manip-from-program';
 
 export type BabelOptions = {
   configFilePath?: string;
-  importName?: string;
-  onlyMatchImportSuffix?: boolean;
 };
 
 export function getGraphQLLetBabelOption(babelOptions: any): BabelOptions {
