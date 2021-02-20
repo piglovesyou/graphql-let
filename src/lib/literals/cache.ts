@@ -19,7 +19,7 @@ import { readFile, statSync, writeFile } from '../file';
  * to take care of old caches.
  */
 export type PartialCacheStore = {
-  [gqlHash: string]: [/*dtsRelPath*/ string, /*gqlContent*/ string];
+  [gqlHash: string]: [dtsRelPath: string, gqlContent: string];
 };
 
 export type ProjectCacheStore = {
