@@ -1,6 +1,5 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
-import { join } from 'path';
 import { processLiteralsWithDtsGenerateSync } from '../lib/literals/literals';
 import { LiteralCodegenContext } from '../lib/types';
 import {
@@ -29,7 +28,6 @@ export function manipulateFromProgramPath(
 
   const literalCodegenContext: LiteralCodegenContext[] = processLiteralsWithDtsGenerateSync(
     {
-      libFullDir: join(__dirname, '../../'),
       cwd,
       configFilePath,
       sourceRelPath,

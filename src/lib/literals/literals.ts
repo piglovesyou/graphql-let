@@ -1,7 +1,6 @@
 import { parse } from '@babel/parser';
 import traverse, { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
-import doSync from 'do-sync';
 import { existsSync } from 'fs';
 import { stripIgnoredCharacters } from 'graphql';
 import makeDir from 'make-dir';
@@ -19,6 +18,7 @@ import createExecContext, { ExecContext } from '../exec-context';
 import { readFile, rimraf } from '../file';
 import { createHash } from '../hash';
 import { createSchemaHash, shouldGenResolverTypes } from '../resolver-types';
+import { toSync } from '../to-sync';
 import { CodegenContext, LiteralCodegenContext } from '../types';
 import { LiteralCache, PartialCacheStore } from './cache';
 import { createPaths, parserOption } from './fns';
@@ -216,19 +216,6 @@ export async function processLiteralsForContext(
   await cache.unload();
 }
 
-type ProcessLiteralWithDtsGenerateSyncArg = LiteralsArgs & {
-  libFullDir: string;
-};
-
-export const processLiteralsWithDtsGenerateSync = doSync<
-  [ProcessLiteralWithDtsGenerateSyncArg],
-  LiteralCodegenContext[]
->(({ libFullDir, ...gqlCompileArgs }) => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { join } = require('path');
-  const modulePath = join(libFullDir, './dist/lib/literals/literals');
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const processLiteralsWithDtsGenerate: ProcessLiteralsWithDtsGenerateType = require(modulePath)
-    .processLiteralsWithDtsGenerate;
-  return processLiteralsWithDtsGenerate(gqlCompileArgs);
-});
+export const processLiteralsWithDtsGenerateSync = toSync<
+  typeof processLiteralsWithDtsGenerate
+>('dist/lib/literals/literals', 'processLiteralsWithDtsGenerate');
