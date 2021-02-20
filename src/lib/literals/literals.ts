@@ -107,9 +107,13 @@ export type LiteralsArgs = {
   gqlContents: string[];
 };
 
-export async function processLiteralsWithDtsGenerate(
+type ProcessLiteralsWithDtsGenerateType = (
   literalsArgs: LiteralsArgs,
-): Promise<LiteralCodegenContext[]> {
+) => Promise<LiteralCodegenContext[]>;
+
+export const processLiteralsWithDtsGenerate: ProcessLiteralsWithDtsGenerateType = async (
+  literalsArgs,
+) => {
   const { cwd, configFilePath, sourceRelPath, gqlContents } = literalsArgs;
 
   const [config, configHash] = await loadConfig(cwd, configFilePath);
@@ -137,7 +141,7 @@ export async function processLiteralsWithDtsGenerate(
   await processDtsForContext(execContext, codegenContext);
 
   return codegenContext;
-}
+};
 
 export async function processLiteralsForContext(
   execContext: ExecContext,
@@ -212,18 +216,22 @@ export async function processLiteralsForContext(
   await cache.unload();
 }
 
-export const processLiteralsWithDtsGenerateSync = doSync(
-  ({
-    libFullDir,
-    ...gqlCompileArgs
-  }: LiteralsArgs & {
-    libFullDir: string;
-  }): /* Promise<LiteralCodegenContext[]> */ any => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { join } = require('path');
-    const modulePath = join(libFullDir, './dist/lib/literals/literals');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { processLiteralsWithDtsGenerate } = require(modulePath);
-    return processLiteralsWithDtsGenerate(gqlCompileArgs);
-  },
-);
+type ProcessLiteralWithDtsGenerateSyncArg = LiteralsArgs & {
+  libFullDir: string;
+};
+
+export const processLiteralsWithDtsGenerateSync = doSync<
+  [ProcessLiteralWithDtsGenerateSyncArg],
+  any
+>(async ({ libFullDir, ...gqlCompileArgs }) => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { join } = require('path');
+  const modulePath = join(libFullDir, './dist/lib/literals/literals');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const processLiteralsWithDtsGenerate: ProcessLiteralsWithDtsGenerateType = require(modulePath)
+    .processLiteralsWithDtsGenerate;
+  const context = await processLiteralsWithDtsGenerate(gqlCompileArgs);
+  return context.map(({ dtsContentDecorator, ...c }) => {
+    return c;
+  });
+});
