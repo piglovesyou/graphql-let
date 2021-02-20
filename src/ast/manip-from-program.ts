@@ -1,12 +1,16 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
-import { processLiteralsWithDtsGenerateSync } from '../lib/literals/literals';
-import { LiteralCodegenContext } from '../lib/types';
+import { processLiterals2Sync } from '../lib/literals/literals';
+import { CodegenContext } from '../lib/types';
 import {
   modifyLiteralCalls,
   removeImportDeclaration,
   visitFromProgramPath,
 } from './ast';
+import {
+  generateForContextSync,
+  prepareCodegenArgs,
+} from './manip-from-callee-expressions';
 
 export function manipulateFromProgramPath(
   cwd: string,
@@ -18,22 +22,22 @@ export function manipulateFromProgramPath(
   const visitLiteralCallResults = visitFromProgramPath(programPath);
   const {
     literalCallExpressionPaths,
-    hasError,
     pendingDeletion,
   } = visitLiteralCallResults;
 
-  // TODO: Handle error
-
   if (!literalCallExpressionPaths.length) return;
 
-  const literalCodegenContext: LiteralCodegenContext[] = processLiteralsWithDtsGenerateSync(
-    {
-      cwd,
-      configFilePath,
-      sourceRelPath,
-      gqlContents: literalCallExpressionPaths.map(([, value]) => value),
-    },
-  ) as any; // Suppress JSONValue error. LiteralCodegenContext has a function property, but it can be ignored.
+  const { execContext, schemaHash } = prepareCodegenArgs(cwd);
+  let codegenContext: CodegenContext[] = [];
+
+  const gqlContents = literalCallExpressionPaths.map(([, value]) => value);
+  const literalCodegenContext = processLiterals2Sync(
+    execContext,
+    sourceRelPath,
+    schemaHash,
+    gqlContents,
+    codegenContext,
+  );
 
   modifyLiteralCalls(
     programPath,
@@ -41,9 +45,10 @@ export function manipulateFromProgramPath(
     literalCallExpressionPaths,
     literalCodegenContext,
   );
+  codegenContext = codegenContext.concat(literalCodegenContext);
+
+  generateForContextSync(execContext, codegenContext, sourceRelPath);
 
   // Only delete import statement or specifier when there is no error
-  if (!hasError) {
-    removeImportDeclaration(pendingDeletion);
-  }
+  removeImportDeclaration(pendingDeletion);
 }
