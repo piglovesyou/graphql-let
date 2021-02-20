@@ -11,13 +11,10 @@ import {
   visitFromProgramPath,
   VisitLiteralCallResults,
 } from '../../ast/ast';
-import loadConfig from '../config';
 import { processGraphQLCodegenForLiterals } from '../documents';
-import { processDtsForContext } from '../dts';
-import createExecContext, { ExecContext } from '../exec-context';
+import { ExecContext } from '../exec-context';
 import { readFile, rimraf } from '../file';
 import { createHash } from '../hash';
-import { createSchemaHash, shouldGenResolverTypes } from '../resolver-types';
 import { toSync } from '../to-sync';
 import { CodegenContext, LiteralCodegenContext } from '../types';
 import { LiteralCache, PartialCacheStore } from './cache';
@@ -175,51 +172,6 @@ export async function processLiterals(
   }
 }
 
-export type LiteralsArgs = {
-  // execContext: ExecContext;
-  cwd: string;
-  configFilePath?: string;
-  // schemaHash: string;
-  sourceRelPath: string;
-  gqlContents: string[];
-};
-
-type ProcessLiteralsWithDtsGenerateType = (
-  literalsArgs: LiteralsArgs,
-) => Promise<LiteralCodegenContext[]>;
-
-export const processLiteralsWithDtsGenerate: ProcessLiteralsWithDtsGenerateType = async (
-  literalsArgs,
-) => {
-  const { cwd, configFilePath, sourceRelPath, gqlContents } = literalsArgs;
-
-  const [config, configHash] = await loadConfig(cwd, configFilePath);
-  const execContext = createExecContext(cwd, config, configHash);
-  let schemaHash = configHash;
-  if (shouldGenResolverTypes(config)) {
-    schemaHash = await createSchemaHash(execContext);
-  }
-
-  const codegenContext: LiteralCodegenContext[] = [];
-
-  const cache = new LiteralCache(execContext);
-  await cache.load();
-
-  await processLiterals(
-    execContext,
-    sourceRelPath,
-    schemaHash,
-    gqlContents,
-    codegenContext,
-    cache.get(sourceRelPath),
-  );
-  await cache.unload();
-
-  await processDtsForContext(execContext, codegenContext);
-
-  return codegenContext;
-};
-
 export async function processLiteralsForContext(
   execContext: ExecContext,
   schemaHash: string,
@@ -293,6 +245,6 @@ export async function processLiteralsForContext(
   await cache.unload();
 }
 
-export const processLiteralsWithDtsGenerateSync = toSync<
-  typeof processLiteralsWithDtsGenerate
->('dist/lib/literals/literals', 'processLiteralsWithDtsGenerate');
+// export const processLiteralsWithDtsGenerateSync = toSync<
+//   typeof processLiteralsWithDtsGenerate
+// >('dist/lib/literals/literals', 'processLiteralsWithDtsGenerate');
