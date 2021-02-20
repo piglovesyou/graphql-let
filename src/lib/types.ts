@@ -12,11 +12,13 @@ export type CreatedPathsBase = {
   dtsFullPath: string;
 };
 
-export type CodegenContextBase = {
+export type CodegenContextBase<
+  type extends 'file' | 'file-schema' | 'literal' | 'load'
+> = {
+  type: type;
   gqlHash: string;
   // If true, cache is fresh, so we don't need to generate new one.
   skip: boolean;
-  dtsContentDecorator: (content: string) => string;
 };
 
 /**
@@ -35,16 +37,22 @@ export type LiteralCreatedPaths = CreatedPathsBase & {
   srcFullPath: string;
 };
 
-export type FileCodegenContext = CodegenContextBase & FileCreatedPaths;
+export type FileCodegenContext = CodegenContextBase<'file'> & FileCreatedPaths;
+export type FileSchemaCodegenContext = CodegenContextBase<'file-schema'> &
+  FileCreatedPaths;
 
 export type LiteralCodegenContext = {
+  type: 'literal';
   gqlContent: string;
   strippedGqlContent: string;
-} & CodegenContextBase &
+} & CodegenContextBase<'literal'> &
   LiteralCreatedPaths;
 
-export type CodegenContext = FileCodegenContext | LiteralCodegenContext;
+export type CodegenContext =
+  | FileCodegenContext
+  | FileSchemaCodegenContext
+  | LiteralCodegenContext;
 
-export function isLiteralContext(context: CodegenContext): boolean {
-  return Boolean((context as LiteralCodegenContext).strippedGqlContent);
+export function isLiteralContext({ type }: CodegenContext): boolean {
+  return type === 'literal';
 }

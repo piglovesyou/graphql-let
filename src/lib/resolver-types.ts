@@ -9,7 +9,7 @@ import { processGraphQLCodegen } from './graphql-codegen';
 import { createHashFromBuffers } from './hash';
 import { createPaths, isURL } from './paths';
 import { printError, updateLog } from './print';
-import { CodegenContext, FileCodegenContext } from './types';
+import { CodegenContext, FileSchemaCodegenContext } from './types';
 
 export function shouldGenResolverTypes(config: ConfigTypes): boolean {
   try {
@@ -80,19 +80,10 @@ export async function processResolverTypesIfNeeded(
       schemaHash !== (await readHash(createdPaths.tsxFullPath)) ||
       schemaHash !== (await readHash(createdPaths.dtsFullPath));
 
-    const context: FileCodegenContext = {
+    const context: FileSchemaCodegenContext = {
       ...createdPaths,
+      type: 'file-schema',
       gqlHash: schemaHash,
-      dtsContentDecorator: (s) => {
-        return `${s}
-          
-// This is an extra code in addition to what graphql-codegen makes.
-// Users are likely to use 'graphql-tag/loader' with 'graphql-tag/schema/loader'
-// in webpack. This code enables the result to be typed.
-import { DocumentNode } from 'graphql'
-export default DocumentNode
-`;
-      },
       skip: !shouldUpdate,
     };
     codegenContext.push(context);

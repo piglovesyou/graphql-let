@@ -131,8 +131,8 @@ export async function processDocumentsForContext(
 
     const context: FileCodegenContext = {
       ...createdPaths,
+      type: 'file',
       gqlHash,
-      dtsContentDecorator: (s) => s,
       skip: !shouldUpdate,
     };
     codegenContext.push(context);

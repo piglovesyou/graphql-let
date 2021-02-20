@@ -12,9 +12,10 @@ import {
   sys,
 } from 'typescript';
 import { ConfigTypes } from './config';
+import { decorateDts } from './decorate-dts';
 import { ExecContext } from './exec-context';
 import { withHash, writeFile } from './file';
-import { CodegenContext, FileCodegenContext } from './types';
+import { CodegenContext } from './types';
 
 const essentialCompilerOptions: CompilerOptions = {
   declaration: true,
@@ -131,12 +132,9 @@ export async function processDtsForContext(
   await makeDir(dirname(codegenContext[0].dtsFullPath));
   for (const [i, dtsContent] of dtsContents.entries()) {
     const ctx = codegenContext[i];
-    const { dtsFullPath, gqlHash } = ctx!;
-    const { dtsContentDecorator } = ctx as FileCodegenContext;
-    const content = withHash(
-      gqlHash,
-      dtsContentDecorator ? dtsContentDecorator(dtsContent) : dtsContent,
-    );
+    const { type, dtsFullPath, gqlHash } = ctx!;
+    let content = withHash(gqlHash, dtsContent);
+    content = decorateDts(type, content);
     await makeDir(dirname(dtsFullPath));
     await writeFile(dtsFullPath, content);
   }

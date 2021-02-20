@@ -17,9 +17,9 @@ describe('graphql-codegen.ts', () => {
     const codegenContext: FileCodegenContext[] = [
       {
         ...paths,
+        type: 'file',
         gqlHash: 'xx',
         skip: false,
-        dtsContentDecorator: (_) => _,
       },
     ];
     await processGraphQLCodegenForFiles(execContext, codegenContext);

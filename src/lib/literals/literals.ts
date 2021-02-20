@@ -21,7 +21,7 @@ import { createHash } from '../hash';
 import { createSchemaHash, shouldGenResolverTypes } from '../resolver-types';
 import { CodegenContext, LiteralCodegenContext } from '../types';
 import { LiteralCache, PartialCacheStore } from './cache';
-import { appendExportAsObject, createPaths, parserOption } from './fns';
+import { createPaths, parserOption } from './fns';
 
 // To avoid conflicts of file names
 export const typesRootRelDir = 'proj-root';
@@ -58,11 +58,11 @@ export async function processLiterals(
     );
     const context: LiteralCodegenContext = {
       ...createdPaths,
+      type: 'literal',
       gqlContent,
       strippedGqlContent,
       gqlHash,
       skip: Boolean(partialCache[gqlHash]),
-      dtsContentDecorator: appendExportAsObject,
     };
     codegenContext.push(context);
     literalCodegenContext.push(context);
@@ -222,16 +222,13 @@ type ProcessLiteralWithDtsGenerateSyncArg = LiteralsArgs & {
 
 export const processLiteralsWithDtsGenerateSync = doSync<
   [ProcessLiteralWithDtsGenerateSyncArg],
-  any
->(async ({ libFullDir, ...gqlCompileArgs }) => {
+  LiteralCodegenContext[]
+>(({ libFullDir, ...gqlCompileArgs }) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { join } = require('path');
   const modulePath = join(libFullDir, './dist/lib/literals/literals');
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const processLiteralsWithDtsGenerate: ProcessLiteralsWithDtsGenerateType = require(modulePath)
     .processLiteralsWithDtsGenerate;
-  const context = await processLiteralsWithDtsGenerate(gqlCompileArgs);
-  return context.map(({ dtsContentDecorator, ...c }) => {
-    return c;
-  });
+  return processLiteralsWithDtsGenerate(gqlCompileArgs);
 });
