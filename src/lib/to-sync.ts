@@ -23,9 +23,7 @@ export type AsyncFn<I extends Value[], O extends Value> = (
 const gen = (moduleFullPath: string, fnName: string, input: Value[]) => {
   return `
 const fn = require('${moduleFullPath}')['${fnName}'];
-if (!fn) throw new Error('${fnName} is not exported in ${{
-    moduleFullDir: moduleFullPath,
-  }}');
+if (!fn) throw new Error('${fnName} is not exported in ${moduleFullPath}');
 fn(...${JSON.stringify(input)})
 .then(value => console.log(JSON.stringify({ type: "success", value: value })))
 .catch(e => console.log(JSON.stringify({ type: "failure", value: e })));

@@ -7,7 +7,11 @@ import { readFile, readFileSync } from './file';
 import { createHash } from './hash';
 import { printError } from './print';
 
+var a: Types.Caa;
+
 export type PartialGraphqlCodegenOptions = Omit<Types.Config, 'generates'>;
+
+// var a: Types.
 
 export type GraphQLLetAdditionalOptions = {
   plugins: Array<string | Record<string, any>>;

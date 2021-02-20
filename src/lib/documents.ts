@@ -42,7 +42,7 @@ export async function findTargetDocuments({
 
 // GraphQLFileLoader only allows "# import" when passing file paths.
 // But we want it even in gql(`query {}`), don't we?
-class CodegenConfigForLiteralDocuments extends CodegenConfig {
+export class CodegenConfigForLiteralDocuments extends CodegenConfig {
   sourceRelPath: string;
   constructor(
     execContext: ExecContext,

@@ -26,6 +26,91 @@ import { createPaths, parserOption } from './fns';
 // To avoid conflicts of file names
 export const typesRootRelDir = 'proj-root';
 
+export async function processLiterals2(
+  execContext: ExecContext,
+  sourceRelPath: string,
+  schemaHash: string,
+  gqlContents: string[],
+  codegenContext: CodegenContext[],
+) {
+  const cache = new LiteralCache(execContext);
+  await cache.load();
+  const partialCache = cache.get(sourceRelPath);
+
+  const { cwd, config, cacheFullDir } = execContext;
+  const dtsRelDir = dirname(config.gqlDtsEntrypoint);
+
+  // const literalCodegenContext: LiteralCodegenContext[] = [];
+  const oldGqlHashes = new Set(Object.keys(partialCache));
+
+  // Prepare
+  await Promise.all([
+    await makeDir(join(cwd, dtsRelDir)),
+    await makeDir(cacheFullDir),
+  ]);
+
+  for (const gqlContent of gqlContents) {
+    const strippedGqlContent = stripIgnoredCharacters(gqlContent);
+    const gqlHash = createHash(schemaHash + strippedGqlContent);
+    const createdPaths = createPaths(
+      pathJoin(typesRootRelDir, sourceRelPath),
+      gqlHash,
+      dtsRelDir,
+      cacheFullDir,
+      cwd,
+    );
+    const context: LiteralCodegenContext = {
+      ...createdPaths,
+      type: 'literal',
+      gqlContent,
+      strippedGqlContent,
+      gqlHash,
+      skip: Boolean(partialCache[gqlHash]),
+    };
+    codegenContext.push(context);
+    // literalCodegenContext.push(context);
+
+    // Note: Non-stripped gqlContent is necessary
+    // to write dtsEntrypoint.
+    partialCache[gqlHash] = [slash(createdPaths.dtsRelPath), gqlContent];
+
+    // Old caches left will be removed
+    oldGqlHashes.delete(gqlHash);
+  }
+
+  // TODO: Do this outside!
+  // // Run codegen to write .tsx
+  // await processGraphQLCodegenForLiterals(
+  //   execContext,
+  //   literalCodegenContext,
+  //   sourceRelPath,
+  // );
+
+  // Remove old caches
+  for (const oldGqlHash of oldGqlHashes) {
+    delete partialCache[oldGqlHash];
+    const { dtsFullPath } = createPaths(
+      sourceRelPath,
+      oldGqlHash,
+      dtsRelDir,
+      cacheFullDir,
+      cwd,
+    );
+    if (existsSync(dtsFullPath)) {
+      await rimraf(dtsFullPath);
+    }
+  }
+
+  await cache.unload();
+
+  return codegenContext;
+}
+
+export const processLiterals2Sync = toSync<typeof processLiterals2>(
+  'dist/lib/literals/literals',
+  'processLiterals2',
+);
+
 export async function processLiterals(
   execContext: ExecContext,
   sourceRelPath: string,

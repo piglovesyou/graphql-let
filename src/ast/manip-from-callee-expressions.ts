@@ -1,12 +1,54 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
-import { processLiteralsWithDtsGenerateSync } from '../lib/literals/literals';
-import { LiteralCodegenContext } from '../lib/types';
+import { loadConfigSync } from '../lib/config';
+import { CodegenConfigForLiteralDocuments } from '../lib/documents';
+import { processDtsForContext } from '../lib/dts';
+import createExecContext, { ExecContext } from '../lib/exec-context';
+import { processGraphQLCodegen } from '../lib/graphql-codegen';
+import { processLiterals2Sync } from '../lib/literals/literals';
+import {
+  createSchemaHashSync,
+  shouldGenResolverTypes,
+} from '../lib/resolver-types';
+import { toSync } from '../lib/to-sync';
+import { CodegenContext } from '../lib/types';
 import {
   getProgramPath,
   modifyLiteralCalls,
   visitFromCallExpressionPaths,
 } from './ast';
+
+// TODO: name of function
+export function prepareCodegenArgs(cwd: string) {
+  const [config, configHash] = loadConfigSync(cwd, undefined);
+  const execContext = createExecContext(cwd, config, configHash);
+  let schemaHash = configHash;
+  if (shouldGenResolverTypes(config))
+    schemaHash = createSchemaHashSync(execContext);
+  return { execContext, schemaHash };
+}
+
+export async function generateForContext(
+  execContext: ExecContext,
+  codegenContext: CodegenContext[],
+  sourceRelPath: string,
+) {
+  await processGraphQLCodegen(
+    execContext,
+    codegenContext,
+    new CodegenConfigForLiteralDocuments(
+      execContext,
+      codegenContext,
+      sourceRelPath,
+    ),
+  );
+  await processDtsForContext(execContext, codegenContext);
+}
+
+const generateForContextSync = toSync<typeof generateForContext>(
+  'dist/ast/manip-from-callee-expressions',
+  'generateForContext',
+);
 
 export function manipulateFromCalleeExpressions(
   cwd: string,
@@ -24,14 +66,17 @@ export function manipulateFromCalleeExpressions(
   );
   if (!literalCallExpressionPaths.length) return;
 
-  const literalCodegenContext: LiteralCodegenContext[] = processLiteralsWithDtsGenerateSync(
-    {
-      cwd,
-      configFilePath: undefined, // TODO: Remove this arg from the signature.
-      sourceRelPath,
-      gqlContents: literalCallExpressionPaths.map(([, value]) => value),
-    },
-  ) as any; // Suppress JSONValue error. LiteralCodegenContext has a function property, but it can be ignored.
+  const { execContext, schemaHash } = prepareCodegenArgs(cwd);
+  let codegenContext: CodegenContext[] = [];
+
+  const gqlContents = literalCallExpressionPaths.map(([, value]) => value);
+  const literalCodegenContext = processLiterals2Sync(
+    execContext,
+    sourceRelPath,
+    schemaHash,
+    gqlContents,
+    codegenContext,
+  );
 
   modifyLiteralCalls(
     programPath,
@@ -39,4 +84,7 @@ export function manipulateFromCalleeExpressions(
     literalCallExpressionPaths,
     literalCodegenContext,
   );
+  codegenContext = codegenContext.concat(literalCodegenContext);
+
+  generateForContextSync(execContext, codegenContext, sourceRelPath);
 }
