@@ -50,7 +50,7 @@ const generateForContextSync = toSync<typeof generateForContext>(
   'generateForContext',
 );
 
-export function manipulateFromCalleeExpressions(
+export function manipulateFromCalleeExpressionsSync(
   cwd: string,
   gqlCalleePaths: NodePath[],
   sourceRelPath: string,

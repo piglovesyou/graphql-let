@@ -78,14 +78,6 @@ export async function processLiterals2(
     oldGqlHashes.delete(gqlHash);
   }
 
-  // TODO: Do this outside!
-  // // Run codegen to write .tsx
-  // await processGraphQLCodegenForLiterals(
-  //   execContext,
-  //   literalCodegenContext,
-  //   sourceRelPath,
-  // );
-
   // Remove old caches
   for (const oldGqlHash of oldGqlHashes) {
     delete partialCache[oldGqlHash];
