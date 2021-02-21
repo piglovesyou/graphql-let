@@ -47,7 +47,7 @@
     "@babel/plugin-syntax-jsx": ">=7.12.13",
     "@babel/preset-env": "^7.12.16",
     "@babel/preset-react": "^7.12.13",
-    "@babel/preset-typescript": "^7.12.7",
+    "@babel/preset-typescript": "^7.12.17",
     "@graphql-codegen/cli": "^1.20.1",
     "@graphql-codegen/plugin-helpers": "^1.18.2",
     "@graphql-codegen/typescript": "^1.20.0",
