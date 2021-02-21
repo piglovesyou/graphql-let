@@ -45,10 +45,7 @@ export async function generateForContext(
   await processDtsForContext(execContext, codegenContext);
 }
 
-export const generateForContextSync = toSync<typeof generateForContext>(
-  'dist/ast/manip-from-callee-expressions',
-  'generateForContext',
-);
+export const generateForContextSync = toSync(generateForContext);
 
 export function manipulateFromCalleeExpressionsSync(
   cwd: string,

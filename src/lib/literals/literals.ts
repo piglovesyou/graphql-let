@@ -95,10 +95,7 @@ export async function processLiterals(
   return codegenContext;
 }
 
-export const processLiteralsSync = toSync<typeof processLiterals>(
-  'dist/lib/literals/literals',
-  'processLiterals',
-);
+export const processLiteralsSync = toSync(processLiterals);
 
 export async function processLiteralsDeprecated(
   execContext: ExecContext,

@@ -1,6 +1,6 @@
 // Fork version of do-sync that runs a function within the entire .js file
+import caller from 'caller';
 import { spawnSync, SpawnSyncOptions } from 'child_process';
-import { join as pathJoin } from 'path';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface JSONObject extends Record<string, JSONValue> {}
@@ -27,20 +27,33 @@ fn(...${JSON.stringify(input)})
   `;
 };
 
+type ToSyncOptions = SpawnSyncOptions & {
+  filename?: string;
+  functionName?: string;
+};
+
+type AsyncFn = (...args: any) => Promise<any>;
+
 export function toSync<
-  F extends (...args: any) => Promise<any>,
+  F extends AsyncFn,
   I extends any[] = Parameters<F>,
   O = ReturnType<F> extends PromiseLike<infer R> ? R : never
 >(
-  moduleRelPath: string,
-  fnName: string,
-  { maxBuffer = 1000 * 1024 * 1024, ...etc }: SpawnSyncOptions = {},
+  asyncFn: F,
+  {
+    filename = caller(),
+    functionName = asyncFn.name,
+    maxBuffer = 1000 * 1024 * 1024,
+    ...etc
+  }: ToSyncOptions = {},
 ): (...args: I) => O {
-  const libFullDir = pathJoin(__dirname, '../..');
-  const moduleFullPath = pathJoin(libFullDir, moduleRelPath);
+  if (!functionName)
+    throw new Error(
+      `Couldn't get function name. Use named function or please provide "functionName" in option manually.`,
+    );
   return (...args: I) => {
     const proc = spawnSync('node', ['-'], {
-      input: gen(moduleFullPath, fnName, args),
+      input: gen(filename, functionName, args),
       maxBuffer,
       ...etc,
     });

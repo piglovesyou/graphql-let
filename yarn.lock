@@ -1862,6 +1862,11 @@
     "@types/connect" "*"
     "@types/node" "*"
 
+"@types/caller@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/caller/-/caller-1.0.0.tgz#21044c8254e95e57c86a2079bd99430d5f892c62"
+  integrity sha512-zbyHsdYFn5gCQFn+fF7Ad9En1fJdj3o0YP7DPTD9J3at4M9auNfoLrVYH4hFdLfFDhnB0kTZw3RAKp4iD516uw==
+
 "@types/connect-history-api-fallback@*":
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/@types/connect-history-api-fallback/-/connect-history-api-fallback-1.3.3.tgz#4772b79b8b53185f0f4c9deab09236baf76ee3b4"
@@ -3917,6 +3922,11 @@ call-bind@^1.0.0:
     function-bind "^1.1.1"
     get-intrinsic "^1.0.2"
 
+caller@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/caller/-/caller-1.0.1.tgz#b851860f70e195db3d277395aa1a7e23ea30ecf5"
+  integrity sha1-uFGGD3Dhlds9J3OVqhp+I+ow7PU=
+
 callsites@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/callsites/-/callsites-3.1.0.tgz#b3630abd8943432f54b3f0519238e33cd7df2f73"
@@ -4846,13 +4856,6 @@ dns-txt@^2.0.2:
   integrity sha1-uR2Ab10nGI5Ks+fRB9iBocxGQrY=
   dependencies:
     buffer-indexof "^1.0.0"
-
-do-sync@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/do-sync/-/do-sync-3.0.2.tgz#d6f7c501262aa96439f4f4c04eb2ee5795714092"
-  integrity sha512-CvevkFUHh3ybmlO16jT5eFUHr8Ew/AIRmopUoROwYI+tAIjHeBuRhymIHy7CygZbfkLlqSjQT0G8kfnNHkJI9Q==
-  dependencies:
-    cross-spawn "^7.0.2"
 
 doctrine@^3.0.0:
   version "3.0.0"
@@ -5793,7 +5796,7 @@ generic-names@^2.0.1:
   dependencies:
     loader-utils "^1.1.0"
 
-gensync@^1.0.0-beta.1:
+gensync@^1.0.0-beta.1, gensync@^1.0.0-beta.2:
   version "1.0.0-beta.2"
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.2.tgz#32a6ee76c3d7f52d46b2b1ae5d93fea8580a25e0"
   integrity sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==
