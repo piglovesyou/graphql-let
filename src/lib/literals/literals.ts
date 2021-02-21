@@ -15,7 +15,7 @@ import { processGraphQLCodegenForLiterals } from '../documents';
 import { ExecContext } from '../exec-context';
 import { readFile, rimraf } from '../file';
 import { createHash } from '../hash';
-import { toSync } from '../to-sync';
+import toSync from '../to-sync';
 import { CodegenContext, LiteralCodegenContext } from '../types';
 import { LiteralCache, PartialCacheStore } from './cache';
 import { createPaths, parserOption } from './fns';

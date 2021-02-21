@@ -1,8 +1,8 @@
 // Fork version of do-sync that runs a function within the entire .js file
 import caller from 'caller';
 import { spawnSync, SpawnSyncOptions } from 'child_process';
+import slash from 'slash';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface JSONObject extends Record<string, JSONValue> {}
 export type JSONPrimitive = string | number | boolean | null | undefined;
 export type JSONValue = JSONObject | JSONArray | JSONPrimitive;
@@ -17,17 +17,19 @@ interface Response {
 
 export type Value = JSONValue;
 
-const gen = (moduleFullPath: string, fnName: string, input: Value[]) => {
+const gen = (filename: string, fnName: string, args: Value[]) => {
   return `
-const fn = require('${moduleFullPath}')['${fnName}'];
-if (!fn) throw new Error('${fnName} is not exported in ${moduleFullPath}');
-fn(...${JSON.stringify(input)})
-.then(value => console.log(JSON.stringify({ type: "success", value: value })))
+async function main() {
+  const fn = require('${slash(filename)}')['${fnName}'];
+  if (!fn) throw new Error('${fnName} is not exported in ${filename}');
+  return fn(...${JSON.stringify(args)})
+}
+main().then(value => console.log(JSON.stringify({ type: "success", value: value })))
 .catch(e => console.log(JSON.stringify({ type: "failure", value: e })));
   `;
 };
 
-type ToSyncOptions = SpawnSyncOptions & {
+export type ToSyncOptions = SpawnSyncOptions & {
   filename?: string;
   functionName?: string;
 };
@@ -68,3 +70,5 @@ export function toSync<
     return rsp.value as any;
   };
 }
+
+export default toSync;
