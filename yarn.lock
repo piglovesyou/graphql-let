@@ -81,7 +81,7 @@
   resolved "https://registry.yarnpkg.com/@babel/compat-data/-/compat-data-7.12.13.tgz#27e19e0ed3726ccf54067ced4109501765e7e2e8"
   integrity sha512-U/hshG5R+SIoW7HVWIdmy1cB7s3ki+r3FpyEZiCgpi4tFgPnX/vynY80ZGSASOIrUM6O7VxOgCZgdt7h97bUGg==
 
-"@babel/core@^7.0.0", "@babel/core@^7.1.0", "@babel/core@^7.12.13", "@babel/core@^7.12.17", "@babel/core@^7.7.5":
+"@babel/core@^7.0.0", "@babel/core@^7.1.0", "@babel/core@^7.12.17", "@babel/core@^7.7.5":
   version "7.12.17"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.12.17.tgz#993c5e893333107a2815d8e0d73a2c3755e280b2"
   integrity sha512-V3CuX1aBywbJvV2yzJScRxeiiw0v2KZZYYE3giywxzFJL13RiyPjaaDwhDnxmgFTTS7FgvM2ijr4QmKNIu0AtQ==
@@ -323,13 +323,13 @@
   dependencies:
     "@babel/types" "^7.12.13"
 
-"@babel/helper-transform-fixture-test-runner@^7.12.13":
-  version "7.12.13"
-  resolved "https://registry.yarnpkg.com/@babel/helper-transform-fixture-test-runner/-/helper-transform-fixture-test-runner-7.12.13.tgz#f8132dc4079dbd06c4255219facad938be810dfc"
-  integrity sha512-2GV16Ncw/x1gRj+YIFnPMOB1VhKJlBM66zSLVSi4piNfZBFSQEbLl+89YGZ8JS42I4rURAOczo+Jbh4EapAGsg==
+"@babel/helper-transform-fixture-test-runner@^7.12.17":
+  version "7.12.17"
+  resolved "https://registry.yarnpkg.com/@babel/helper-transform-fixture-test-runner/-/helper-transform-fixture-test-runner-7.12.17.tgz#7877c922649683c98204b1ebbd8e65330fa2a9b3"
+  integrity sha512-+E23nGE4FjONtExqjj95FMv8njvsX/FCYUtpuvFWZls7GdK4UVhow14/GeN4L07j1GVkmz7RsiAL+XE8i2bTqg==
   dependencies:
     "@babel/code-frame" "^7.12.13"
-    "@babel/core" "^7.12.13"
+    "@babel/core" "^7.12.17"
     "@babel/helper-fixtures" "^7.12.13"
     babel-check-duplicated-nodes "^1.0.0"
     jest-diff "^24.8.0"
