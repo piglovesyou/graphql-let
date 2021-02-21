@@ -3,6 +3,7 @@ import caller from 'caller';
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import slash from 'slash';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface JSONObject extends Record<string, JSONValue> {}
 export type JSONPrimitive = string | number | boolean | null | undefined;
 export type JSONValue = JSONObject | JSONArray | JSONPrimitive;
