@@ -23,7 +23,7 @@ import { createPaths, parserOption } from './fns';
 // To avoid conflicts of file names
 export const typesRootRelDir = 'proj-root';
 
-export async function processLiterals2(
+export async function processLiterals(
   execContext: ExecContext,
   sourceRelPath: string,
   schemaHash: string,
@@ -95,12 +95,12 @@ export async function processLiterals2(
   return codegenContext;
 }
 
-export const processLiterals2Sync = toSync<typeof processLiterals2>(
+export const processLiteralsSync = toSync<typeof processLiterals>(
   'dist/lib/literals/literals',
-  'processLiterals2',
+  'processLiterals',
 );
 
-export async function processLiterals(
+export async function processLiteralsDeprecated(
   execContext: ExecContext,
   sourceRelPath: string,
   schemaHash: string,
@@ -225,7 +225,7 @@ export async function processLiteralsForContext(
 
     const gqlContents = literalCallExpressionPaths.map(([, value]) => value);
 
-    await processLiterals(
+    await processLiteralsDeprecated(
       execContext,
       sourceRelPath,
       schemaHash,

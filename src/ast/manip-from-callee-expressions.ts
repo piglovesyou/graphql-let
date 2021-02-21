@@ -5,7 +5,7 @@ import { CodegenConfigForLiteralDocuments } from '../lib/documents';
 import { processDtsForContext } from '../lib/dts';
 import createExecContext, { ExecContext } from '../lib/exec-context';
 import { processGraphQLCodegen } from '../lib/graphql-codegen';
-import { processLiterals2Sync } from '../lib/literals/literals';
+import { processLiteralsSync } from '../lib/literals/literals';
 import {
   createSchemaHashSync,
   shouldGenResolverTypes,
@@ -70,7 +70,7 @@ export function manipulateFromCalleeExpressionsSync(
   let codegenContext: CodegenContext[] = [];
 
   const gqlContents = literalCallExpressionPaths.map(([, value]) => value);
-  const literalCodegenContext = processLiterals2Sync(
+  const literalCodegenContext = processLiteralsSync(
     execContext,
     sourceRelPath,
     schemaHash,

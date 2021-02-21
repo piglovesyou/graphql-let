@@ -1,6 +1,6 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
-import { processLiterals2Sync } from '../lib/literals/literals';
+import { processLiteralsSync } from '../lib/literals/literals';
 import { CodegenContext } from '../lib/types';
 import {
   modifyLiteralCalls,
@@ -31,7 +31,7 @@ export function manipulateFromProgramPath(
   let codegenContext: CodegenContext[] = [];
 
   const gqlContents = literalCallExpressionPaths.map(([, value]) => value);
-  const literalCodegenContext = processLiterals2Sync(
+  const literalCodegenContext = processLiteralsSync(
     execContext,
     sourceRelPath,
     schemaHash,
@@ -47,8 +47,7 @@ export function manipulateFromProgramPath(
   );
   codegenContext = codegenContext.concat(literalCodegenContext);
 
-  generateForContextSync(execContext, codegenContext, sourceRelPath);
-
-  // Only delete import statement or specifier when there is no error
   removeImportDeclaration(pendingDeletion);
+
+  generateForContextSync(execContext, codegenContext, sourceRelPath);
 }
