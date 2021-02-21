@@ -1,16 +1,12 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
-import { processLiteralsSync } from '../lib/literals/literals';
 import { CodegenContext } from '../lib/types';
-import {
-  modifyLiteralCalls,
-  removeImportDeclaration,
-  visitFromProgramPath,
-} from './ast';
+import { removeImportDeclaration, visitFromProgramPath } from './ast';
 import {
   generateForContextSync,
+  manipulateLiterals,
   prepareCodegenArgs,
-} from './manip-from-callee-expressions';
+} from './manip-fns';
 
 export function manipulateFromProgramPath(
   cwd: string,
@@ -19,33 +15,23 @@ export function manipulateFromProgramPath(
   sourceRelPath: string,
   sourceFullPath: string,
 ) {
-  const visitLiteralCallResults = visitFromProgramPath(programPath);
-  const {
-    literalCallExpressionPaths,
-    pendingDeletion,
-  } = visitLiteralCallResults;
-
+  const { literalCallExpressionPaths, pendingDeletion } = visitFromProgramPath(
+    programPath,
+  );
   if (!literalCallExpressionPaths.length) return;
 
+  const codegenContext: CodegenContext[] = [];
   const { execContext, schemaHash } = prepareCodegenArgs(cwd);
-  let codegenContext: CodegenContext[] = [];
 
-  const gqlContents = literalCallExpressionPaths.map(([, value]) => value);
-  const literalCodegenContext = processLiteralsSync(
+  manipulateLiterals(
+    literalCallExpressionPaths,
     execContext,
     sourceRelPath,
     schemaHash,
-    gqlContents,
     codegenContext,
-  );
-
-  modifyLiteralCalls(
     programPath,
     sourceFullPath,
-    literalCallExpressionPaths,
-    literalCodegenContext,
   );
-  codegenContext = codegenContext.concat(literalCodegenContext);
 
   removeImportDeclaration(pendingDeletion);
 
