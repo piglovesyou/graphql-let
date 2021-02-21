@@ -1,10 +1,11 @@
-// Fork version of do-sync
+// Fork version of do-sync that runs a function within the entire .js file
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import { join as pathJoin } from 'path';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface JSONObject extends Record<string, JSONValue> {}
 export type JSONPrimitive = string | number | boolean | null | undefined;
 export type JSONValue = JSONObject | JSONArray | JSONPrimitive;
-export interface JSONObject extends Record<string, JSONValue> {}
 export type JSONArray = JSONValue[];
 
 type ResponseType = 'success' | 'failure';
@@ -15,10 +16,6 @@ interface Response {
 }
 
 export type Value = JSONValue;
-
-export type AsyncFn<I extends Value[], O extends Value> = (
-  ...v: I
-) => Promise<O>;
 
 const gen = (moduleFullPath: string, fnName: string, input: Value[]) => {
   return `
