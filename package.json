@@ -107,7 +107,7 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "remark-cli": "^9.0.0",
-    "remark-toc": "^7.0.0",
+    "remark-toc": "^7.2.0",
     "terminate": "^2.1.2",
     "ts-jest": "^26.4.4",
     "tslib": "^2.1.0",
