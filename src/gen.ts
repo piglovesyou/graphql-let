@@ -9,9 +9,9 @@ import {
 import { processDtsForContext } from './lib/dts';
 import createExecContext, { ExecContext } from './lib/exec-context';
 import { rimraf } from './lib/file';
-import { processLiteralsForContext } from './lib/inject-types/literals';
 import { updateLog } from './lib/print';
 import { processResolverTypesIfNeeded } from './lib/resolver-types';
+import { processLiteralsForContext } from './lib/type-inject/literals';
 import { CodegenContext, CommandOpts } from './lib/types';
 
 async function removeOldTsxCaches(

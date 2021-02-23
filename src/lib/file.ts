@@ -27,6 +27,7 @@ export function withHash(sourceHash: string, content: string): string {
 ${content}`;
 }
 
+// TODO: Move to hash.ts
 export function readHash(filePath: string): Promise<string | null> {
   if (!existsSync(filePath)) {
     return Promise.resolve(null);

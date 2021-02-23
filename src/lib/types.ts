@@ -50,11 +50,12 @@ export type LiteralCodegenContext = {
 
 export type LoadCodegenContext = {
   type: 'load';
-  // gqlContent: string;
-  // strippedGqlContent: string;
+  srcRelPath: string;
+  srcFullPath: string;
+  gqlRelPath: string;
+  gqlFullPath: string;
 } & CodegenContextBase<'load'> &
-  LiteralCreatedPaths &
-  FileCreatedPaths;
+  CreatedPathsBase;
 
 export type CodegenContext =
   | FileCodegenContext

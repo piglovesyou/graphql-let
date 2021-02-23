@@ -5,13 +5,13 @@ import { CodegenConfigForLiteralDocuments } from '../lib/documents';
 import { processDtsForContext } from '../lib/dts';
 import createExecContext, { ExecContext } from '../lib/exec-context';
 import { processGraphQLCodegen } from '../lib/graphql-codegen';
-import { processLiteralsSync } from '../lib/inject-types/literals';
-import { processLoadsSync } from '../lib/inject-types/loads';
 import {
   createSchemaHashSync,
   shouldGenResolverTypes,
 } from '../lib/resolver-types';
 import { toSync } from '../lib/to-sync';
+import { processLiteralsSync } from '../lib/type-inject/literals';
+import { processLoadsSync } from '../lib/type-inject/loads';
 import { CodegenContext } from '../lib/types';
 import { CallExpressionPathPairs, modifyLiteralCalls } from './ast';
 
