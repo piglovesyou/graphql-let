@@ -1,4 +1,4 @@
-import gen from './gen';
+import gen from './gen2';
 import { spawn } from './lib/__tools/child-process';
 import { prepareFixtures } from './lib/__tools/file';
 
