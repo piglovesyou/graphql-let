@@ -6,7 +6,7 @@ import { promisify } from 'util';
 export const rimraf = promisify(_rimraf);
 
 export const { readFile, writeFile } = fsPromises;
-export { readFileSync, statSync } from 'fs';
+export { exists, readFileSync, statSync } from 'fs';
 
 // Erasing old cache in __generated__ on HMR.
 // Otherwise the multiple `declare module "*/x.graphql"` are exposed.
