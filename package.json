@@ -45,7 +45,7 @@
     "@apollo/react-hooks": "^4.0.0",
     "@babel/helper-transform-fixture-test-runner": "^7.12.17",
     "@babel/plugin-syntax-jsx": ">=7.12.13",
-    "@babel/preset-env": "^7.12.16",
+    "@babel/preset-env": "^7.13.0",
     "@babel/preset-react": "^7.12.13",
     "@babel/preset-typescript": "^7.12.17",
     "@graphql-codegen/cli": "^1.20.1",
