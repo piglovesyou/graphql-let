@@ -2,6 +2,7 @@ import { Types } from '@graphql-codegen/plugin-helpers';
 import loadConfig from './lib/config';
 import { processDtsForContext } from './lib/dts';
 import createExecContext, { ExecContext } from './lib/exec-context';
+import { processGraphQLCodegen } from './lib/graphql-codegen';
 import { updateLog } from './lib/print';
 import { CodegenContext, CommandOpts } from './lib/types';
 import {
@@ -21,22 +22,34 @@ export function buildCodegenConfig(
 
   for (const context of codegenContext) {
     const { tsxFullPath } = context;
-
-    let documents: string;
+    let opts: ConfiguredOutput;
     switch (context.type) {
+      case 'file-schema':
+        opts = {
+          plugins: ['typescript', 'typescript-resolvers'],
+        };
+        break;
+
+      case 'file':
+      case 'load':
+        opts = {
+          plugins: config.plugins,
+          documents: context.gqlRelPath,
+        };
+        break;
+
       case 'literal':
         // XXX: We want to pass shorter `strippedGqlContent`,
         // but `# import` also disappears!
-        documents = context.gqlContent;
+        opts = {
+          plugins: config.plugins,
+          documents: context.gqlContent,
+        };
         break;
-      default:
-        documents = context.gqlRelPath;
     }
     generates[tsxFullPath] = {
       ...config.generateOptions,
-      // graphql-let -controlled fields:
-      documents,
-      plugins: config.plugins,
+      ...opts,
     };
   }
 
@@ -59,7 +72,14 @@ export function buildCodegenConfig(
 async function processCodegenForContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
-): Promise<void> {}
+): Promise<Types.FileOutput[]> {
+  const codegenConfig = buildCodegenConfig(execContext, codegenContext);
+  return await processGraphQLCodegen(
+    execContext,
+    codegenContext,
+    codegenConfig,
+  );
+}
 
 export async function gen2({
   cwd,
@@ -87,9 +107,9 @@ export async function gen2({
     graphqlRelPaths,
   );
 
-  // TODO: processTsForContext()
+  // TODO: processTsForContext(execContext, )
 
-  // TODO: processCodegenForContext()
+  await processCodegenForContext(execContext, codegenContext);
 
   await processDtsForContext(execContext, codegenContext);
 
