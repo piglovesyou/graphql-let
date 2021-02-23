@@ -5,7 +5,7 @@ import slash from 'slash';
 import { printError } from '../lib/print';
 import { CodegenContext } from '../lib/types';
 
-export type LiteralCallExpressionPaths = [
+export type CallExpressionPathPairs = [
   path: NodePath<t.CallExpression>,
   value: string,
 ][];
@@ -18,9 +18,9 @@ export type PendingDeletion = {
   path: NodePath<t.ImportDeclaration>;
 }[];
 
-export type VisitLiteralCallResults = {
+export type VisitedCallExpressionResults = {
   pendingDeletion: PendingDeletion;
-  literalCallExpressionPaths: LiteralCallExpressionPaths;
+  callExpressionPathPairs: CallExpressionPathPairs;
   hasError: boolean;
 };
 
@@ -71,7 +71,7 @@ export function getArgumentString(path: NodePath<t.CallExpression>): string {
 export function visitFromCallExpressionPaths(
   gqlCallExpressionPaths: NodePath<t.CallExpression>[],
 ) {
-  const literalCallExpressionPaths: LiteralCallExpressionPaths = [];
+  const literalCallExpressionPaths: CallExpressionPathPairs = [];
   for (const path of gqlCallExpressionPaths) {
     const value = getArgumentString(path);
     if (value) literalCallExpressionPaths.push([path, value]);
@@ -80,7 +80,7 @@ export function visitFromCallExpressionPaths(
 }
 
 export function removeImportDeclaration(
-  pendingDeletion: VisitLiteralCallResults['pendingDeletion'],
+  pendingDeletion: VisitedCallExpressionResults['pendingDeletion'],
 ) {
   for (const { path: pathToRemove } of pendingDeletion) {
     if (pathToRemove.node.specifiers.length === 1) {
@@ -98,15 +98,12 @@ export function removeImportDeclaration(
 export function modifyLiteralCalls(
   programPath: NodePath<t.Program>,
   sourceFullPath: string,
-  literalCallExpressionPaths: LiteralCallExpressionPaths,
+  CallExpressionPaths: CallExpressionPathPairs,
   codegenContext: CodegenContext[],
 ) {
-  if (literalCallExpressionPaths.length !== codegenContext.length)
+  if (CallExpressionPaths.length !== codegenContext.length)
     throw new Error('what');
-  for (const [
-    i,
-    [callExpressionPath],
-  ] of literalCallExpressionPaths.entries()) {
+  for (const [i, [callExpressionPath]] of CallExpressionPaths.entries()) {
     const { gqlHash, tsxFullPath } = codegenContext[i]!;
     const tsxRelPathFromSource =
       './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
@@ -125,9 +122,9 @@ export function modifyLiteralCalls(
 
 export function visitFromProgramPath(
   programPath: NodePath<t.Program>,
-): VisitLiteralCallResults {
+): VisitedCallExpressionResults {
   const pendingDeletion: PendingDeletion = [];
-  const literalCallExpressionPaths: LiteralCallExpressionPaths = [];
+  const literalCallExpressionPaths: CallExpressionPathPairs = [];
   let hasError = false;
   const localNames: string[] = [];
 
@@ -151,7 +148,11 @@ export function visitFromProgramPath(
 
   // If no use of our library, abort quickly.
   if (!localNames.length)
-    return { literalCallExpressionPaths, hasError, pendingDeletion };
+    return {
+      callExpressionPathPairs: literalCallExpressionPaths,
+      hasError,
+      pendingDeletion,
+    };
 
   function processTargetCalls(
     path: NodePath<t.CallExpression>,
@@ -181,7 +182,7 @@ export function visitFromProgramPath(
 
   return {
     pendingDeletion,
-    literalCallExpressionPaths: literalCallExpressionPaths,
+    callExpressionPathPairs: literalCallExpressionPaths,
     hasError,
   };
 }

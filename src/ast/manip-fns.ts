@@ -5,14 +5,15 @@ import { CodegenConfigForLiteralDocuments } from '../lib/documents';
 import { processDtsForContext } from '../lib/dts';
 import createExecContext, { ExecContext } from '../lib/exec-context';
 import { processGraphQLCodegen } from '../lib/graphql-codegen';
-import { processLiteralsSync } from '../lib/literals/literals';
+import { processLiteralsSync } from '../lib/inject-types/literals';
+import { processLoadsSync } from '../lib/inject-types/loads';
 import {
   createSchemaHashSync,
   shouldGenResolverTypes,
 } from '../lib/resolver-types';
 import { toSync } from '../lib/to-sync';
 import { CodegenContext } from '../lib/types';
-import { LiteralCallExpressionPaths, modifyLiteralCalls } from './ast';
+import { CallExpressionPathPairs, modifyLiteralCalls } from './ast';
 
 // TODO: name of function
 export function prepareCodegenArgs(cwd: string) {
@@ -44,7 +45,7 @@ export async function generateForContext(
 export const generateForContextSync = toSync(generateForContext);
 
 export function manipulateLiterals(
-  literalCallExpressionPaths: LiteralCallExpressionPaths,
+  literalCallExpressionPaths: CallExpressionPathPairs,
   execContext: ExecContext,
   sourceRelPath: string,
   schemaHash: string,
@@ -65,6 +66,36 @@ export function manipulateLiterals(
     programPath,
     sourceFullPath,
     literalCallExpressionPaths,
+    literalCodegenContext,
+  );
+
+  codegenContext.push(...literalCodegenContext);
+}
+
+export function manipulateLoads(
+  loadCallExpressionPaths: CallExpressionPathPairs,
+  execContext: ExecContext,
+  sourceRelPath: string,
+  schemaHash: string,
+  codegenContext: CodegenContext[],
+  programPath: NodePath<t.Program>,
+  sourceFullPath: string,
+) {
+  const loadRelPaths = loadCallExpressionPaths.map(([, value]) => value);
+
+  // TODO:
+  const literalCodegenContext = processLoadsSync(
+    execContext,
+    sourceRelPath,
+    schemaHash,
+    loadRelPaths,
+    codegenContext,
+  );
+
+  modifyLiteralCalls(
+    programPath,
+    sourceFullPath,
+    loadCallExpressionPaths,
     literalCodegenContext,
   );
 

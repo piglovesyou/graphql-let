@@ -15,16 +15,16 @@ export function manipulateFromProgramPath(
   sourceRelPath: string,
   sourceFullPath: string,
 ) {
-  const { literalCallExpressionPaths, pendingDeletion } = visitFromProgramPath(
+  const { callExpressionPathPairs, pendingDeletion } = visitFromProgramPath(
     programPath,
   );
-  if (!literalCallExpressionPaths.length) return;
+  if (!callExpressionPathPairs.length) return;
 
   const codegenContext: CodegenContext[] = [];
   const { execContext, schemaHash } = prepareCodegenArgs(cwd);
 
   manipulateLiterals(
-    literalCallExpressionPaths,
+    callExpressionPathPairs,
     execContext,
     sourceRelPath,
     schemaHash,

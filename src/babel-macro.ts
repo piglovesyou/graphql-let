@@ -4,7 +4,7 @@ import { manipulateFromCalleeExpressionsSync } from './ast/manip-from-callee-exp
 
 const babelMacro = createMacro((params) => {
   const {
-    references: { gql: gqlCalleePaths },
+    references: { gql: gqlCalleePaths, load: loadCalleePaths },
     state,
   } = params;
 
@@ -14,6 +14,7 @@ const babelMacro = createMacro((params) => {
     manipulateFromCalleeExpressionsSync(
       cwd,
       gqlCalleePaths,
+      loadCalleePaths,
       sourceRelPath,
       sourceFullPath,
     );

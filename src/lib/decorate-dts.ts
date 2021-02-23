@@ -1,4 +1,4 @@
-import { appendExportAsObject } from './literals/fns';
+import { appendExportAsObject } from './inject-types/fns';
 import { CodegenContext } from './types';
 
 export function decorateDts(type: CodegenContext['type'], dtsContent: string) {
@@ -12,6 +12,7 @@ export function decorateDts(type: CodegenContext['type'], dtsContent: string) {
 import { DocumentNode } from 'graphql'
 export default DocumentNode
 `;
+    case 'load':
     case 'literal':
       return appendExportAsObject(dtsContent);
   }

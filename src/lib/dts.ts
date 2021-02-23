@@ -133,8 +133,8 @@ export async function processDtsForContext(
   for (const [i, dtsContent] of dtsContents.entries()) {
     const ctx = codegenContext[i];
     const { type, dtsFullPath, gqlHash } = ctx!;
-    let content = withHash(gqlHash, dtsContent);
-    content = decorateDts(type, content);
+    let content = decorateDts(type, dtsContent);
+    content = withHash(gqlHash, content);
     await makeDir(dirname(dtsFullPath));
     await writeFile(dtsFullPath, content);
   }

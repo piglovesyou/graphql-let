@@ -8,8 +8,8 @@ import { dirname, join, join as pathJoin } from 'path';
 import slash from 'slash';
 import {
   modifyLiteralCalls,
+  VisitedCallExpressionResults,
   visitFromProgramPath,
-  VisitLiteralCallResults,
 } from '../../ast/ast';
 import { processGraphQLCodegenForLiterals } from '../documents';
 import { ExecContext } from '../exec-context';
@@ -17,9 +17,10 @@ import { readFile, rimraf } from '../file';
 import { createHash } from '../hash';
 import toSync from '../to-sync';
 import { CodegenContext, LiteralCodegenContext } from '../types';
-import { LiteralCache, PartialCacheStore } from './cache';
+import { PartialCacheStore, TypeCache } from './cache';
 import { createPaths, parserOption } from './fns';
 
+// TODO: Move somewhere
 // To avoid conflicts of file names
 export const typesRootRelDir = 'proj-root';
 
@@ -30,7 +31,7 @@ export async function processLiterals(
   gqlContents: string[],
   codegenContext: CodegenContext[],
 ) {
-  const cache = new LiteralCache(execContext);
+  const cache = new TypeCache(execContext);
   await cache.load();
   const partialCache = cache.get(sourceRelPath);
 
@@ -180,7 +181,7 @@ export async function processLiteralsForContext(
   const { cwd } = execContext;
 
   const visitedSources: {
-    visitLiteralCallResults: VisitLiteralCallResults;
+    visitLiteralCallResults: VisitedCallExpressionResults;
     programPath: NodePath<t.Program>;
     sourceFullPath: string;
     sourceRelPath: string;
@@ -195,7 +196,7 @@ export async function processLiteralsForContext(
         const visitLiteralCallResults = visitFromProgramPath(programPath);
         // TODO: Handle error
         // There's no `gql(`query {}`)` in the source
-        if (!visitLiteralCallResults.literalCallExpressionPaths.length) return;
+        if (!visitLiteralCallResults.callExpressionPathPairs.length) return;
 
         visitedSources.push({
           visitLiteralCallResults,
@@ -207,7 +208,7 @@ export async function processLiteralsForContext(
     });
   }
 
-  const cache = new LiteralCache(execContext);
+  const cache = new TypeCache(execContext);
   await cache.load();
 
   for (const visited of visitedSources) {
@@ -218,9 +219,9 @@ export async function processLiteralsForContext(
       sourceFullPath,
       sourceRelPath,
     } = visited;
-    const { literalCallExpressionPaths } = visitLiteralCallResults;
+    const { callExpressionPathPairs } = visitLiteralCallResults;
 
-    const gqlContents = literalCallExpressionPaths.map(([, value]) => value);
+    const gqlContents = callExpressionPathPairs.map(([, value]) => value);
 
     await processLiteralsDeprecated(
       execContext,
@@ -233,7 +234,7 @@ export async function processLiteralsForContext(
     modifyLiteralCalls(
       programPath,
       sourceFullPath,
-      literalCallExpressionPaths,
+      callExpressionPathPairs,
       scopedCodegenContext,
     );
     for (const context of scopedCodegenContext) codegenContext.push(context);

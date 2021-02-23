@@ -8,12 +8,7 @@ import path from 'path';
 import { ExecContext } from './exec-context';
 import { withHash, writeFile } from './file';
 import { printError } from './print';
-import {
-  CodegenContext,
-  FileCodegenContext,
-  isLiteralContext,
-  LiteralCodegenContext,
-} from './types';
+import { CodegenContext } from './types';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
 export function buildCodegenConfig(
@@ -26,11 +21,17 @@ export function buildCodegenConfig(
 
   for (const context of codegenContext) {
     const { tsxFullPath } = context;
-    const documents = isLiteralContext(context)
-      ? // XXX: We want to pass shorter `strippedGqlContent`,
+
+    let documents: string;
+    switch (context.type) {
+      case 'literal':
+        // XXX: We want to pass shorter `strippedGqlContent`,
         // but `# import` also disappears!
-        (context as LiteralCodegenContext).gqlContent
-      : (context as FileCodegenContext).gqlRelPath;
+        documents = context.gqlContent;
+        break;
+      default:
+        documents = context.gqlRelPath;
+    }
     generates[tsxFullPath] = {
       ...config.generateOptions,
       // graphql-let -controlled fields:

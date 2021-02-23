@@ -48,10 +48,19 @@ export type LiteralCodegenContext = {
 } & CodegenContextBase<'literal'> &
   LiteralCreatedPaths;
 
+export type LoadCodegenContext = {
+  type: 'load';
+  // gqlContent: string;
+  // strippedGqlContent: string;
+} & CodegenContextBase<'load'> &
+  LiteralCreatedPaths &
+  FileCreatedPaths;
+
 export type CodegenContext =
   | FileCodegenContext
   | FileSchemaCodegenContext
-  | LiteralCodegenContext;
+  | LiteralCodegenContext
+  | LoadCodegenContext;
 
 export function isLiteralContext({ type }: CodegenContext): boolean {
   return type === 'literal';

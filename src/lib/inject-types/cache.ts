@@ -26,7 +26,7 @@ export type ProjectCacheStore = {
   [tsxRelPath: string]: PartialCacheStore;
 };
 
-export class LiteralCache {
+export class TypeCache {
   dtsEntrypointFullPath: string;
   storeFullPath: string;
   macroFullPath: string;
