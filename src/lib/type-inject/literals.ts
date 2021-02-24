@@ -61,6 +61,7 @@ export async function processLiterals(
       ...createdPaths,
       type: 'literal',
       gqlContent,
+      resolvedGqlContent: '', // TODO
       strippedGqlContent,
       gqlHash,
       skip: Boolean(partialCache[gqlHash]),
@@ -132,6 +133,7 @@ export async function processLiteralsDeprecated(
       ...createdPaths,
       type: 'literal',
       gqlContent,
+      resolvedGqlContent: '', // TODO
       strippedGqlContent,
       gqlHash,
       skip: Boolean(partialCache[gqlHash]),
