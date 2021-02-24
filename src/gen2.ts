@@ -12,17 +12,17 @@ import makeDir from 'make-dir';
 import pMap from 'p-map';
 import { basename, dirname, join as pathJoin } from 'path';
 import slash from 'slash';
-import { visitFromProgramPath } from './ast/ast';
 import loadConfig from './lib/config';
 import { processDtsForContext } from './lib/dts';
 import createExecContext, { ExecContext } from './lib/exec-context';
-import { readFile, readHash, writeFile } from './lib/file';
+import { readFile, readFileSync, readHash, writeFile } from './lib/file';
 import { processGraphQLCodegen } from './lib/graphql-codegen';
 import { createHash } from './lib/hash';
 import { updateLog } from './lib/print';
 import { parserOption } from './lib/type-inject/fns';
 import { typesRootRelDir } from './lib/type-inject/literals';
 import { CodegenContext, CommandOpts } from './lib/types';
+import { visitFromProgramPath } from './lib2/ast';
 import { appendFileContext, findTargetDocuments } from './lib2/documents';
 import { createTiPaths } from './lib2/fns';
 import { appendFileSchemaContext } from './lib2/resolver-types';
@@ -137,39 +137,90 @@ async function appendLiteralAndLoadContext(
 
               for (const [
                 ,
-                gqlContent,
+                value,
+                importName,
               ] of visitLiteralCallResults.callExpressionPathPairs) {
-                const documentNode = resolveGraphQLDocument(
-                  cwd,
-                  sourceFullPath,
-                  gqlContent,
-                );
+                switch (importName) {
+                  case 'gql':
+                    {
+                      const gqlContent = value;
+                      const documentNode = resolveGraphQLDocument(
+                        cwd,
+                        sourceFullPath,
+                        gqlContent,
+                      );
+                      const documentName = documentNode.definitions
+                        .map((d) => (d as OperationDefinitionNode).name!.value)
+                        .join('-');
+                      const gqlHash = createHash(schemaHash + gqlContent);
+                      const createdPaths = createTiPaths(
+                        execContext,
+                        sourceRelPath,
+                        documentName,
+                      );
+                      const { tsxFullPath, dtsFullPath } = createdPaths;
+                      const strippedGqlContent = stripIgnoredCharacters(
+                        gqlContent,
+                      );
+                      (async () => {
+                        const shouldUpdate =
+                          gqlHash !== (await readHash(tsxFullPath)) ||
+                          gqlHash !== (await readHash(dtsFullPath));
+                        codegenContext.push({
+                          ...createdPaths,
+                          type: 'literal',
+                          gqlHash,
+                          gqlContent,
+                          strippedGqlContent,
+                          skip: !shouldUpdate,
+                        });
+                      })().then(resolve);
+                    }
+                    break;
 
-                const documentName = documentNode.definitions
-                  .map((d) => (d as OperationDefinitionNode).name!.value)
-                  .join('-');
-                const gqlHash = createHash(schemaHash + gqlContent);
-                const createdPaths = createTiPaths(
-                  execContext,
-                  sourceRelPath,
-                  documentName,
-                );
-                const { tsxFullPath, dtsFullPath } = createdPaths;
-                const strippedGqlContent = stripIgnoredCharacters(gqlContent);
-
-                (async () => {
-                  const shouldUpdate =
-                    gqlHash !== (await readHash(tsxFullPath)) ||
-                    gqlHash !== (await readHash(dtsFullPath));
-                  codegenContext.push({
-                    ...createdPaths,
-                    type: 'literal',
-                    gqlHash,
-                    gqlContent,
-                    strippedGqlContent,
-                    skip: !shouldUpdate,
-                  });
-                })().then(resolve);
+                  case 'load': {
+                    const gqlPathFragment = value;
+                    const gqlRelPath = pathJoin(
+                      dirname(sourceRelPath),
+                      gqlPathFragment,
+                    );
+                    const gqlFullPath = pathJoin(cwd, gqlRelPath);
+                    const gqlContent = readFileSync(gqlFullPath, 'utf-8');
+                    const documentNode = resolveGraphQLDocument(
+                      cwd,
+                      sourceFullPath,
+                      gqlContent,
+                    );
+                    const documentName = documentNode.definitions
+                      .map((d) => (d as OperationDefinitionNode).name!.value)
+                      .join('-');
+                    const gqlHash = createHash(schemaHash + gqlContent);
+                    const createdPaths = createTiPaths(
+                      execContext,
+                      sourceRelPath,
+                      documentName,
+                    );
+                    const { tsxFullPath, dtsFullPath } = createdPaths;
+                    const strippedGqlContent = stripIgnoredCharacters(
+                      gqlContent,
+                    );
+                    (async () => {
+                      const shouldUpdate =
+                        gqlHash !== (await readHash(tsxFullPath)) ||
+                        gqlHash !== (await readHash(dtsFullPath));
+                      codegenContext.push({
+                        ...createdPaths,
+                        type: 'load',
+                        gqlHash,
+                        gqlPathFragment,
+                        gqlRelPath,
+                        gqlFullPath,
+                        skip: !shouldUpdate,
+                      });
+                    })().then(resolve);
+                    break;
+                  }
+                }
               }
             },
           });
@@ -198,7 +249,10 @@ async function writeTiIndexForContext(
   let dtsEntrypointContent = '';
   for (const c of codegenContext) {
     switch (c.type) {
-      case 'literal':
+      case 'file':
+      case 'file-schema':
+        continue;
+      case 'literal': {
         // For TS2691
         const dtsRelPathWithoutExtension = slash(
           pathJoin(
@@ -212,7 +266,23 @@ export function gql(gql: \`${c.gqlContent}\`): T${c.gqlHash}.__GraphQLLetTypeInj
 `;
         hasLiteral = true;
         break;
-      // TODO: case 'load':
+      }
+
+      case 'load': {
+        // For TS2691
+        const dtsRelPathWithoutExtension = slash(
+          pathJoin(
+            typesRootRelDir,
+            dirname(c.dtsRelPath),
+            basename(c.dtsRelPath, '.d.ts'),
+          ),
+        );
+        dtsEntrypointContent += `import T${c.gqlHash} from './${dtsRelPathWithoutExtension}';
+export function load(load: \`${c.gqlPathFragment}\`): T${c.gqlHash}.__GraphQLLetTypeInjection;
+`;
+        hasLoad = true;
+        break;
+      }
     }
   }
   await writeFile(gqlDtsEntrypointFullPath, dtsEntrypointContent);

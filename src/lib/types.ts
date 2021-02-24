@@ -50,6 +50,7 @@ export type LiteralCodegenContext = {
 
 export type LoadCodegenContext = {
   type: 'load';
+  gqlPathFragment: string; // load(gqlPathFragment)
   srcRelPath: string;
   srcFullPath: string;
   gqlRelPath: string;

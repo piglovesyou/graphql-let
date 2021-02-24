@@ -5,7 +5,7 @@ import { typesRootRelDir } from '../lib/type-inject/literals';
 export function createTiPaths(
   execContext: ExecContext,
   srcRelPath: string,
-  documentName: string,
+  callIdentity: string,
 ) {
   const abs = (relPath: string) => pathJoin(cwd, relPath);
   const { cwd, config, cacheFullDir } = execContext;
@@ -25,14 +25,14 @@ export function createTiPaths(
   const base = basename(srcRelPath, ext);
 
   // "index-2345.tsx"
-  const tsxBasename = `${base}-${documentName}${ext}`;
+  const tsxBasename = `${base}-${callIdentity}${ext}`;
   // "pages/index-2345.tsx"
   const tsxRelPath = pathJoin(relDir, tsxBasename);
   // "/Users/.../node_modules/graphql-let/__generated__/pages/index-2345.d.ts"
   const tsxFullPath = pathJoin(cacheFullDir, tsxRelPath);
 
   // "index-2345.d.ts"
-  const dtsBasename = `${base}-${documentName}.d.ts`;
+  const dtsBasename = `${base}-${callIdentity}.d.ts`;
   // "pages/index-2345.d.ts"
   const dtsRelPath = pathJoin(relDir, dtsBasename);
   // "/Users/.../node_modules/@types/graphql-let/pages/index-2345.d.ts"
