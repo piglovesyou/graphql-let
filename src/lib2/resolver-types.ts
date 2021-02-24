@@ -82,7 +82,7 @@ export function createSchemaHashSync(execContext: ExecContext) {
   return createHashFromBuffers([configHash, ...contents]);
 }
 
-export async function processResolverTypesIfNeeded(
+export async function appendFileSchemaContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
 ) {

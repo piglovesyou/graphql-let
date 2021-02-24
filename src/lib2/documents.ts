@@ -101,7 +101,7 @@ export function processGraphQLCodegenForLiterals(
   );
 }
 
-export async function processDocumentsForContext(
+export async function appendFileContext(
   execContext: ExecContext,
   schemaHash: string,
   codegenContext: CodegenContext[],

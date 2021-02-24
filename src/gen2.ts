@@ -23,12 +23,9 @@ import { updateLog } from './lib/print';
 import { parserOption } from './lib/type-inject/fns';
 import { typesRootRelDir } from './lib/type-inject/literals';
 import { CodegenContext, CommandOpts } from './lib/types';
-import {
-  findTargetDocuments,
-  processDocumentsForContext,
-} from './lib2/documents';
+import { appendFileContext, findTargetDocuments } from './lib2/documents';
 import { createTiPaths } from './lib2/fns';
-import { processResolverTypesIfNeeded } from './lib2/resolver-types';
+import { appendFileSchemaContext } from './lib2/resolver-types';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
 function buildCodegenConfig(
@@ -111,7 +108,7 @@ function resolveGraphQLDocument(
   return processImport(sourceFullPath, cwd, predefinedImports);
 }
 
-async function processTsForContext(
+async function appendLiteralAndLoadContext(
   execContext: ExecContext,
   schemaHash: string,
   codegenContext: CodegenContext[],
@@ -183,7 +180,7 @@ async function processTsForContext(
   );
 }
 
-async function processTiIndexForContext(
+async function writeTiIndexForContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
 ) {
@@ -242,19 +239,19 @@ export async function gen2({
     execContext,
   );
 
-  const { schemaHash } = await processResolverTypesIfNeeded(
+  const { schemaHash } = await appendFileSchemaContext(
     execContext,
     codegenContext,
   );
 
-  await processDocumentsForContext(
+  await appendFileContext(
     execContext,
     schemaHash,
     codegenContext,
     graphqlRelPaths,
   );
 
-  await processTsForContext(
+  await appendLiteralAndLoadContext(
     execContext,
     schemaHash,
     codegenContext,
@@ -263,9 +260,9 @@ export async function gen2({
 
   await processCodegenForContext(execContext, codegenContext);
 
-  await processTiIndexForContext(execContext, codegenContext);
-
   await processDtsForContext(execContext, codegenContext);
+
+  await writeTiIndexForContext(execContext, codegenContext);
 
   // TODO: removeObsoleteFiles(execContext, codegenContext);
 
