@@ -31,7 +31,7 @@ import { createTiPaths } from './lib2/fns';
 import { processResolverTypesIfNeeded } from './lib2/resolver-types';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
-export function buildCodegenConfig(
+function buildCodegenConfig(
   { cwd, config }: ExecContext,
   codegenContext: CodegenContext[],
 ) {
@@ -40,6 +40,7 @@ export function buildCodegenConfig(
   } = Object.create(null);
 
   for (const context of codegenContext) {
+    if (context.skip) continue;
     const { tsxFullPath } = context;
     let opts: ConfiguredOutput;
     switch (context.type) {
@@ -265,6 +266,8 @@ export async function gen2({
   await processTiIndexForContext(execContext, codegenContext);
 
   await processDtsForContext(execContext, codegenContext);
+
+  // TODO: removeObsoleteFiles(execContext, codegenContext);
 
   return codegenContext;
 }

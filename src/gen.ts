@@ -69,6 +69,7 @@ export default async function gen({
 
   await removeOldTsxCaches(execContext, codegenContext);
 
+  // TODO: Use faster way
   if (codegenContext.filter((e) => !e.skip).length) {
     updateLog(`${codegenContext.length} .d.ts were generated.`);
   } else {
