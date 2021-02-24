@@ -6,6 +6,7 @@ import { processImport } from '@graphql-tools/import';
 import {
   DocumentNode,
   OperationDefinitionNode,
+  print,
   stripIgnoredCharacters,
 } from 'graphql';
 import makeDir from 'make-dir';
@@ -60,7 +61,7 @@ function buildCodegenConfig(
         // but `# import` also disappears!
         opts = {
           plugins: config.plugins,
-          documents: context.gqlContent,
+          documents: context.resolvedGqlContent,
         };
         break;
     }
@@ -89,13 +90,10 @@ function buildCodegenConfig(
 async function processCodegenForContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
-): Promise<Types.FileOutput[]> {
+): Promise<void> {
+  if (!codegenContext.find(({ skip }) => !skip)) return;
   const codegenConfig = buildCodegenConfig(execContext, codegenContext);
-  return await processGraphQLCodegen(
-    execContext,
-    codegenContext,
-    codegenConfig,
-  );
+  await processGraphQLCodegen(execContext, codegenContext, codegenConfig);
 }
 
 function resolveGraphQLDocument(
@@ -117,16 +115,17 @@ async function prepareAppendTiContext(
 ) {
   const { cwd } = execContext;
   const documentNode = resolveGraphQLDocument(cwd, sourceFullPath, gqlContent);
+  const resolvedGqlContent = print(documentNode);
   const documentName = documentNode.definitions
     .map((d) => (d as OperationDefinitionNode).name!.value)
     .join('-');
-  const gqlHash = createHash(schemaHash + gqlContent);
+  const gqlHash = createHash(schemaHash + resolvedGqlContent);
   const createdPaths = createTiPaths(execContext, sourceRelPath, documentName);
   const { tsxFullPath, dtsFullPath } = createdPaths;
   const shouldUpdate =
     gqlHash !== (await readHash(tsxFullPath)) ||
     gqlHash !== (await readHash(dtsFullPath));
-  return { gqlHash, createdPaths, shouldUpdate };
+  return { gqlHash, createdPaths, shouldUpdate, resolvedGqlContent };
 }
 
 async function appendLiteralAndLoadContext(
@@ -175,16 +174,24 @@ async function appendLiteralAndLoadContext(
                         sourceFullPath,
                         gqlContent,
                       )
-                        .then(({ gqlHash, createdPaths, shouldUpdate }) => {
-                          codegenContext.push({
-                            ...createdPaths,
-                            type: 'literal',
+                        .then(
+                          ({
                             gqlHash,
-                            gqlContent,
-                            strippedGqlContent,
-                            skip: !shouldUpdate,
-                          });
-                        })
+                            createdPaths,
+                            shouldUpdate,
+                            resolvedGqlContent,
+                          }) => {
+                            codegenContext.push({
+                              ...createdPaths,
+                              type: 'literal',
+                              gqlHash,
+                              gqlContent,
+                              resolvedGqlContent,
+                              strippedGqlContent,
+                              skip: !shouldUpdate,
+                            });
+                          },
+                        )
                         .then(resolve);
                     }
                     break;

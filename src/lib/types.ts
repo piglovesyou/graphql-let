@@ -44,6 +44,7 @@ export type FileSchemaCodegenContext = CodegenContextBase<'file-schema'> &
 export type LiteralCodegenContext = {
   type: 'literal';
   gqlContent: string;
+  resolvedGqlContent: string;
   strippedGqlContent: string;
 } & CodegenContextBase<'literal'> &
   LiteralCreatedPaths;

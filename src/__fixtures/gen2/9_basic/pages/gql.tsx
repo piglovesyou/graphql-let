@@ -1,7 +1,7 @@
 import { gql } from 'graphql-let';
 
-const { useViewerQuery } = gql(`
-  query Viewer {
+const { useViewer1Query } = gql(`
+  query Viewer1 {
       viewer {
           id
           name
@@ -10,7 +10,7 @@ const { useViewerQuery } = gql(`
   }
 `);
 
-const result = useViewerQuery();
+const result = useViewer1Query();
 result.data.viewer.status as string;
 // @ts-expect-error
 result.data.viewer.status as number;

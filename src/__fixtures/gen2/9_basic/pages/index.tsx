@@ -1,6 +1,6 @@
-import { useViewerQuery } from './viewer.graphql';
+import { useViewer2Query } from './viewer.graphql';
 
-const result = useViewerQuery();
+const result = useViewer2Query();
 result.data.viewer.status as string;
 // @ts-expect-error
 result.data.viewer.status as number;
