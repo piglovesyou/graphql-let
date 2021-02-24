@@ -11,7 +11,7 @@ import fs, { Dirent } from 'fs';
 import makeDir from 'make-dir';
 import { dirname, join as pathJoin } from 'path';
 import ts from 'typescript';
-import genDeprecated from '../src/genDeprecated';
+import gen from '../src/gen';
 import { AbsFn, prepareFixtures } from '../src/lib/__tools/file';
 
 jest.mock('cross-fetch');
@@ -73,7 +73,7 @@ describe('"graphql-let" command', () => {
   test.skip('fails when ts is not configured correctly', async () => {
     let error;
     try {
-      await genDeprecated({
+      await gen({
         cwd,
         configFilePath: 'graphql-let.yml',
       });
@@ -85,7 +85,7 @@ describe('"graphql-let" command', () => {
   test('passes with the correct tsconfig', async () => {
     let error = null;
     try {
-      await genDeprecated({
+      await gen({
         cwd,
         configFilePath: 'graphql-let2.yml',
       });
@@ -98,7 +98,7 @@ describe('"graphql-let" command', () => {
     const findConfigFileMock = jest.spyOn(ts, 'findConfigFile');
     let error = null;
     try {
-      await genDeprecated({
+      await gen({
         cwd,
         configFilePath: 'graphql-let3.yml',
       });
@@ -122,7 +122,7 @@ describe('"graphql-let" command', () => {
     });
     let error = null;
     try {
-      await genDeprecated({
+      await gen({
         cwd,
         configFilePath: 'graphql-let4.yml',
       });
