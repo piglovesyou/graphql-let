@@ -14,7 +14,7 @@ import { matchPathsAndContents } from './lib/__tools/match-paths-and-contents';
 describe('"graphql-let" command', () => {
   test(`Basic command usage results in generating d.ts and passing tsc type check`, async () => {
     const [cwd] = await prepareFixtures(__dirname, '__fixtures/gen/1_basic');
-    await genDeprecated({ cwd });
+    await gen({ cwd });
     await matchPathsAndContents(
       ['**/*.graphql.d.ts', '**/*.graphqls.d.ts'],
       cwd,
