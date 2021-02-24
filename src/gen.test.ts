@@ -3,7 +3,7 @@
 import { statSync } from 'fs';
 import glob from 'globby';
 import pick from 'lodash.pick';
-import gen from './gen';
+import genDeprecated from './genDeprecated';
 import * as prints from './lib/print';
 import { CodegenContext, FileCodegenContext } from './lib/types';
 import { spawn } from './lib/__tools/child-process';
@@ -13,7 +13,7 @@ import { matchPathsAndContents } from './lib/__tools/match-paths-and-contents';
 describe('"graphql-let" command', () => {
   test(`Basic command usage results in generating d.ts and passing tsc type check`, async () => {
     const [cwd] = await prepareFixtures(__dirname, '__fixtures/gen/1_basic');
-    await gen({ cwd });
+    await genDeprecated({ cwd });
     await matchPathsAndContents(
       ['**/*.graphql.d.ts', '**/*.graphqls.d.ts'],
       cwd,
@@ -26,7 +26,7 @@ describe('"graphql-let" command', () => {
       __dirname,
       '__fixtures/gen/2_exclude-files',
     );
-    await gen({ cwd });
+    await genDeprecated({ cwd });
     const files = (
       await glob(['**/*.graphql.d.ts', '**/*.graphqls.d.ts'], { cwd })
     ).sort();
@@ -39,7 +39,7 @@ describe('"graphql-let" command', () => {
       '__fixtures/gen/3_gitignore',
     );
     await rename(abs('_gitignore'), abs('.gitignore'));
-    await gen({ cwd });
+    await genDeprecated({ cwd });
     const files = (
       await glob(['**/*.graphql.d.ts', '**/*.graphqls.d.ts'], { cwd })
     ).sort();
@@ -54,11 +54,11 @@ describe('"graphql-let" command', () => {
     const pickProperties = (context: CodegenContext) =>
       pick(context, ['gqlRelPath', 'tsxRelPath', 'dtsRelPath', 'gqlHash']);
 
-    const result1 = (await gen({ cwd })) as FileCodegenContext[];
+    const result1 = (await genDeprecated({ cwd })) as FileCodegenContext[];
     for (const r of result1) expect(r).toMatchObject({ skip: false });
     expect(result1.map(pickProperties)).toMatchSnapshot();
 
-    const result2 = (await gen({ cwd })) as FileCodegenContext[];
+    const result2 = (await genDeprecated({ cwd })) as FileCodegenContext[];
     for (const r of result2) expect(r).toMatchObject({ skip: true });
     expect(result2.map(pickProperties)).toMatchSnapshot();
 
@@ -81,13 +81,13 @@ describe('"graphql-let" command', () => {
       __dirname,
       '__fixtures/gen/5_pass-config',
     );
-    await gen({ cwd });
+    await genDeprecated({ cwd });
     await matchPathsAndContents(['schema/type-defs.graphqls.d.ts'], cwd);
   });
 
   test(`documents: **/*.tsx generates .d.ts for babel`, async () => {
     const [cwd] = await prepareFixtures(__dirname, '__fixtures/gen/6_babel');
-    await gen({ cwd });
+    await genDeprecated({ cwd });
     await matchPathsAndContents(['node_modules'], cwd);
     await spawn('yarn', ['tsc'], { cwd });
   });
@@ -100,7 +100,7 @@ describe('"graphql-let" command', () => {
       printedMessages.push(err.message);
     });
     try {
-      await gen({ cwd });
+      await genDeprecated({ cwd });
     } catch (e) {
       expect(printedMessages.length).toBe(1);
       expect(printedMessages[0]).toContain(`Failed to load schema

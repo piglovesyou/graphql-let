@@ -11,8 +11,7 @@ import {
 } from '../lib/resolver-types';
 import { toSync } from '../lib/to-sync';
 import { processLiteralsSync } from '../lib/type-inject/literals';
-import { processLoadsSync } from '../lib/type-inject/loads';
-import { CodegenContext } from '../lib/types';
+import { CodegenContext, LiteralCodegenContext } from '../lib/types';
 import { CallExpressionPathPairs, modifyLiteralCalls } from './ast';
 
 // TODO: name of function
@@ -84,13 +83,14 @@ export function manipulateLoads(
   const loadRelPaths = loadCallExpressionPaths.map(([, value]) => value);
 
   // TODO:
-  const literalCodegenContext = processLoadsSync(
-    execContext,
-    sourceRelPath,
-    schemaHash,
-    loadRelPaths,
-    codegenContext,
-  );
+  const literalCodegenContext: LiteralCodegenContext[] = [];
+  //   processLoadsSync(
+  //   execContext,
+  //   sourceRelPath,
+  //   schemaHash,
+  //   loadRelPaths,
+  //   codegenContext,
+  // );
 
   modifyLiteralCalls(
     programPath,

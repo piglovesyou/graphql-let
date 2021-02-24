@@ -31,7 +31,7 @@ async function removeOldTsxCaches(
   );
 }
 
-export default async function gen({
+export default async function genDeprecated({
   cwd,
   configFilePath,
 }: CommandOpts): Promise<CodegenContext[]> {
