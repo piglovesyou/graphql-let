@@ -212,16 +212,19 @@ async function processTiIndexForContext(
         dtsEntrypointContent += `import T${c.gqlHash} from './${dtsRelPathWithoutExtension}';
 export function gql(gql: \`${c.gqlContent}\`): T${c.gqlHash}.__GraphQLLetTypeInjection;
 `;
+        hasLiteral = true;
         break;
       // TODO: case 'load':
     }
   }
   await writeFile(gqlDtsEntrypointFullPath, dtsEntrypointContent);
-  await writeFile(
-    gqlDtsMacroFullPath,
-    (hasLiteral ? `export { gql } from ".";\n` : '') +
-      (hasLoad ? `export { load } from ".";\n` : ''),
-  );
+  if (hasLoad || hasLoad) {
+    await writeFile(
+      gqlDtsMacroFullPath,
+      (hasLiteral ? `export { gql } from ".";\n` : '') +
+        (hasLoad ? `export { load } from ".";\n` : ''),
+    );
+  }
 }
 
 export async function gen2({
