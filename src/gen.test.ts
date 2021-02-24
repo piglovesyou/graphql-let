@@ -3,6 +3,7 @@
 import { statSync } from 'fs';
 import glob from 'globby';
 import pick from 'lodash.pick';
+import gen from './gen';
 import genDeprecated from './genDeprecated';
 import * as prints from './lib/print';
 import { CodegenContext, FileCodegenContext } from './lib/types';
@@ -109,5 +110,11 @@ describe('"graphql-let" command', () => {
         Type "Broke" not found in document.
         Error: Type "Broke" not found in document.`);
     }
+  });
+
+  test('gen', async () => {
+    const [cwd] = await prepareFixtures(__dirname, '__fixtures/gen2/9_basic');
+    await gen({ cwd });
+    await spawn('yarn', ['tsc'], { cwd });
   });
 });

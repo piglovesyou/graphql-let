@@ -293,7 +293,7 @@ export function load(load: \`${c.gqlPathFragment}\`): T${c.gqlHash}.__GraphQLLet
   }
 }
 
-export async function gen2({
+export async function gen({
   cwd,
   configFilePath,
 }: CommandOpts): Promise<CodegenContext[]> {
@@ -337,4 +337,4 @@ export async function gen2({
   return codegenContext;
 }
 
-export default gen2;
+export default gen;
