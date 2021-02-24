@@ -108,6 +108,27 @@ function resolveGraphQLDocument(
   return processImport(sourceFullPath, cwd, predefinedImports);
 }
 
+async function prepareAppendTiContext(
+  execContext: ExecContext,
+  schemaHash: string,
+  sourceRelPath: string,
+  sourceFullPath: string,
+  gqlContent: string,
+) {
+  const { cwd } = execContext;
+  const documentNode = resolveGraphQLDocument(cwd, sourceFullPath, gqlContent);
+  const documentName = documentNode.definitions
+    .map((d) => (d as OperationDefinitionNode).name!.value)
+    .join('-');
+  const gqlHash = createHash(schemaHash + gqlContent);
+  const createdPaths = createTiPaths(execContext, sourceRelPath, documentName);
+  const { tsxFullPath, dtsFullPath } = createdPaths;
+  const shouldUpdate =
+    gqlHash !== (await readHash(tsxFullPath)) ||
+    gqlHash !== (await readHash(dtsFullPath));
+  return { gqlHash, createdPaths, shouldUpdate };
+}
+
 async function appendLiteralAndLoadContext(
   execContext: ExecContext,
   schemaHash: string,
@@ -144,37 +165,27 @@ async function appendLiteralAndLoadContext(
                   case 'gql':
                     {
                       const gqlContent = value;
-                      const documentNode = resolveGraphQLDocument(
-                        cwd,
-                        sourceFullPath,
-                        gqlContent,
-                      );
-                      const documentName = documentNode.definitions
-                        .map((d) => (d as OperationDefinitionNode).name!.value)
-                        .join('-');
-                      const gqlHash = createHash(schemaHash + gqlContent);
-                      const createdPaths = createTiPaths(
-                        execContext,
-                        sourceRelPath,
-                        documentName,
-                      );
-                      const { tsxFullPath, dtsFullPath } = createdPaths;
                       const strippedGqlContent = stripIgnoredCharacters(
                         gqlContent,
                       );
-                      (async () => {
-                        const shouldUpdate =
-                          gqlHash !== (await readHash(tsxFullPath)) ||
-                          gqlHash !== (await readHash(dtsFullPath));
-                        codegenContext.push({
-                          ...createdPaths,
-                          type: 'literal',
-                          gqlHash,
-                          gqlContent,
-                          strippedGqlContent,
-                          skip: !shouldUpdate,
-                        });
-                      })().then(resolve);
+                      prepareAppendTiContext(
+                        execContext,
+                        schemaHash,
+                        sourceRelPath,
+                        sourceFullPath,
+                        gqlContent,
+                      )
+                        .then(({ gqlHash, createdPaths, shouldUpdate }) => {
+                          codegenContext.push({
+                            ...createdPaths,
+                            type: 'literal',
+                            gqlHash,
+                            gqlContent,
+                            strippedGqlContent,
+                            skip: !shouldUpdate,
+                          });
+                        })
+                        .then(resolve);
                     }
                     break;
 
@@ -186,38 +197,25 @@ async function appendLiteralAndLoadContext(
                     );
                     const gqlFullPath = pathJoin(cwd, gqlRelPath);
                     const gqlContent = readFileSync(gqlFullPath, 'utf-8');
-                    const documentNode = resolveGraphQLDocument(
-                      cwd,
+                    prepareAppendTiContext(
+                      execContext,
+                      schemaHash,
+                      sourceRelPath,
                       sourceFullPath,
                       gqlContent,
-                    );
-                    const documentName = documentNode.definitions
-                      .map((d) => (d as OperationDefinitionNode).name!.value)
-                      .join('-');
-                    const gqlHash = createHash(schemaHash + gqlContent);
-                    const createdPaths = createTiPaths(
-                      execContext,
-                      sourceRelPath,
-                      documentName,
-                    );
-                    const { tsxFullPath, dtsFullPath } = createdPaths;
-                    const strippedGqlContent = stripIgnoredCharacters(
-                      gqlContent,
-                    );
-                    (async () => {
-                      const shouldUpdate =
-                        gqlHash !== (await readHash(tsxFullPath)) ||
-                        gqlHash !== (await readHash(dtsFullPath));
-                      codegenContext.push({
-                        ...createdPaths,
-                        type: 'load',
-                        gqlHash,
-                        gqlPathFragment,
-                        gqlRelPath,
-                        gqlFullPath,
-                        skip: !shouldUpdate,
-                      });
-                    })().then(resolve);
+                    )
+                      .then(({ gqlHash, createdPaths, shouldUpdate }) => {
+                        codegenContext.push({
+                          ...createdPaths,
+                          type: 'load',
+                          gqlHash,
+                          gqlPathFragment,
+                          gqlRelPath,
+                          gqlFullPath,
+                          skip: !shouldUpdate,
+                        });
+                      })
+                      .then(resolve);
                     break;
                   }
                 }
