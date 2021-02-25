@@ -1,18 +1,19 @@
 import { getOptions } from 'loader-utils';
 import logUpdate from 'log-update';
-import { join, relative as pathRelative } from 'path';
+import { relative as pathRelative } from 'path';
 import { validate } from 'schema-utils';
 import type { Schema as JsonSchema } from 'schema-utils/declarations/validate';
 import { loader } from 'webpack';
+import { processCodegenForContext } from './gen';
 import loadConfig from './lib/config';
-import { processDocumentsForContext } from './lib/documents';
 import { processDtsForContext } from './lib/dts';
 import createExecContext from './lib/exec-context';
 import { readFile } from './lib/file';
 import memoize from './lib/memoize';
-import { PRINT_PREFIX, updateLog } from './lib/print';
-import { createSchemaHash, shouldGenResolverTypes } from './lib/resolver-types';
+import { PRINT_PREFIX } from './lib/print';
 import { CodegenContext } from './lib/types';
+import { appendFileContext } from './lib2/documents';
+import { appendFileSchemaContext } from './lib2/resolver-types';
 
 const optionsSchema: JsonSchema = {
   type: 'object',
@@ -43,49 +44,31 @@ const processGraphQLLetLoader = memoize(
     cwd: string,
     options: GraphQLLetLoaderOptions,
   ): Promise<string> => {
+    const graphqlRelPath = pathRelative(cwd, gqlFullPath);
     const [config, configHash] = await loadConfig(cwd, options.configFile);
     const execContext = createExecContext(cwd, config, configHash);
-
-    // To pass config change on subsequent generation,
-    // configHash should be primary hash seed.
-    let schemaHash = configHash;
-
-    if (shouldGenResolverTypes(config)) {
-      schemaHash = await createSchemaHash(execContext);
-      const schemaFullPath = join(cwd, config.schemaEntrypoint);
-
-      // If using resolver types, all documents should depend on all schema files.
-      addDependency(schemaFullPath);
-    }
-
-    const gqlRelPath = pathRelative(cwd, gqlFullPath);
     const codegenContext: CodegenContext[] = [];
 
-    const [result] = await processDocumentsForContext(
+    const { schemaHash } = await appendFileSchemaContext(
       execContext,
-      schemaHash,
       codegenContext,
-      [gqlRelPath],
-      [String(gqlContent)],
     );
 
-    // Cache was obsolete
-    if (result) {
-      const { content } = result;
-      updateLog('Generating .d.ts...');
-      await processDtsForContext(execContext, codegenContext);
-      updateLog(`${gqlRelPath} was generated.`);
+    await appendFileContext(execContext, schemaHash, codegenContext, [
+      graphqlRelPath,
+    ]);
 
-      // Hack to prevent duplicated logs for simultaneous build, in SSR app for an example.
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      logUpdate.done();
-      return content;
-    } else {
-      // When cache is fresh, just load it
-      if (codegenContext.length !== 1) throw new Error('never');
-      const [{ tsxFullPath }] = codegenContext;
-      return await readFile(tsxFullPath, 'utf-8');
-    }
+    const [{ skip, tsxFullPath }] = codegenContext;
+    if (skip) return await readFile(tsxFullPath, 'utf-8');
+
+    const [{ content }] = await processCodegenForContext(
+      execContext,
+      codegenContext,
+    );
+
+    await processDtsForContext(execContext, codegenContext);
+
+    return content;
   },
   (gqlFullPath: string) => gqlFullPath,
 );

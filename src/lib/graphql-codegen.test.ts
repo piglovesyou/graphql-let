@@ -1,6 +1,6 @@
 import { join as pathJoin } from 'path';
 import loadConfig from './config';
-import { processGraphQLCodegenForFiles } from './documents';
+import { processGraphQLCodegenForFilesDeprecated } from './documents';
 import createExecContext from './exec-context';
 import { createPaths } from './paths';
 import { FileCodegenContext } from './types';
@@ -22,7 +22,7 @@ describe('graphql-codegen.ts', () => {
         skip: false,
       },
     ];
-    await processGraphQLCodegenForFiles(execContext, codegenContext);
+    await processGraphQLCodegenForFilesDeprecated(execContext, codegenContext);
     await matchPathsAndContents(['__generated__'], cwd);
   });
 });

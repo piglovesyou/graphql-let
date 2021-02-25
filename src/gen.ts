@@ -87,13 +87,17 @@ function buildCodegenConfig(
   };
 }
 
-async function processCodegenForContext(
+export async function processCodegenForContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
-): Promise<void> {
-  if (!codegenContext.find(({ skip }) => !skip)) return;
+): Promise<Types.FileOutput[]> {
+  if (!codegenContext.find(({ skip }) => !skip)) return [];
   const codegenConfig = buildCodegenConfig(execContext, codegenContext);
-  await processGraphQLCodegen(execContext, codegenContext, codegenConfig);
+  return await processGraphQLCodegen(
+    execContext,
+    codegenContext,
+    codegenConfig,
+  );
 }
 
 function resolveGraphQLDocument(

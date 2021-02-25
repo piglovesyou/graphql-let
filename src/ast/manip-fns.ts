@@ -1,7 +1,7 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
 import { loadConfigSync } from '../lib/config';
-import { CodegenConfigForLiteralDocuments } from '../lib/documents';
+import { CodegenConfigForLiteralDocumentsDeprecated } from '../lib/documents';
 import { processDtsForContext } from '../lib/dts';
 import createExecContext, { ExecContext } from '../lib/exec-context';
 import { processGraphQLCodegen } from '../lib/graphql-codegen';
@@ -32,7 +32,7 @@ export async function generateForContext(
   await processGraphQLCodegen(
     execContext,
     codegenContext,
-    new CodegenConfigForLiteralDocuments(
+    new CodegenConfigForLiteralDocumentsDeprecated(
       execContext,
       codegenContext,
       sourceRelPath,

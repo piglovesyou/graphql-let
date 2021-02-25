@@ -14,7 +14,7 @@ import {
   LiteralCodegenContext,
 } from './types';
 
-export async function findTargetDocuments({
+export async function findTargetDocumentsDeprecated({
   cwd,
   config,
 }: ExecContext): Promise<{
@@ -42,7 +42,7 @@ export async function findTargetDocuments({
 
 // GraphQLFileLoader only allows "# import" when passing file paths.
 // But we want it even in gql(`query {}`), don't we?
-export class CodegenConfigForLiteralDocuments extends CodegenConfig {
+export class CodegenConfigForLiteralDocumentsDeprecated extends CodegenConfig {
   sourceRelPath: string;
   constructor(
     execContext: ExecContext,
@@ -72,7 +72,7 @@ export class CodegenConfigForLiteralDocuments extends CodegenConfig {
   }
 }
 
-export function processGraphQLCodegenForFiles(
+export function processGraphQLCodegenForFilesDeprecated(
   execContext: ExecContext,
   codegenContext: FileCodegenContext[],
 ) {
@@ -83,7 +83,7 @@ export function processGraphQLCodegenForFiles(
   );
 }
 
-export function processGraphQLCodegenForLiterals(
+export function processGraphQLCodegenForLiteralsDeprecated(
   execContext: ExecContext,
   codegenContext: LiteralCodegenContext[],
   sourceRelPath: string,
@@ -91,7 +91,7 @@ export function processGraphQLCodegenForLiterals(
   return processGraphQLCodegen(
     execContext,
     codegenContext,
-    new CodegenConfigForLiteralDocuments(
+    new CodegenConfigForLiteralDocumentsDeprecated(
       execContext,
       codegenContext,
       sourceRelPath,
@@ -99,7 +99,7 @@ export function processGraphQLCodegenForLiterals(
   );
 }
 
-export async function processDocumentsForContext(
+export async function processDocumentsForContextDeprecated(
   execContext: ExecContext,
   schemaHash: string,
   codegenContext: CodegenContext[],
@@ -141,7 +141,7 @@ export async function processDocumentsForContext(
 
   if (documentCodegenContext.every(({ skip }) => skip)) return [];
 
-  return await processGraphQLCodegenForFiles(
+  return await processGraphQLCodegenForFilesDeprecated(
     execContext,
     documentCodegenContext,
   );

@@ -2,8 +2,8 @@ import logUpdate from 'log-update';
 import { loader } from 'webpack';
 import loadConfig from './lib/config';
 import {
-  findTargetDocuments,
-  processDocumentsForContext,
+  findTargetDocumentsDeprecated,
+  processDocumentsForContextDeprecated,
 } from './lib/documents';
 import { processDtsForContext } from './lib/dts';
 import createExecContext from './lib/exec-context';
@@ -19,7 +19,9 @@ const processGraphQLCodegenSchemaLoader = memoize(
 
     const codegenContext: CodegenContext[] = [];
 
-    const { graphqlRelPaths } = await findTargetDocuments(execContext);
+    const { graphqlRelPaths } = await findTargetDocumentsDeprecated(
+      execContext,
+    );
 
     const { schemaHash } = await processResolverTypesIfNeeded(
       execContext,
@@ -28,7 +30,7 @@ const processGraphQLCodegenSchemaLoader = memoize(
 
     // Only if schema was changed, documents should also be handled for quick startup of webpack dev.
     if (codegenContext.some(({ skip }) => !skip)) {
-      await processDocumentsForContext(
+      await processDocumentsForContextDeprecated(
         execContext,
         schemaHash,
         codegenContext,

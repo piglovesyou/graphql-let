@@ -3,8 +3,8 @@ import logUpdate from 'log-update';
 import { join } from 'path';
 import loadConfig from './lib/config';
 import {
-  findTargetDocuments,
-  processDocumentsForContext,
+  findTargetDocumentsDeprecated,
+  processDocumentsForContextDeprecated,
 } from './lib/documents';
 import { processDtsForContext } from './lib/dts';
 import createExecContext, { ExecContext } from './lib/exec-context';
@@ -41,16 +41,17 @@ export default async function genDeprecated({
   const execContext = createExecContext(cwd, config, configHash);
   const codegenContext: CodegenContext[] = [];
 
-  const { graphqlRelPaths, tsSourceRelPaths } = await findTargetDocuments(
-    execContext,
-  );
+  const {
+    graphqlRelPaths,
+    tsSourceRelPaths,
+  } = await findTargetDocumentsDeprecated(execContext);
 
   const { schemaHash } = await processResolverTypesIfNeeded(
     execContext,
     codegenContext,
   );
 
-  await processDocumentsForContext(
+  await processDocumentsForContextDeprecated(
     execContext,
     schemaHash,
     codegenContext,

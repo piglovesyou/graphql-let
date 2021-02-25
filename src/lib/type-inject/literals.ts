@@ -11,7 +11,7 @@ import {
   VisitedCallExpressionResults,
   visitFromProgramPath,
 } from '../../ast/ast';
-import { processGraphQLCodegenForLiterals } from '../documents';
+import { processGraphQLCodegenForLiteralsDeprecated } from '../documents';
 import { ExecContext } from '../exec-context';
 import { readFile, rimraf } from '../file';
 import { createHash } from '../hash';
@@ -150,7 +150,7 @@ export async function processLiteralsDeprecated(
   }
 
   // Run codegen to write .tsx
-  await processGraphQLCodegenForLiterals(
+  await processGraphQLCodegenForLiteralsDeprecated(
     execContext,
     literalCodegenContext,
     sourceRelPath,
