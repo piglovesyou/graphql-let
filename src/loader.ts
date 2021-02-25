@@ -11,7 +11,7 @@ import createExecContext from './lib/exec-context';
 import { readFile } from './lib/file';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX } from './lib/print';
-import { CodegenContext, FileSchemaCodegenContext } from './lib/types';
+import { FileCodegenContext, FileSchemaCodegenContext } from './lib/types';
 import { appendFileContext } from './lib2/documents';
 import { appendFileSchemaContext } from './lib2/resolver-types';
 
@@ -47,33 +47,30 @@ const processGraphQLLetLoader = memoize(
     const graphqlRelPath = pathRelative(cwd, gqlFullPath);
     const [config, configHash] = await loadConfig(cwd, options.configFile);
     const execContext = createExecContext(cwd, config, configHash);
-    const codegenContext: CodegenContext[] = [];
 
+    const fileSchemaCodegenContext: FileSchemaCodegenContext[] = [];
     const { schemaHash } = await appendFileSchemaContext(
       execContext,
-      codegenContext,
+      fileSchemaCodegenContext,
     );
-
-    await appendFileContext(execContext, schemaHash, codegenContext, [
-      graphqlRelPath,
-    ]);
-
-    const fileSchemaContext = codegenContext.find(
-      ({ type }) => type === 'file-schema',
-    ) as FileSchemaCodegenContext;
+    const [fileSchemaContext] = fileSchemaCodegenContext;
     if (fileSchemaContext) addDependency(fileSchemaContext.gqlFullPath);
 
-    const { skip, tsxFullPath } = codegenContext.find(
-      ({ type }) => type === 'file',
-    )!;
+    const fileCodegenContext: FileCodegenContext[] = [];
+    await appendFileContext(execContext, schemaHash, fileCodegenContext, [
+      graphqlRelPath,
+    ]);
+    const [fileContext] = fileCodegenContext;
+    if (!fileContext) throw new Error('Never');
+
+    const { skip, tsxFullPath } = fileContext;
     if (skip) return await readFile(tsxFullPath, 'utf-8');
 
-    const [{ content }] = await processCodegenForContext(
-      execContext,
-      codegenContext,
-    );
+    const [{ content }] = await processCodegenForContext(execContext, [
+      fileContext,
+    ]);
 
-    await processDtsForContext(execContext, codegenContext);
+    await processDtsForContext(execContext, [fileContext]);
 
     return content;
   },
