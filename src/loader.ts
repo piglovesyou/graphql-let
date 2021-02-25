@@ -11,7 +11,7 @@ import createExecContext from './lib/exec-context';
 import { readFile } from './lib/file';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX } from './lib/print';
-import { CodegenContext } from './lib/types';
+import { CodegenContext, FileSchemaCodegenContext } from './lib/types';
 import { appendFileContext } from './lib2/documents';
 import { appendFileSchemaContext } from './lib2/resolver-types';
 
@@ -58,7 +58,14 @@ const processGraphQLLetLoader = memoize(
       graphqlRelPath,
     ]);
 
-    const [{ skip, tsxFullPath }] = codegenContext;
+    const fileSchemaContext = codegenContext.find(
+      ({ type }) => type === 'file-schema',
+    ) as FileSchemaCodegenContext;
+    if (fileSchemaContext) addDependency(fileSchemaContext.gqlFullPath);
+
+    const { skip, tsxFullPath } = codegenContext.find(
+      ({ type }) => type === 'file',
+    )!;
     if (skip) return await readFile(tsxFullPath, 'utf-8');
 
     const [{ content }] = await processCodegenForContext(
