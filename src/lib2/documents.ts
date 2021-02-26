@@ -3,7 +3,7 @@ import { processImport } from '@graphql-tools/import';
 import glob from 'globby';
 import { join as pathJoin } from 'path';
 import { ExecContext } from '../lib/exec-context';
-import { readFile, readHash } from '../lib/file';
+import { readFileSync, readHash } from '../lib/file';
 import {
   buildCodegenConfig,
   processGraphQLCodegen,
@@ -101,13 +101,13 @@ export function processGraphQLCodegenForLiterals(
   );
 }
 
-export async function appendFileContext(
+export function appendFileContext(
   execContext: ExecContext,
   schemaHash: string,
   codegenContext: CodegenContext[],
   gqlRelPaths: string[],
   gqlContents?: string[],
-): Promise<void> {
+): void {
   if (!gqlRelPaths.length) return;
 
   const { cwd } = execContext;
@@ -117,7 +117,7 @@ export async function appendFileContext(
     // Loader passes gqlContent directly
     const gqlContent = gqlContents
       ? gqlContents[i]
-      : await readFile(pathJoin(cwd, gqlRelPath), 'utf-8');
+      : readFileSync(pathJoin(cwd, gqlRelPath), 'utf-8');
     if (!gqlContent) throw new Error('never');
 
     const createdPaths = createPaths(execContext, gqlRelPath);

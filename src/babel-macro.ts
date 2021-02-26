@@ -1,6 +1,6 @@
 import { createMacro } from 'babel-plugin-macros';
-import { getPathsFromState } from './ast/ast';
 import { manipulateFromCalleeExpressionsSync } from './ast/manip-from-callee-expressions';
+import { getPathsFromState } from './lib2/ast';
 
 const babelMacro = createMacro((params) => {
   const {

@@ -2,31 +2,23 @@ import { parse } from '@babel/parser';
 import traverse, { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { processImport } from '@graphql-tools/import';
-import {
-  DocumentNode,
-  OperationDefinitionNode,
-  print,
-  stripIgnoredCharacters,
-} from 'graphql';
+import { stripIgnoredCharacters } from 'graphql';
 import makeDir from 'make-dir';
-import pMap from 'p-map';
 import { basename, dirname, join as pathJoin } from 'path';
 import slash from 'slash';
 import loadConfig from './lib/config';
 import { processDtsForContext } from './lib/dts';
 import createExecContext, { ExecContext } from './lib/exec-context';
-import { readFile, readFileSync, readHash, writeFile } from './lib/file';
+import { readFileSync, writeFile } from './lib/file';
 import { processGraphQLCodegen } from './lib/graphql-codegen';
-import { createHash } from './lib/hash';
 import { updateLog } from './lib/print';
 import { parserOption } from './lib/type-inject/fns';
 import { typesRootRelDir } from './lib/type-inject/literals';
 import { CodegenContext, CommandOpts } from './lib/types';
 import { visitFromProgramPath } from './lib2/ast';
 import { appendFileContext, findTargetDocuments } from './lib2/documents';
-import { createTiPaths } from './lib2/fns';
 import { appendFileSchemaContext } from './lib2/resolver-types';
+import { prepareAppendTiContext } from './lib2/type-inject';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
 function buildCodegenConfig(
@@ -100,38 +92,7 @@ export async function processCodegenForContext(
   );
 }
 
-function resolveGraphQLDocument(
-  cwd: string,
-  sourceFullPath: string,
-  gqlContent: string,
-): DocumentNode {
-  // This allows to start from content of GraphQL document, not file path
-  const predefinedImports = { [sourceFullPath]: gqlContent };
-  return processImport(sourceFullPath, cwd, predefinedImports);
-}
-
-async function prepareAppendTiContext(
-  execContext: ExecContext,
-  schemaHash: string,
-  sourceRelPath: string,
-  sourceFullPath: string,
-  gqlContent: string,
-) {
-  const { cwd } = execContext;
-  const documentNode = resolveGraphQLDocument(cwd, sourceFullPath, gqlContent);
-  const resolvedGqlContent = print(documentNode);
-  const documentName = documentNode.definitions
-    .map((d) => (d as OperationDefinitionNode).name!.value)
-    .join('-');
-  const gqlHash = createHash(schemaHash + resolvedGqlContent);
-  const createdPaths = createTiPaths(execContext, sourceRelPath, documentName);
-  const { tsxFullPath, dtsFullPath } = createdPaths;
-  const shouldUpdate =
-    gqlHash !== readHash(tsxFullPath) || gqlHash !== readHash(dtsFullPath);
-  return { gqlHash, createdPaths, shouldUpdate, resolvedGqlContent };
-}
-
-async function appendLiteralAndLoadContext(
+function appendLiteralAndLoadContext(
   execContext: ExecContext,
   schemaHash: string,
   codegenContext: CodegenContext[],
@@ -141,102 +102,86 @@ async function appendLiteralAndLoadContext(
 
   const { cwd } = execContext;
 
-  await pMap(
-    tsSourceRelPaths,
-    (sourceRelPath) => {
-      return new Promise<void>((resolve) => {
-        const sourceFullPath = pathJoin(cwd, sourceRelPath);
-        readFile(sourceFullPath, 'utf-8').then((sourceContent) => {
-          const sourceAST = parse(sourceContent, parserOption);
-          traverse(sourceAST, {
-            Program(programPath: NodePath<t.Program>) {
-              const visitLiteralCallResults = visitFromProgramPath(programPath);
-              // TODO: Handle error
-              if (!visitLiteralCallResults.callExpressionPathPairs.length) {
-                // There's no `gql()` in the source. Skip.
-                resolve();
-                return;
-              }
+  for (const sourceRelPath of tsSourceRelPaths) {
+    const sourceFullPath = pathJoin(cwd, sourceRelPath);
+    const sourceContent = readFileSync(sourceFullPath, 'utf-8');
+    const sourceAST = parse(sourceContent, parserOption);
+    traverse(sourceAST, {
+      Program(programPath: NodePath<t.Program>) {
+        const visitLiteralCallResults = visitFromProgramPath(programPath);
 
-              for (const [
-                ,
-                value,
-                importName,
-              ] of visitLiteralCallResults.callExpressionPathPairs) {
-                switch (importName) {
-                  case 'gql':
-                    {
-                      const gqlContent = value;
-                      const strippedGqlContent = stripIgnoredCharacters(
-                        gqlContent,
-                      );
-                      prepareAppendTiContext(
-                        execContext,
-                        schemaHash,
-                        sourceRelPath,
-                        sourceFullPath,
-                        gqlContent,
-                      )
-                        .then(
-                          ({
-                            gqlHash,
-                            createdPaths,
-                            shouldUpdate,
-                            resolvedGqlContent,
-                          }) => {
-                            codegenContext.push({
-                              ...createdPaths,
-                              type: 'literal',
-                              gqlHash,
-                              gqlContent,
-                              resolvedGqlContent,
-                              strippedGqlContent,
-                              skip: !shouldUpdate,
-                            });
-                          },
-                        )
-                        .then(resolve);
-                    }
-                    break;
+        // There's no `gql()` in the source. Skip.
+        if (!visitLiteralCallResults.callExpressionPathPairs.length) return;
 
-                  case 'load': {
-                    const gqlPathFragment = value;
-                    const gqlRelPath = pathJoin(
-                      dirname(sourceRelPath),
-                      gqlPathFragment,
-                    );
-                    const gqlFullPath = pathJoin(cwd, gqlRelPath);
-                    const gqlContent = readFileSync(gqlFullPath, 'utf-8');
-                    prepareAppendTiContext(
-                      execContext,
-                      schemaHash,
-                      sourceRelPath,
-                      sourceFullPath,
-                      gqlContent,
-                    )
-                      .then(({ gqlHash, createdPaths, shouldUpdate }) => {
-                        codegenContext.push({
-                          ...createdPaths,
-                          type: 'load',
-                          gqlHash,
-                          gqlPathFragment,
-                          gqlRelPath,
-                          gqlFullPath,
-                          skip: !shouldUpdate,
-                        });
-                      })
-                      .then(resolve);
-                    break;
-                  }
-                }
+        for (const [
+          ,
+          value,
+          importName,
+        ] of visitLiteralCallResults.callExpressionPathPairs) {
+          switch (importName) {
+            case 'gql':
+              {
+                const gqlContent = value;
+                const strippedGqlContent = stripIgnoredCharacters(gqlContent);
+                const {
+                  gqlHash,
+                  createdPaths,
+                  shouldUpdate,
+                  resolvedGqlContent,
+                } = prepareAppendTiContext(
+                  execContext,
+                  schemaHash,
+                  sourceRelPath,
+                  sourceFullPath,
+                  gqlContent,
+                );
+                codegenContext.push({
+                  ...createdPaths,
+                  type: 'literal',
+                  gqlHash,
+                  gqlContent,
+                  resolvedGqlContent,
+                  strippedGqlContent,
+                  skip: !shouldUpdate,
+                });
               }
-            },
-          });
-        });
-      });
-    },
-    { concurrency: 2 },
-  );
+              break;
+
+            case 'load': {
+              const gqlPathFragment = value;
+              const gqlRelPath = pathJoin(
+                dirname(sourceRelPath),
+                gqlPathFragment,
+              );
+              const gqlFullPath = pathJoin(cwd, gqlRelPath);
+              const gqlContent = readFileSync(gqlFullPath, 'utf-8');
+              const {
+                gqlHash,
+                createdPaths,
+                shouldUpdate,
+              } = prepareAppendTiContext(
+                execContext,
+                schemaHash,
+                sourceRelPath,
+                sourceFullPath,
+                gqlContent,
+              );
+              codegenContext.push({
+                ...createdPaths,
+                type: 'load',
+                gqlHash,
+                gqlPathFragment,
+                gqlRelPath,
+                gqlFullPath,
+                skip: !shouldUpdate,
+              });
+              break;
+            }
+          }
+        }
+      },
+    });
+  }
 }
 
 async function writeTiIndexForContext(
@@ -322,14 +267,9 @@ export async function gen({
     codegenContext,
   );
 
-  await appendFileContext(
-    execContext,
-    schemaHash,
-    codegenContext,
-    graphqlRelPaths,
-  );
+  appendFileContext(execContext, schemaHash, codegenContext, graphqlRelPaths);
 
-  await appendLiteralAndLoadContext(
+  appendLiteralAndLoadContext(
     execContext,
     schemaHash,
     codegenContext,
