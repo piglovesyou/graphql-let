@@ -77,7 +77,7 @@ export function getHash(
   tiContext: TypeInjectContext,
   sourceRelPath: string,
   gqlName: string,
-): Promise<string | null> {
+): string | null {
   const tiFullPath = createTiFullPath(tiContext, sourceRelPath, gqlName);
   return readHash(tiFullPath);
 }

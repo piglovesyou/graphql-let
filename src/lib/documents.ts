@@ -126,8 +126,7 @@ export async function processDocumentsForContextDeprecated(
     const gqlHash = createHash(schemaHash + gqlContent);
 
     const shouldUpdate =
-      gqlHash !== (await readHash(tsxFullPath)) ||
-      gqlHash !== (await readHash(dtsFullPath));
+      gqlHash !== readHash(tsxFullPath) || gqlHash !== readHash(dtsFullPath);
 
     const context: FileCodegenContext = {
       ...createdPaths,

@@ -97,8 +97,8 @@ export async function processResolverTypesIfNeeded(
     const createdPaths = createPaths(execContext, config.schemaEntrypoint);
 
     const shouldUpdate =
-      schemaHash !== (await readHash(createdPaths.tsxFullPath)) ||
-      schemaHash !== (await readHash(createdPaths.dtsFullPath));
+      schemaHash !== readHash(createdPaths.tsxFullPath) ||
+      schemaHash !== readHash(createdPaths.dtsFullPath);
 
     const context: FileSchemaCodegenContext = {
       ...createdPaths,

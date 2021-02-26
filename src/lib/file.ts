@@ -1,4 +1,4 @@
-import { createReadStream, existsSync, promises as fsPromises } from 'fs';
+import { promises as fsPromises, readFileSync } from 'fs';
 import glob from 'globby';
 import _rimraf from 'rimraf';
 import { promisify } from 'util';
@@ -28,23 +28,19 @@ ${content}`;
 }
 
 // TODO: Move to hash.ts
-export function readHash(filePath: string): Promise<string | null> {
-  if (!existsSync(filePath)) {
-    return Promise.resolve(null);
+export function readHash(filePath: string): string | null {
+  try {
+    // Sync is the fastest for a limited sized file to read hash
+    // https://gist.github.com/piglovesyou/537a8157ba691e8e9e023263bfc7838d
+    const content = readFileSync(filePath, 'utf-8');
+    const hash = content.slice(
+      leadingStringOfGeneratedContent.length,
+      leadingStringOfGeneratedContent.length + hexHashLength,
+    );
+    if (hash) return hash;
+    return null;
+  } catch (error) {
+    if (error.code === 'ENOENT') return null;
+    throw error;
   }
-
-  return new Promise((resolve, reject) => {
-    const stream = createReadStream(filePath, {
-      encoding: 'utf-8',
-      highWaterMark: leadingStringOfGeneratedContent.length + hexHashLength,
-    });
-    stream.on('error', (error) => reject(error));
-    stream.on('data', (chunk: string) => {
-      const hash = chunk.slice(leadingStringOfGeneratedContent.length);
-      if (hash.length !== hexHashLength) return resolve(null);
-
-      resolve(hash);
-    });
-    stream.read();
-  });
 }

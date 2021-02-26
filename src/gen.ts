@@ -127,8 +127,7 @@ async function prepareAppendTiContext(
   const createdPaths = createTiPaths(execContext, sourceRelPath, documentName);
   const { tsxFullPath, dtsFullPath } = createdPaths;
   const shouldUpdate =
-    gqlHash !== (await readHash(tsxFullPath)) ||
-    gqlHash !== (await readHash(dtsFullPath));
+    gqlHash !== readHash(tsxFullPath) || gqlHash !== readHash(dtsFullPath);
   return { gqlHash, createdPaths, shouldUpdate, resolvedGqlContent };
 }
 

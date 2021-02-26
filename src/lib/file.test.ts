@@ -4,7 +4,7 @@ import { readHash } from './file';
 
 describe('file.ts', () => {
   test('readHash reads file from generated file', async () => {
-    const hash = await readHash(
+    const hash = readHash(
       pathJoin(__dirname, '__fixtures/file/dummy-graphql-d-ts.txt'),
     );
     if (!hash) throw new Error('boom');
