@@ -71,16 +71,17 @@ export function getArgumentString(path: NodePath<t.CallExpression>): string {
   return value;
 }
 
-// export function visitFromCallExpressionPaths(
-//   gqlCallExpressionPaths: NodePath<t.CallExpression>[],
-// ) {
-//   const literalCallExpressionPaths: CallExpressionPathPairs = [];
-//   for (const path of gqlCallExpressionPaths) {
-//     const value = getArgumentString(path);
-//     if (value) literalCallExpressionPaths.push([path, value]);
-//   }
-//   return literalCallExpressionPaths;
-// }
+export function visitFromCallExpressionPaths(
+  gqlCallExpressionPaths: NodePath<t.CallExpression>[],
+  fnName: ExportedFunctionName,
+): CallExpressionPathPairs {
+  const literalCallExpressionPaths: CallExpressionPathPairs = [];
+  for (const path of gqlCallExpressionPaths) {
+    const value = getArgumentString(path);
+    if (value) literalCallExpressionPaths.push([path, value, fnName]);
+  }
+  return literalCallExpressionPaths;
+}
 
 export function removeImportDeclaration(
   pendingDeletion: VisitedCallExpressionResults['pendingDeletion'],
