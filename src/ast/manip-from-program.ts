@@ -1,7 +1,7 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
 import { CodegenContext } from '../lib/types';
-import { removeImportDeclaration, visitFromProgramPath } from './ast';
+import { removeImportDeclaration, visitFromProgramPathDeprecated } from './ast';
 import {
   generateForContextSync,
   manipulateLiterals,
@@ -15,9 +15,10 @@ export function manipulateFromProgramPath(
   sourceRelPath: string,
   sourceFullPath: string,
 ) {
-  const { callExpressionPathPairs, pendingDeletion } = visitFromProgramPath(
-    programPath,
-  );
+  const {
+    callExpressionPathPairs,
+    pendingDeletion,
+  } = visitFromProgramPathDeprecated(programPath);
   if (!callExpressionPathPairs.length) return;
 
   const codegenContext: CodegenContext[] = [];

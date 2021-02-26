@@ -12,7 +12,7 @@ import {
 import { toSync } from '../lib/to-sync';
 import { processLiteralsSync } from '../lib/type-inject/literals';
 import { CodegenContext, LiteralCodegenContext } from '../lib/types';
-import { CallExpressionPathPairs, modifyLiteralCalls } from './ast';
+import { CallExpressionPathPairsDeprecated, modifyLiteralCalls } from './ast';
 
 // TODO: name of function
 export function prepareCodegenArgs(cwd: string) {
@@ -44,7 +44,7 @@ export async function generateForContext(
 export const generateForContextSync = toSync(generateForContext);
 
 export function manipulateLiterals(
-  literalCallExpressionPaths: CallExpressionPathPairs,
+  literalCallExpressionPaths: CallExpressionPathPairsDeprecated,
   execContext: ExecContext,
   sourceRelPath: string,
   schemaHash: string,
@@ -72,7 +72,7 @@ export function manipulateLiterals(
 }
 
 export function manipulateLoads(
-  loadCallExpressionPaths: CallExpressionPathPairs,
+  loadCallExpressionPaths: CallExpressionPathPairsDeprecated,
   execContext: ExecContext,
   sourceRelPath: string,
   schemaHash: string,

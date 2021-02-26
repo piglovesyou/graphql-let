@@ -9,7 +9,7 @@ import slash from 'slash';
 import {
   modifyLiteralCalls,
   VisitedCallExpressionResults,
-  visitFromProgramPath,
+  visitFromProgramPathDeprecated,
 } from '../../ast/ast';
 import { processGraphQLCodegenForLiteralsDeprecated } from '../documents';
 import { ExecContext } from '../exec-context';
@@ -195,7 +195,9 @@ export async function processLiteralsForContext(
     const sourceAST = parse(sourceContent, parserOption);
     traverse(sourceAST, {
       Program(programPath: NodePath<t.Program>) {
-        const visitLiteralCallResults = visitFromProgramPath(programPath);
+        const visitLiteralCallResults = visitFromProgramPathDeprecated(
+          programPath,
+        );
         // TODO: Handle error
         // There's no `gql(`query {}`)` in the source
         if (!visitLiteralCallResults.callExpressionPathPairs.length) return;

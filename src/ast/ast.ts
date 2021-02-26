@@ -5,7 +5,7 @@ import slash from 'slash';
 import { printError } from '../lib/print';
 import { CodegenContext } from '../lib/types';
 
-export type CallExpressionPathPairs = [
+export type CallExpressionPathPairsDeprecated = [
   path: NodePath<t.CallExpression>,
   value: string,
 ][];
@@ -20,7 +20,7 @@ export type PendingDeletion = {
 
 export type VisitedCallExpressionResults = {
   pendingDeletion: PendingDeletion;
-  callExpressionPathPairs: CallExpressionPathPairs;
+  callExpressionPathPairs: CallExpressionPathPairsDeprecated;
   hasError: boolean;
 };
 
@@ -71,7 +71,7 @@ export function getArgumentString(path: NodePath<t.CallExpression>): string {
 export function visitFromCallExpressionPaths(
   gqlCallExpressionPaths: NodePath<t.CallExpression>[],
 ) {
-  const literalCallExpressionPaths: CallExpressionPathPairs = [];
+  const literalCallExpressionPaths: CallExpressionPathPairsDeprecated = [];
   for (const path of gqlCallExpressionPaths) {
     const value = getArgumentString(path);
     if (value) literalCallExpressionPaths.push([path, value]);
@@ -98,7 +98,7 @@ export function removeImportDeclaration(
 export function modifyLiteralCalls(
   programPath: NodePath<t.Program>,
   sourceFullPath: string,
-  CallExpressionPaths: CallExpressionPathPairs,
+  CallExpressionPaths: CallExpressionPathPairsDeprecated,
   codegenContext: CodegenContext[],
 ) {
   if (CallExpressionPaths.length !== codegenContext.length)
@@ -120,11 +120,11 @@ export function modifyLiteralCalls(
   }
 }
 
-export function visitFromProgramPath(
+export function visitFromProgramPathDeprecated(
   programPath: NodePath<t.Program>,
 ): VisitedCallExpressionResults {
   const pendingDeletion: PendingDeletion = [];
-  const literalCallExpressionPaths: CallExpressionPathPairs = [];
+  const literalCallExpressionPaths: CallExpressionPathPairsDeprecated = [];
   let hasError = false;
   const localNames: string[] = [];
 
