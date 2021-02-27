@@ -1,5 +1,3 @@
-import { NodePath } from '@babel/core';
-import * as t from '@babel/types';
 import { loadConfigSync } from '../lib/config';
 import { CodegenConfigForLiteralDocumentsDeprecated } from '../lib/documents';
 import { processDtsForContext } from '../lib/dts';
@@ -10,9 +8,7 @@ import {
   shouldGenResolverTypes,
 } from '../lib/resolver-types';
 import { toSync } from '../lib/to-sync';
-import { processLiteralsSync } from '../lib/type-inject/literals';
-import { CodegenContext, LiteralCodegenContext } from '../lib/types';
-import { CallExpressionPathPairsDeprecated, modifyLiteralCalls } from './ast';
+import { CodegenContext } from '../lib/types';
 
 // TODO: name of function
 export function prepareCodegenArgs(cwd: string) {
@@ -42,62 +38,3 @@ export async function generateForContext(
 }
 
 export const generateForContextSync = toSync(generateForContext);
-
-export function manipulateLiterals(
-  literalCallExpressionPaths: CallExpressionPathPairsDeprecated,
-  execContext: ExecContext,
-  sourceRelPath: string,
-  schemaHash: string,
-  codegenContext: CodegenContext[],
-  programPath: NodePath<t.Program>,
-  sourceFullPath: string,
-) {
-  const gqlContents = literalCallExpressionPaths.map(([, value]) => value);
-  const literalCodegenContext = processLiteralsSync(
-    execContext,
-    sourceRelPath,
-    schemaHash,
-    gqlContents,
-    codegenContext,
-  );
-
-  modifyLiteralCalls(
-    programPath,
-    sourceFullPath,
-    literalCallExpressionPaths,
-    literalCodegenContext,
-  );
-
-  codegenContext.push(...literalCodegenContext);
-}
-
-export function manipulateLoads(
-  loadCallExpressionPaths: CallExpressionPathPairsDeprecated,
-  execContext: ExecContext,
-  sourceRelPath: string,
-  schemaHash: string,
-  codegenContext: CodegenContext[],
-  programPath: NodePath<t.Program>,
-  sourceFullPath: string,
-) {
-  const loadRelPaths = loadCallExpressionPaths.map(([, value]) => value);
-
-  // TODO:
-  const literalCodegenContext: LiteralCodegenContext[] = [];
-  //   processLoadsSync(
-  //   execContext,
-  //   sourceRelPath,
-  //   schemaHash,
-  //   loadRelPaths,
-  //   codegenContext,
-  // );
-
-  modifyLiteralCalls(
-    programPath,
-    sourceFullPath,
-    loadCallExpressionPaths,
-    literalCodegenContext,
-  );
-
-  codegenContext.push(...literalCodegenContext);
-}

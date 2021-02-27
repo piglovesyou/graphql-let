@@ -242,6 +242,7 @@ Array [
 exports[`"graphql-let" command documents: **/*.tsx generates .d.ts for babel: node_modules 1`] = `
 Array [
   "node_modules/@types/graphql-let/index.d.ts",
+  "node_modules/@types/graphql-let/macro.d.ts",
   "node_modules/@types/graphql-let/proj-root/pages/index-ViewerX.d.ts",
   "node_modules/@types/graphql-let/proj-root/pages/index-ViewerY-Partial.d.ts",
   "node_modules/graphql-let/__generated__/pages/index-ViewerX.tsx",
@@ -270,6 +271,11 @@ export function gql(gql: \`
     }
   }
 \`): Ta676764526e5ed744fa3abc4ec4497e7357cdd90.__GraphQLLetTypeInjection;
+"
+`;
+
+exports[`"graphql-let" command documents: **/*.tsx generates .d.ts for babel: node_modules/@types/graphql-let/macro.d.ts 1`] = `
+"export { gql } from \\".\\";
 "
 `;
 
