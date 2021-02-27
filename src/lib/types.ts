@@ -13,7 +13,7 @@ export type CreatedPathsBase = {
 };
 
 export type CodegenContextBase<
-  type extends 'document' | 'schema' | 'gql-call' | 'load-call'
+  type extends 'document-import' | 'schema-import' | 'gql-call' | 'load-call'
 > = {
   type: type;
   gqlHash: string;
@@ -37,9 +37,9 @@ export type LiteralCreatedPaths = CreatedPathsBase & {
   srcFullPath: string;
 };
 
-export type FileCodegenContext = CodegenContextBase<'document'> &
+export type FileCodegenContext = CodegenContextBase<'document-import'> &
   FileCreatedPaths;
-export type FileSchemaCodegenContext = CodegenContextBase<'schema'> &
+export type FileSchemaCodegenContext = CodegenContextBase<'schema-import'> &
   FileCreatedPaths;
 
 export type LiteralCodegenContext = {

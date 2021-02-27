@@ -40,13 +40,13 @@ function buildCodegenConfig(
     const { tsxFullPath } = context;
     let opts: ConfiguredOutput;
     switch (context.type) {
-      case 'schema':
+      case 'schema-import':
         opts = {
           plugins: ['typescript', 'typescript-resolvers'],
         };
         break;
 
-      case 'document':
+      case 'document-import':
       case 'load-call':
         opts = {
           plugins: config.plugins,
@@ -216,8 +216,8 @@ export function writeTiIndexForContext(
   let dtsEntrypointContent = '';
   for (const c of codegenContext) {
     switch (c.type) {
-      case 'document':
-      case 'schema':
+      case 'document-import':
+      case 'schema-import':
         continue;
       case 'gql-call': {
         // For TS2691

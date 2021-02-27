@@ -101,7 +101,7 @@ export async function appendFileSchemaContext(
 
     const context: FileSchemaCodegenContext = {
       ...createdPaths,
-      type: 'schema',
+      type: 'schema-import',
       gqlHash: schemaHash,
       skip: !shouldUpdate,
     };

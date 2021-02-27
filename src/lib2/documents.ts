@@ -62,7 +62,7 @@ export function appendFileContext(
 
     const context: FileCodegenContext = {
       ...createdPaths,
-      type: 'document',
+      type: 'document-import',
       gqlHash,
       skip: !shouldUpdate,
     };

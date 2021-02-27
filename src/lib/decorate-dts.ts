@@ -3,7 +3,7 @@ import { CodegenContext } from './types';
 
 export function decorateDts(type: CodegenContext['type'], dtsContent: string) {
   switch (type) {
-    case 'schema':
+    case 'schema-import':
       return `${dtsContent}
  
 // This is an extra code in addition to what graphql-codegen makes.
