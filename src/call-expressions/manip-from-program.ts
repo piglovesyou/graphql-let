@@ -1,15 +1,15 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
-import {
-  appendLiteralAndLoadCodegenContext,
-  writeTiIndexForContext,
-} from '../gen';
 import { CodegenContext } from '../lib/types';
 import {
   removeImportDeclaration,
   replaceCallExpressions,
   visitFromProgramPath,
 } from './ast';
+import {
+  appendLiteralAndLoadCodegenContext,
+  writeTiIndexForContext,
+} from './call-expressions';
 // import { removeImportDeclaration, visitFromProgramPathDeprecated } from './ast';
 import { generateForContextSync, prepareCodegenArgs } from './manip-fns';
 

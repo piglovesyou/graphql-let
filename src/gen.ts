@@ -1,268 +1,42 @@
-import { parse } from '@babel/parser';
-import traverse, { NodePath } from '@babel/traverse';
-import * as t from '@babel/types';
-import { Types } from '@graphql-codegen/plugin-helpers';
-import { writeFileSync } from 'fs';
-import { stripIgnoredCharacters } from 'graphql';
-import makeDir from 'make-dir';
-import { basename, dirname, join as pathJoin } from 'path';
-import slash from 'slash';
+import glob from 'globby';
 import {
-  CallExpressionPathPairs,
-  parserOption,
-  visitFromProgramPath,
-} from './call-expressions/ast';
-import {
-  prepareAppendTiContext,
-  typesRootRelDir,
-} from './call-expressions/type-inject';
-import {
-  appendFileContext,
-  findTargetDocuments,
-} from './document-import/document-import';
+  appendLiteralAndLoadContextForTsSources,
+  writeTiIndexForContext,
+} from './call-expressions/call-expressions';
+import { appendFileContext } from './document-import/document-import';
+import { processCodegenForContext } from './lib/codegen';
 import loadConfig from './lib/config';
 import { processDtsForContext } from './lib/dts';
 import createExecContext, { ExecContext } from './lib/exec-context';
-import { readFileSync } from './lib/file';
-import { processGraphQLCodegen } from './lib/graphql-codegen';
+import { isTypeScriptPath } from './lib/paths';
 import { updateLog } from './lib/print';
 import { CodegenContext, CommandOpts } from './lib/types';
 import { appendFileSchemaContext } from './schema-import/schema-import';
-import ConfiguredOutput = Types.ConfiguredOutput;
 
-function buildCodegenConfig(
-  { cwd, config }: ExecContext,
-  codegenContext: CodegenContext[],
-) {
-  const generates: {
-    [outputPath: string]: ConfiguredOutput;
-  } = Object.create(null);
-
-  for (const context of codegenContext) {
-    if (context.skip) continue;
-    const { tsxFullPath } = context;
-    let opts: ConfiguredOutput;
-    switch (context.type) {
-      case 'schema-import':
-        opts = {
-          plugins: ['typescript', 'typescript-resolvers'],
-        };
-        break;
-
-      case 'document-import':
-      case 'load-call':
-        opts = {
-          plugins: config.plugins,
-          documents: context.gqlRelPath,
-        };
-        break;
-
-      case 'gql-call':
-        // XXX: We want to pass shorter `strippedGqlContent`,
-        // but `# import` also disappears!
-        opts = {
-          plugins: config.plugins,
-          documents: context.resolvedGqlContent,
-        };
-        break;
-    }
-    generates[tsxFullPath] = {
-      ...config.generateOptions,
-      ...opts,
-    };
-  }
-
-  return {
-    silent: true,
-    ...config,
-    // @ts-ignore
+export async function findTargetSources({
+  cwd,
+  config,
+}: ExecContext): Promise<{
+  graphqlRelPaths: string[];
+  tsSourceRelPaths: string[];
+}> {
+  const documentPaths = await glob(config.documents, {
     cwd,
-
-    // @ts-ignore This allows recognizing "#import" in GraphQL documents
-    skipGraphQLImport: false,
-
-    // In our config, "documents" should always be empty
-    // since "generates" should take care of them.
-    documents: undefined,
-    generates,
-  };
-}
-
-export async function processCodegenForContext(
-  execContext: ExecContext,
-  codegenContext: CodegenContext[],
-): Promise<Types.FileOutput[]> {
-  if (!codegenContext.find(({ skip }) => !skip)) return [];
-  const codegenConfig = buildCodegenConfig(execContext, codegenContext);
-  return await processGraphQLCodegen(
-    execContext,
-    codegenContext,
-    codegenConfig,
-  );
-}
-
-export function appendLiteralAndLoadCodegenContext(
-  callExpressionPathPairs: CallExpressionPathPairs,
-  execContext: ExecContext,
-  schemaHash: string,
-  sourceRelPath: string,
-  sourceFullPath: string,
-  codegenContext: CodegenContext[],
-  cwd: string,
-): void {
-  if (!callExpressionPathPairs.length) return;
-
-  for (const [, value, importName] of callExpressionPathPairs) {
-    switch (importName) {
-      case 'gql':
-        {
-          const gqlContent = value;
-          const strippedGqlContent = stripIgnoredCharacters(gqlContent);
-          const {
-            gqlHash,
-            createdPaths,
-            shouldUpdate,
-            resolvedGqlContent,
-          } = prepareAppendTiContext(
-            execContext,
-            schemaHash,
-            sourceRelPath,
-            sourceFullPath,
-            gqlContent,
-          );
-          codegenContext.push({
-            ...createdPaths,
-            type: 'gql-call',
-            gqlHash,
-            gqlContent,
-            resolvedGqlContent,
-            strippedGqlContent,
-            skip: !shouldUpdate,
-          });
-        }
-        break;
-
-      case 'load': {
-        const gqlPathFragment = value;
-        const gqlRelPath = pathJoin(dirname(sourceRelPath), gqlPathFragment);
-        const gqlFullPath = pathJoin(cwd, gqlRelPath);
-        const gqlContent = readFileSync(gqlFullPath, 'utf-8');
-        const { gqlHash, createdPaths, shouldUpdate } = prepareAppendTiContext(
-          execContext,
-          schemaHash,
-          sourceRelPath,
-          sourceFullPath,
-          gqlContent,
-        );
-        codegenContext.push({
-          ...createdPaths,
-          type: 'load-call',
-          gqlHash,
-          gqlPathFragment,
-          gqlRelPath,
-          gqlFullPath,
-          skip: !shouldUpdate,
-        });
-        break;
-      }
-    }
-  }
-}
-
-function appendLiteralAndLoadContextForTsSources(
-  execContext: ExecContext,
-  schemaHash: string,
-  codegenContext: CodegenContext[],
-  tsSourceRelPaths: string[],
-) {
-  if (!tsSourceRelPaths.length) return;
-
-  const { cwd } = execContext;
-
-  for (const sourceRelPath of tsSourceRelPaths) {
-    const sourceFullPath = pathJoin(cwd, sourceRelPath);
-    const sourceContent = readFileSync(sourceFullPath, 'utf-8');
-    const sourceAST = parse(sourceContent, parserOption);
-    traverse(sourceAST, {
-      Program(programPath: NodePath<t.Program>) {
-        const { callExpressionPathPairs } = visitFromProgramPath(programPath);
-
-        appendLiteralAndLoadCodegenContext(
-          callExpressionPathPairs,
-          execContext,
-          schemaHash,
-          sourceRelPath,
-          sourceFullPath,
-          codegenContext,
-          cwd,
-        );
-      },
-    });
-  }
-}
-
-export function writeTiIndexForContext(
-  execContext: ExecContext,
-  codegenContext: CodegenContext[],
-) {
-  const { cwd, config } = execContext;
-  const gqlDtsEntrypointFullPath = pathJoin(cwd, config.gqlDtsEntrypoint);
-  const gqlDtsEntrypointFullDir = pathJoin(
-    cwd,
-    dirname(config.gqlDtsEntrypoint),
-  );
-  const gqlDtsMacroFullPath = pathJoin(gqlDtsEntrypointFullDir, 'macro.d.ts');
-  makeDir.sync(gqlDtsEntrypointFullDir);
-
-  let hasLiteral = false;
-  let hasLoad = false;
-  let dtsEntrypointContent = '';
-  for (const c of codegenContext) {
-    switch (c.type) {
-      case 'document-import':
-      case 'schema-import':
-        continue;
-      case 'gql-call': {
-        // For TS2691
-        const dtsRelPathWithoutExtension = slash(
-          pathJoin(
-            typesRootRelDir,
-            dirname(c.dtsRelPath),
-            basename(c.dtsRelPath, '.d.ts'),
-          ),
-        );
-        dtsEntrypointContent += `import T${c.gqlHash} from './${dtsRelPathWithoutExtension}';
-export function gql(gql: \`${c.gqlContent}\`): T${c.gqlHash}.__GraphQLLetTypeInjection;
-`;
-        hasLiteral = true;
-        break;
-      }
-
-      case 'load-call': {
-        // For TS2691
-        const dtsRelPathWithoutExtension = slash(
-          pathJoin(
-            typesRootRelDir,
-            dirname(c.dtsRelPath),
-            basename(c.dtsRelPath, '.d.ts'),
-          ),
-        );
-        dtsEntrypointContent += `import T${c.gqlHash} from './${dtsRelPathWithoutExtension}';
-export function load(load: \`${c.gqlPathFragment}\`): T${c.gqlHash}.__GraphQLLetTypeInjection;
-`;
-        hasLoad = true;
-        break;
-      }
-    }
-  }
-  writeFileSync(gqlDtsEntrypointFullPath, dtsEntrypointContent);
-  if (hasLiteral || hasLoad) {
-    writeFileSync(
-      gqlDtsMacroFullPath,
-      (hasLiteral ? `export { gql } from ".";\n` : '') +
-        (hasLoad ? `export { load } from ".";\n` : ''),
+    gitignore: config.respectGitIgnore,
+  });
+  if (documentPaths.length === 0) {
+    throw new Error(
+      `No GraphQL documents are found from the path ${JSON.stringify(
+        config.documents,
+      )}. Check "documents" in .graphql-let.yml.`,
     );
   }
+  const graphqlRelPaths: string[] = [];
+  const tsSourceRelPaths: string[] = [];
+  for (const p of documentPaths) {
+    isTypeScriptPath(p) ? tsSourceRelPaths.push(p) : graphqlRelPaths.push(p);
+  }
+  return { graphqlRelPaths, tsSourceRelPaths };
 }
 
 export async function gen({
@@ -275,7 +49,7 @@ export async function gen({
   const execContext = createExecContext(cwd, config, configHash);
   const codegenContext: CodegenContext[] = [];
 
-  const { graphqlRelPaths, tsSourceRelPaths } = await findTargetDocuments(
+  const { graphqlRelPaths, tsSourceRelPaths } = await findTargetSources(
     execContext,
   );
 

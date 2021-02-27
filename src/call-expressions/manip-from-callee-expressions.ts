@@ -1,9 +1,5 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
-import {
-  appendLiteralAndLoadCodegenContext,
-  writeTiIndexForContext,
-} from '../gen';
 import { CodegenContext } from '../lib/types';
 import {
   CallExpressionPathPairs,
@@ -11,6 +7,10 @@ import {
   replaceCallExpressions,
   visitFromCallExpressionPaths,
 } from './ast';
+import {
+  appendLiteralAndLoadCodegenContext,
+  writeTiIndexForContext,
+} from './call-expressions';
 import { generateForContextSync, prepareCodegenArgs } from './manip-fns';
 
 export function manipulateFromCalleeExpressionsSync(

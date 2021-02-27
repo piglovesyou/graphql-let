@@ -5,7 +5,7 @@ import { validate } from 'schema-utils';
 import type { Schema as JsonSchema } from 'schema-utils/declarations/validate';
 import { loader } from 'webpack';
 import { appendFileContext } from './document-import/document-import';
-import { processCodegenForContext } from './gen';
+import { processCodegenForContext } from './lib/codegen';
 import loadConfig from './lib/config';
 import { processDtsForContext } from './lib/dts';
 import createExecContext from './lib/exec-context';

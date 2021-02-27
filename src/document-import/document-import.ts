@@ -1,36 +1,9 @@
-import glob from 'globby';
 import { join as pathJoin } from 'path';
 import { ExecContext } from '../lib/exec-context';
 import { readFileSync, readHash } from '../lib/file';
 import { createHash } from '../lib/hash';
-import { createPaths, isTypeScriptPath } from '../lib/paths';
+import { createPaths } from '../lib/paths';
 import { CodegenContext, FileCodegenContext } from '../lib/types';
-
-export async function findTargetDocuments({
-  cwd,
-  config,
-}: ExecContext): Promise<{
-  graphqlRelPaths: string[];
-  tsSourceRelPaths: string[];
-}> {
-  const documentPaths = await glob(config.documents, {
-    cwd,
-    gitignore: config.respectGitIgnore,
-  });
-  if (documentPaths.length === 0) {
-    throw new Error(
-      `No GraphQL documents are found from the path ${JSON.stringify(
-        config.documents,
-      )}. Check "documents" in .graphql-let.yml.`,
-    );
-  }
-  const graphqlRelPaths: string[] = [];
-  const tsSourceRelPaths: string[] = [];
-  for (const p of documentPaths) {
-    isTypeScriptPath(p) ? tsSourceRelPaths.push(p) : graphqlRelPaths.push(p);
-  }
-  return { graphqlRelPaths, tsSourceRelPaths };
-}
 
 export function appendFileContext(
   execContext: ExecContext,
