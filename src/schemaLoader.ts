@@ -8,7 +8,7 @@ import { readFile } from './lib/file';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX } from './lib/print';
 import { CodegenContext } from './lib/types';
-import { appendFileSchemaContext } from './schema/resolver-types';
+import { appendFileSchemaContext } from './schema-import/schema-import';
 
 const processGraphQLCodegenSchemaLoader = memoize(
   async (cwd: string) => {

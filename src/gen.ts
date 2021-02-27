@@ -16,6 +16,10 @@ import {
   prepareAppendTiContext,
   typesRootRelDir,
 } from './call-expressions/type-inject';
+import {
+  appendFileContext,
+  findTargetDocuments,
+} from './document-import/document-import';
 import loadConfig from './lib/config';
 import { processDtsForContext } from './lib/dts';
 import createExecContext, { ExecContext } from './lib/exec-context';
@@ -23,8 +27,7 @@ import { readFileSync } from './lib/file';
 import { processGraphQLCodegen } from './lib/graphql-codegen';
 import { updateLog } from './lib/print';
 import { CodegenContext, CommandOpts } from './lib/types';
-import { appendFileContext, findTargetDocuments } from './lib2/documents';
-import { appendFileSchemaContext } from './schema/resolver-types';
+import { appendFileSchemaContext } from './schema-import/schema-import';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
 function buildCodegenConfig(

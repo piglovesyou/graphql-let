@@ -4,6 +4,7 @@ import { relative as pathRelative } from 'path';
 import { validate } from 'schema-utils';
 import type { Schema as JsonSchema } from 'schema-utils/declarations/validate';
 import { loader } from 'webpack';
+import { appendFileContext } from './document-import/document-import';
 import { processCodegenForContext } from './gen';
 import loadConfig from './lib/config';
 import { processDtsForContext } from './lib/dts';
@@ -12,8 +13,7 @@ import { readFile } from './lib/file';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX } from './lib/print';
 import { FileCodegenContext, FileSchemaCodegenContext } from './lib/types';
-import { appendFileContext } from './lib2/documents';
-import { appendFileSchemaContext } from './schema/resolver-types';
+import { appendFileSchemaContext } from './schema-import/schema-import';
 
 const optionsSchema: JsonSchema = {
   type: 'object',
