@@ -2,12 +2,10 @@ import { processCodegenForContext } from '../lib/codegen';
 import { loadConfigSync } from '../lib/config';
 import { processDtsForContext } from '../lib/dts';
 import createExecContext, { ExecContext } from '../lib/exec-context';
-import {
-  createSchemaHashSync,
-  shouldGenResolverTypes,
-} from '../lib/resolver-types';
 import { toSync } from '../lib/to-sync';
 import { CodegenContext } from '../lib/types';
+import { shouldGenResolverTypes } from '../schema-import/resolver-types';
+import { createSchemaHashSync } from '../schema-import/schema-import';
 
 // TODO: name of function
 export function prepareCodegenArgs(cwd: string) {

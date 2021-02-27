@@ -11,50 +11,50 @@ import { printError } from './print';
 import { CodegenContext } from './types';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
-export function buildCodegenConfig(
-  { cwd, config }: ExecContext,
-  codegenContext: CodegenContext[],
-) {
-  const generates: {
-    [outputPath: string]: ConfiguredOutput;
-  } = Object.create(null);
-
-  for (const context of codegenContext) {
-    const { tsxFullPath } = context;
-
-    let documents: string;
-    switch (context.type) {
-      case 'gql-call':
-        // XXX: We want to pass shorter `strippedGqlContent`,
-        // but `# import` also disappears!
-        documents = context.gqlContent;
-        break;
-      default:
-        documents = context.gqlRelPath;
-    }
-    generates[tsxFullPath] = {
-      ...config.generateOptions,
-      // graphql-let -controlled fields:
-      documents,
-      plugins: config.plugins,
-    };
-  }
-
-  return {
-    silent: true,
-    ...config,
-    // @ts-ignore
-    cwd,
-
-    // @ts-ignore This allows recognizing "#import" in GraphQL documents
-    skipGraphQLImport: false,
-
-    // In our config, "documents" should always be empty
-    // since "generates" should take care of them.
-    documents: undefined,
-    generates,
-  };
-}
+// export function buildCodegenConfig(
+//   { cwd, config }: ExecContext,
+//   codegenContext: CodegenContext[],
+// ) {
+//   const generates: {
+//     [outputPath: string]: ConfiguredOutput;
+//   } = Object.create(null);
+//
+//   for (const context of codegenContext) {
+//     const { tsxFullPath } = context;
+//
+//     let documents: string;
+//     switch (context.type) {
+//       case 'gql-call':
+//         // XXX: We want to pass shorter `strippedGqlContent`,
+//         // but `# import` also disappears!
+//         documents = context.gqlContent;
+//         break;
+//       default:
+//         documents = context.gqlRelPath;
+//     }
+//     generates[tsxFullPath] = {
+//       ...config.generateOptions,
+//       // graphql-let -controlled fields:
+//       documents,
+//       plugins: config.plugins,
+//     };
+//   }
+//
+//   return {
+//     silent: true,
+//     ...config,
+//     // @ts-ignore
+//     cwd,
+//
+//     // @ts-ignore This allows recognizing "#import" in GraphQL documents
+//     skipGraphQLImport: false,
+//
+//     // In our config, "documents" should always be empty
+//     // since "generates" should take care of them.
+//     documents: undefined,
+//     generates,
+//   };
+// }
 
 export async function processGraphQLCodegen(
   execContext: ExecContext,

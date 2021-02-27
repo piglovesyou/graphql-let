@@ -1,7 +1,11 @@
+import { generate } from '@graphql-codegen/cli';
+import { CodegenContext as CodegenConfig } from '@graphql-codegen/cli/config';
 import { Types } from '@graphql-codegen/plugin-helpers';
+import makeDir from 'make-dir';
+import path from 'path';
 import { ExecContext } from './exec-context';
-import { processGraphQLCodegen } from './graphql-codegen';
-import toSync from './to-sync';
+import { withHash, writeFile } from './file';
+import { printError } from './print';
 import { CodegenContext } from './types';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
@@ -63,6 +67,40 @@ export function buildCodegenConfig(
   };
 }
 
+async function processGraphQLCodegen(
+  execContext: ExecContext,
+  codegenContext: CodegenContext[],
+  generateArg: CodegenConfig | (Types.Config & { cwd?: string }),
+): Promise<Types.FileOutput[]> {
+  let results: Types.FileOutput[];
+  try {
+    results = await generate(generateArg, false);
+  } catch (error) {
+    if (error.name === 'ListrError' && error.errors != null) {
+      for (const err of error.errors) {
+        err.message = `${err.message}${err.details}`;
+        printError(err);
+      }
+    } else {
+      printError(error);
+    }
+    throw error;
+  }
+  if (codegenContext.length !== results.length) throw new Error('never');
+  // Object option "generates" in codegen obviously doesn't guarantee result's order.
+  const tsxPathTable = new Map<string, CodegenContext>(
+    codegenContext.map((c) => [c.tsxFullPath, c]),
+  );
+  for (const result of results) {
+    const { filename, content } = result;
+    const context = tsxPathTable.get(filename);
+    if (!context) throw new Error('never');
+    await makeDir(path.dirname(filename));
+    await writeFile(filename, withHash(context.gqlHash, content));
+  }
+  return results;
+}
+
 export async function processCodegenForContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
@@ -75,5 +113,3 @@ export async function processCodegenForContext(
     codegenConfig,
   );
 }
-
-export const processCodegenForContextSync = toSync(processCodegenForContext);
