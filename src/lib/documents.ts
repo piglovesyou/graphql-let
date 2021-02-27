@@ -3,11 +3,7 @@ import { processImport } from '@graphql-tools/import';
 import { join as pathJoin } from 'path';
 import { ExecContext } from './exec-context';
 import { buildCodegenConfig, processGraphQLCodegen } from './graphql-codegen';
-import {
-  CodegenContext,
-  FileCodegenContext,
-  LiteralCodegenContext,
-} from './types';
+import { CodegenContext, FileCodegenContext } from './types';
 
 // export async function findTargetDocumentsDeprecated({
 //   cwd,
@@ -78,22 +74,22 @@ export function processGraphQLCodegenForFilesDeprecated(
   );
 }
 
-export function processGraphQLCodegenForLiteralsDeprecated(
-  execContext: ExecContext,
-  codegenContext: LiteralCodegenContext[],
-  sourceRelPath: string,
-) {
-  return processGraphQLCodegen(
-    execContext,
-    codegenContext,
-    new CodegenConfigForLiteralDocumentsDeprecated(
-      execContext,
-      codegenContext,
-      sourceRelPath,
-    ),
-  );
-}
-
+// export function processGraphQLCodegenForLiteralsDeprecated(
+//   execContext: ExecContext,
+//   codegenContext: LiteralCodegenContext[],
+//   sourceRelPath: string,
+// ) {
+//   return processGraphQLCodegen(
+//     execContext,
+//     codegenContext,
+//     new CodegenConfigForLiteralDocumentsDeprecated(
+//       execContext,
+//       codegenContext,
+//       sourceRelPath,
+//     ),
+//   );
+// }
+//
 // export async function processDocumentsForContextDeprecated(
 //   execContext: ExecContext,
 //   schemaHash: string,
