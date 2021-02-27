@@ -99,15 +99,15 @@ export function removeImportDeclaration(
   }
 }
 
-export function modifyLiteralCalls(
+export function replaceCallExpressions(
   programPath: NodePath<t.Program>,
   sourceFullPath: string,
-  CallExpressionPaths: CallExpressionPathPairs,
+  callExpressionPaths: CallExpressionPathPairs,
   codegenContext: CodegenContext[],
 ) {
-  if (CallExpressionPaths.length !== codegenContext.length)
+  if (callExpressionPaths.length !== codegenContext.length)
     throw new Error('what');
-  for (const [i, [callExpressionPath]] of CallExpressionPaths.entries()) {
+  for (const [i, [callExpressionPath]] of callExpressionPaths.entries()) {
     const { gqlHash, tsxFullPath } = codegenContext[i]!;
     const tsxRelPathFromSource =
       './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
