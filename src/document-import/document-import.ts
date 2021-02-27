@@ -1,7 +1,7 @@
 import { join as pathJoin } from 'path';
 import { ExecContext } from '../lib/exec-context';
-import { readFileSync, readHash } from '../lib/file';
-import { createHash } from '../lib/hash';
+import { readFileSync } from '../lib/file';
+import { createHash, readHash } from '../lib/hash';
 import { createPaths } from '../lib/paths';
 import { CodegenContext, FileCodegenContext } from '../lib/types';
 

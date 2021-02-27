@@ -11,10 +11,11 @@ import {
   readConfigFile,
   sys,
 } from 'typescript';
+import { appendExportAsObject } from '../call-expressions/decorate-dts';
 import { ConfigTypes } from './config';
-import { decorateDts } from './decorate-dts';
 import { ExecContext } from './exec-context';
-import { withHash, writeFile } from './file';
+import { writeFile } from './file';
+import { withHash } from './hash';
 import { CodegenContext } from './types';
 
 const essentialCompilerOptions: CompilerOptions = {
@@ -23,6 +24,24 @@ const essentialCompilerOptions: CompilerOptions = {
   skipLibCheck: true,
   noEmit: false,
 };
+
+function decorateDts(type: CodegenContext['type'], dtsContent: string) {
+  switch (type) {
+    case 'schema-import':
+      return `${dtsContent}
+ 
+// This is an extra code in addition to what graphql-codegen makes.
+// Users are likely to use 'graphql-tag/loader' with 'graphql-tag/schema/loader'
+// in webpack. This code enables the result to be typed.
+import { DocumentNode } from 'graphql'
+export default DocumentNode
+`;
+    case 'load-call':
+    case 'gql-call':
+      return appendExportAsObject(dtsContent);
+  }
+  return dtsContent;
+}
 
 function resolveCompilerOptions(cwd: string, { TSConfigFile }: ConfigTypes) {
   const fileName = TSConfigFile || 'tsconfig.json';

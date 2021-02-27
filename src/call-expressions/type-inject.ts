@@ -1,8 +1,7 @@
 import { processImport } from '@graphql-tools/import';
 import { DocumentNode, OperationDefinitionNode, print } from 'graphql';
 import { ExecContext } from '../lib/exec-context';
-import { readHash } from '../lib/file';
-import { createHash } from '../lib/hash';
+import { createHash, readHash } from '../lib/hash';
 import { createTiPaths } from './paths';
 
 export const typesRootRelDir = 'proj-root';
