@@ -1,7 +1,7 @@
-import * as V1ffee34aad94b8da4e33faf385ded9238d7affef from "./node_modules/graphql-let/__generated__/proj-root/input-1ffee34aad94b8da4e33faf385ded9238d7affef.ts";
+import * as V4de3a990eddfa70dba05f32dbaca0afc6aca7bda from "./node_modules/graphql-let/__generated__/input-Viewer.ts";
 const {
   useViewerQuery
-} = V1ffee34aad94b8da4e33faf385ded9238d7affef;
+} = V4de3a990eddfa70dba05f32dbaca0afc6aca7bda;
 
 function nest1() {
   function nest2() {
