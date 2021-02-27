@@ -5,6 +5,8 @@ import { readHash } from '../lib/file';
 import { createHash } from '../lib/hash';
 import { createTiPaths } from './paths';
 
+export const typesRootRelDir = 'proj-root';
+
 function resolveGraphQLDocument(
   cwd: string,
   sourceFullPath: string,

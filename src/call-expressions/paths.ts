@@ -1,6 +1,6 @@
 import { basename, dirname, extname, join as pathJoin } from 'path';
 import { ExecContext } from '../lib/exec-context';
-import { typesRootRelDir } from '../lib/type-inject/literals';
+import { typesRootRelDir } from './type-inject';
 
 export function createTiPaths(
   execContext: ExecContext,

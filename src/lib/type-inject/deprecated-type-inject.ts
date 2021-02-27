@@ -1,9 +1,9 @@
 import { existsSync } from 'fs';
 import { basename, dirname, extname, join as pathJoin } from 'path';
+import { typesRootRelDir } from '../../call-expressions/type-inject';
 import { ExecContext } from '../exec-context';
 import { readHash, statSync } from '../file';
 import { JSONObject } from '../to-sync';
-import { typesRootRelDir } from './literals';
 
 type TypeInjectDiff = {
   type: 'add' | 'remove';

@@ -11,7 +11,10 @@ import {
   CallExpressionPathPairs,
   visitFromProgramPath,
 } from './call-expressions/ast';
-import { prepareAppendTiContext } from './call-expressions/type-inject';
+import {
+  prepareAppendTiContext,
+  typesRootRelDir,
+} from './call-expressions/type-inject';
 import { appendFileSchemaContext } from './file-schema/resolver-types';
 import loadConfig from './lib/config';
 import { processDtsForContext } from './lib/dts';
@@ -20,7 +23,6 @@ import { readFileSync } from './lib/file';
 import { processGraphQLCodegen } from './lib/graphql-codegen';
 import { updateLog } from './lib/print';
 import { parserOption } from './lib/type-inject/fns';
-import { typesRootRelDir } from './lib/type-inject/literals';
 import { CodegenContext, CommandOpts } from './lib/types';
 import { appendFileContext, findTargetDocuments } from './lib2/documents';
 import ConfiguredOutput = Types.ConfiguredOutput;
