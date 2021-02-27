@@ -16,7 +16,6 @@ import {
   prepareAppendTiContext,
   typesRootRelDir,
 } from './call-expressions/type-inject';
-import { appendFileSchemaContext } from './file-schema/resolver-types';
 import loadConfig from './lib/config';
 import { processDtsForContext } from './lib/dts';
 import createExecContext, { ExecContext } from './lib/exec-context';
@@ -25,6 +24,7 @@ import { processGraphQLCodegen } from './lib/graphql-codegen';
 import { updateLog } from './lib/print';
 import { CodegenContext, CommandOpts } from './lib/types';
 import { appendFileContext, findTargetDocuments } from './lib2/documents';
+import { appendFileSchemaContext } from './schema/resolver-types';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
 function buildCodegenConfig(

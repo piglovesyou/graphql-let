@@ -2,7 +2,7 @@ import generator from '@babel/generator';
 import { parse } from '@babel/parser';
 import traverse, { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
-import { parserOption } from '../../call-expressions/ast';
+import { parserOption } from './ast';
 
 export function appendExportAsObject(dtsContent: string) {
   // TODO: Build ast?

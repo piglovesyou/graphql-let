@@ -1,4 +1,4 @@
-import { appendExportAsObject } from './type-inject/fns';
+import { appendExportAsObject } from '../call-expressions/decorate-dts';
 import { CodegenContext } from './types';
 
 export function decorateDts(type: CodegenContext['type'], dtsContent: string) {
