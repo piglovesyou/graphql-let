@@ -6,7 +6,9 @@ import { cleanup } from '../src/lib/__tools/file';
 import { matchPathsAndContents } from '../src/lib/__tools/match-paths-and-contents';
 
 const cwd = join(__dirname, '.__fixtures/babel');
-const ignoreDirs = ['macro-load'];
+const ignoreDirs: string[] = [
+  // 'macro-load'
+];
 
 beforeAll(async () => {
   await cleanup(cwd, ['**/node_modules']);
