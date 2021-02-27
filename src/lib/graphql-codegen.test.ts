@@ -17,7 +17,7 @@ describe('graphql-codegen.ts', () => {
     const codegenContext: FileCodegenContext[] = [
       {
         ...paths,
-        type: 'file',
+        type: 'document',
         gqlHash: 'xx',
         skip: false,
       },

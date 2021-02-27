@@ -3,7 +3,7 @@ import { CodegenContext } from './types';
 
 export function decorateDts(type: CodegenContext['type'], dtsContent: string) {
   switch (type) {
-    case 'file-schema':
+    case 'schema':
       return `${dtsContent}
  
 // This is an extra code in addition to what graphql-codegen makes.
@@ -12,8 +12,8 @@ export function decorateDts(type: CodegenContext['type'], dtsContent: string) {
 import { DocumentNode } from 'graphql'
 export default DocumentNode
 `;
-    case 'load':
-    case 'literal':
+    case 'load-call':
+    case 'gql-call':
       return appendExportAsObject(dtsContent);
   }
   return dtsContent;

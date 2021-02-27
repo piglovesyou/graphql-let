@@ -13,7 +13,7 @@ export type CreatedPathsBase = {
 };
 
 export type CodegenContextBase<
-  type extends 'file' | 'file-schema' | 'literal' | 'load'
+  type extends 'document' | 'schema' | 'gql-call' | 'load-call'
 > = {
   type: type;
   gqlHash: string;
@@ -37,26 +37,27 @@ export type LiteralCreatedPaths = CreatedPathsBase & {
   srcFullPath: string;
 };
 
-export type FileCodegenContext = CodegenContextBase<'file'> & FileCreatedPaths;
-export type FileSchemaCodegenContext = CodegenContextBase<'file-schema'> &
+export type FileCodegenContext = CodegenContextBase<'document'> &
+  FileCreatedPaths;
+export type FileSchemaCodegenContext = CodegenContextBase<'schema'> &
   FileCreatedPaths;
 
 export type LiteralCodegenContext = {
-  type: 'literal';
+  type: 'gql-call';
   gqlContent: string;
   resolvedGqlContent: string;
   strippedGqlContent: string;
-} & CodegenContextBase<'literal'> &
+} & CodegenContextBase<'gql-call'> &
   LiteralCreatedPaths;
 
 export type LoadCodegenContext = {
-  type: 'load';
+  type: 'load-call';
   gqlPathFragment: string; // load(gqlPathFragment)
   srcRelPath: string;
   srcFullPath: string;
   gqlRelPath: string;
   gqlFullPath: string;
-} & CodegenContextBase<'load'> &
+} & CodegenContextBase<'load-call'> &
   CreatedPathsBase;
 
 export type CodegenContext =
@@ -66,5 +67,5 @@ export type CodegenContext =
   | LoadCodegenContext;
 
 export function isLiteralContext({ type }: CodegenContext): boolean {
-  return type === 'literal';
+  return type === 'gql-call';
 }

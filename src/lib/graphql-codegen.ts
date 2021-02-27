@@ -24,7 +24,7 @@ export function buildCodegenConfig(
 
     let documents: string;
     switch (context.type) {
-      case 'literal':
+      case 'gql-call':
         // XXX: We want to pass shorter `strippedGqlContent`,
         // but `# import` also disappears!
         documents = context.gqlContent;

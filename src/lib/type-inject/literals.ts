@@ -36,7 +36,7 @@
 //     );
 //     const context: LiteralCodegenContext = {
 //       ...createdPaths,
-//       type: 'literal',
+//       type: 'gql-call',
 //       gqlContent,
 //       resolvedGqlContent: '', // TODO
 //       strippedGqlContent,
@@ -108,7 +108,7 @@
 //     );
 //     const context: LiteralCodegenContext = {
 //       ...createdPaths,
-//       type: 'literal',
+//       type: 'gql-call',
 //       gqlContent,
 //       resolvedGqlContent: '', // TODO
 //       strippedGqlContent,

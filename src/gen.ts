@@ -40,21 +40,21 @@ function buildCodegenConfig(
     const { tsxFullPath } = context;
     let opts: ConfiguredOutput;
     switch (context.type) {
-      case 'file-schema':
+      case 'schema':
         opts = {
           plugins: ['typescript', 'typescript-resolvers'],
         };
         break;
 
-      case 'file':
-      case 'load':
+      case 'document':
+      case 'load-call':
         opts = {
           plugins: config.plugins,
           documents: context.gqlRelPath,
         };
         break;
 
-      case 'literal':
+      case 'gql-call':
         // XXX: We want to pass shorter `strippedGqlContent`,
         // but `# import` also disappears!
         opts = {
@@ -129,7 +129,7 @@ export function appendLiteralAndLoadCodegenContext(
           );
           codegenContext.push({
             ...createdPaths,
-            type: 'literal',
+            type: 'gql-call',
             gqlHash,
             gqlContent,
             resolvedGqlContent,
@@ -153,7 +153,7 @@ export function appendLiteralAndLoadCodegenContext(
         );
         codegenContext.push({
           ...createdPaths,
-          type: 'load',
+          type: 'load-call',
           gqlHash,
           gqlPathFragment,
           gqlRelPath,
@@ -216,10 +216,10 @@ export function writeTiIndexForContext(
   let dtsEntrypointContent = '';
   for (const c of codegenContext) {
     switch (c.type) {
-      case 'file':
-      case 'file-schema':
+      case 'document':
+      case 'schema':
         continue;
-      case 'literal': {
+      case 'gql-call': {
         // For TS2691
         const dtsRelPathWithoutExtension = slash(
           pathJoin(
@@ -235,7 +235,7 @@ export function gql(gql: \`${c.gqlContent}\`): T${c.gqlHash}.__GraphQLLetTypeInj
         break;
       }
 
-      case 'load': {
+      case 'load-call': {
         // For TS2691
         const dtsRelPathWithoutExtension = slash(
           pathJoin(

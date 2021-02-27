@@ -48,7 +48,7 @@
 //
 //     const context: LoadCodegenContext = {
 //       ...createdPaths,
-//       type: 'load',
+//       type: 'load-call',
 //       gqlPathFragment:
 //       gqlHash,
 //       gqlRelPath,

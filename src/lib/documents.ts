@@ -130,7 +130,7 @@ export async function processDocumentsForContextDeprecated(
 
     const context: FileCodegenContext = {
       ...createdPaths,
-      type: 'file',
+      type: 'document',
       gqlHash,
       skip: !shouldUpdate,
     };

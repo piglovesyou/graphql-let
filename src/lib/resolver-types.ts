@@ -102,7 +102,7 @@ export async function processResolverTypesIfNeeded(
 
     const context: FileSchemaCodegenContext = {
       ...createdPaths,
-      type: 'file-schema',
+      type: 'schema',
       gqlHash: schemaHash,
       skip: !shouldUpdate,
     };
