@@ -7,6 +7,12 @@ import { stripIgnoredCharacters } from 'graphql';
 import makeDir from 'make-dir';
 import { basename, dirname, join as pathJoin } from 'path';
 import slash from 'slash';
+import {
+  CallExpressionPathPairs,
+  visitFromProgramPath,
+} from './call-expressions/ast';
+import { prepareAppendTiContext } from './call-expressions/type-inject';
+import { appendFileSchemaContext } from './file-schema/resolver-types';
 import loadConfig from './lib/config';
 import { processDtsForContext } from './lib/dts';
 import createExecContext, { ExecContext } from './lib/exec-context';
@@ -16,10 +22,7 @@ import { updateLog } from './lib/print';
 import { parserOption } from './lib/type-inject/fns';
 import { typesRootRelDir } from './lib/type-inject/literals';
 import { CodegenContext, CommandOpts } from './lib/types';
-import { CallExpressionPathPairs, visitFromProgramPath } from './lib2/ast';
 import { appendFileContext, findTargetDocuments } from './lib2/documents';
-import { appendFileSchemaContext } from './lib2/resolver-types';
-import { prepareAppendTiContext } from './lib2/type-inject';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
 function buildCodegenConfig(

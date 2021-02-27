@@ -3,7 +3,7 @@ import { DocumentNode, OperationDefinitionNode, print } from 'graphql';
 import { ExecContext } from '../lib/exec-context';
 import { readHash } from '../lib/file';
 import { createHash } from '../lib/hash';
-import { createTiPaths } from './fns';
+import { createTiPaths } from './paths';
 
 function resolveGraphQLDocument(
   cwd: string,
