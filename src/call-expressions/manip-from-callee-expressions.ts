@@ -66,5 +66,5 @@ export function manipulateFromCalleeExpressionsSync(
 
   writeTiIndexForContext(execContext, codegenContext);
 
-  generateForContextSync(execContext, codegenContext, sourceRelPath);
+  generateForContextSync(execContext, codegenContext);
 }

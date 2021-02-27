@@ -1,6 +1,7 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { ExecContext } from './exec-context';
 import { processGraphQLCodegen } from './graphql-codegen';
+import toSync from './to-sync';
 import { CodegenContext } from './types';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
@@ -74,3 +75,5 @@ export async function processCodegenForContext(
     codegenConfig,
   );
 }
+
+export const processCodegenForContextSync = toSync(processCodegenForContext);

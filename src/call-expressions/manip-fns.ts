@@ -1,8 +1,7 @@
+import { processCodegenForContext } from '../lib/codegen';
 import { loadConfigSync } from '../lib/config';
-import { CodegenConfigForLiteralDocumentsDeprecated } from '../lib/documents';
 import { processDtsForContext } from '../lib/dts';
 import createExecContext, { ExecContext } from '../lib/exec-context';
-import { processGraphQLCodegen } from '../lib/graphql-codegen';
 import {
   createSchemaHashSync,
   shouldGenResolverTypes,
@@ -23,17 +22,8 @@ export function prepareCodegenArgs(cwd: string) {
 export async function generateForContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
-  sourceRelPath: string,
 ) {
-  await processGraphQLCodegen(
-    execContext,
-    codegenContext,
-    new CodegenConfigForLiteralDocumentsDeprecated(
-      execContext,
-      codegenContext,
-      sourceRelPath,
-    ),
-  );
+  await processCodegenForContext(execContext, codegenContext);
   await processDtsForContext(execContext, codegenContext);
 }
 

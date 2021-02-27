@@ -10,7 +10,6 @@ import {
   appendLiteralAndLoadCodegenContext,
   writeTiIndexForContext,
 } from './call-expressions';
-// import { removeImportDeclaration, visitFromProgramPathDeprecated } from './ast';
 import { generateForContextSync, prepareCodegenArgs } from './manip-fns';
 
 export function manipulateFromProgramPath(
@@ -49,5 +48,5 @@ export function manipulateFromProgramPath(
 
   writeTiIndexForContext(execContext, codegenContext);
 
-  generateForContextSync(execContext, codegenContext, sourceRelPath);
+  generateForContextSync(execContext, codegenContext);
 }
