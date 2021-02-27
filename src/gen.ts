@@ -9,6 +9,7 @@ import { basename, dirname, join as pathJoin } from 'path';
 import slash from 'slash';
 import {
   CallExpressionPathPairs,
+  parserOption,
   visitFromProgramPath,
 } from './call-expressions/ast';
 import {
@@ -22,7 +23,6 @@ import createExecContext, { ExecContext } from './lib/exec-context';
 import { readFileSync } from './lib/file';
 import { processGraphQLCodegen } from './lib/graphql-codegen';
 import { updateLog } from './lib/print';
-import { parserOption } from './lib/type-inject/fns';
 import { CodegenContext, CommandOpts } from './lib/types';
 import { appendFileContext, findTargetDocuments } from './lib2/documents';
 import ConfiguredOutput = Types.ConfiguredOutput;

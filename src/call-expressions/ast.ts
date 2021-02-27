@@ -1,4 +1,5 @@
 import { NodePath, PluginPass } from '@babel/core';
+import { ParserOptions } from '@babel/parser';
 import * as t from '@babel/types';
 import { dirname, relative } from 'path';
 import slash from 'slash';
@@ -28,6 +29,11 @@ export type VisitedCallExpressionResults = {
 };
 
 const IMPORT_NAME = 'graphql-let';
+
+export const parserOption: ParserOptions = {
+  sourceType: 'module',
+  plugins: ['typescript', 'jsx'],
+};
 
 export function getPathsFromState(state: PluginPass) {
   const { cwd } = state;
