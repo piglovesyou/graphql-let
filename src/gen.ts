@@ -3,7 +3,8 @@ import {
   appendLiteralAndLoadContextForTsSources,
   writeTiIndexForContext,
 } from './call-expressions/handle-codegen-context';
-import { appendFileContext } from './document-import/document-import';
+import { appendFileContext } from './file-imports/document-import';
+import { appendFileSchemaContext } from './file-imports/schema-import';
 import { processCodegenForContext } from './lib/codegen';
 import loadConfig from './lib/config';
 import { processDtsForContext } from './lib/dts';
@@ -11,7 +12,6 @@ import createExecContext, { ExecContext } from './lib/exec-context';
 import { isTypeScriptPath } from './lib/paths';
 import { updateLog } from './lib/print';
 import { CodegenContext, CommandOpts } from './lib/types';
-import { appendFileSchemaContext } from './schema-import/schema-import';
 
 async function findTargetSources({
   cwd,

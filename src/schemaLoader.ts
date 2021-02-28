@@ -1,5 +1,6 @@
 import logUpdate from 'log-update';
 import { loader } from 'webpack';
+import { appendFileSchemaContext } from './file-imports/schema-import';
 import { processCodegenForContext } from './lib/codegen';
 import loadConfig from './lib/config';
 import { processDtsForContext } from './lib/dts';
@@ -8,7 +9,6 @@ import { readFile } from './lib/file';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX } from './lib/print';
 import { CodegenContext } from './lib/types';
-import { appendFileSchemaContext } from './schema-import/schema-import';
 
 const processGraphQLCodegenSchemaLoader = memoize(
   async (cwd: string) => {
