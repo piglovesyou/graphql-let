@@ -1,6 +1,13 @@
 import { gql } from 'graphql-let/macro';
 
-const { useViewerQuery } = gql(`query Viewer { viewer { name } }`);
+const { useViewerQuery } = gql(`
+  # import Partial from './partial.graphql'
+  query Viewer {
+    viewer {
+      ...Partial
+    }
+  }
+`);
 
 function nest1() {
   function nest2() {
