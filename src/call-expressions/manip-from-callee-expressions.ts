@@ -7,10 +7,7 @@ import {
   replaceCallExpressions,
   visitFromCallExpressionPaths,
 } from './ast';
-import {
-  appendLiteralAndLoadCodegenContext,
-  writeTiIndexForContext,
-} from './handle-codegen-context';
+import { appendLiteralAndLoadCodegenContext } from './handle-codegen-context';
 import { generateFilesForContextSync, prepareToManipulate } from './manip-fns';
 
 export function manipulateFromCalleeExpressionsSync(
@@ -63,8 +60,6 @@ export function manipulateFromCalleeExpressionsSync(
     callExpressionPathPairs,
     codegenContext,
   );
-
-  writeTiIndexForContext(execContext, codegenContext);
 
   generateFilesForContextSync(execContext, codegenContext);
 }

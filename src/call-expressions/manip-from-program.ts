@@ -6,10 +6,7 @@ import {
   replaceCallExpressions,
   visitFromProgramPath,
 } from './ast';
-import {
-  appendLiteralAndLoadCodegenContext,
-  writeTiIndexForContext,
-} from './handle-codegen-context';
+import { appendLiteralAndLoadCodegenContext } from './handle-codegen-context';
 import { generateFilesForContextSync, prepareToManipulate } from './manip-fns';
 
 export function manipulateFromProgramPath(
@@ -45,8 +42,6 @@ export function manipulateFromProgramPath(
   );
 
   removeImportDeclaration(pendingDeletion);
-
-  writeTiIndexForContext(execContext, codegenContext);
 
   generateFilesForContextSync(execContext, codegenContext);
 }
