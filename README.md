@@ -8,23 +8,23 @@ that integrates graphql-let.
 
 ## Table of Contents
 
--   [Why it exists](#why-it-exists)
--   [How it works](#how-it-works)
--   [Get started with webpack loader](#get-started-with-webpack-loader)
--   [Configuration is compatible with `codegen.yml`, except:](#configuration-is-compatible-with-codegenyml-except)
--   [Setup Babel Plugin for inline GraphQL documents](#setup-babel-plugin-for-inline-graphql-documents)
--   [Jest Transformer](#jest-transformer)
--   [Experimental feature: Resolver Types](#experimental-feature-resolver-types)
--   [FAQ](#faq)
--   [Contribution](#contribution)
--   [License](#license)
+*   [Why this exists](#why-this-exists)
+*   [Supported entrypoints and features](#supported-entrypoints-and-features)
+*   [Get started with webpack loader](#get-started-with-webpack-loader)
+*   [Configuration is compatible with `codegen.yml`, except:](#configuration-is-compatible-with-codegenyml-except)
+*   [Setup Babel Plugin for inline GraphQL documents](#setup-babel-plugin-for-inline-graphql-documents)
+*   [Jest Transformer](#jest-transformer)
+*   [Experimental feature: Resolver Types](#experimental-feature-resolver-types)
+*   [FAQ](#faq)
+*   [Contribution](#contribution)
+*   [License](#license)
 
 ## Why this exists
 
 One of the strengths of GraphQL is
 [enforcing data types on runtime](https://graphql.github.io/graphql-spec/June2018/#sec-Value-Completion).
 Further, TypeScript and
-[GraphQL code generator](https://graphql-code-generator.com/) 
+[GraphQL code generator](https://graphql-code-generator.com/)
 helps it even safer to type your codebase statically. Both makes a truly type-protected
 development environment with rich IDE assists.
 
@@ -41,20 +41,14 @@ const News: React.FC = () => {
 }
 ```
 
-
-
-
-
-
-
 ## Supported entrypoints and features
 
 There are three entry points to start graphql-let:
 
--   CLI
--   babel-plugin-macros
--   webpack loader
--   Babel plugin
+*   CLI
+*   babel-plugin-macros
+*   webpack loader
+*   Babel plugin
 
 Mostly, all of them do the same.
 
@@ -63,25 +57,22 @@ Mostly, all of them do the same.
 3.  It passes the arguments to GraphQL code generator to generate `.ts(x)`. This is used for runtime.
 4.  It also generates the corresponding `.d.ts` for the codegen results. This is used for static typing.
 
-But there are little differences depending on the entrypoints, because of the platform restrictions. 
-
-
-
+But there are little differences depending on the entrypoints, because of the platform restrictions.
 
 <details>
   <summary>Efficient?</summary>
 
 There are things to make graphql-let light and stable.
 
--   Sharing the processes. Generating files is expensive, so it runs less time
+*   Sharing the processes. Generating files is expensive, so it runs less time
     to run GraphQL code generator and TypeScript API.
--   Caching. By embedding hashes as your source states, it reduces the number of
+*   Caching. By embedding hashes as your source states, it reduces the number of
     unnecessary processing.
--   Sharing the promises. The webpack compilation in typical SSR applications as
+*   Sharing the promises. The webpack compilation in typical SSR applications as
     Next.js runs [targets](https://webpack.js.org/concepts/targets/) of `"node"`
     and `"web"` simultaneously. If sources are the same, the compilation should be once.
-</details>
 
+</details>
 
 ## Get started with webpack loader
 
@@ -246,9 +237,9 @@ Documen-pointer level options such as `noRequire: true` or
 [Custom Document Loader](https://graphql-code-generator.com/docs/getting-started/documents-field#custom-document-loader)
 are not supported.
 
-### Babel Plugin Limitation: `` gql(`query{}`) `` is allowed only in `.ts(x)`s
+### Babel Plugin Limitation: ``gql(`query{}`)`` is allowed only in `.ts(x)`s
 
-Currently, `` gql(`query{}`) `` can be handled only for files with extensions
+Currently, ``gql(`query{}`)`` can be handled only for files with extensions
 `.ts` and `.tsx`.
 
 graphql-tag-pluck, which GraphQL code generator uses under the hood, plucks
@@ -403,10 +394,10 @@ excluded to be TS compilation. Please try `cacheDir: __generated__` in your
 
 ### Limitations of `graphql-let/babel`
 
--   **Sadly**, type injection can't be done with TaggedTemplateExpression such
+*   **Sadly**, type injection can't be done with TaggedTemplateExpression such
     as `` gql`query {}` ``. This is the limitation of TypeScript.
     [Please answer me if you have ideas.](https://stackoverflow.com/questions/61917066/can-taggedtempalte-have-overload-signatures-with-a-certain-string-literal-argume)
--   Fragments are still not available. Please watch
+*   Fragments are still not available. Please watch
     [the issue.](https://github.com/piglovesyou/graphql-let/issues/65)
 
 ## Jest Transformer
@@ -471,12 +462,12 @@ schema. Just use what you need, it's most likely to be `jest-transform-graphql`.
 
 If you meet the following conditions, graphql-let generates Resolver Types.
 
--   You have `schemaEntrypoint` in the config
--   You have file paths including glob patterns in `schema`
--   You have
+*   You have `schemaEntrypoint` in the config
+*   You have file paths including glob patterns in `schema`
+*   You have
     [`@graphql-codegen/typescript-resolvers`](https://graphql-code-generator.com/docs/plugins/typescript-resolvers)
     installed
--   your `schemaEntrypoint` in .graphql-let.yml points to a single local GraphQL
+*   your `schemaEntrypoint` in .graphql-let.yml points to a single local GraphQL
     schema file (`.graphqls`)
 
 Run:
@@ -528,11 +519,11 @@ file content to the next webpack loader. Set it up as below:
 
 #### So, it's just a graphql-codegen wrapper generating `d.ts`...?
 
-_Yes._
+*Yes.*
 
 #### Supported combination of tools? / x + y don't work!
 
-Basically both syntax `import './a.graphql'` and `` gql(`query {}` ) `` are
+Basically both syntax `import './a.graphql'` and ``gql(`query {}` )`` are
 suposed to just work, but currently some of combinations require more effort.
 Please vote by creating issues.
 [Sponsering me](https://github.com/sponsors/piglovesyou) is another way to get
@@ -540,7 +531,7 @@ my attention🍩🍦
 
 These are the states/tools for the syntaxes.
 
-| states/tools for syntax                                                      | File import as<br>`import './a.graphql';`                            | Inline GraphQL as<br>`import gql from 'graphql-tag';`<br>`` gql(`query {}` ); `` |
+| states/tools for syntax                                                      | File import as<br>`import './a.graphql';`                            | Inline GraphQL as<br>`import gql from 'graphql-tag';`<br>``gql(`query {}` );`` |
 | ---------------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | generating `.d.ts`s by command `graphql-let`                                 | ✅                                                                   | ✅                                                                               |
 | importing GraphQL content from another as<br>`# import A from './a.graphql'` | ✅                                                                   | ✅                                                                               |
@@ -554,10 +545,10 @@ These are the states/tools for the syntaxes.
 No. There are
 [more plugins that also generates `.ts(x)`s from GraphQL documents](https://graphql-code-generator.com/docs/plugins/).
 
-#### Can I write GraphQL documents in my `.tsx` as `` const query = gql`query News{ ... }`; ``?
+#### Can I write GraphQL documents in my `.tsx` as ``const query = gql`query News{ ... }`;``?
 
 Please try the Babel Plugin `graphql-let/babel`, but you need parenthesis
-`` gql(`query {}`) ``.
+``gql(`query {}`)``.
 
 #### What's the extension `.graphqls`? Should I use it for schema and `.graphql` for documents?
 
@@ -599,12 +590,12 @@ query Viewer {
 
 ## Contribution
 
--   **[Create an issue](https://github.com/piglovesyou/graphql-let/issues/new)**
+*   **[Create an issue](https://github.com/piglovesyou/graphql-let/issues/new)**
     if you have ideas, found a bug or anything.
--   **Creating a PR** is always welcome!
-    -   Running `npm run prepublishOnly` locally will get your local development
+*   **Creating a PR** is always welcome!
+    *   Running `npm run prepublishOnly` locally will get your local development
         ready.
-    -   Adding tests is preferable, but don't hesitate without it, maybe someone
+    *   Adding tests is preferable, but don't hesitate without it, maybe someone
         else will fill it.
 
 ## License
