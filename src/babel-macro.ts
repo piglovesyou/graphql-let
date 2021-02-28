@@ -7,8 +7,9 @@ const babelMacro = createMacro((params) => {
   const {
     references: { gql: gqlCalleePaths, load: loadCalleePaths },
     state,
+    config = {},
   } = params;
-  const { configFilePath } = params.config as BabelOptions;
+  const { configFilePath } = config as BabelOptions;
 
   const { cwd, sourceFullPath, sourceRelPath } = getPathsFromState(state);
 
