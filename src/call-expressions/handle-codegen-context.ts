@@ -38,6 +38,7 @@ export function appendLiteralAndLoadCodegenContext(
             createdPaths,
             shouldUpdate,
             resolvedGqlContent,
+            dependantFullPaths,
           } = prepareAppendTiContext(
             execContext,
             schemaHash,
@@ -54,6 +55,7 @@ export function appendLiteralAndLoadCodegenContext(
             resolvedGqlContent,
             strippedGqlContent,
             skip: !shouldUpdate,
+            dependantFullPaths,
           });
         }
         break;
@@ -63,7 +65,12 @@ export function appendLiteralAndLoadCodegenContext(
         const gqlRelPath = pathJoin(dirname(sourceRelPath), gqlPathFragment);
         const gqlFullPath = pathJoin(cwd, gqlRelPath);
         const gqlContent = readFileSync(gqlFullPath, 'utf-8');
-        const { gqlHash, createdPaths, shouldUpdate } = prepareAppendTiContext(
+        const {
+          gqlHash,
+          createdPaths,
+          shouldUpdate,
+          dependantFullPaths,
+        } = prepareAppendTiContext(
           execContext,
           schemaHash,
           sourceRelPath,
@@ -79,6 +86,7 @@ export function appendLiteralAndLoadCodegenContext(
           gqlRelPath,
           gqlFullPath,
           skip: !shouldUpdate,
+          dependantFullPaths,
         });
         break;
       }

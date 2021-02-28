@@ -1,5 +1,8 @@
-import { processImport } from '@graphql-tools/import';
-import { DocumentNode, OperationDefinitionNode, print } from 'graphql';
+import {
+  processImport,
+  VisitedFilesMap,
+} from '@piglovesyou/patched-graphql-tools-import';
+import { OperationDefinitionNode, print } from 'graphql';
 import { basename, dirname, extname, join as pathJoin } from 'path';
 import { ExecContext } from '../lib/exec-context';
 import { createHash, readHash } from '../lib/hash';
@@ -59,10 +62,18 @@ function resolveGraphQLDocument(
   importRootPath: string,
   gqlContent: string,
   cwd: string,
-): DocumentNode {
+) {
   // This allows to start from content of GraphQL document, not file path
   const predefinedImports = { [importRootPath]: gqlContent };
-  return processImport(importRootPath, cwd, predefinedImports);
+  const map: VisitedFilesMap = new Map();
+  const documentNode = processImport(
+    importRootPath,
+    cwd,
+    predefinedImports,
+    map,
+  );
+  const dependantFullPaths = Array.from(map.keys());
+  return { documentNode, dependantFullPaths };
 }
 
 export function prepareAppendTiContext(
@@ -74,7 +85,11 @@ export function prepareAppendTiContext(
   importRootPath: string,
 ) {
   const { cwd } = execContext;
-  const documentNode = resolveGraphQLDocument(importRootPath, gqlContent, cwd);
+  const { documentNode, dependantFullPaths } = resolveGraphQLDocument(
+    importRootPath,
+    gqlContent,
+    cwd,
+  );
   const resolvedGqlContent = print(documentNode);
   const documentName = documentNode.definitions
     .map((d) => (d as OperationDefinitionNode).name!.value)
@@ -84,5 +99,11 @@ export function prepareAppendTiContext(
   const { tsxFullPath, dtsFullPath } = createdPaths;
   const shouldUpdate =
     gqlHash !== readHash(tsxFullPath) || gqlHash !== readHash(dtsFullPath);
-  return { gqlHash, createdPaths, shouldUpdate, resolvedGqlContent };
+  return {
+    gqlHash,
+    createdPaths,
+    shouldUpdate,
+    resolvedGqlContent,
+    dependantFullPaths,
+  };
 }

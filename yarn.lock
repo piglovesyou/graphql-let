@@ -1756,6 +1756,14 @@
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
 
+"@piglovesyou/patched-graphql-tools-import@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@piglovesyou/patched-graphql-tools-import/-/patched-graphql-tools-import-0.1.1.tgz#339e9176813c59cb1eb493f05bede15116c2369d"
+  integrity sha512-p+j6VU8SEnv4MU0eZD0PfgjvOX4YeSPJi/E15lKsvpubfBiWIahJIWjwtL45HyUAAE26aTmrRBB3xy5tXBok4g==
+  dependencies:
+    resolve-from "5.0.0"
+    tslib "~2.1.0"
+
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@samverschueren/stream-to-observable/-/stream-to-observable-0.3.1.tgz#a21117b19ee9be70c379ec1877537ef2e1c63301"

@@ -83,13 +83,25 @@ const processLoaderForSources = memoize(
 
     const [[fileNode, programPath, callExpressionPathPairs]] = paths;
 
+    // Add dependencies so editing dependent GraphQL emits HMR.
+    for (const context of codegenContext) {
+      switch (context.type) {
+        case 'document-import':
+        case 'schema-import':
+          throw new Error('Never');
+        case 'gql-call':
+        case 'load-call':
+          for (const d of context.dependantFullPaths) addDependency(d);
+          break;
+      }
+    }
+
     replaceCallExpressions(
       programPath,
       sourceFullPath,
       callExpressionPathPairs,
       codegenContext,
     );
-
     writeTiIndexForContext(execContext, codegenContext);
     await processCodegenForContext(execContext, codegenContext);
     await processDtsForContext(execContext, codegenContext);
@@ -151,7 +163,9 @@ const graphQLLetLoader: loader.Loader = function (resourceContent) {
   const addDependency = this.addDependency.bind(this);
 
   let promise: Promise<string | Buffer>;
-  if (resourceFullPath.endsWith('.ts') || resourceFullPath.endsWith('.tsx')) {
+  const isTypeScriptSource =
+    resourceFullPath.endsWith('.ts') || resourceFullPath.endsWith('.tsx');
+  if (isTypeScriptSource) {
     promise = processLoaderForSources(
       resourceFullPath,
       resourceContent,
