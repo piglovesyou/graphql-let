@@ -1,15 +1,9 @@
-import { gql } from 'graphql-let';
+import { gql, load } from 'graphql-let';
 
-const { useViewerXQuery } = gql(`
-  query ViewerX {
-    viewer {
-      name
-    }
-  }
-`);
-useViewerXQuery().data.viewer.name as string;
+const { useViewerQuery } = load('./viewer.graphql');
+useViewerQuery().data.viewer.name as string;
 // @ts-expect-error
-useViewerXQuery() as number;
+useViewerQuery() as number;
 
 const { useViewerYQuery } = gql(`
   # import Partial from './partial.graphql'
