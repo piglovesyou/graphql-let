@@ -1,7 +1,7 @@
 import { gql } from 'graphql-let/macro';
 
 const { useViewerQuery } = gql(`
-  # import Partial from './partial.graphql'
+  # import Partial from './documents/partial.graphql'
   query Viewer {
     viewer {
       ...Partial

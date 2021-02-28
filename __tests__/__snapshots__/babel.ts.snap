@@ -20,7 +20,7 @@ Array [
 exports[`Generated files are okay: suite/macro-gql/node_modules/@types/graphql-let/index.d.ts 1`] = `
 "import Ta8ca7f2176b9dce4e4ba81526fcae512e2279848 from './proj-root/input-Viewer-Partial';
 export function gql(gql: \`
-  # import Partial from './partial.graphql'
+  # import Partial from './documents/partial.graphql'
   query Viewer {
     viewer {
       ...Partial
@@ -203,7 +203,7 @@ export type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVaria
 
 exports[`Generated files are okay: suite/macro-load/node_modules/@types/graphql-let/index.d.ts 1`] = `
 "import Ta8ca7f2176b9dce4e4ba81526fcae512e2279848 from './proj-root/input-Viewer-Partial';
-export function load(load: \`./viewer.graphql\`): Ta8ca7f2176b9dce4e4ba81526fcae512e2279848.__GraphQLLetTypeInjection;
+export function load(load: \`./documents/viewer.graphql\`): Ta8ca7f2176b9dce4e4ba81526fcae512e2279848.__GraphQLLetTypeInjection;
 "
 `;
 

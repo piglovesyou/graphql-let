@@ -56,13 +56,13 @@ export function createTiPaths(
 }
 
 function resolveGraphQLDocument(
-  cwd: string,
-  sourceFullPath: string,
+  importRootPath: string,
   gqlContent: string,
+  cwd: string,
 ): DocumentNode {
   // This allows to start from content of GraphQL document, not file path
-  const predefinedImports = { [sourceFullPath]: gqlContent };
-  return processImport(sourceFullPath, cwd, predefinedImports);
+  const predefinedImports = { [importRootPath]: gqlContent };
+  return processImport(importRootPath, cwd, predefinedImports);
 }
 
 export function prepareAppendTiContext(
@@ -71,9 +71,10 @@ export function prepareAppendTiContext(
   sourceRelPath: string,
   sourceFullPath: string,
   gqlContent: string,
+  importRootPath: string,
 ) {
   const { cwd } = execContext;
-  const documentNode = resolveGraphQLDocument(cwd, sourceFullPath, gqlContent);
+  const documentNode = resolveGraphQLDocument(importRootPath, gqlContent, cwd);
   const resolvedGqlContent = print(documentNode);
   const documentName = documentNode.definitions
     .map((d) => (d as OperationDefinitionNode).name!.value)

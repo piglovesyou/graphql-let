@@ -44,6 +44,7 @@ export function appendLiteralAndLoadCodegenContext(
             sourceRelPath,
             sourceFullPath,
             gqlContent,
+            sourceFullPath,
           );
           codegenContext.push({
             ...createdPaths,
@@ -68,6 +69,7 @@ export function appendLiteralAndLoadCodegenContext(
           sourceRelPath,
           sourceFullPath,
           gqlContent,
+          gqlFullPath,
         );
         codegenContext.push({
           ...createdPaths,

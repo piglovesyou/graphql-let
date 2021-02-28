@@ -1,6 +1,6 @@
 import { load } from 'graphql-let/macro';
 
-const { useViewerQuery } = load(`./viewer.graphql`);
+const { useViewerQuery } = load(`./documents/viewer.graphql`);
 
 function nest1() {
   function nest2() {
