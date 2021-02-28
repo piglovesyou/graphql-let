@@ -8,15 +8,6 @@ export type BabelOptions = {
   configFilePath?: string;
 };
 
-// export function getGraphQLLetBabelOption(babelOptions: any): BabelOptions {
-//   for (const { key, options } of babelOptions.plugins || []) {
-//     if (key.includes('graphql-let/')) {
-//       return options;
-//     }
-//   }
-//   return {};
-// }
-
 export const configFunction = (options: BabelOptions = {}): PluginObj<any> => {
   const { configFilePath } = options;
 

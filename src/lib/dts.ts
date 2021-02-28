@@ -16,7 +16,7 @@ import { ConfigTypes } from './config';
 import { ExecContext } from './exec-context';
 import { writeFile } from './file';
 import { withHash } from './hash';
-import { CodegenContext } from './types';
+import { CodegenContext, isAllSkip } from './types';
 
 const essentialCompilerOptions: CompilerOptions = {
   declaration: true,
@@ -141,9 +141,7 @@ export async function processDtsForContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
 ) {
-  if (codegenContext.every(({ skip }) => skip)) return;
-
-  // TODO: Skip contexts to genDts
+  if (isAllSkip(codegenContext)) return;
 
   const dtsContents = genDts(
     execContext,

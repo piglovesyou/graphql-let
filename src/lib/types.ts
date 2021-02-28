@@ -69,3 +69,7 @@ export type CodegenContext =
 export function isLiteralContext({ type }: CodegenContext): boolean {
   return type === 'gql-call';
 }
+
+export function isAllSkip(codegenContext: CodegenContext[]): boolean {
+  return codegenContext.findIndex(({ skip }) => !skip) != 0;
+}

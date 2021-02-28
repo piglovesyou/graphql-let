@@ -7,7 +7,7 @@ import { ExecContext } from './exec-context';
 import { writeFile } from './file';
 import { withHash } from './hash';
 import { printError } from './print';
-import { CodegenContext } from './types';
+import { CodegenContext, isAllSkip } from './types';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
 export function buildCodegenConfig(
@@ -106,7 +106,7 @@ export async function processCodegenForContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
 ): Promise<Types.FileOutput[]> {
-  if (!codegenContext.find(({ skip }) => !skip)) return [];
+  if (isAllSkip(codegenContext)) return [];
   const codegenConfig = buildCodegenConfig(execContext, codegenContext);
   return await processGraphQLCodegen(
     execContext,

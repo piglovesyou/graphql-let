@@ -1,6 +1,6 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
-import { CodegenContext } from '../lib/types';
+import { CodegenContext, isAllSkip } from '../lib/types';
 import {
   CallExpressionPathPairs,
   getProgramPath,
@@ -61,5 +61,6 @@ export function manipulateFromCalleeExpressionsSync(
     codegenContext,
   );
 
-  generateFilesForContextSync(execContext, codegenContext);
+  if (!isAllSkip(codegenContext))
+    generateFilesForContextSync(execContext, codegenContext);
 }
