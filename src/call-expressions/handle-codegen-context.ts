@@ -92,15 +92,21 @@ export function appendLiteralAndLoadContextForTsSources(
   codegenContext: CodegenContext[],
   tsSourceRelPaths: string[],
 ) {
-  if (!tsSourceRelPaths.length) return;
+  const paths: [
+    fileNode: t.File,
+    programPath: NodePath<t.Program>,
+    callExpressionPathPairs: CallExpressionPathPairs,
+  ][] = [];
+
+  if (!tsSourceRelPaths.length) return paths;
 
   const { cwd } = execContext;
 
   for (const sourceRelPath of tsSourceRelPaths) {
     const sourceFullPath = pathJoin(cwd, sourceRelPath);
     const sourceContent = readFileSync(sourceFullPath, 'utf-8');
-    const sourceAST = parse(sourceContent, parserOption);
-    traverse(sourceAST, {
+    const fileNode = parse(sourceContent, parserOption);
+    traverse(fileNode, {
       Program(programPath: NodePath<t.Program>) {
         const { callExpressionPathPairs } = visitFromProgramPath(programPath);
 
@@ -113,9 +119,13 @@ export function appendLiteralAndLoadContextForTsSources(
           codegenContext,
           cwd,
         );
+
+        paths.push([fileNode, programPath, callExpressionPathPairs]);
       },
     });
   }
+
+  return paths;
 }
 
 export function writeTiIndexForContext(

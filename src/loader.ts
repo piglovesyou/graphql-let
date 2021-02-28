@@ -1,10 +1,15 @@
+import generator from '@babel/generator';
 import { getOptions } from 'loader-utils';
 import logUpdate from 'log-update';
 import { relative as pathRelative } from 'path';
 import { validate } from 'schema-utils';
 import type { Schema as JsonSchema } from 'schema-utils/declarations/validate';
 import { loader } from 'webpack';
-import { appendLiteralAndLoadContextForTsSources } from './call-expressions/handle-codegen-context';
+import { replaceCallExpressions } from './call-expressions/ast';
+import {
+  appendLiteralAndLoadContextForTsSources,
+  writeTiIndexForContext,
+} from './call-expressions/handle-codegen-context';
 import { appendFileContext } from './file-imports/document-import';
 import { appendFileSchemaContext } from './file-imports/schema-import';
 import { processCodegenForContext } from './lib/codegen';
@@ -18,6 +23,7 @@ import {
   CodegenContext,
   FileCodegenContext,
   FileSchemaCodegenContext,
+  isAllSkip,
 } from './lib/types';
 
 const optionsSchema: JsonSchema = {
@@ -60,25 +66,36 @@ const processLoaderForSources = memoize(
       codegenContext,
     );
 
-    appendLiteralAndLoadContextForTsSources(
+    const paths = appendLiteralAndLoadContextForTsSources(
       execContext,
       schemaHash,
       codegenContext,
       [sourceRelPath],
     );
+    if (!paths.length) throw new Error('Never');
 
-    // const { skip, tsxFullPath } = fileContext;
-    // if (skip) return await readFile(tsxFullPath, 'utf-8');
-    //
-    // const [{ content }] = await processCodegenForContext(execContext, [
-    //   fileContext,
-    // ]);
-    //
-    // await processDtsForContext(execContext, [fileContext]);
+    if (!codegenContext.length) return sourceContent;
 
-    // return content;
+    if (isAllSkip(codegenContext)) {
+      const [{ tsxFullPath }] = codegenContext;
+      return await readFile(tsxFullPath, 'utf-8');
+    }
 
-    return '';
+    const [[fileNode, programPath, callExpressionPathPairs]] = paths;
+
+    replaceCallExpressions(
+      programPath,
+      sourceFullPath,
+      callExpressionPathPairs,
+      codegenContext,
+    );
+
+    writeTiIndexForContext(execContext, codegenContext);
+    await processCodegenForContext(execContext, codegenContext);
+    await processDtsForContext(execContext, codegenContext);
+
+    const { code } = generator(fileNode);
+    return code;
   },
   (gqlFullPath: string) => gqlFullPath,
 );
