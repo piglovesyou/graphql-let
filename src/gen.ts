@@ -11,7 +11,7 @@ import { processDtsForContext } from './lib/dts';
 import createExecContext, { ExecContext } from './lib/exec-context';
 import { isTypeScriptPath } from './lib/paths';
 import { updateLog } from './lib/print';
-import { CodegenContext, CommandOpts } from './lib/types';
+import { CodegenContext, CommandOpts, isAllSkip } from './lib/types';
 
 async function findTargetSources({
   cwd,
@@ -67,11 +67,13 @@ export async function gen({
     tsSourceRelPaths,
   );
 
-  await processCodegenForContext(execContext, codegenContext);
+  if (!isAllSkip(codegenContext)) {
+    writeTiIndexForContext(execContext, codegenContext);
 
-  await processDtsForContext(execContext, codegenContext);
+    await processCodegenForContext(execContext, codegenContext);
 
-  writeTiIndexForContext(execContext, codegenContext);
+    await processDtsForContext(execContext, codegenContext);
+  }
 
   // TODO: removeObsoleteFiles(execContext, codegenContext);
 

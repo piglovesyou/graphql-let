@@ -29,7 +29,7 @@ describe('graphql-let/loader', () => {
 
   test('generates .tsx and .d.ts', async () => {
     const fixture = 'pages/viewer.graphql';
-    const stats = await compiler(fixturePath1, fixture, 'node');
+    const stats = await compiler(fixturePath1, [fixture], 'node');
     const { 0: actual, length } = stats
       .toJson()
       .modules!.map((m) => m.source)
@@ -48,7 +48,7 @@ describe('graphql-let/loader', () => {
     ];
     const results = await Promise.all(
       expectedTargets.map(([file, target]) =>
-        compiler(fixturePath1, file, target),
+        compiler(fixturePath1, [file], target),
       ),
     );
     for (const [i, stats] of results.entries()) {
@@ -78,7 +78,7 @@ describe('graphql-let/loader', () => {
     ) {
       const stats = await compiler(
         pathJoin(fixturePath2, 'packages/app'),
-        'src/index.ts',
+        ['src/index.ts'],
         'web',
         { configFile: configFilePath },
       );

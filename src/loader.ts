@@ -4,6 +4,7 @@ import { relative as pathRelative } from 'path';
 import { validate } from 'schema-utils';
 import type { Schema as JsonSchema } from 'schema-utils/declarations/validate';
 import { loader } from 'webpack';
+import { appendLiteralAndLoadContextForTsSources } from './call-expressions/handle-codegen-context';
 import { appendFileContext } from './file-imports/document-import';
 import { appendFileSchemaContext } from './file-imports/schema-import';
 import { processCodegenForContext } from './lib/codegen';
@@ -13,7 +14,11 @@ import createExecContext from './lib/exec-context';
 import { readFile } from './lib/file';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX } from './lib/print';
-import { FileCodegenContext, FileSchemaCodegenContext } from './lib/types';
+import {
+  CodegenContext,
+  FileCodegenContext,
+  FileSchemaCodegenContext,
+} from './lib/types';
 
 const optionsSchema: JsonSchema = {
   type: 'object',
@@ -36,7 +41,49 @@ function parseOptions(ctx: loader.LoaderContext): GraphQLLetLoaderOptions {
   return (options as unknown) as GraphQLLetLoaderOptions;
 }
 
-const processGraphQLLetLoader = memoize(
+const processLoaderForSources = memoize(
+  async (
+    sourceFullPath: string,
+    sourceContent: string | Buffer,
+    addDependency: (path: string) => void,
+    cwd: string,
+    options: GraphQLLetLoaderOptions,
+  ): Promise<string | Buffer> => {
+    const [config, configHash] = await loadConfig(cwd, options.configFile);
+    const execContext = createExecContext(cwd, config, configHash);
+    const codegenContext: CodegenContext[] = [];
+
+    const sourceRelPath = pathRelative(cwd, sourceFullPath);
+
+    const { schemaHash } = await appendFileSchemaContext(
+      execContext,
+      codegenContext,
+    );
+
+    appendLiteralAndLoadContextForTsSources(
+      execContext,
+      schemaHash,
+      codegenContext,
+      [sourceRelPath],
+    );
+
+    // const { skip, tsxFullPath } = fileContext;
+    // if (skip) return await readFile(tsxFullPath, 'utf-8');
+    //
+    // const [{ content }] = await processCodegenForContext(execContext, [
+    //   fileContext,
+    // ]);
+    //
+    // await processDtsForContext(execContext, [fileContext]);
+
+    // return content;
+
+    return '';
+  },
+  (gqlFullPath: string) => gqlFullPath,
+);
+
+const processLoaderForDocuments = memoize(
   async (
     gqlFullPath: string,
     gqlContent: string | Buffer,
@@ -77,23 +124,42 @@ const processGraphQLLetLoader = memoize(
   (gqlFullPath: string) => gqlFullPath,
 );
 
-const graphQLLetLoader: loader.Loader = function (gqlContent) {
+/**
+ * Webpack loader to handle both *.graphql and *.ts(x).
+ */
+const graphQLLetLoader: loader.Loader = function (resourceContent) {
   const callback = this.async()!;
-  const { resourcePath: gqlFullPath, rootContext: cwd } = this;
+  const { resourcePath: resourceFullPath, rootContext: cwd } = this;
   const options = parseOptions(this);
+  const addDependency = this.addDependency.bind(this);
 
-  processGraphQLLetLoader(
-    gqlFullPath,
-    gqlContent,
-    this.addDependency.bind(this),
-    cwd,
-    options,
-  )
-    .then((tsxContent: string) => {
+  let promise: Promise<string | Buffer>;
+  if (resourceFullPath.endsWith('.ts') || resourceFullPath.endsWith('.tsx')) {
+    promise = processLoaderForSources(
+      resourceFullPath,
+      resourceContent,
+      addDependency,
+      cwd,
+      options,
+    );
+  } else {
+    promise = processLoaderForDocuments(
+      resourceFullPath,
+      resourceContent,
+      addDependency,
+      cwd,
+      options,
+    ).then((content) => {
       // Pretend .tsx for later loaders.
       // babel-loader at least doesn't respond the .graphql extension.
-      this.resourcePath = `${gqlFullPath}.tsx`;
+      this.resourcePath = `${resourceFullPath}.tsx`;
 
+      return content;
+    });
+  }
+
+  promise
+    .then((tsxContent) => {
       callback(undefined, tsxContent);
     })
     .catch((e) => {
