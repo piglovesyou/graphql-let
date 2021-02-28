@@ -16,11 +16,12 @@ export function manipulateFromCalleeExpressionsSync(
   loadCalleePaths: NodePath[] | undefined,
   sourceRelPath: string,
   sourceFullPath: string,
+  configFilePath: string | undefined,
 ) {
   if (!gqlCalleePaths?.length && !loadCalleePaths?.length) return;
 
   const programPath = getProgramPath((gqlCalleePaths || loadCalleePaths!)[0]);
-  const { execContext, schemaHash } = prepareToManipulate(cwd);
+  const { execContext, schemaHash } = prepareToManipulate(cwd, configFilePath);
 
   const callExpressionPathPairs: CallExpressionPathPairs = [];
   if (gqlCalleePaths?.length)

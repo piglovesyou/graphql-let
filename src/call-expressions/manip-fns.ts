@@ -10,8 +10,8 @@ import { toSync } from '../lib/to-sync';
 import { CodegenContext } from '../lib/types';
 import { writeTiIndexForContext } from './handle-codegen-context';
 
-export function prepareToManipulate(cwd: string) {
-  const [config, configHash] = loadConfigSync(cwd, undefined);
+export function prepareToManipulate(cwd: string, configFilePath?: string) {
+  const [config, configHash] = loadConfigSync(cwd, configFilePath);
   const execContext = createExecContext(cwd, config, configHash);
   let schemaHash = configHash;
   if (shouldGenResolverTypes(config))

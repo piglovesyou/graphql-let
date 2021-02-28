@@ -3,10 +3,7 @@ import { declare } from '@babel/helper-plugin-utils';
 import * as t from '@babel/types';
 import { getPathsFromState } from './call-expressions/ast';
 import { manipulateFromProgramPath } from './call-expressions/manip-from-program';
-
-export type BabelOptions = {
-  configFilePath?: string;
-};
+import { BabelOptions } from './lib/types';
 
 export const configFunction = (options: BabelOptions = {}): PluginObj<any> => {
   const { configFilePath } = options;

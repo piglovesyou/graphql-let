@@ -75,3 +75,7 @@ export function isLiteralContext({ type }: CodegenContext): boolean {
 export function isAllSkip(codegenContext: CodegenContext[]): boolean {
   return codegenContext.findIndex(({ skip }) => !skip) != 0;
 }
+
+export type BabelOptions = {
+  configFilePath?: string;
+};

@@ -21,7 +21,7 @@ export function manipulateFromProgramPath(
   );
   if (!callExpressionPathPairs.length) return;
 
-  const { execContext, schemaHash } = prepareToManipulate(cwd);
+  const { execContext, schemaHash } = prepareToManipulate(cwd, configFilePath);
   const codegenContext: CodegenContext[] = [];
 
   appendLiteralAndLoadCodegenContext(
