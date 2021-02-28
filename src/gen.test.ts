@@ -110,10 +110,4 @@ describe('"graphql-let" command', () => {
         Error: Type "Broke" not found in document.`);
     }
   });
-
-  test('gen', async () => {
-    const [cwd] = await prepareFixtures(__dirname, '__fixtures/gen2/9_basic');
-    await gen({ cwd });
-    await spawn('yarn', ['tsc'], { cwd });
-  });
 });
