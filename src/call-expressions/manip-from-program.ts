@@ -10,7 +10,7 @@ import {
   appendLiteralAndLoadCodegenContext,
   writeTiIndexForContext,
 } from './handle-codegen-context';
-import { generateForContextSync, prepareCodegenArgs } from './manip-fns';
+import { generateFilesForContextSync, prepareToManipulate } from './manip-fns';
 
 export function manipulateFromProgramPath(
   cwd: string,
@@ -24,7 +24,7 @@ export function manipulateFromProgramPath(
   );
   if (!callExpressionPathPairs.length) return;
 
-  const { execContext, schemaHash } = prepareCodegenArgs(cwd);
+  const { execContext, schemaHash } = prepareToManipulate(cwd);
   const codegenContext: CodegenContext[] = [];
 
   appendLiteralAndLoadCodegenContext(
@@ -48,5 +48,5 @@ export function manipulateFromProgramPath(
 
   writeTiIndexForContext(execContext, codegenContext);
 
-  generateForContextSync(execContext, codegenContext);
+  generateFilesForContextSync(execContext, codegenContext);
 }

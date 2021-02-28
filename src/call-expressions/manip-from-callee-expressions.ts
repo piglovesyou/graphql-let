@@ -11,7 +11,7 @@ import {
   appendLiteralAndLoadCodegenContext,
   writeTiIndexForContext,
 } from './handle-codegen-context';
-import { generateForContextSync, prepareCodegenArgs } from './manip-fns';
+import { generateFilesForContextSync, prepareToManipulate } from './manip-fns';
 
 export function manipulateFromCalleeExpressionsSync(
   cwd: string,
@@ -23,7 +23,7 @@ export function manipulateFromCalleeExpressionsSync(
   if (!gqlCalleePaths?.length && !loadCalleePaths?.length) return;
 
   const programPath = getProgramPath((gqlCalleePaths || loadCalleePaths!)[0]);
-  const { execContext, schemaHash } = prepareCodegenArgs(cwd);
+  const { execContext, schemaHash } = prepareToManipulate(cwd);
 
   const callExpressionPathPairs: CallExpressionPathPairs = [];
   if (gqlCalleePaths?.length)
@@ -66,5 +66,5 @@ export function manipulateFromCalleeExpressionsSync(
 
   writeTiIndexForContext(execContext, codegenContext);
 
-  generateForContextSync(execContext, codegenContext);
+  generateFilesForContextSync(execContext, codegenContext);
 }

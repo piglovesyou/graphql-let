@@ -9,8 +9,7 @@ import createExecContext, { ExecContext } from '../lib/exec-context';
 import { toSync } from '../lib/to-sync';
 import { CodegenContext } from '../lib/types';
 
-// TODO: name of function
-export function prepareCodegenArgs(cwd: string) {
+export function prepareToManipulate(cwd: string) {
   const [config, configHash] = loadConfigSync(cwd, undefined);
   const execContext = createExecContext(cwd, config, configHash);
   let schemaHash = configHash;
@@ -19,7 +18,7 @@ export function prepareCodegenArgs(cwd: string) {
   return { execContext, schemaHash };
 }
 
-export async function generateForContext(
+export async function generateFilesForContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
 ) {
@@ -27,4 +26,4 @@ export async function generateForContext(
   await processDtsForContext(execContext, codegenContext);
 }
 
-export const generateForContextSync = toSync(generateForContext);
+export const generateFilesForContextSync = toSync(generateFilesForContext);
