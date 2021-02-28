@@ -4,7 +4,7 @@ import { basename, dirname, extname, join as pathJoin } from 'path';
 import { ExecContext } from '../lib/exec-context';
 import { createHash, readHash } from '../lib/hash';
 
-export const typesRootRelDir = 'proj-root';
+export const typesRootRelDir = '__generated__';
 
 export function createTiPaths(
   execContext: ExecContext,
