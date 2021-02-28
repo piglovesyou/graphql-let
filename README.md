@@ -1,6 +1,6 @@
 # graphql-let [![](https://github.com/piglovesyou/graphql-let/workflows/Node%20CI/badge.svg)](https://github.com/piglovesyou/graphql-let/actions) [![npm version](https://badgen.net/npm/v/graphql-let)](https://www.npmjs.com/package/graphql-let) [![downloads](https://badgen.net/npm/dm/graphql-let)](https://www.npmjs.com/package/graphql-let) [![Babel Macro](https://img.shields.io/badge/babel--macro-%F0%9F%8E%A3-f5da55.svg?style=flat-square)](https://github.com/kentcdodds/babel-plugin-macros)
 
-A tool to get results of GraphQL code generator closer to you with types.
+A layer making you feel closer to GraphQL code generator.
 
 Try
 [the Next.js example](https://github.com/zeit/next.js/blob/canary/examples/with-typescript-graphql/README.md#readme)
@@ -19,22 +19,17 @@ that integrates graphql-let.
 -   [Contribution](#contribution)
 -   [License](#license)
 
-## Why it exists
+## Why this exists
 
 One of the strengths of GraphQL is
 [enforcing data types on runtime](https://graphql.github.io/graphql-spec/June2018/#sec-Value-Completion).
 Further, TypeScript and
-[GraphQL code generator](https://graphql-code-generator.com/) (graphql-codegen)
-make it safer by typing data statically, so you can write truly type-protected
-code with rich IDE assists.
+[GraphQL code generator](https://graphql-code-generator.com/) 
+helps it even safer to type your codebase statically. Both makes a truly type-protected
+development environment with rich IDE assists.
 
-To enhance that development pattern, we should move on to the more specific
-use-case than what GraphQL code generator allows; Consider TypeScript as a
-first-class citizen and forget intermediate artifacts to let HMR (hot module
-replacement) work.
-
-graphql-let lets you `import` to get results of GraphQL code generator per
-GraphQL documents with TypeScript type definitions.
+graphql-let enhances that development pattern by minimizing configuration setup, introducing intuitive syntax and confortable development experience through HMR (hot module
+replacement).
 
 ```typescript jsx
 import { useNewsQuery } from './news.graphql'
@@ -46,33 +41,47 @@ const News: React.FC = () => {
 }
 ```
 
-## How it works
 
-There are three entry points to graphql-let:
+
+
+
+
+
+## Supported entrypoints and features
+
+There are three entry points to start graphql-let:
 
 -   CLI
+-   babel-plugin-macros
 -   webpack loader
--   Babel plugin (still partial support)
+-   Babel plugin
 
-Mostly, all do the same as below.
+Mostly, all of them do the same.
 
 1.  It loads configurations from `.graphql-let.yml`
-2.  It builds codegen context from glob patterns from the config, a file content
-    from webpack, or an AST from Babel.
-3.  It passes these to GraphQL code generator to get `.ts(x)`s, which runtime
-    will make use of
-4.  It generates `.d.ts` for the `.ts(x)`s, which your IDE and `tsc` will use
+2.  It finds GraphQL documents (queries, mutations, subscriptions) from `config.documents` including `*.graphql` and `*.ts(x)`.
+3.  It passes the arguments to GraphQL code generator to generate `.ts(x)`. This is used for runtime.
+4.  It also generates the corresponding `.d.ts` for the codegen results. This is used for static typing.
 
-There are a few things graphql-let works on to make it happen fast and stable.
+But there are little differences depending on the entrypoints, because of the platform restrictions. 
+
+
+
+
+<details>
+  <summary>Efficient?</summary>
+
+There are things to make graphql-let light and stable.
 
 -   Sharing the processes. Generating files is expensive, so it runs less time
     to run GraphQL code generator and TypeScript API.
--   Caching. By embedding hashes of source states, it reduces the number of
-    unnecessary generation.
+-   Caching. By embedding hashes as your source states, it reduces the number of
+    unnecessary processing.
 -   Sharing the promises. The webpack compilation in typical SSR applications as
     Next.js runs [targets](https://webpack.js.org/concepts/targets/) of `"node"`
-    and `"web"` simultaneously. If sources are the same, the compilation should
-    run at a time.
+    and `"web"` simultaneously. If sources are the same, the compilation should be once.
+</details>
+
 
 ## Get started with webpack loader
 
