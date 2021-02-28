@@ -1,7 +1,4 @@
-import {
-  processImport,
-  VisitedFilesMap,
-} from '@piglovesyou/patched-graphql-tools-import';
+import { processImport, VisitedFilesMap } from '@graphql-tools/import';
 import { OperationDefinitionNode, print } from 'graphql';
 import { basename, dirname, extname, join as pathJoin } from 'path';
 import { ExecContext } from '../lib/exec-context';

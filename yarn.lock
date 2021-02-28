@@ -1380,6 +1380,14 @@
     resolve-from "5.0.0"
     tslib "~2.1.0"
 
+"@graphql-tools/import@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/import/-/import-6.3.0.tgz#171472b425ea7cba4a612ad524b96bd206ae71b6"
+  integrity sha512-zmaVhJ3UPjzJSb005Pjn2iWvH+9AYRXI4IUiTi14uPupiXppJP3s7S25Si3+DbHpFwurDF2nWRxBLiFPWudCqw==
+  dependencies:
+    resolve-from "5.0.0"
+    tslib "~2.1.0"
+
 "@graphql-tools/json-file-loader@^6", "@graphql-tools/json-file-loader@^6.0.0":
   version "6.2.6"
   resolved "https://registry.yarnpkg.com/@graphql-tools/json-file-loader/-/json-file-loader-6.2.6.tgz#830482cfd3721a0799cbf2fe5b09959d9332739a"
@@ -1755,14 +1763,6 @@
   dependencies:
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
-
-"@piglovesyou/patched-graphql-tools-import@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@piglovesyou/patched-graphql-tools-import/-/patched-graphql-tools-import-0.1.1.tgz#339e9176813c59cb1eb493f05bede15116c2369d"
-  integrity sha512-p+j6VU8SEnv4MU0eZD0PfgjvOX4YeSPJi/E15lKsvpubfBiWIahJIWjwtL45HyUAAE26aTmrRBB3xy5tXBok4g==
-  dependencies:
-    resolve-from "5.0.0"
-    tslib "~2.1.0"
 
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.1"

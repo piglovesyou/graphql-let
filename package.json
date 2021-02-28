@@ -34,7 +34,7 @@
     "@babel/helper-plugin-utils": "^7.10.4",
     "@babel/parser": "^7.12.11",
     "@babel/traverse": "^7.12.13",
-    "@piglovesyou/patched-graphql-tools-import": "^0.1.1",
+    "@graphql-tools/import": "^6.3.0",
     "caller": "^1.0.1",
     "gensync": "^1.0.0-beta.2",
     "globby": "^11.0.2",
