@@ -4,8 +4,10 @@ import { processDtsForContext } from '../lib/dts';
 import createExecContext, { ExecContext } from '../lib/exec-context';
 import { toSync } from '../lib/to-sync';
 import { CodegenContext } from '../lib/types';
-import { shouldGenResolverTypes } from '../schema-import/resolver-types';
-import { createSchemaHashSync } from '../schema-import/schema-import';
+import {
+  createSchemaHashSync,
+  shouldGenResolverTypes,
+} from '../schema-import/schema-import';
 
 // TODO: name of function
 export function prepareCodegenArgs(cwd: string) {

@@ -2,7 +2,7 @@ import glob from 'globby';
 import {
   appendLiteralAndLoadContextForTsSources,
   writeTiIndexForContext,
-} from './call-expressions/call-expressions';
+} from './call-expressions/handle-codegen-context';
 import { appendFileContext } from './document-import/document-import';
 import { processCodegenForContext } from './lib/codegen';
 import loadConfig from './lib/config';
@@ -13,7 +13,7 @@ import { updateLog } from './lib/print';
 import { CodegenContext, CommandOpts } from './lib/types';
 import { appendFileSchemaContext } from './schema-import/schema-import';
 
-export async function findTargetSources({
+async function findTargetSources({
   cwd,
   config,
 }: ExecContext): Promise<{

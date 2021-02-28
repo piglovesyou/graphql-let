@@ -10,7 +10,7 @@ import {
 import {
   appendLiteralAndLoadCodegenContext,
   writeTiIndexForContext,
-} from './call-expressions';
+} from './handle-codegen-context';
 import { generateForContextSync, prepareCodegenArgs } from './manip-fns';
 
 export function manipulateFromCalleeExpressionsSync(

@@ -8,20 +8,15 @@ const babelMacro = createMacro((params) => {
     state,
   } = params;
 
-  try {
-    const { cwd, sourceFullPath, sourceRelPath } = getPathsFromState(state);
+  const { cwd, sourceFullPath, sourceRelPath } = getPathsFromState(state);
 
-    manipulateFromCalleeExpressionsSync(
-      cwd,
-      gqlCalleePaths,
-      loadCalleePaths,
-      sourceRelPath,
-      sourceFullPath,
-    );
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  manipulateFromCalleeExpressionsSync(
+    cwd,
+    gqlCalleePaths,
+    loadCalleePaths,
+    sourceRelPath,
+    sourceFullPath,
+  );
 });
 
 export default babelMacro;

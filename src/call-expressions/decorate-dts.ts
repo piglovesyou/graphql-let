@@ -4,7 +4,7 @@ import traverse, { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { parserOption } from './ast';
 
-export function appendExportAsObject(dtsContent: string) {
+export function addObjectExportToDts(dtsContent: string) {
   // TODO: Build ast?
 
   let allExportsCode = `export declare type __GraphQLLetTypeInjection = { `;

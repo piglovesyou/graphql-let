@@ -11,7 +11,7 @@ import {
   readConfigFile,
   sys,
 } from 'typescript';
-import { appendExportAsObject } from '../call-expressions/decorate-dts';
+import { addObjectExportToDts } from '../call-expressions/decorate-dts';
 import { ConfigTypes } from './config';
 import { ExecContext } from './exec-context';
 import { writeFile } from './file';
@@ -38,7 +38,7 @@ export default DocumentNode
 `;
     case 'load-call':
     case 'gql-call':
-      return appendExportAsObject(dtsContent);
+      return addObjectExportToDts(dtsContent);
   }
   return dtsContent;
 }
