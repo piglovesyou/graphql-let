@@ -58,7 +58,7 @@ export function createTiPaths(
   };
 }
 
-function resolveGraphQLDocument(
+export function resolveGraphQLDocument(
   importRootPath: string,
   gqlContent: string,
   cwd: string,

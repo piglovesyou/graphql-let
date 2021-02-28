@@ -10,6 +10,7 @@ import {
   appendLiteralAndLoadContextForTsSources,
   writeTiIndexForContext,
 } from './call-expressions/handle-codegen-context';
+import { resolveGraphQLDocument } from './call-expressions/type-inject';
 import { appendFileContext } from './file-imports/document-import';
 import { appendFileSchemaContext } from './file-imports/schema-import';
 import { processCodegenForContext } from './lib/codegen';
@@ -123,6 +124,14 @@ const processLoaderForDocuments = memoize(
     const graphqlRelPath = pathRelative(cwd, gqlFullPath);
     const [config, configHash] = await loadConfig(cwd, options.configFile);
     const execContext = createExecContext(cwd, config, configHash);
+
+    // Add dependencies so editing dependent GraphQL emits HMR.
+    const { dependantFullPaths } = resolveGraphQLDocument(
+      gqlFullPath,
+      String(gqlContent),
+      cwd,
+    );
+    for (const d of dependantFullPaths) addDependency(d);
 
     const fileSchemaCodegenContext: FileSchemaCodegenContext[] = [];
     const { schemaHash } = await appendFileSchemaContext(

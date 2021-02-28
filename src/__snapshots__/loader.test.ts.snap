@@ -3,15 +3,19 @@
 exports[`graphql-let/loader generates .tsx and .d.ts 1`] = `
 "import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
+export const PartialFragmentDoc = gql\`
+    fragment Partial on User {
+  id
+  name
+}
+    \`;
 export const ViewerDocument = gql\`
     query Viewer {
   viewer {
-    id
-    name
-    status
+    ...Partial
   }
 }
-    \`;
+    \${PartialFragmentDoc}\`;
 /**
  * __useViewerQuery__
  *
@@ -38,10 +42,10 @@ export function useViewerLazyQuery(baseOptions) {
 
 exports[`graphql-let/loader generates .tsx and .d.ts 2`] = `
 "import * as Va6306cb6adb2fd1f9b5d907f0d5ba6cdeefaa51e from \\"./../__generated__/pages/index-ViewerY-Partial.tsx\\";
-import * as V85d5d10810aac8135d819a4715c5ff518d9cd1f1 from \\"./../__generated__/pages/index-Viewer.tsx\\";
+import * as Vfb38f64fc6fadc6653df67e5d98df8c16bf04b55 from \\"./../__generated__/pages/index-Viewer-Partial.tsx\\";
 const {
   useViewerQuery
-} = V85d5d10810aac8135d819a4715c5ff518d9cd1f1;
+} = Vfb38f64fc6fadc6653df67e5d98df8c16bf04b55;
 useViewerQuery().data.viewer.name; // @ts-expect-error
 
 useViewerQuery();
