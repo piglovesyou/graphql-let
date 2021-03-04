@@ -75,37 +75,37 @@ But there are a few differences between the entrypoints.
 	<tr>
 		<th rowspan="2" align="left">webpack loader<br /><br />Configure <code>"graphql-let/loader"</code><br /> to files <code>"/.*\.(tsx?|graphql)$/"</code> in webpack.config.(js|ts)</td>
 		<td>File</td>
-		<td colspan="2">✅ Import both value and types from a GraphQL document as a module.<pre>import {useQuery, Query} from "./a.graphql"</pre></td>
+		<td colspan="2">✅ Import both value and types from a GraphQL document as a module.<pre>import { useQuery, Query } from "./a.graphql"</pre></td>
 		<td rowspan="2">HMR works as expected.<br />Webpack config is required even though your project only uses Babel</td>
 	</tr>
 	<tr>
 		<td>String literal</td>
-		<td>✅ by<pre>import {gql} from "graphql-let" <br /><br />const {useQuery} = gql("query A { braa }")</pre></td>
-		<td>⚠️ You can, but you have to find the internal d.ts.<pre>import {gql} from "graphql-let"<br />import {Query} from 'graphql-let/__generated__/index-A'<br /><br />const {useQuery} = gql("query { braa }")</pre></td>
+		<td>✅ by<pre>import { gql } from "graphql-let" <br /><br />const { useQuery } = gql("query A { braa }")</pre></td>
+		<td>⚠️ You can, but you have to find the internal d.ts.<pre>import { gql } from "graphql-let"<br />import {Query} from 'graphql-let/__generated__/index-A'<br /><br />const { useQuery } = gql("query { braa }")</pre></td>
 	</tr>
 	<tr>
 		<th rowspan="2" align="left">babel-plugin-macros<br /><br />If you've already setupbabel-plugin-macros,no config needed any more</td>
 		<td>File</td>
-		<td>✅ by<pre>import {loader} from "graphql-let/macro"<br /><br />const {useQuery} = load("./a.graphql")</pre></td>
-		<td>⚠️ You can, but you have to find the internally generated d.ts.<pre>import {loader} from "graphql-let/macro"<br />import {Query} from 'graphql-let/__generated__/index-A'<br /><br />const {useQuery} = load("./a.graphql")</pre></td>
+		<td>✅ by<pre>import { load } from "graphql-let/macro"<br /><br />const { useQuery } = load("./a.graphql")</pre></td>
+		<td>⚠️ You can, but you have to find the internally generated d.ts.<pre>import { load } from "graphql-let/macro"<br />import {Query} from 'graphql-let/__generated__/index-A'<br /><br />const { useQuery } = load("./a.graphql")</pre></td>
 		<td rowspan="2">Easiest to integrate if your project already has babel-plugin-macros. create-react-app is the great fit.Cannot load types from function call.<br /><br />Modifying *.graphql doesn't emit HMR.</td>
 	</tr>
 	<tr>
 		<td>String literal</td>
-		<td>✅ by<pre>import {gql} from "graphql-let/macro"<br /><br />const {useQuery} = gql("query A { braa }")</pre></td>
-		<td>⚠️ You can, but you have to find the internally generated d.ts.<pre>import {gql} from "graphql-let/macro"<br />import {Query} from 'graphql-let/__generated__/index-A'<br /><br />const {useQuery} = gql("query { braa }")</pre></td>
+		<td>✅ by<pre>import { gql } from "graphql-let/macro"<br /><br />const { useQuery } = gql("query A { braa }")</pre></td>
+		<td>⚠️ You can, but you have to find the internally generated d.ts.<pre>import { gql } from "graphql-let/macro"<br />import {Query} from 'graphql-let/__generated__/index-A'<br /><br />const { useQuery } = gql("query { braa }")</pre></td>
 	</tr>
 	<tr>
 		<th rowspan="2" align="left">babel-plugin<br /><br />Put "graphql-let/babel"to you .babelrc as a plugin</td>
 		<td>File</td>
-		<td>✅ by<pre>import {loader} from "graphql-let"<br /><br />const {useQuery} = load("./a.graphql")</pre></td>
-		<td>⚠️ You can, but you have to find the internally generated d.ts.<pre>import {loader} from "graphql-let"<br />import {Query} from 'graphql-let/__generated__/index-A'<br /><br />const {useQuery} = load("./a.graphql")</pre></td>
+		<td>✅ by<pre>import { load } from "graphql-let"<br /><br />const { useQuery } = load("./a.graphql")</pre></td>
+		<td>⚠️ You can, but you have to find the internally generated d.ts.<pre>import { load } from "graphql-let"<br />import {Query} from 'graphql-let/__generated__/index-A'<br /><br />const { useQuery } = load("./a.graphql")</pre></td>
 		<td rowspan="2">Mostly equivalent to babel-plugin-macros, but you always need your .babelrc configuration. Possibly, "import "./a.graphql"" could be implemented, but not supported yet.Cannot load types from function call.<br /><br />Modifying *.graphql doesn't emit HMR.Possibly I can make "--watch" option butlots to do for dependency management to detect file change.</td>
 	</tr>
 	<tr>
 		<td>String literal</td>
-		<td>✅ by<pre>import {gql} from "graphql-let"<br /><br />const {useQuery} = gql("query A { braa }")</pre></td>
-		<td>⚠️ You can, but you have to find the internally generated d.ts.<pre>import {gql} from "graphql-let"<br />import {Query} from 'graphql-let/__generated__/index-A'<br /><br />const {useQuery} = gql("query { braa }")</pre></td>
+		<td>✅ by<pre>import { gql } from "graphql-let"<br /><br />const { useQuery } = gql("query A { braa }")</pre></td>
+		<td>⚠️ You can, but you have to find the internally generated d.ts.<pre>import { gql } from "graphql-let"<br />import {Query} from 'graphql-let/__generated__/index-A'<br /><br />const { useQuery } = gql("query { braa }")</pre></td>
 	</tr>
 </table>
 
@@ -278,10 +278,10 @@ Thanks to babel-plugin-macros's beautiful architecture, you're ready to use
 GraphQL codegen values.
 
 ```typescript jsx
-import {loader} from "graphql-let/macro"
+import { load } from "graphql-let/macro"
 
 // Typed⚡️
-const {useQuery} = load("./viewer.graphql")
+const { useQuery } = load("./viewer.graphql")
 ```
 
 Note these functions `gql()` and `load()` can't return types. If you want them,
@@ -319,7 +319,7 @@ Please finish [1. Install dependencies](#1-install-dependencies) and
 ### 4. Code
 
 ```typescript jsx
-import {gql, loader} from "graphql-let"
+import {gql, load} from "graphql-let"
 
 const {useNewsQuery} = gql("query News { braa }")
 const {useViewerQuery} = load("./viewer.graphql")
