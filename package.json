@@ -164,7 +164,7 @@
   "remarkConfig": {
     "plugins": {
       "toc": {
-        "maxDepth": 3,
+        "maxDepth": 2,
         "tight": true
       }
     }
