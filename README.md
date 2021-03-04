@@ -61,25 +61,25 @@ But there are a few differences between the entrypoints.
 
 <table>
 	<tr>
-		<td>Entry pointsYou need .graphql-let.yml and:</td>
-		<td>Getting codegen result from</td>
-		<td>Use values of codegen result</td>
-		<td>Use types of codegen result</td>
-		<td>Pros/Cons</td>
+		<th align="left">Entry pointsYou need .graphql-let.yml and:</th>
+		<th>Getting codegen result from</th>
+		<th>Use values of codegen result</th>
+		<th>Use types of codegen result</th>
+		<th>Pros/Cons</th>
 	</tr>
 	<tr>
-		<td rowspan="2">webpack loader<br /><br />Configure "graphql-let/loader"to files "/.*&yen;.(tsx?|graphql)$/"in webpack.config.(js|ts)</td>
+		<th rowspan="2" align="left">webpack loader<br /><br />Configure <code>"graphql-let/loader"</code><br /> to files <code>"/.*\.(tsx?|graphql)$/"</code> in webpack.config.(js|ts)</td>
 		<td>File</td>
-		<td colspan="2">✅ Import both value and types from a GraphQL document as a module.<br /><br />import {useQuery, Query} from "./a.graphql"</td>
+		<td colspan="2">✅ Import both value and types from a GraphQL document as a module.<br /><br /><pre>import {useQuery, Query} from "./a.graphql"</pre></td>
 		<td rowspan="2">HMR works as expected.<br /><br />Webpack config is required even though your project only uses Babel</td>
 	</tr>
 	<tr>
 		<td>String literal</td>
-		<td>✅ by<br /><br />import {gql} from "graphql-let"const {useQuery} = gql(`query A { braa }`)</td>
+		<td>✅ by<br /><br /><pre>import {gql} from "graphql-let" <br />const {useQuery} = gql(`query A { braa }`)</pre></td>
 		<td>⚠️You can, but you have to find the internal d.ts.<br /><br />import {gql} from "graphql-let"import {Query} from 'graphql-let/__generated__/index-A'const {useQuery} = gql(`query { braa }`)</td>
 	</tr>
 	<tr>
-		<td rowspan="2">babel-plugin-macros<br /><br />If you've already setupbabel-plugin-macros,no config needed any more</td>
+		<th rowspan="2" align="left">babel-plugin-macros<br /><br />If you've already setupbabel-plugin-macros,no config needed any more</td>
 		<td>File</td>
 		<td>✅ by<br /><br />import {loader} from "graphql-let/macro"const {useQuery} = load("./a.graphql")</td>
 		<td>⚠️You can, but you have to find the internally generated d.ts.<br /><br />import {loader} from "graphql-let/macro"import {Query} from 'graphql-let/__generated__/index-A'const {useQuery} = load("./a.graphql")</td>
@@ -91,7 +91,7 @@ But there are a few differences between the entrypoints.
 		<td>⚠️You can, but you have to find the internally generated d.ts.<br /><br />import {gql} from "graphql-let/macro"import {Query} from 'graphql-let/__generated__/index-A'const {useQuery} = gql(`query { braa }`)</td>
 	</tr>
 	<tr>
-		<td rowspan="2">babel-plugin<br /><br />Put "graphql-let/babel"to you .babelrc as a plugin</td>
+		<th rowspan="2" align="left">babel-plugin<br /><br />Put "graphql-let/babel"to you .babelrc as a plugin</td>
 		<td>File</td>
 		<td>✅ by<br /><br />import {loader} from "graphql-let"const {useQuery} = load("./a.graphql")</td>
 		<td>⚠️You can, but you have to find the internally generated d.ts.<br /><br />import {loader} from "graphql-let"import {Query} from 'graphql-let/__generated__/index-A'const {useQuery} = load("./a.graphql")</td>
