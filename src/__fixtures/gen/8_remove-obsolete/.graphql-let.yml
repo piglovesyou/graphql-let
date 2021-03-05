@@ -1,0 +1,9 @@
+schema: "**/*.graphqls"
+schemaEntrypoint: schema/type-defs.graphqls
+documents:
+    - "**/*.graphql"
+    - "**/*.tsx"
+plugins:
+    - typescript
+    - typescript-operations
+    - typescript-react-apollo

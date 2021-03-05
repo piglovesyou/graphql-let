@@ -110,4 +110,13 @@ describe('"graphql-let" command', () => {
         Error: Type "Broke" not found in document.`);
     }
   });
+
+  test(`remove obsolete files`, async () => {
+    const [cwd] = await prepareFixtures(
+      __dirname,
+      '__fixtures/gen/8_remove-obsolete',
+    );
+    await gen({ cwd });
+    await spawn('yarn', ['tsc'], { cwd });
+  });
 });
