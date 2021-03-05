@@ -13,7 +13,7 @@ result2.data.viewer.status as string;
 result2.data.viewer.status as number;
 
 const { useViewerFromGqlQuery } = gql(`
-  # import Partial from './Partial.graphql'
+  # import Partial from './partial.graphql'
   query ViewerFromGql {
     viewer {
       ...Partial

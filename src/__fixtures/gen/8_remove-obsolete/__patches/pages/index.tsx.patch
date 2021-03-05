@@ -29,7 +29,7 @@ diff --git a/src/__fixtures/gen/8_remove-obsolete/pages/index.tsx b/src/__fixtur
 
 -const { useViewerFromGqlQuery } = gql(`
 +const { useModifiedViewerFromGqlQuery } = gql(`
-   # import Partial from './Partial.graphql'
+   # import Partial from './partial.graphql'
 -  query ViewerFromGql {
 +  query ModifiedViewerFromGql {
      viewer {

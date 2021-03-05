@@ -6,13 +6,17 @@ export const getCacheFullDir = (cwd: string, cacheDir: string) => {
   return isAbsolute(cacheDir) ? cacheDir : join(cwd, cacheDir);
 };
 
+export function toDtsPath(pathFragm: string) {
+  return `${pathFragm}.d.ts`;
+}
+
 export function createPaths(
   { cwd, cacheFullDir }: ExecContext,
   gqlRelPath: string,
 ): FileCreatedPaths {
   const tsxRelPath = `${gqlRelPath}.tsx`;
   const tsxFullPath = join(cacheFullDir, tsxRelPath);
-  const dtsRelPath = `${gqlRelPath}.d.ts`;
+  const dtsRelPath = toDtsPath(gqlRelPath);
   const dtsFullPath = join(cwd, dtsRelPath);
   const gqlFullPath = join(cwd, gqlRelPath);
 

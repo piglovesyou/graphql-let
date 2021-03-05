@@ -126,8 +126,7 @@ describe('"graphql-let" command', () => {
     await gen({ cwd });
     await spawn('yarn', ['tsc'], { cwd });
 
-    const files = (await glob(['**/*.d.ts', '**/*.tsx'], { cwd })).sort();
-    expect(files).toMatchSnapshot();
+    const firstFiles = (await glob(['**/*.d.ts', '**/*.tsx'], { cwd })).sort();
 
     await writeFile(
       join(cwd, 'pages/index.tsx'),
@@ -146,5 +145,12 @@ describe('"graphql-let" command', () => {
 
     await gen({ cwd });
     await spawn('yarn', ['tsc'], { cwd });
+
+    const secondFiles = (await glob(['**/*.d.ts', '**/*.tsx'], { cwd })).sort();
+
+    const removed = firstFiles.filter((e) => !secondFiles.includes(e));
+    expect(removed).toMatchSnapshot('Removed files');
+    const added = secondFiles.filter((e) => !firstFiles.includes(e));
+    expect(added).toMatchSnapshot('Added files');
   });
 });
