@@ -1051,3 +1051,21 @@ import { DocumentNode } from 'graphql'
 export default DocumentNode
 "
 `;
+
+exports[`"graphql-let" command remove obsolete files 1`] = `
+Array [
+  "node_modules/@types/graphql-let/__generated__/pages/index-Viewer-Partial.d.ts",
+  "node_modules/@types/graphql-let/__generated__/pages/index-ViewerFromGql-Partial.d.ts",
+  "node_modules/@types/graphql-let/index.d.ts",
+  "node_modules/@types/graphql-let/macro.d.ts",
+  "node_modules/graphql-let/__generated__/pages/index-Viewer-Partial.tsx",
+  "node_modules/graphql-let/__generated__/pages/index-ViewerFromGql-Partial.tsx",
+  "node_modules/graphql-let/__generated__/pages/partial.graphql.tsx",
+  "node_modules/graphql-let/__generated__/pages/viewer.graphql.tsx",
+  "node_modules/graphql-let/__generated__/schema/type-defs.graphqls.tsx",
+  "pages/index.tsx",
+  "pages/partial.graphql.d.ts",
+  "pages/viewer.graphql.d.ts",
+  "schema/type-defs.graphqls.d.ts",
+]
+`;

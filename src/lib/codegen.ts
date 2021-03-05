@@ -87,7 +87,6 @@ async function processGraphQLCodegen(
     }
     throw error;
   }
-  if (codegenContext.length !== results.length) throw new Error('never');
   // Object option "generates" in codegen obviously doesn't guarantee result's order.
   const tsxPathTable = new Map<string, CodegenContext>(
     codegenContext.map((c) => [c.tsxFullPath, c]),

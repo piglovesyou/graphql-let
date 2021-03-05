@@ -1,0 +1,44 @@
+Index: src/__fixtures/gen/8_remove-obsolete/pages/index.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/__fixtures/gen/8_remove-obsolete/pages/index.tsx b/src/__fixtures/gen/8_remove-obsolete/pages/index.tsx
+--- a/src/__fixtures/gen/8_remove-obsolete/pages/index.tsx	(revision 039c66f7b2f91d4b9e57c44dd9954d59b8b918c4)
++++ b/src/__fixtures/gen/8_remove-obsolete/pages/index.tsx	(date 1614907843076)
+@@ -1,26 +1,28 @@
+ import { gql, load } from 'graphql-let';
+-import { useViewerQuery } from './viewer.graphql';
++import { useModifiedViewerQuery } from './viewer.graphql';
+
+-const result = useViewerQuery();
++const result = useModifiedViewerQuery();
+ result.data.viewer.status as string;
+ // @ts-expect-error
+ result.data.viewer.status as number;
+
+-const { useViewerQuery: useViewerQuery2 } = load('./viewer.graphql');
+-const result2 = useViewerQuery2();
++const { useModifiedViewerQuery: useModifiedViewerQuery2 } = load(
++  './viewer.graphql',
++);
++const result2 = useModifiedViewerQuery2();
+ result2.data.viewer.status as string;
+ // @ts-expect-error
+ result2.data.viewer.status as number;
+
+-const { useViewerFromGqlQuery } = gql(`
++const { useModifiedViewerFromGqlQuery } = gql(`
+   # import Partial from './Partial.graphql'
+-  query ViewerFromGql {
++  query ModifiedViewerFromGql {
+     viewer {
+       ...Partial
+     }
+   }
+ `);
+-const result3 = useViewerFromGqlQuery();
++const result3 = useModifiedViewerFromGqlQuery();
+ result3.data.viewer.status as string;
+ // @ts-expect-error
+ result3.data.viewer.status as number;

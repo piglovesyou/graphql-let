@@ -1,0 +1,17 @@
+Index: src/__fixtures/gen/8_remove-obsolete/pages/viewer.graphql
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/__fixtures/gen/8_remove-obsolete/pages/viewer.graphql b/src/__fixtures/gen/8_remove-obsolete/pages/viewer.graphql
+--- a/src/__fixtures/gen/8_remove-obsolete/pages/viewer.graphql	(revision 039c66f7b2f91d4b9e57c44dd9954d59b8b918c4)
++++ b/src/__fixtures/gen/8_remove-obsolete/pages/viewer.graphql	(date 1614908549912)
+@@ -1,6 +1,5 @@
+-# import Partial from './partial.graphql'
+-query Viewer {
++query ModifiedViewer {
+     viewer {
+-        ...Partial
++        status
+     }
+ }

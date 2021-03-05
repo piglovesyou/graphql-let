@@ -73,7 +73,8 @@ export function isLiteralContext({ type }: CodegenContext): boolean {
 }
 
 export function isAllSkip(codegenContext: CodegenContext[]): boolean {
-  return codegenContext.findIndex(({ skip }) => !skip) != 0;
+  for (const { skip } of codegenContext) if (!skip) return false;
+  return true;
 }
 
 export type BabelOptions = {
