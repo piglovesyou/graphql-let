@@ -13,3 +13,7 @@ export function printError(err: Error): void {
 export function updateLog(message: string) {
   logUpdate(PRINT_PREFIX + message);
 }
+
+export function updateLogDone() {
+  logUpdate.done();
+}

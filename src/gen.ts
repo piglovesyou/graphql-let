@@ -55,9 +55,12 @@ async function removeObsoleteFiles(
   const { cwd, config } = execContext;
 
   const generatedFiles = new Set<string>(
-    codegenContext.flatMap(({ tsxFullPath, dtsFullPath }) => {
-      return [tsxFullPath, dtsFullPath];
-    }),
+    // TODO: Use flatMap after unsupporting Node 10
+    codegenContext.reduce(
+      (acc, { tsxFullPath, dtsFullPath }) =>
+        acc.concat([tsxFullPath, dtsFullPath]),
+      [] as string[],
+    ),
   );
 
   const globsToRemove = new Set<string>();
@@ -93,7 +96,7 @@ export async function gen({
   cwd,
   configFilePath,
 }: CommandOpts): Promise<CodegenContext[]> {
-  updateLog('Running graphql-codegen...');
+  updateLog('Scanning...');
 
   const [config, configHash] = await loadConfig(cwd, configFilePath);
   const execContext = createExecContext(cwd, config, configHash);
@@ -117,12 +120,29 @@ export async function gen({
     tsSourceRelPaths,
   );
 
-  if (!isAllSkip(codegenContext)) {
+  if (isAllSkip(codegenContext)) {
+    updateLog(
+      `Nothing to do. Caches for ${codegenContext.length} GraphQL documents are fresh.`,
+    );
+  } else {
+    const numToProcess = codegenContext.reduce(
+      (i, { skip }) => (skip ? i : i + 1),
+      0,
+    );
+    updateLog(`Processing ${numToProcess} codegen...`);
+
     writeTiIndexForContext(execContext, codegenContext);
 
     await processCodegenForContext(execContext, codegenContext);
 
+    updateLog(`Generating ${numToProcess} d.ts...`);
     await processDtsForContext(execContext, codegenContext);
+
+    const displayNum =
+      numToProcess === codegenContext.length
+        ? numToProcess
+        : `${numToProcess}/${codegenContext.length}`;
+    updateLog(`Done processing ${displayNum} GraphQL documents.`);
   }
 
   await removeObsoleteFiles(execContext, codegenContext, graphqlRelPaths);
