@@ -15,7 +15,8 @@ export type GraphQLLetAdditionalOptions = {
   schemaEntrypoint?: string;
   cacheDir?: string;
   TSConfigFile?: string;
-  gqlDtsEntrypoint?: string;
+  // gqlDtsEntrypoint?: string;
+  typeInjectEntrypoint?: string;
   generateOptions?: Types.ConfiguredOutput;
 };
 
@@ -31,6 +32,14 @@ export function buildConfig(raw: UserConfigTypes): ConfigTypes {
 
   if (!raw.schema || !raw.documents || !raw.plugins)
     printError(new Error(`A config requires a "${name}" field`));
+
+  // @ts-ignore
+  if (raw.gqlDtsEntrypoint)
+    printError(
+      new Error(
+        `"gqlDtsEntrypoint" is deprecated. Rewrite the key to "typeInjectEntrypoint".`,
+      ),
+    );
 
   const documents: Types.OperationDocumentGlobPath[] = Array.isArray(
     raw.documents,
@@ -51,8 +60,8 @@ export function buildConfig(raw: UserConfigTypes): ConfigTypes {
       raw.respectGitIgnore !== undefined ? raw.respectGitIgnore : true,
     cacheDir: raw.cacheDir || 'node_modules/graphql-let/__generated__',
     TSConfigFile: raw.TSConfigFile || 'tsconfig.json',
-    gqlDtsEntrypoint:
-      raw.gqlDtsEntrypoint || 'node_modules/@types/graphql-let/index.d.ts',
+    typeInjectEntrypoint:
+      raw.typeInjectEntrypoint || 'node_modules/@types/graphql-let/index.d.ts',
     generateOptions: raw.generateOptions || Object.create(null),
     schemaEntrypoint: raw.schemaEntrypoint || '',
   };

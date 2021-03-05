@@ -39,6 +39,11 @@ async function findTargetSources({
   return { graphqlRelPaths, tsSourceRelPaths };
 }
 
+async function removeObsoleteFiles(
+  execContext: ExecContext,
+  codegenContext: CodegenContext[],
+): Promise<void> {}
+
 export async function gen({
   cwd,
   configFilePath,
@@ -75,7 +80,7 @@ export async function gen({
     await processDtsForContext(execContext, codegenContext);
   }
 
-  // TODO: removeObsoleteFiles(execContext, codegenContext);
+  await removeObsoleteFiles(execContext, codegenContext);
 
   return codegenContext;
 }

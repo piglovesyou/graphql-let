@@ -13,10 +13,7 @@ export function createTiPaths(
 ) {
   const abs = (relPath: string) => pathJoin(cwd, relPath);
   const { cwd, config, cacheFullDir } = execContext;
-  const gqlDtsEntrypointFullDir = pathJoin(
-    cwd,
-    dirname(config.gqlDtsEntrypoint),
-  );
+  const typeInjectFullDir = pathJoin(cwd, dirname(config.typeInjectEntrypoint));
 
   // srcRelPath: "pages/index.tsx"
   // "pages"
@@ -40,11 +37,7 @@ export function createTiPaths(
   // "pages/index-2345.d.ts"
   const dtsRelPath = pathJoin(relDir, dtsBasename);
   // "/Users/.../node_modules/@types/graphql-let/pages/index-2345.d.ts"
-  const dtsFullPath = pathJoin(
-    gqlDtsEntrypointFullDir,
-    typesRootRelDir,
-    dtsRelPath,
-  );
+  const dtsFullPath = pathJoin(typeInjectFullDir, typesRootRelDir, dtsRelPath);
   return {
     srcRelPath,
     srcFullPath,

@@ -141,13 +141,19 @@ export function writeTiIndexForContext(
   codegenContext: CodegenContext[],
 ) {
   const { cwd, config } = execContext;
-  const gqlDtsEntrypointFullPath = pathJoin(cwd, config.gqlDtsEntrypoint);
-  const gqlDtsEntrypointFullDir = pathJoin(
+  const typeInjectEntrypointFullPath = pathJoin(
     cwd,
-    dirname(config.gqlDtsEntrypoint),
+    config.typeInjectEntrypoint,
   );
-  const gqlDtsMacroFullPath = pathJoin(gqlDtsEntrypointFullDir, 'macro.d.ts');
-  makeDir.sync(gqlDtsEntrypointFullDir);
+  const typeInjectEntrypointFullDir = pathJoin(
+    cwd,
+    dirname(config.typeInjectEntrypoint),
+  );
+  const gqlDtsMacroFullPath = pathJoin(
+    typeInjectEntrypointFullDir,
+    'macro.d.ts',
+  );
+  makeDir.sync(typeInjectEntrypointFullDir);
 
   let hasLiteral = false;
   let hasLoad = false;
@@ -190,7 +196,7 @@ export function load(load: \`${c.gqlPathFragment}\`): T${c.gqlHash}.__GraphQLLet
       }
     }
   }
-  writeFileSync(gqlDtsEntrypointFullPath, dtsEntrypointContent);
+  writeFileSync(typeInjectEntrypointFullPath, dtsEntrypointContent);
   if (hasLiteral || hasLoad) {
     writeFileSync(
       gqlDtsMacroFullPath,

@@ -400,10 +400,11 @@ cacheDir: __generated__
 TSConfigFile: tsconfig.json
 TSConfigFile: tsconfig.compile.json
 
-# "gqlDtsEntrypoint", optional.
+# "typeInjectEntrypoint", optional.
 # `node_modules/@types/graphql-let/index.d.ts` by default. Needs to end with ".d.ts".
-# Used as an entrypoint and directory of generated type declarations for `gql()` calls.
-gqlDtsEntrypoint: node_modules/@types/graphql-let/index.d.ts
+# Used as an entrypoint and directory of generated type declarations
+# for `gql()` and `load()` calls.
+typeInjectEntrypoint: node_modules/@types/graphql-let/index.d.ts
 
 # "schemaEntrypoint", optional. You need this only if you want to use Resolver Types.
 # Since you could point to multiple schemas, this path is
@@ -456,7 +457,7 @@ config:
     useIndexSignature: true
 cacheDir: __generated__
 TSConfigFile: tsconfig.compile.json
-gqlDtsEntrypoint: typings/graphql-let.d.ts
+typeInjectEntrypoint: typings/graphql-let.d.ts
 ```
 
 ### Limitations of `graphql-let/babel`

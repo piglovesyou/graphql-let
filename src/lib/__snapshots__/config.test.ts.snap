@@ -33,7 +33,7 @@ Array [
       "**/*.graphql",
     ],
     "generateOptions": Object {},
-    "gqlDtsEntrypoint": "node_modules/@types/graphql-let/index.d.ts",
+    "typeInjectEntrypoint": "node_modules/@types/graphql-let/index.d.ts",
     "plugins": Array [
       "typescript",
     ],
@@ -61,7 +61,7 @@ Object {
     "**/*.graphql",
   ],
   "generateOptions": Object {},
-  "gqlDtsEntrypoint": "typings/yeah.d.ts;",
+  "typeInjectEntrypoint": "typings/yeah.d.ts;",
   "plugins": Array [
     "typescript",
   ],

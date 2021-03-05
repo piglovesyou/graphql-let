@@ -6,4 +6,4 @@ respectGitIgnore: false
 schemaEntrypoint: yeah.graphqls
 cacheDir: __yeah__;
 TSConfigFile: tsconfig.yeah.json;
-gqlDtsEntrypoint: typings/yeah.d.ts;
+typeInjectEntrypoint: typings/yeah.d.ts;
