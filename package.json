@@ -21,7 +21,7 @@
     "babel.js"
   ],
   "dependencies": {
-    "@babel/core": "^7.12.17",
+    "@babel/core": "^7.13.8",
     "@babel/helper-plugin-utils": "^7.10.4",
     "@babel/parser": "^7.13.4",
     "@babel/traverse": "^7.13.0",
