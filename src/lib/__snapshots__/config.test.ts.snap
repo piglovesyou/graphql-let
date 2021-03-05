@@ -33,7 +33,6 @@ Array [
       "**/*.graphql",
     ],
     "generateOptions": Object {},
-    "typeInjectEntrypoint": "node_modules/@types/graphql-let/index.d.ts",
     "plugins": Array [
       "typescript",
     ],
@@ -48,6 +47,7 @@ Array [
       },
     ],
     "schemaEntrypoint": "",
+    "typeInjectEntrypoint": "node_modules/@types/graphql-let/index.d.ts",
   },
   "6134bbfa2c25f64acb7c526097ecc4e4014c2aa4",
 ]
@@ -61,12 +61,12 @@ Object {
     "**/*.graphql",
   ],
   "generateOptions": Object {},
-  "typeInjectEntrypoint": "typings/yeah.d.ts;",
   "plugins": Array [
     "typescript",
   ],
   "respectGitIgnore": false,
   "schema": "**/*.graphql",
   "schemaEntrypoint": "yeah.graphqls",
+  "typeInjectEntrypoint": "typings/yeah.d.ts;",
 }
 `;
