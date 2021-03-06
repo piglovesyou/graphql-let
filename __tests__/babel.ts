@@ -26,6 +26,7 @@ pluginTester({
   plugin: myPlugin,
   snapshot: true,
   babelOptions: {
+    presets: ['@babel/preset-typescript'],
     plugins: [
       'graphql-let/babel',
       [
@@ -35,39 +36,7 @@ pluginTester({
         },
       ],
       'babel-plugin-macros',
-      '@babel/plugin-transform-typescript',
     ],
   },
   tests,
 });
-
-// const ignoreDirs: string[] = [
-//   // 'macro-load'
-// ];
-//
-// beforeAll(async () => {
-//   await cleanup(cwd, ['**/node_modules']);
-// });
-//
-// runner(
-//   cwd,
-//   'gql',
-//   // {},
-//   {
-//     ignoreTasks: ignoreDirs.map((d) => d.split('-').join(' ')),
-//   },
-//   { sourceType: 'unambiguous' },
-// );
-//
-// test(`Type checking for all fixtures`, async () => {
-//   const dirs = await glob(['*/*', ...ignoreDirs.map((d) => `!*/${d}`)], {
-//     cwd,
-//     onlyDirectories: true,
-//     absolute: true,
-//   });
-//   for (const dir of dirs) await spawn('yarn', ['tsc'], { cwd: dir });
-// });
-//
-// test(`Generated files are okay`, async () => {
-//   await matchPathsAndContents(['**/node_modules/**'], cwd);
-// });
