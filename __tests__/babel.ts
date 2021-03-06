@@ -4,7 +4,7 @@ import myPlugin from '../src/babel-plugin';
 import { spawn } from '../src/lib/__tools/child-process';
 import { matchPathsAndContents } from '../src/lib/__tools/match-paths-and-contents';
 
-const fixtureBaseDir = join(__dirname, '.' + '__fixtures/babel/suite');
+const fixtureBaseDir = join(__dirname, '.' + '__fixtures/babel');
 
 const tests: TestObject[] = ['macro-gql', 'macro-load', 'plugin'].map(
   (name) => {
