@@ -1,20 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { applyPatch } from 'diff';
 import { statSync } from 'fs';
 import glob from 'globby';
 import pick from 'lodash.pick';
-import { join } from 'path';
 import gen from './gen';
 import * as prints from './lib/print';
 import { CodegenContext, FileCodegenContext } from './lib/types';
+import { applyPatch } from './lib/__tools/apply-patch';
 import { spawn } from './lib/__tools/child-process';
-import {
-  prepareFixtures,
-  readFile,
-  rename,
-  writeFile,
-} from './lib/__tools/file';
+import { prepareFixtures, rename } from './lib/__tools/file';
 import { matchPathsAndContents } from './lib/__tools/match-paths-and-contents';
 
 describe('"graphql-let" command', () => {
@@ -127,21 +121,8 @@ describe('"graphql-let" command', () => {
     await spawn('yarn', ['tsc'], { cwd });
 
     const firstFiles = (await glob(['**/*.d.ts', '**/*.tsx'], { cwd })).sort();
-
-    await writeFile(
-      join(cwd, 'pages/index.tsx'),
-      applyPatch(
-        await readFile(join(cwd, 'pages/index.tsx')),
-        await readFile(join(cwd, '__patches/pages/index.tsx.patch')),
-      ),
-    );
-    await writeFile(
-      join(cwd, 'pages/viewer.graphql'),
-      applyPatch(
-        await readFile(join(cwd, 'pages/viewer.graphql')),
-        await readFile(join(cwd, '__patches/pages/viewer.graphql.patch')),
-      ),
-    );
+    await applyPatch(cwd, 'pages/index.tsx');
+    await applyPatch(cwd, 'pages/viewer.graphql');
 
     await gen({ cwd });
     await spawn('yarn', ['tsc'], { cwd });
