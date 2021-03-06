@@ -6,7 +6,7 @@ const projRoot = join(__dirname, '../../..');
 export default async function setup() {
   await cleanup(projRoot, ['**/.__fixtures']);
 
-  // XXX: Hacky. @babel/helper-transform-fixture-test-runner wants this.
+  // XXX: babel-plugin-tester wants this.
   await prepareFixtures(
     join(__dirname, '../../../__tests__'),
     '__fixtures/babel',

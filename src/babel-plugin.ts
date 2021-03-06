@@ -9,6 +9,7 @@ export const configFunction = (options: BabelOptions = {}): PluginObj<any> => {
   const { configFilePath } = options;
 
   return {
+    name: 'graphql-let/babel',
     visitor: {
       Program(programPath: NodePath<t.Program>, state: PluginPass) {
         const { cwd, sourceFullPath, sourceRelPath } = getPathsFromState(state);
