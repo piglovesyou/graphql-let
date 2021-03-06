@@ -84,7 +84,9 @@ async function removeObsoleteFiles(
   const cacheFullDir = pathJoin(cwd, config.cacheDir, '**/*');
   globsToRemove.add(cacheFullDir);
 
-  const candidates = await glob(Array.from(globsToRemove), { absolute: true });
+  const candidates = await glob(Array.from(globsToRemove).map(slash), {
+    absolute: true,
+  });
   for (const fullPath of candidates.map(slash))
     if (!generatedFiles.has(fullPath)) unlinkSync(fullPath);
 }
