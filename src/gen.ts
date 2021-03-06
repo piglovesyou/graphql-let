@@ -1,6 +1,7 @@
+import { unlinkSync } from 'fs';
 import glob from 'globby';
-import pMap from 'p-map';
 import { dirname, extname, join as pathJoin } from 'path';
+import slash from 'slash';
 import {
   appendLiteralAndLoadContextForTsSources,
   writeTiIndexForContext,
@@ -12,7 +13,6 @@ import { processCodegenForContext } from './lib/codegen';
 import loadConfig from './lib/config';
 import { processDtsForContext } from './lib/dts';
 import createExecContext, { ExecContext } from './lib/exec-context';
-import { unlink } from './lib/file';
 import { isTypeScriptPath, toDtsPath } from './lib/paths';
 import { updateLog } from './lib/print';
 import { CodegenContext, CommandOpts, isAllSkip } from './lib/types';
@@ -56,11 +56,13 @@ async function removeObsoleteFiles(
 
   const generatedFiles = new Set<string>(
     // TODO: Use flatMap after unsupporting Node 10
-    codegenContext.reduce(
-      (acc, { tsxFullPath, dtsFullPath }) =>
-        acc.concat([tsxFullPath, dtsFullPath]),
-      [] as string[],
-    ),
+    codegenContext
+      .reduce(
+        (acc, { tsxFullPath, dtsFullPath }) =>
+          acc.concat([tsxFullPath, dtsFullPath]),
+        [] as string[],
+      )
+      .map(slash),
   );
 
   const globsToRemove = new Set<string>();
@@ -83,13 +85,8 @@ async function removeObsoleteFiles(
   globsToRemove.add(cacheFullDir);
 
   const candidates = await glob(Array.from(globsToRemove), { absolute: true });
-  await pMap(
-    candidates,
-    async (fullPath) => {
-      if (!generatedFiles.has(fullPath)) await unlink(fullPath);
-    },
-    { concurrency: 10 },
-  );
+  for (const fullPath of candidates.map(slash))
+    if (!generatedFiles.has(fullPath)) unlinkSync(fullPath);
 }
 
 export async function gen({
