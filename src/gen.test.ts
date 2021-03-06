@@ -121,8 +121,12 @@ describe('"graphql-let" command', () => {
     await spawn('yarn', ['tsc'], { cwd });
 
     const firstFiles = (await glob(['**/*.d.ts', '**/*.tsx'], { cwd })).sort();
-    await applyPatch(cwd, 'pages/index.tsx', 'pages/index.tsx.patch');
-    await applyPatch(cwd, 'pages/viewer.graphql', 'pages/viewer.graphql.patch');
+    await applyPatch(cwd, 'pages/index.tsx', '__patches/pages/index.tsx.patch');
+    await applyPatch(
+      cwd,
+      'pages/viewer.graphql',
+      '__patches/pages/viewer.graphql.patch',
+    );
 
     await gen({ cwd });
     await spawn('yarn', ['tsc'], { cwd });

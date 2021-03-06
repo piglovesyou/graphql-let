@@ -11,7 +11,7 @@ export async function applyPatch(
     join(cwd, targetRelPath),
     diffApplyPatch(
       await readFile(join(cwd, targetRelPath)),
-      await readFile(join(cwd, '__patches', patchRelPath)),
+      await readFile(join(cwd, patchRelPath)),
     ),
   );
 }
