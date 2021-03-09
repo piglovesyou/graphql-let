@@ -46,7 +46,6 @@ export type LiteralCodegenContext = {
   type: 'gql-call';
   gqlContent: string;
   resolvedGqlContent: string;
-  strippedGqlContent: string;
   dependantFullPaths: string[];
 } & CodegenContextBase<'gql-call'> &
   LiteralCreatedPaths;

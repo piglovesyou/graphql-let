@@ -2,7 +2,6 @@ import { parse } from '@babel/parser';
 import traverse, { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { writeFileSync } from 'fs';
-import { stripIgnoredCharacters } from 'graphql';
 import makeDir from 'make-dir';
 import { basename, dirname, join as pathJoin } from 'path';
 import slash from 'slash';
@@ -32,7 +31,6 @@ export function appendLiteralAndLoadCodegenContext(
       case 'gql':
         {
           const gqlContent = value;
-          const strippedGqlContent = stripIgnoredCharacters(gqlContent);
           const {
             gqlHash,
             createdPaths,
@@ -53,7 +51,6 @@ export function appendLiteralAndLoadCodegenContext(
             gqlHash,
             gqlContent,
             resolvedGqlContent,
-            strippedGqlContent,
             skip: !shouldUpdate,
             dependantFullPaths,
           });

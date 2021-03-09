@@ -38,8 +38,6 @@ export function buildCodegenConfig(
         break;
 
       case 'gql-call':
-        // XXX: We want to pass shorter `strippedGqlContent`,
-        // but `# import` also disappears!
         opts = {
           plugins: config.plugins,
           documents: context.resolvedGqlContent,

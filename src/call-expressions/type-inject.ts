@@ -84,7 +84,8 @@ export function prepareAppendTiContext(
   const documentName = documentNode.definitions
     .map((d) => (d as OperationDefinitionNode).name!.value)
     .join('-');
-  const gqlHash = createHash(schemaHash + resolvedGqlContent);
+  // We should use raw gqlContent instead of modified version resolvedGqlContent to get hash.
+  const gqlHash = createHash(schemaHash + gqlContent);
   const createdPaths = createTiPaths(execContext, sourceRelPath, documentName);
   const { tsxFullPath, dtsFullPath } = createdPaths;
   const shouldUpdate =
