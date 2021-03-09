@@ -1,0 +1,6 @@
+# import Partial from './partial.graphql'
+query ViewerFromMacro {
+    viewer {
+        ...Partial
+    }
+}
