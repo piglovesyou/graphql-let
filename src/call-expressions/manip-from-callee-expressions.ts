@@ -12,15 +12,17 @@ import { generateFilesForContextSync, prepareToManipulate } from './manip-fns';
 
 export function manipulateFromCalleeExpressionsSync(
   cwd: string,
-  gqlCalleePaths: NodePath[] | undefined,
-  loadCalleePaths: NodePath[] | undefined,
+  gqlCalleePaths: NodePath[] = [],
+  loadCalleePaths: NodePath[] = [],
   sourceRelPath: string,
   sourceFullPath: string,
   configFilePath: string | undefined,
 ) {
-  if (!gqlCalleePaths?.length && !loadCalleePaths?.length) return;
+  if (!gqlCalleePaths.length && !loadCalleePaths?.length) return;
 
-  const programPath = getProgramPath((gqlCalleePaths || loadCalleePaths!)[0]);
+  const programPath = getProgramPath(
+    gqlCalleePaths.concat(loadCalleePaths)[0]!,
+  );
   const { execContext, schemaHash } = prepareToManipulate(cwd, configFilePath);
 
   const callExpressionPathPairs: CallExpressionPathPairs = [];
