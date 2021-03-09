@@ -28,7 +28,10 @@ export type VisitedCallExpressionResults = {
   hasError: boolean;
 };
 
-const IMPORT_NAME = 'graphql-let';
+const VALID_IMPORT_NAMES = new Set<string>([
+  'graphql-let',
+  'graphql-let/macro',
+]);
 
 export const parserOption: ParserOptions = {
   sourceType: 'module',
@@ -142,7 +145,7 @@ export function visitFromProgramPath(
     ImportDeclaration(path: NodePath<t.ImportDeclaration>) {
       try {
         const pathValue = path.node.source.value;
-        if (pathValue === IMPORT_NAME) {
+        if (VALID_IMPORT_NAMES.has(pathValue)) {
           for (const specifier of path.node.specifiers) {
             if (!t.isImportSpecifier(specifier)) continue;
             const name = (specifier.imported as t.Identifier)
