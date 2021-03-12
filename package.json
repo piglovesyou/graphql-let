@@ -63,7 +63,7 @@
     "@types/babel__traverse": "^7.11.0",
     "@types/copyfiles": "^2.4.0",
     "@types/core-js": "^2.5.4",
-    "@types/eslint": "^7.2.6",
+    "@types/eslint": "^7.2.7",
     "@types/eslint-plugin-prettier": "^3.1.0",
     "@types/jest": "^26.0.20",
     "@types/loader-utils": "^2.0.1",
