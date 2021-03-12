@@ -1372,10 +1372,10 @@
   optionalDependencies:
     "@vue/compiler-sfc" "^3.0.4"
 
-"@graphql-tools/import@^6.2.6":
-  version "6.2.6"
-  resolved "https://registry.yarnpkg.com/@graphql-tools/import/-/import-6.2.6.tgz#c5f899f0b87e9fe0523b889be8a59cb30aa164ad"
-  integrity sha512-/0H/bDjNK1MnKonk8fMbB7wIYU6QLCwbQOHtSHbFJ4j2qki5CqfAxpF+fGX6KovDtkdigcgRMvSKKi14oiuHPA==
+"@graphql-tools/import@^6.2.6", "@graphql-tools/import@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/import/-/import-6.3.0.tgz#171472b425ea7cba4a612ad524b96bd206ae71b6"
+  integrity sha512-zmaVhJ3UPjzJSb005Pjn2iWvH+9AYRXI4IUiTi14uPupiXppJP3s7S25Si3+DbHpFwurDF2nWRxBLiFPWudCqw==
   dependencies:
     resolve-from "5.0.0"
     tslib "~2.1.0"
