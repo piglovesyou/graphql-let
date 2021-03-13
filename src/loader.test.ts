@@ -1,46 +1,70 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { deepStrictEqual, ok, strictEqual } from 'assert';
+import { ok, strictEqual } from 'assert';
 import 'core-js/es/array';
 import * as fs from 'fs';
 import glob from 'globby';
 import { join as pathJoin } from 'path';
 import { promisify } from 'util';
 import waitOn from 'wait-on';
+import { Stats } from 'webpack';
 import compiler from './lib/__tools/compile';
 import { prepareFixtures } from './lib/__tools/file';
 
 const unlink = promisify(fs.unlink);
 
-let fixturePath1: string;
-let fixturePath2: string;
+let flatProjFixtureDir: string;
+let monorepoFixtureDir: string;
+
+const flatProjEntrypoints = ['pages/index.tsx', 'pages/viewer.graphql'];
+
+function getOutputInfo(stats: Stats) {
+  const { modules } = stats.toJson()!;
+  const acc: [name: string, output: string][] = [];
+  (function getNamesAndOutputs(fnModules: Stats.FnModules[]) {
+    for (const m of fnModules) {
+      if (m.name && m.source) acc.push([m.name, m.source]);
+      if (m.modules) getNamesAndOutputs(m.modules);
+    }
+  })(modules!);
+  return acc;
+}
 
 describe('graphql-let/loader', () => {
   beforeAll(async () => {
-    [fixturePath1] = await prepareFixtures(
+    [flatProjFixtureDir] = await prepareFixtures(
       __dirname,
       '__fixtures/loader/usual',
     );
-    [fixturePath2] = await prepareFixtures(
+    [monorepoFixtureDir] = await prepareFixtures(
       __dirname,
       '__fixtures/loader/monorepo',
     );
   });
 
   test('generates .tsx and .d.ts', async () => {
-    const fixture = 'pages/viewer.graphql';
-    const stats = await compiler(fixturePath1, fixture, 'node');
-    const { 0: actual, length } = stats
-      .toJson()
-      .modules!.map((m) => m.source)
-      .filter(Boolean);
+    const stats = await compiler(
+      flatProjFixtureDir,
+      flatProjEntrypoints,
+      'node',
+    );
+    const outputs = getOutputInfo(stats);
+    expect(outputs).toHaveLength(4);
 
-    deepStrictEqual(length, 1);
-    expect(actual).toMatchSnapshot();
+    const [, gqlOutput] = outputs.find(
+      ([name]) => name === './pages/viewer.graphql',
+    )!;
+    expect(gqlOutput).toMatchSnapshot();
+    const [, sourceOutput] = outputs.find(
+      ([name]) => name === './pages/index.tsx',
+    )!;
+    expect(sourceOutput).toMatchSnapshot();
   });
 
   test('runs well for simultaneous execution, assuming SSR', async () => {
     const expectedTargets: [string, 'node' | 'web'][] = [
+      ['pages/index.tsx', 'node'],
+      ['pages/index.tsx', 'web'],
       ['pages/viewer.graphql', 'node'],
       ['pages/viewer.graphql', 'web'],
       ['pages/viewer2.graphql', 'node'],
@@ -48,27 +72,18 @@ describe('graphql-let/loader', () => {
     ];
     const results = await Promise.all(
       expectedTargets.map(([file, target]) =>
-        compiler(fixturePath1, file, target),
+        compiler(flatProjFixtureDir, [file], target),
       ),
     );
     for (const [i, stats] of results.entries()) {
       const [file] = expectedTargets[i];
-      const { 0: actual, length } = stats
-        .toJson()
-        .modules!.map((m) => m.source)
-        .filter(Boolean);
-
-      deepStrictEqual(length, 1);
-      switch (file) {
-        case 'pages/viewer.graphql':
-          ok(actual!.includes('export function useViewerQuery('));
-          break;
-        case 'pages/viewer2.graphql':
-          ok(actual!.includes('export function useViewer2Query('));
-          break;
-      }
+      const outputs = getOutputInfo(stats);
+      const [, output] = outputs.find(([name]) => name === './' + file)!;
+      expect(output).toMatchSnapshot();
     }
-    const globResults = await glob('**/*.graphql.d.ts', { cwd: fixturePath1 });
+    const globResults = await glob('**/*.graphql.d.ts', {
+      cwd: flatProjFixtureDir,
+    });
     strictEqual(globResults.length, 2);
   });
 
@@ -77,8 +92,8 @@ describe('graphql-let/loader', () => {
       configFilePath: string,
     ) {
       const stats = await compiler(
-        pathJoin(fixturePath2, 'packages/app'),
-        'src/index.ts',
+        pathJoin(monorepoFixtureDir, 'packages/app'),
+        ['src/index.ts'],
         'web',
         { configFile: configFilePath },
       );
@@ -102,7 +117,7 @@ describe('graphql-let/loader', () => {
 
       await waitOn({
         resources: [
-          `${fixturePath2}/packages/app/__generated__/src/fruits.graphql.tsx`,
+          `${monorepoFixtureDir}/packages/app/__generated__/src/fruits.graphql.tsx`,
         ],
       });
 
@@ -113,9 +128,9 @@ describe('graphql-let/loader', () => {
 
       await Promise.all([
         unlink(
-          `${fixturePath2}/packages/app/__generated__/src/fruits.graphql.tsx`,
+          `${monorepoFixtureDir}/packages/app/__generated__/src/fruits.graphql.tsx`,
         ),
-        unlink(`${fixturePath2}/packages/app/src/fruits.graphql.d.ts`),
+        unlink(`${monorepoFixtureDir}/packages/app/src/fruits.graphql.d.ts`),
       ]).catch(() => {
         /* discard error */
       });

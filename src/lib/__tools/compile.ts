@@ -6,14 +6,14 @@ import type { GraphQLLetLoaderOptions } from '../../loader';
 
 export default function compile(
   cwd: string,
-  fixture: string,
+  entries: string[],
   target: 'node' | 'web',
   gqlLetLoaderOptions: GraphQLLetLoaderOptions | undefined = undefined,
 ): Promise<webpack.Stats> {
   const compiler = webpack({
     mode: 'production',
     context: cwd,
-    entry: `./${fixture}`,
+    entry: entries.map((e) => `./${e}`),
     output: {
       path: path.resolve(cwd),
       filename: 'bundle.js',
@@ -23,7 +23,7 @@ export default function compile(
     module: {
       rules: [
         {
-          test: /\.graphql$/,
+          test: /\.(graphql|tsx)$/,
           use: [
             {
               loader: 'babel-loader',

@@ -3,17 +3,30 @@ import { basename, dirname, resolve } from 'path';
 import { printError } from './lib/print';
 import { CommandOpts } from './lib/types';
 
-const argv = minimist(process.argv.slice(2));
-const HELP_TEXT = `Usage: graphql-let [command]
+const argv = minimist(process.argv.slice(2), {
+  alias: {
+    h: 'help',
+    r: 'require',
+  },
+});
+const HELP_TEXT = `Usage: graphql-let [options] [command]
 
 graphql-let                   Generates .graphql.d.ts beside all GraphQL documents based on .graphql-let.yml config
-graphql-let --config [FILE]   Generates .graphql.d.ts given a config file
-graphql-let init              Generates a template of .graphql-let.yml configuration file 
+    --config [FILE]           Generates .graphql.d.ts given a config file
+    --require (-r) [MODULE]   Load modules before running. Useful to load env vars by "--require dotenv/config"
+    init                      Generates your initial .graphql-let.yml configuration file 
 `;
 
-if (argv.help || argv.h) {
+if (argv.help) {
   console.info(HELP_TEXT);
   process.exit(0);
+}
+
+if (argv.require) {
+  const moduleNames = Array.isArray(argv.require)
+    ? argv.require
+    : [argv.require];
+  for (const name of moduleNames) require(name);
 }
 
 let task: string;

@@ -15,7 +15,7 @@ describe('graphql-let/jestTransformer', () => {
 
   test('transforms .graphql', async () => {
     const fileName = 'pages/viewer.graphql';
-    const stats = await compiler(cwd, fileName, 'node');
+    const stats = await compiler(cwd, [fileName], 'node');
     const { 0: fileData } = stats
       .toJson()
       .modules!.map((m) => m.source)

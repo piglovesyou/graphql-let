@@ -11,10 +11,12 @@ import {
   readConfigFile,
   sys,
 } from 'typescript';
+import { addObjectExportToDts } from '../call-expressions/decorate-dts';
 import { ConfigTypes } from './config';
 import { ExecContext } from './exec-context';
-import { withHash, writeFile } from './file';
-import { CodegenContext, FileCodegenContext } from './types';
+import { writeFile } from './file';
+import { withHash } from './hash';
+import { CodegenContext, isAllSkip } from './types';
 
 const essentialCompilerOptions: CompilerOptions = {
   declaration: true,
@@ -22,6 +24,24 @@ const essentialCompilerOptions: CompilerOptions = {
   skipLibCheck: true,
   noEmit: false,
 };
+
+function decorateDts(type: CodegenContext['type'], dtsContent: string) {
+  switch (type) {
+    case 'schema-import':
+      return `${dtsContent}
+ 
+// This is an extra code in addition to what graphql-codegen makes.
+// Users are likely to use 'graphql-tag/loader' with 'graphql-tag/schema/loader'
+// in webpack. This code enables the result to be typed.
+import { DocumentNode } from 'graphql'
+export default DocumentNode
+`;
+    case 'load-call':
+    case 'gql-call':
+      return addObjectExportToDts(dtsContent);
+  }
+  return dtsContent;
+}
 
 function resolveCompilerOptions(cwd: string, { TSConfigFile }: ConfigTypes) {
   const fileName = TSConfigFile || 'tsconfig.json';
@@ -121,7 +141,7 @@ export async function processDtsForContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
 ) {
-  if (codegenContext.every(({ skip }) => skip)) return;
+  if (isAllSkip(codegenContext)) return;
 
   const dtsContents = genDts(
     execContext,
@@ -131,12 +151,9 @@ export async function processDtsForContext(
   await makeDir(dirname(codegenContext[0].dtsFullPath));
   for (const [i, dtsContent] of dtsContents.entries()) {
     const ctx = codegenContext[i];
-    const { dtsFullPath, gqlHash } = ctx!;
-    const { dtsContentDecorator } = ctx as FileCodegenContext;
-    const content = withHash(
-      gqlHash,
-      dtsContentDecorator ? dtsContentDecorator(dtsContent) : dtsContent,
-    );
+    const { type, dtsFullPath, gqlHash } = ctx!;
+    let content = decorateDts(type, dtsContent);
+    content = withHash(gqlHash, content);
     await makeDir(dirname(dtsFullPath));
     await writeFile(dtsFullPath, content);
   }

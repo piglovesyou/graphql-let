@@ -12,11 +12,13 @@ export type CreatedPathsBase = {
   dtsFullPath: string;
 };
 
-export type CodegenContextBase = {
+export type CodegenContextBase<
+  type extends 'document-import' | 'schema-import' | 'gql-call' | 'load-call'
+> = {
+  type: type;
   gqlHash: string;
   // If true, cache is fresh, so we don't need to generate new one.
   skip: boolean;
-  dtsContentDecorator: (content: string) => string;
 };
 
 /**
@@ -35,16 +37,45 @@ export type LiteralCreatedPaths = CreatedPathsBase & {
   srcFullPath: string;
 };
 
-export type FileCodegenContext = CodegenContextBase & FileCreatedPaths;
+export type FileCodegenContext = CodegenContextBase<'document-import'> &
+  FileCreatedPaths;
+export type FileSchemaCodegenContext = CodegenContextBase<'schema-import'> &
+  FileCreatedPaths;
 
 export type LiteralCodegenContext = {
+  type: 'gql-call';
   gqlContent: string;
-  strippedGqlContent: string;
-} & CodegenContextBase &
+  resolvedGqlContent: string;
+  dependantFullPaths: string[];
+} & CodegenContextBase<'gql-call'> &
   LiteralCreatedPaths;
 
-export type CodegenContext = FileCodegenContext | LiteralCodegenContext;
+export type LoadCodegenContext = {
+  type: 'load-call';
+  gqlPathFragment: string; // load(gqlPathFragment)
+  srcRelPath: string;
+  srcFullPath: string;
+  gqlRelPath: string;
+  gqlFullPath: string;
+  dependantFullPaths: string[];
+} & CodegenContextBase<'load-call'> &
+  CreatedPathsBase;
 
-export function isLiteralContext(context: CodegenContext): boolean {
-  return Boolean((context as LiteralCodegenContext).strippedGqlContent);
+export type CodegenContext =
+  | FileCodegenContext
+  | FileSchemaCodegenContext
+  | LiteralCodegenContext
+  | LoadCodegenContext;
+
+export function isLiteralContext({ type }: CodegenContext): boolean {
+  return type === 'gql-call';
 }
+
+export function isAllSkip(codegenContext: CodegenContext[]): boolean {
+  for (const { skip } of codegenContext) if (!skip) return false;
+  return true;
+}
+
+export type BabelOptions = {
+  configFilePath?: string;
+};

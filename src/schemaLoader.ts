@@ -1,43 +1,35 @@
 import logUpdate from 'log-update';
 import { loader } from 'webpack';
+import { appendFileSchemaContext } from './file-imports/schema-import';
+import { processCodegenForContext } from './lib/codegen';
 import loadConfig from './lib/config';
-import {
-  findTargetDocuments,
-  processDocumentsForContext,
-} from './lib/documents';
 import { processDtsForContext } from './lib/dts';
 import createExecContext from './lib/exec-context';
+import { readFile } from './lib/file';
 import memoize from './lib/memoize';
-import { PRINT_PREFIX, updateLog } from './lib/print';
-import { processResolverTypesIfNeeded } from './lib/resolver-types';
+import { PRINT_PREFIX } from './lib/print';
 import { CodegenContext } from './lib/types';
 
 const processGraphQLCodegenSchemaLoader = memoize(
   async (cwd: string) => {
     const [config, configHash] = await loadConfig(cwd);
     const execContext = createExecContext(cwd, config, configHash);
-
     const codegenContext: CodegenContext[] = [];
 
-    const { graphqlRelPaths } = await findTargetDocuments(execContext);
+    await appendFileSchemaContext(execContext, codegenContext);
+    if (!codegenContext.length) throw new Error('Never');
 
-    const { schemaHash } = await processResolverTypesIfNeeded(
+    const [{ skip, tsxFullPath }] = codegenContext;
+    if (skip) return await readFile(tsxFullPath, 'utf-8');
+
+    const [{ content }] = await processCodegenForContext(
       execContext,
       codegenContext,
     );
 
-    // Only if schema was changed, documents should also be handled for quick startup of webpack dev.
-    if (codegenContext.some(({ skip }) => !skip)) {
-      await processDocumentsForContext(
-        execContext,
-        schemaHash,
-        codegenContext,
-        graphqlRelPaths,
-      );
+    await processDtsForContext(execContext, codegenContext);
 
-      updateLog('Generating .d.ts...');
-      await processDtsForContext(execContext, codegenContext);
-    }
+    return content;
   },
   () => 'schemaLoader',
 );

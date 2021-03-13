@@ -1,6 +1,6 @@
 import copyfiles from 'copyfiles';
 import { promises } from 'fs';
-import { join as pathJoin, sep } from 'path';
+import { join as pathJoin, resolve as pathResolve, sep } from 'path';
 import _rimraf from 'rimraf';
 import { promisify } from 'util';
 
@@ -32,7 +32,9 @@ export function copyDir(
   // destRelDir: .d/e
   // It generates /Users/a/b/c/.d/e
   if (srcRelDir === destRelDir) throw new Error('Kidding me?');
-  const up = pathJoin(baseFullDir).split(sep).length + 1;
+  const relPathOffset = 1;
+  // pathResolve to strip empty dirs on right
+  const up = pathResolve(baseFullDir).split(sep).length + relPathOffset;
   const [relRoot] = destRelDir.split('/');
   return new Promise<void>((resolve, rejects) => {
     copyfiles(
