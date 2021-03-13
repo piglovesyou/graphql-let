@@ -54,7 +54,7 @@
     "@apollo/react-components": "^4.0.0",
     "@apollo/react-hooks": "^4.0.0",
     "@babel/plugin-syntax-jsx": ">=7.12.13",
-    "@babel/preset-env": "^7.12.16",
+    "@babel/preset-env": "^7.13.10",
     "@babel/preset-react": "^7.12.13",
     "@babel/preset-typescript": "^7.12.7",
     "@graphql-codegen/cli": "^1.20.0",
