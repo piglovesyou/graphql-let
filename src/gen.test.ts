@@ -5,7 +5,7 @@ import glob from 'globby';
 import pick from 'lodash.pick';
 import gen from './gen';
 import * as prints from './lib/print';
-import { CodegenContext, FileCodegenContext } from './lib/types';
+import { CodegenContext, DocumentImportCodegenContext } from './lib/types';
 import { applyPatch } from './lib/__tools/apply-patch';
 import { spawn } from './lib/__tools/child-process';
 import { prepareFixtures, rename } from './lib/__tools/file';
@@ -55,11 +55,11 @@ describe('"graphql-let" command', () => {
     const pickProperties = (context: CodegenContext) =>
       pick(context, ['gqlRelPath', 'tsxRelPath', 'dtsRelPath', 'gqlHash']);
 
-    const result1 = (await gen({ cwd })) as FileCodegenContext[];
+    const result1 = (await gen({ cwd })) as DocumentImportCodegenContext[];
     for (const r of result1) expect(r).toMatchObject({ skip: false });
     expect(result1.map(pickProperties)).toMatchSnapshot();
 
-    const result2 = (await gen({ cwd })) as FileCodegenContext[];
+    const result2 = (await gen({ cwd })) as DocumentImportCodegenContext[];
     for (const r of result2) expect(r).toMatchObject({ skip: true });
     expect(result2.map(pickProperties)).toMatchSnapshot();
 

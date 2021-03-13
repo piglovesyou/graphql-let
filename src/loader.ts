@@ -22,9 +22,9 @@ import memoize from './lib/memoize';
 import { PRINT_PREFIX, updateLog, updateLogDone } from './lib/print';
 import {
   CodegenContext,
-  FileCodegenContext,
-  FileSchemaCodegenContext,
+  DocumentImportCodegenContext,
   isAllSkip,
+  SchemaImportCodegenContext,
 } from './lib/types';
 
 const optionsSchema: JsonSchema = {
@@ -133,7 +133,7 @@ const processLoaderForDocuments = memoize(
     const [config, configHash] = await loadConfig(cwd, options.configFile);
     const { silent } = config;
     const execContext = createExecContext(cwd, config, configHash);
-    const codegenContext: FileSchemaCodegenContext[] = [];
+    const codegenContext: SchemaImportCodegenContext[] = [];
     const graphqlRelPath = pathRelative(cwd, gqlFullPath);
     if (!silent) updateLog(`Processing ${graphqlRelPath}...`);
 
@@ -152,7 +152,7 @@ const processLoaderForDocuments = memoize(
     const [fileSchemaContext] = codegenContext;
     if (fileSchemaContext) addDependency(fileSchemaContext.gqlFullPath);
 
-    const fileCodegenContext: FileCodegenContext[] = [];
+    const fileCodegenContext: DocumentImportCodegenContext[] = [];
     await appendFileContext(execContext, schemaHash, fileCodegenContext, [
       graphqlRelPath,
     ]);

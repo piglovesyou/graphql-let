@@ -3,7 +3,7 @@ import { ExecContext } from '../lib/exec-context';
 import { readFileSync } from '../lib/file';
 import { createHash, readHash } from '../lib/hash';
 import { createPaths } from '../lib/paths';
-import { CodegenContext, FileCodegenContext } from '../lib/types';
+import { CodegenContext, DocumentImportCodegenContext } from '../lib/types';
 
 export function appendFileContext(
   execContext: ExecContext,
@@ -33,7 +33,7 @@ export function appendFileContext(
     const shouldUpdate =
       gqlHash !== readHash(tsxFullPath) || gqlHash !== readHash(dtsFullPath);
 
-    const context: FileCodegenContext = {
+    const context: DocumentImportCodegenContext = {
       ...createdPaths,
       type: 'document-import',
       gqlHash,

@@ -3,7 +3,7 @@ import { processCodegenForContext } from './codegen';
 import loadConfig from './config';
 import createExecContext from './exec-context';
 import { createPaths } from './paths';
-import { FileCodegenContext } from './types';
+import { DocumentImportCodegenContext } from './types';
 import { matchPathsAndContents } from './__tools/match-paths-and-contents';
 
 const cwd = pathJoin(__dirname, '__fixtures/graphql-codegen');
@@ -14,7 +14,7 @@ describe('graphql-codegen.ts', () => {
 
     const execContext = createExecContext(cwd, config, configHash);
     const paths = createPaths(execContext, 'pages/viewer.graphql');
-    const codegenContext: FileCodegenContext[] = [
+    const codegenContext: DocumentImportCodegenContext[] = [
       {
         ...paths,
         type: 'document-import',

@@ -7,7 +7,7 @@ import { ExecContext } from '../lib/exec-context';
 import { createHashFromBuffers, readHash } from '../lib/hash';
 import { createPaths, isURL } from '../lib/paths';
 import { printError } from '../lib/print';
-import { CodegenContext, FileSchemaCodegenContext } from '../lib/types';
+import { CodegenContext, SchemaImportCodegenContext } from '../lib/types';
 
 export function shouldGenResolverTypes(config: ConfigTypes): boolean {
   try {
@@ -96,7 +96,7 @@ export async function appendFileSchemaContext(
       schemaHash !== readHash(createdPaths.tsxFullPath) ||
       schemaHash !== readHash(createdPaths.dtsFullPath);
 
-    const context: FileSchemaCodegenContext = {
+    const context: SchemaImportCodegenContext = {
       ...createdPaths,
       type: 'schema-import',
       gqlHash: schemaHash,
