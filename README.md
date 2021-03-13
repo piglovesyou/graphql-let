@@ -4,8 +4,9 @@
 A layer to start/scale the use of GraphQL code generator.
 
 Try
-[the Next.js example](https://github.com/zeit/next.js/blob/canary/examples/with-typescript-graphql/README.md#readme)
-that integrates graphql-let.
+[a Create React App example](https://github.com/piglovesyou/cra-template-graphql#readme) and
+[a Next.js example](https://github.com/zeit/next.js/blob/canary/examples/with-typescript-graphql/README.md#readme)
+that integrate graphql-let.
 
 ## Table of Contents
 
