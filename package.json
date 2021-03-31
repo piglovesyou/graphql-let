@@ -70,7 +70,7 @@
     "@types/babel-plugin-macros": "^2.8.4",
     "@types/babel__core": "^7.1.12",
     "@types/babel__preset-env": "^7.9.1",
-    "@types/babel__traverse": "^7.11.0",
+    "@types/babel__traverse": "^7.11.1",
     "@types/caller": "^1.0.0",
     "@types/copyfiles": "^2.4.0",
     "@types/core-js": "^2.5.4",
