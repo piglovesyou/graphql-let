@@ -75,7 +75,7 @@
     "@types/copyfiles": "^2.4.0",
     "@types/core-js": "^2.5.4",
     "@types/diff": "^5.0.0",
-    "@types/eslint": "^7.2.7",
+    "@types/eslint": "^7.2.8",
     "@types/eslint-plugin-prettier": "^3.1.0",
     "@types/jest": "^26.0.20",
     "@types/loader-utils": "^2.0.2",
