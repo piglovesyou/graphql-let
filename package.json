@@ -101,7 +101,7 @@
     "babel-plugin-module-resolver": "^4.1.0",
     "babel-plugin-tester": "^10.0.0",
     "copyfiles": "^2.4.1",
-    "core-js": "^3.9.1",
+    "core-js": "^3.10.0",
     "diff": "^5.0.0",
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^8.0.0",
