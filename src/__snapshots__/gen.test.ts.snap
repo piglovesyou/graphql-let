@@ -658,6 +658,7 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+const defaultOptions =  {}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -725,10 +726,12 @@ export const ViewerFromMacroDocument = gql\`
  * });
  */
 export function useViewerFromMacroQuery(baseOptions?: Apollo.QueryHookOptions<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>) {
-        return Apollo.useQuery<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>(ViewerFromMacroDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>(ViewerFromMacroDocument, options);
       }
 export function useViewerFromMacroLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>) {
-          return Apollo.useLazyQuery<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>(ViewerFromMacroDocument, baseOptions);
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>(ViewerFromMacroDocument, options);
         }
 export type ViewerFromMacroQueryHookResult = ReturnType<typeof useViewerFromMacroQuery>;
 export type ViewerFromMacroLazyQueryHookResult = ReturnType<typeof useViewerFromMacroLazyQuery>;
@@ -745,6 +748,7 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+const defaultOptions =  {}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -812,10 +816,12 @@ export const ViewerFromMacro2Document = gql\`
  * });
  */
 export function useViewerFromMacro2Query(baseOptions?: Apollo.QueryHookOptions<ViewerFromMacro2Query, ViewerFromMacro2QueryVariables>) {
-        return Apollo.useQuery<ViewerFromMacro2Query, ViewerFromMacro2QueryVariables>(ViewerFromMacro2Document, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ViewerFromMacro2Query, ViewerFromMacro2QueryVariables>(ViewerFromMacro2Document, options);
       }
 export function useViewerFromMacro2LazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerFromMacro2Query, ViewerFromMacro2QueryVariables>) {
-          return Apollo.useLazyQuery<ViewerFromMacro2Query, ViewerFromMacro2QueryVariables>(ViewerFromMacro2Document, baseOptions);
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ViewerFromMacro2Query, ViewerFromMacro2QueryVariables>(ViewerFromMacro2Document, options);
         }
 export type ViewerFromMacro2QueryHookResult = ReturnType<typeof useViewerFromMacro2Query>;
 export type ViewerFromMacro2LazyQueryHookResult = ReturnType<typeof useViewerFromMacro2LazyQuery>;
@@ -832,6 +838,7 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+const defaultOptions =  {}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -899,10 +906,12 @@ export const ViewerDocument = gql\`
  * });
  */
 export function useViewerQuery(baseOptions?: Apollo.QueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-        return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
       }
 export function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-          return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, baseOptions);
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
         }
 export type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
@@ -919,6 +928,7 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+const defaultOptions =  {}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -986,10 +996,12 @@ export const ViewerYDocument = gql\`
  * });
  */
 export function useViewerYQuery(baseOptions?: Apollo.QueryHookOptions<ViewerYQuery, ViewerYQueryVariables>) {
-        return Apollo.useQuery<ViewerYQuery, ViewerYQueryVariables>(ViewerYDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ViewerYQuery, ViewerYQueryVariables>(ViewerYDocument, options);
       }
 export function useViewerYLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerYQuery, ViewerYQueryVariables>) {
-          return Apollo.useLazyQuery<ViewerYQuery, ViewerYQueryVariables>(ViewerYDocument, baseOptions);
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ViewerYQuery, ViewerYQueryVariables>(ViewerYDocument, options);
         }
 export type ViewerYQueryHookResult = ReturnType<typeof useViewerYQuery>;
 export type ViewerYLazyQueryHookResult = ReturnType<typeof useViewerYLazyQuery>;
@@ -1049,6 +1061,7 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+const defaultOptions =  {}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -1116,10 +1129,12 @@ export const ViewerDocument = gql\`
  * });
  */
 export function useViewerQuery(baseOptions?: Apollo.QueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-        return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
       }
 export function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>) {
-          return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, baseOptions);
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ViewerQuery, ViewerQueryVariables>(ViewerDocument, options);
         }
 export type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
@@ -1136,6 +1151,7 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+const defaultOptions =  {}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -1203,10 +1219,12 @@ export const ViewerFromMacroDocument = gql\`
  * });
  */
 export function useViewerFromMacroQuery(baseOptions?: Apollo.QueryHookOptions<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>) {
-        return Apollo.useQuery<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>(ViewerFromMacroDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>(ViewerFromMacroDocument, options);
       }
 export function useViewerFromMacroLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>) {
-          return Apollo.useLazyQuery<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>(ViewerFromMacroDocument, baseOptions);
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>(ViewerFromMacroDocument, options);
         }
 export type ViewerFromMacroQueryHookResult = ReturnType<typeof useViewerFromMacroQuery>;
 export type ViewerFromMacroLazyQueryHookResult = ReturnType<typeof useViewerFromMacroLazyQuery>;
