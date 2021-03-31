@@ -46,7 +46,7 @@
     "schema-utils": "^3.0.0",
     "slash": "^3.0.0",
     "string-env-interpolation": "^1.0.1",
-    "yaml": "^1.10.0"
+    "yaml": "^1.10.2"
   },
   "devDependencies": {
     "@apollo/client": "^3.3.7",
