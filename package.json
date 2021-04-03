@@ -5,7 +5,7 @@
     "type": "git",
     "url": "git@github.com:piglovesyou/graphql-let.git"
   },
-  "homepage": "https://github.com/piglovesyou/graphql-let#readme",
+  "homepage": "https://github.com/piglovesyou/graphql-let",
   "author": "Soichi Takamura <thepiglovesyou@gmail.com>",
   "keywords": [
     "graphql",

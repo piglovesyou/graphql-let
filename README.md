@@ -46,19 +46,21 @@ const News: React.FC = () => {
 
 ## Entrypoints and features
 
-Summary of characteristics of each entrypoint.
+These are the supported entrypoints with characteristics summaries.
 
 *   **CLI** for efficient code generation before your type checking
 *   **webpack loader** to get HMR even on modifying GraphQL documents
 *   **babel-plugin-macros** for the minimum configuration
 *   **Babel plugin** if you don't want babel-plugin-macros
 
+The CLI is what you want to run before your webpack/Babel build. One of the others (webpack loader, babel-plugin-macros, Babel plugin) is your choice.
+
 All of them mostly do the same behind the scene.
 
 1.  Loads your configuration from `.graphql-let.yml`
-2.  Finds GraphQL documents (queries, mutations, subscriptions) from  `.graphql*` and `.tsx*` specified in your  `config.documents`
-3.  Processes and passes arguments to GraphQL code generator **to generate `.ts(x)` s**. These are used for runtime.
-4.  Also **generates the corresponding `.d.ts` s** of the codegen results. These are
+2.  Finds GraphQL documents (queries, mutations, subscriptions) from  `.graphql*` and `.ts*` specified in your  `config.documents`
+3.  Processes and passes arguments to GraphQL code generator **to generate `.ts(x)`s**. These are used for runtime.
+4.  It also **generates the corresponding `.d.ts` s** of the codegen results. These are
     used for typing checking / IDE code completion.
 
 Note there are a few differences between the entrypoints.
@@ -114,12 +116,11 @@ Note there are a few differences between the entrypoints.
 <details>
   <summary>Efficiency</summary>
 
-There are things to make graphql-let light and stable.
+There are things to make graphql-let lightweight and stable.
 
 *   Sharing the processes. Generating files is expensive, so it runs less time
     to run GraphQL code generator and TypeScript API.
-*   Caching. By embedding hashes as your source states, it reduces the number of
-    unnecessary processing.
+*   Caching. Embedding hashes, as your source states, reduces the number of unnecessary processing.
 *   Sharing the promises. The webpack compilation in typical SSR applications as
     Next.js runs [targets](https://webpack.js.org/concepts/targets/) of `"node"`
     and `"web"` simultaneously. If sources are the same, the compilation should
@@ -634,13 +635,9 @@ No. There are
 
 Sadly, you need `gql()` instead of `` gql` `   `` because of [the limitation of TypeScript](https://github.com/microsoft/TypeScript/issues/33304).
 
-#### 拡張子 `.graphql` と `.graphqls` とは何ですか? .gql\` などを使ってもいいのでしょうか？
+#### Do I have to use `.graphql` and `.graphqls`? Is `.gql` not available for GraphQL documents?
 
-正確には違いますが、GraphQLドキュメントとGraphQLスキーマを区別することをお勧めします。
-スキーマを区別することをお勧めします。 I think using different extensions for them leads to a more
-understandable configuration for webpack loaders with fewer pitfalls. Another
-reason for `.graphqls` is that it's one of
-[the supported extensions in the internal library](https://github.com/ardatan/graphql-toolkit/blob/d29e518a655c02e3e14377c8c7d3de61f08e6200/packages/loaders/graphql-file/src/index.ts#L9).
+You can use anything. But I'd recommend using different extensions for GraphQL schema and documents for readable configuration for webpack loaders with fewer pitfalls. Another reason for suggesting `.graphqls` is that it's one of [the supported extensions in the internal library](https://github.com/ardatan/graphql-toolkit/blob/d29e518a655c02e3e14377c8c7d3de61f08e6200/packages/loaders/graphql-file/src/index.ts#L9).
 
 #### How to integrate Apollo refetchQueries?
 
