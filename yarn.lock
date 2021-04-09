@@ -5573,12 +5573,12 @@ graphql-request@^3.3.0:
     extract-files "^9.0.0"
     form-data "^3.0.0"
 
-graphql-tag@^2.10.1, graphql-tag@^2.11.0, graphql-tag@^2.12.0:
-  version "2.12.1"
-  resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.12.1.tgz#b065ef885e4800e4afd0842811b718a205f4aa58"
-  integrity sha512-LPewEE1vzGkHnCO8zdOGogKsHHBdtpGyihow1UuMwp6RnZa0lAS7NcbvltLOuo4pi5diQCPASAXZkQq44ffixA==
+graphql-tag@^2.11.0, graphql-tag@^2.12.0, graphql-tag@^2.12.3:
+  version "2.12.3"
+  resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.12.3.tgz#ac47bf9d51c67c68ada8a33fd527143ed15bb647"
+  integrity sha512-5wJMjSvj30yzdciEuk9dPuUBUR56AqDi3xncoYQl1i42pGdSqOJrJsdb/rz5BDoy+qoGvQwABcBeF0xXY3TrKw==
   dependencies:
-    tslib "^1.14.1"
+    tslib "^2.1.0"
 
 graphql-upload@^11.0.0:
   version "11.0.0"
