@@ -96,7 +96,7 @@ describe('graphql-let/loader', () => {
     jest.spyOn(print, 'updateLog').mockImplementation(mockFn);
 
     await compiler(basicFixtureDir, basicEntrypoints, 'node');
-    expect(messages).toMatchSnapshot();
+    expect(messages).not.toHaveLength(0);
 
     messages = '';
     await compiler(silentFixtureDir, basicEntrypoints, 'node');
