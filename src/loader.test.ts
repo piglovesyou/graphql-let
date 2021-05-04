@@ -8,6 +8,7 @@ import { join as pathJoin } from 'path';
 import { promisify } from 'util';
 import waitOn from 'wait-on';
 import { Stats } from 'webpack';
+import * as print from './lib/print';
 import compiler from './lib/__tools/compile';
 import { prepareFixtures } from './lib/__tools/file';
 
@@ -85,6 +86,18 @@ describe('graphql-let/loader', () => {
       cwd: flatProjFixtureDir,
     });
     strictEqual(globResults.length, 2);
+  });
+
+  test('The option "silent" suppresses standard output logs', async () => {
+    let messages = '';
+    const mockFn = (m: any) => (messages += m + '\n');
+    jest.spyOn(print, 'printInfo').mockImplementation(mockFn);
+    jest.spyOn(print, 'updateLog').mockImplementation(mockFn);
+
+    await compiler(flatProjFixtureDir, flatProjEntrypoints, 'node', {
+      // silent: true,
+    });
+    expect(messages).toMatchSnapshot();
   });
 
   describe('options', () => {
