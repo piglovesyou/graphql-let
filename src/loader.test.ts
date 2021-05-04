@@ -14,10 +14,10 @@ import { prepareFixtures } from './lib/__tools/file';
 
 const unlink = promisify(fs.unlink);
 
-let flatProjFixtureDir: string;
+let basicFixtureDir: string;
 let monorepoFixtureDir: string;
 
-const flatProjEntrypoints = ['pages/index.tsx', 'pages/viewer.graphql'];
+const basicEntrypoints = ['pages/index.tsx', 'pages/viewer.graphql'];
 
 function getOutputInfo(stats: Stats) {
   const { modules } = stats.toJson()!;
@@ -33,9 +33,9 @@ function getOutputInfo(stats: Stats) {
 
 describe('graphql-let/loader', () => {
   beforeAll(async () => {
-    [flatProjFixtureDir] = await prepareFixtures(
+    [basicFixtureDir] = await prepareFixtures(
       __dirname,
-      '__fixtures/loader/usual',
+      '__fixtures/loader/basic',
     );
     [monorepoFixtureDir] = await prepareFixtures(
       __dirname,
@@ -44,11 +44,7 @@ describe('graphql-let/loader', () => {
   });
 
   test('generates .tsx and .d.ts', async () => {
-    const stats = await compiler(
-      flatProjFixtureDir,
-      flatProjEntrypoints,
-      'node',
-    );
+    const stats = await compiler(basicFixtureDir, basicEntrypoints, 'node');
     const outputs = getOutputInfo(stats);
     expect(outputs).toHaveLength(4);
 
@@ -73,7 +69,7 @@ describe('graphql-let/loader', () => {
     ];
     const results = await Promise.all(
       expectedTargets.map(([file, target]) =>
-        compiler(flatProjFixtureDir, [file], target),
+        compiler(basicFixtureDir, [file], target),
       ),
     );
     for (const [i, stats] of results.entries()) {
@@ -83,7 +79,7 @@ describe('graphql-let/loader', () => {
       expect(output).toMatchSnapshot();
     }
     const globResults = await glob('**/*.graphql.d.ts', {
-      cwd: flatProjFixtureDir,
+      cwd: basicFixtureDir,
     });
     strictEqual(globResults.length, 2);
   });
@@ -94,9 +90,7 @@ describe('graphql-let/loader', () => {
     jest.spyOn(print, 'printInfo').mockImplementation(mockFn);
     jest.spyOn(print, 'updateLog').mockImplementation(mockFn);
 
-    await compiler(flatProjFixtureDir, flatProjEntrypoints, 'node', {
-      // silent: true,
-    });
+    await compiler(basicFixtureDir, basicEntrypoints, 'node');
     expect(messages).toMatchSnapshot();
   });
 
