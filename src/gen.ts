@@ -95,9 +95,11 @@ export async function gen({
   cwd,
   configFilePath,
 }: CommandOpts): Promise<CodegenContext[]> {
-  updateLog('Scanning...');
-
   const [config, configHash] = await loadConfig(cwd, configFilePath);
+  const { silent } = config;
+
+  if (!silent) updateLog('Scanning...');
+
   const execContext = createExecContext(cwd, config, configHash);
   const codegenContext: CodegenContext[] = [];
 
@@ -120,28 +122,29 @@ export async function gen({
   );
 
   if (isAllSkip(codegenContext)) {
-    updateLog(
-      `Nothing to do. Caches for ${codegenContext.length} GraphQL documents are fresh.`,
-    );
+    if (!silent)
+      updateLog(
+        `Nothing to do. Caches for ${codegenContext.length} GraphQL documents are fresh.`,
+      );
   } else {
     const numToProcess = codegenContext.reduce(
       (i, { skip }) => (skip ? i : i + 1),
       0,
     );
-    updateLog(`Processing ${numToProcess} codegen...`);
+    if (!silent) updateLog(`Processing ${numToProcess} codegen...`);
 
     writeTiIndexForContext(execContext, codegenContext);
 
     await processCodegenForContext(execContext, codegenContext);
 
-    updateLog(`Generating ${numToProcess} d.ts...`);
+    if (!silent) updateLog(`Generating ${numToProcess} d.ts...`);
     await processDtsForContext(execContext, codegenContext);
 
     const displayNum =
       numToProcess === codegenContext.length
         ? numToProcess
         : `${numToProcess}/${codegenContext.length}`;
-    updateLog(`Done processing ${displayNum} GraphQL documents.`);
+    if (!silent) updateLog(`Done processing ${displayNum} GraphQL documents.`);
   }
 
   await removeObsoleteFiles(execContext, codegenContext, graphqlRelPaths);

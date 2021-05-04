@@ -47,6 +47,7 @@ Array [
       },
     ],
     "schemaEntrypoint": "",
+    "silent": false,
     "typeInjectEntrypoint": "node_modules/@types/graphql-let/index.d.ts",
   },
   "6134bbfa2c25f64acb7c526097ecc4e4014c2aa4",
@@ -67,6 +68,7 @@ Object {
   "respectGitIgnore": false,
   "schema": "**/*.graphql",
   "schemaEntrypoint": "yeah.graphqls",
+  "silent": false,
   "typeInjectEntrypoint": "typings/yeah.d.ts;",
 }
 `;

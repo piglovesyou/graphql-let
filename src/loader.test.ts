@@ -8,15 +8,17 @@ import { join as pathJoin } from 'path';
 import { promisify } from 'util';
 import waitOn from 'wait-on';
 import { Stats } from 'webpack';
+import * as print from './lib/print';
 import compiler from './lib/__tools/compile';
 import { prepareFixtures } from './lib/__tools/file';
 
 const unlink = promisify(fs.unlink);
 
-let flatProjFixtureDir: string;
+let basicFixtureDir: string;
 let monorepoFixtureDir: string;
+let silentFixtureDir: string;
 
-const flatProjEntrypoints = ['pages/index.tsx', 'pages/viewer.graphql'];
+const basicEntrypoints = ['pages/index.tsx', 'pages/viewer.graphql'];
 
 function getOutputInfo(stats: Stats) {
   const { modules } = stats.toJson()!;
@@ -32,22 +34,22 @@ function getOutputInfo(stats: Stats) {
 
 describe('graphql-let/loader', () => {
   beforeAll(async () => {
-    [flatProjFixtureDir] = await prepareFixtures(
+    [basicFixtureDir] = await prepareFixtures(
       __dirname,
-      '__fixtures/loader/usual',
+      '__fixtures/loader/basic',
     );
     [monorepoFixtureDir] = await prepareFixtures(
       __dirname,
       '__fixtures/loader/monorepo',
     );
+    [silentFixtureDir] = await prepareFixtures(
+      __dirname,
+      '__fixtures/loader/silent',
+    );
   });
 
   test('generates .tsx and .d.ts', async () => {
-    const stats = await compiler(
-      flatProjFixtureDir,
-      flatProjEntrypoints,
-      'node',
-    );
+    const stats = await compiler(basicFixtureDir, basicEntrypoints, 'node');
     const outputs = getOutputInfo(stats);
     expect(outputs).toHaveLength(4);
 
@@ -72,7 +74,7 @@ describe('graphql-let/loader', () => {
     ];
     const results = await Promise.all(
       expectedTargets.map(([file, target]) =>
-        compiler(flatProjFixtureDir, [file], target),
+        compiler(basicFixtureDir, [file], target),
       ),
     );
     for (const [i, stats] of results.entries()) {
@@ -82,9 +84,23 @@ describe('graphql-let/loader', () => {
       expect(output).toMatchSnapshot();
     }
     const globResults = await glob('**/*.graphql.d.ts', {
-      cwd: flatProjFixtureDir,
+      cwd: basicFixtureDir,
     });
     strictEqual(globResults.length, 2);
+  });
+
+  test('The option "silent" suppresses standard output logs', async () => {
+    let messages = '';
+    const mockFn = (m: any) => (messages += m + '\n');
+    jest.spyOn(print, 'printInfo').mockImplementation(mockFn);
+    jest.spyOn(print, 'updateLog').mockImplementation(mockFn);
+
+    await compiler(basicFixtureDir, basicEntrypoints, 'node');
+    expect(messages).not.toHaveLength(0);
+
+    messages = '';
+    await compiler(silentFixtureDir, basicEntrypoints, 'node');
+    expect(messages).toHaveLength(0);
   });
 
   describe('options', () => {
