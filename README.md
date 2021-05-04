@@ -440,6 +440,10 @@ typeInjectEntrypoint: node_modules/@types/graphql-let/index.d.ts
 # you to specify a normal relative path without glob symbols (`**`) like this.
 schemaEntrypoint: schema.graphqls
 schemaEntrypoint: lib/schema.graphqls
+
+# "silent", optional. `false` by default.
+# Pass `true` if you want to suppress all standard output from graphql-let.
+silent: false
 ```
 
 Simple example:
