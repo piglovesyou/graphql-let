@@ -18,6 +18,7 @@ export type GraphQLLetAdditionalOptions = {
   // gqlDtsEntrypoint?: string;
   typeInjectEntrypoint?: string;
   generateOptions?: Types.ConfiguredOutput;
+  silent?: boolean;
 };
 
 export type UserConfigTypes = PartialGraphqlCodegenOptions &
@@ -64,6 +65,7 @@ export function buildConfig(raw: UserConfigTypes): ConfigTypes {
       raw.typeInjectEntrypoint || 'node_modules/@types/graphql-let/index.d.ts',
     generateOptions: raw.generateOptions || Object.create(null),
     schemaEntrypoint: raw.schemaEntrypoint || '',
+    silent: raw.silent || false,
   };
 }
 
