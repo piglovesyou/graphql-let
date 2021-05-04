@@ -57,10 +57,11 @@ const processLoaderForSources = memoize(
     options: GraphQLLetLoaderOptions,
   ): Promise<string | Buffer> => {
     const [config, configHash] = await loadConfig(cwd, options.configFile);
+    const { silent } = config;
     const execContext = createExecContext(cwd, config, configHash);
     const codegenContext: CodegenContext[] = [];
     const sourceRelPath = pathRelative(cwd, sourceFullPath);
-    updateLog(`Processing ${sourceRelPath}...`);
+    if (!silent) updateLog(`Processing ${sourceRelPath}...`);
 
     const { schemaHash } = await appendFileSchemaContext(
       execContext,
@@ -78,12 +79,12 @@ const processLoaderForSources = memoize(
     if (!codegenContext.length) return sourceContent;
 
     if (isAllSkip(codegenContext)) {
-      updateLog(`Nothing to do. Cache was fresh.`);
+      if (!silent) updateLog(`Nothing to do. Cache was fresh.`);
       const [{ tsxFullPath }] = codegenContext;
       return await readFile(tsxFullPath, 'utf-8');
     }
 
-    updateLog(`Processing codegen for ${sourceRelPath}...`);
+    if (!silent) updateLog(`Processing codegen for ${sourceRelPath}...`);
     const [[fileNode, programPath, callExpressionPathPairs]] = paths;
 
     // Add dependencies so editing dependent GraphQL emits HMR.
@@ -107,12 +108,15 @@ const processLoaderForSources = memoize(
     );
     writeTiIndexForContext(execContext, codegenContext);
     await processCodegenForContext(execContext, codegenContext);
-    updateLog(`Generating d.ts for ${sourceRelPath}...`);
+    if (!silent) updateLog(`Generating d.ts for ${sourceRelPath}...`);
     await processDtsForContext(execContext, codegenContext);
 
     const { code } = generator(fileNode);
 
-    updateLog(`Done processing ${sourceRelPath}.`);
+    if (!silent) {
+      updateLog(`Done processing ${sourceRelPath}.`);
+      updateLogDone();
+    }
     return code;
   },
   (gqlFullPath: string) => gqlFullPath,
@@ -127,10 +131,11 @@ const processLoaderForDocuments = memoize(
     options: GraphQLLetLoaderOptions,
   ): Promise<string> => {
     const [config, configHash] = await loadConfig(cwd, options.configFile);
+    const { silent } = config;
     const execContext = createExecContext(cwd, config, configHash);
     const codegenContext: FileSchemaCodegenContext[] = [];
     const graphqlRelPath = pathRelative(cwd, gqlFullPath);
-    updateLog(`Processing ${graphqlRelPath}...`);
+    if (!silent) updateLog(`Processing ${graphqlRelPath}...`);
 
     // Add dependencies so editing dependent GraphQL emits HMR.
     const { dependantFullPaths } = resolveGraphQLDocument(
@@ -156,19 +161,22 @@ const processLoaderForDocuments = memoize(
 
     const { skip, tsxFullPath } = fileContext;
     if (skip) {
-      updateLog(`Nothing to do. Cache was fresh.`);
+      if (!silent) updateLog(`Nothing to do. Cache was fresh.`);
       return await readFile(tsxFullPath, 'utf-8');
     }
 
-    updateLog(`Processing codegen for ${graphqlRelPath}...`);
+    if (!silent) updateLog(`Processing codegen for ${graphqlRelPath}...`);
     const [{ content }] = await processCodegenForContext(execContext, [
       fileContext,
     ]);
 
-    updateLog(`Generating d.ts for ${graphqlRelPath}...`);
+    if (!silent) updateLog(`Generating d.ts for ${graphqlRelPath}...`);
     await processDtsForContext(execContext, [fileContext]);
 
-    updateLog(`Done processing ${graphqlRelPath}.`);
+    if (!silent) {
+      updateLog(`Done processing ${graphqlRelPath}.`);
+      updateLogDone();
+    }
     return content;
   },
   (gqlFullPath: string) => gqlFullPath,
@@ -212,7 +220,6 @@ const graphQLLetLoader: loader.Loader = function (resourceContent) {
 
   promise
     .then((tsxContent) => {
-      updateLogDone();
       callback(undefined, tsxContent);
     })
     .catch((e) => {

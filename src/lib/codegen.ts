@@ -51,8 +51,11 @@ export function buildCodegenConfig(
   }
 
   return {
-    silent: true,
     ...config,
+    // Regardless of `silent` value in config,
+    // we always suppress GraphQL code generator logs
+    silent: true,
+
     // @ts-ignore
     cwd,
 
