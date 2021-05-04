@@ -16,6 +16,7 @@ const unlink = promisify(fs.unlink);
 
 let basicFixtureDir: string;
 let monorepoFixtureDir: string;
+let silentFixtureDir: string;
 
 const basicEntrypoints = ['pages/index.tsx', 'pages/viewer.graphql'];
 
@@ -40,6 +41,10 @@ describe('graphql-let/loader', () => {
     [monorepoFixtureDir] = await prepareFixtures(
       __dirname,
       '__fixtures/loader/monorepo',
+    );
+    [silentFixtureDir] = await prepareFixtures(
+      __dirname,
+      '__fixtures/loader/silent',
     );
   });
 
@@ -92,6 +97,10 @@ describe('graphql-let/loader', () => {
 
     await compiler(basicFixtureDir, basicEntrypoints, 'node');
     expect(messages).toMatchSnapshot();
+
+    messages = '';
+    await compiler(silentFixtureDir, basicEntrypoints, 'node');
+    expect(messages).toHaveLength(0);
   });
 
   describe('options', () => {

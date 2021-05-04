@@ -1,0 +1,11 @@
+schema: schema/type-defs.graphqls
+documents:
+    - "**/*.graphql"
+    - "**/*.tsx"
+plugins:
+    - typescript
+    - typescript-operations
+    - typescript-react-apollo
+respectGitIgnore: true
+cacheDir: __generated__
+silent: true
