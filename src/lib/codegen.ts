@@ -36,12 +36,12 @@ function getFixedSchemaConfig() {
 
 function createFixedDocumentPresetConfig(
   context: CodegenContext,
-  schemaTsxFullPath: string,
+  schemaDtsFullPath: string,
 ) {
-  const { tsxFullPath } = context;
+  const { dtsFullPath } = context;
   const relPathToSchema = path.relative(
-    dirname(tsxFullPath),
-    removeExtname(schemaTsxFullPath),
+    dirname(dtsFullPath),
+    removeExtname(schemaDtsFullPath),
   );
   return {
     preset: 'import-types',
@@ -79,7 +79,7 @@ export function buildCodegenConfig(
 
   const context = codegenContext.find(({ type }) => type === 'schema-import');
   if (!context) throw new Error('"schema-import" context must appear');
-  const { tsxFullPath: schemaTsxFullPath } = context;
+  const { dtsFullPath: schemaDtsFullPath } = context;
 
   for (const context of codegenContext) {
     if (context.skip) continue;
@@ -95,7 +95,7 @@ export function buildCodegenConfig(
         opts = {
           plugins: appendFixedDocumentPluginConfig(config.plugins),
           documents: context.gqlRelPath,
-          ...createFixedDocumentPresetConfig(context, schemaTsxFullPath),
+          ...createFixedDocumentPresetConfig(context, schemaDtsFullPath),
         };
         break;
 
@@ -103,7 +103,7 @@ export function buildCodegenConfig(
         opts = {
           plugins: appendFixedDocumentPluginConfig(config.plugins),
           documents: context.resolvedGqlContent,
-          ...createFixedDocumentPresetConfig(context, schemaTsxFullPath),
+          ...createFixedDocumentPresetConfig(context, schemaDtsFullPath),
         };
         break;
     }
