@@ -22,7 +22,6 @@ import memoize from './lib/memoize';
 import { PRINT_PREFIX, updateLog, updateLogDone } from './lib/print';
 import {
   CodegenContext,
-  DocumentImportCodegenContext,
   isAllSkip,
   SchemaImportCodegenContext,
 } from './lib/types';
@@ -149,14 +148,14 @@ const processLoaderForDocuments = memoize(
       execContext,
       codegenContext,
     );
-    const [fileSchemaContext] = codegenContext;
-    if (fileSchemaContext) addDependency(fileSchemaContext.gqlFullPath);
+    const [schemaImportContext] = codegenContext;
+    if (schemaImportContext) addDependency(schemaImportContext.gqlFullPath);
 
-    const fileCodegenContext: DocumentImportCodegenContext[] = [];
-    await appendFileContext(execContext, schemaHash, fileCodegenContext, [
+    // const documentImportCodegenContext: DocumentImportCodegenContext[] = [];
+    await appendFileContext(execContext, schemaHash, codegenContext, [
       graphqlRelPath,
     ]);
-    const [fileContext] = fileCodegenContext;
+    const [, fileContext] = codegenContext;
     if (!fileContext) throw new Error('Never');
 
     const { skip, tsxFullPath } = fileContext;
@@ -166,9 +165,10 @@ const processLoaderForDocuments = memoize(
     }
 
     if (!silent) updateLog(`Processing codegen for ${graphqlRelPath}...`);
-    const [{ content }] = await processCodegenForContext(execContext, [
-      fileContext,
-    ]);
+    const [{ content }] = await processCodegenForContext(
+      execContext,
+      codegenContext,
+    );
 
     if (!silent) updateLog(`Generating d.ts for ${graphqlRelPath}...`);
     await processDtsForContext(execContext, [fileContext]);
