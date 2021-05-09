@@ -1,4 +1,12 @@
-import { basename, dirname, extname, isAbsolute, join } from 'path';
+import {
+  basename,
+  dirname,
+  extname,
+  isAbsolute,
+  join,
+  join as pathJoin,
+} from 'path';
+import { typesRootRelDir } from '../call-expressions/type-inject';
 import { ExecContext } from './exec-context';
 import { FileImportCreatedPaths } from './types';
 
@@ -27,6 +35,25 @@ export function createPaths(
     dtsFullPath,
     dtsRelPath,
     gqlFullPath,
+  };
+}
+
+export const SCHEMA_TYPES_BASENAME = '__SCHEMA__';
+
+export function createSchemaPaths(execContext: ExecContext) {
+  const { cwd, config, cacheFullDir } = execContext;
+  const typeInjectFullDir = pathJoin(cwd, dirname(config.typeInjectEntrypoint));
+
+  const tsxRelPath = `${SCHEMA_TYPES_BASENAME}.tsx`;
+  const tsxFullPath = pathJoin(cacheFullDir, tsxRelPath);
+  const dtsRelPath = `${SCHEMA_TYPES_BASENAME}.d.ts`;
+  const dtsFullPath = pathJoin(typeInjectFullDir, typesRootRelDir, dtsRelPath);
+
+  return {
+    tsxRelPath,
+    tsxFullPath,
+    dtsRelPath,
+    dtsFullPath,
   };
 }
 

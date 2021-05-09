@@ -7,7 +7,6 @@ import { ConfigTypes } from './config';
 import { ExecContext } from './exec-context';
 import { writeFile } from './file';
 import { withHash } from './hash';
-import { removeExtname } from './paths';
 import { printError } from './print';
 import { CodegenContext, isAllSkip } from './types';
 import ConfiguredOutput = Types.ConfiguredOutput;
@@ -41,7 +40,7 @@ function createFixedDocumentPresetConfig(
   const { dtsFullPath } = context;
   const relPathToSchema = path.relative(
     dirname(dtsFullPath),
-    removeExtname(schemaDtsFullPath),
+    schemaDtsFullPath.slice(0, schemaDtsFullPath.length - '.d.ts'.length),
   );
   return {
     preset: 'import-types',

@@ -5,7 +5,7 @@ import slash from 'slash';
 import { ConfigTypes } from '../lib/config';
 import { ExecContext } from '../lib/exec-context';
 import { createHash, createHashFromBuffers, readHash } from '../lib/hash';
-import { createPaths, isURL } from '../lib/paths';
+import { createSchemaPaths, isURL } from '../lib/paths';
 import { printError } from '../lib/print';
 import { CodegenContext, SchemaImportCodegenContext } from '../lib/types';
 
@@ -85,7 +85,7 @@ export async function appendFileSchemaContext(
   execContext: ExecContext,
   codegenContext: CodegenContext[],
 ) {
-  const { config, configHash } = execContext;
+  const { configHash } = execContext;
   // We start our hash seed from configHash + schemaHash.
   // If either of them changes, the hash changes, that triggers
   // cache refresh in the subsequent generation process.
@@ -93,10 +93,7 @@ export async function appendFileSchemaContext(
     configHash + (await createSchemaHash(execContext)),
   );
 
-  const createdPaths = createPaths(
-    execContext,
-    config.schemaEntrypoint || '__SCHEMA__',
-  );
+  const createdPaths = createSchemaPaths(execContext);
 
   const shouldUpdate =
     schemaHash !== readHash(createdPaths.tsxFullPath) ||

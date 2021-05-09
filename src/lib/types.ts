@@ -38,7 +38,8 @@ export type GqlCallCreatedPaths = CreatedPathsBase & {
 };
 
 export type SchemaImportCodegenContext = CodegenContextBase<'schema-import'> &
-  FileImportCreatedPaths;
+  CreatedPathsBase;
+
 export type DocumentImportCodegenContext = CodegenContextBase<'document-import'> &
   FileImportCreatedPaths;
 

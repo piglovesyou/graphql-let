@@ -66,6 +66,7 @@ const processLoaderForSources = memoize(
       execContext,
       codegenContext,
     );
+    if (codegenContext.length !== 1) throw new Error('Never');
 
     const paths = appendLiteralAndLoadContextForTsSources(
       execContext,
@@ -75,11 +76,11 @@ const processLoaderForSources = memoize(
     );
     if (!paths.length) throw new Error('Never');
 
-    if (!codegenContext.length) return sourceContent;
+    if (codegenContext.length === 1) return sourceContent;
 
     if (isAllSkip(codegenContext)) {
       if (!silent) updateLog(`Nothing to do. Cache was fresh.`);
-      const [{ tsxFullPath }] = codegenContext;
+      const [{ tsxFullPath }] = codegenContext as SchemaImportCodegenContext[];
       return await readFile(tsxFullPath, 'utf-8');
     }
 
@@ -90,8 +91,10 @@ const processLoaderForSources = memoize(
     for (const context of codegenContext) {
       switch (context.type) {
         case 'document-import':
-        case 'schema-import':
           throw new Error('Never');
+        case 'schema-import':
+          // Nothing to do
+          break;
         case 'gql-call':
         case 'load-call':
           for (const d of context.dependantFullPaths) addDependency(d);
@@ -148,8 +151,6 @@ const processLoaderForDocuments = memoize(
       execContext,
       codegenContext,
     );
-    const [schemaImportContext] = codegenContext;
-    if (schemaImportContext) addDependency(schemaImportContext.gqlFullPath);
 
     // const documentImportCodegenContext: DocumentImportCodegenContext[] = [];
     await appendFileContext(execContext, schemaHash, codegenContext, [
@@ -171,7 +172,7 @@ const processLoaderForDocuments = memoize(
     );
 
     if (!silent) updateLog(`Generating d.ts for ${graphqlRelPath}...`);
-    await processDtsForContext(execContext, [fileContext]);
+    await processDtsForContext(execContext, codegenContext);
 
     if (!silent) {
       updateLog(`Done processing ${graphqlRelPath}.`);
