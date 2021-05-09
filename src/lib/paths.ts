@@ -1,4 +1,4 @@
-import { extname, isAbsolute, join } from 'path';
+import { basename, dirname, extname, isAbsolute, join } from 'path';
 import { ExecContext } from './exec-context';
 import { FileImportCreatedPaths } from './types';
 
@@ -42,4 +42,8 @@ export function isURL(p: string): boolean {
 export function isTypeScriptPath(path: string) {
   const x = extname(path);
   return x === '.ts' || x === '.tsx';
+}
+
+export function removeExtname(path: string) {
+  return join(dirname(path), basename(path, extname(path)));
 }

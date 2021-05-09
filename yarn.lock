@@ -1146,6 +1146,14 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@graphql-codegen/add@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/add/-/add-2.0.2.tgz#4acbb95be9ebb859a3cebfe7132fdf49ffe06dd8"
+  integrity sha512-0X1ofeSvAjCNcLar2ZR1EOmm5dvyKJMFbgM+ySf1PaHyoi3yf/xRI2Du81ONzQ733Lhmn3KTX1VKybm/OB1Qtg==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^1.18.2"
+    tslib "~2.0.1"
+
 "@graphql-codegen/cli@^1.20.0":
   version "1.21.1"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/cli/-/cli-1.21.1.tgz#fa1666ea5f1751e158d6d200c58f8228ad2f98ed"
@@ -1206,6 +1214,16 @@
     "@graphql-tools/utils" "^6"
     tslib "~2.0.1"
 
+"@graphql-codegen/import-types-preset@^1.18.1":
+  version "1.18.1"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/import-types-preset/-/import-types-preset-1.18.1.tgz#86d7c41243e1a5fca9ecfff5c0fa5e3f9d0ab3aa"
+  integrity sha512-kEu47bv/q/hn8JdaLu8dj34CM7zwCePq7OcnsIGtMtIA0SMZ5TvpO3VkDuYUQd0lh/dckVwIfasZv/3U8Tw2pQ==
+  dependencies:
+    "@graphql-codegen/add" "^2.0.2"
+    "@graphql-codegen/plugin-helpers" "^1.18.2"
+    "@graphql-codegen/visitor-plugin-common" "^1.17.20"
+    tslib "~2.0.1"
+
 "@graphql-codegen/plugin-helpers@^1.18.2", "@graphql-codegen/plugin-helpers@^1.18.3", "@graphql-codegen/plugin-helpers@^1.18.4", "@graphql-codegen/plugin-helpers@^1.18.5":
   version "1.18.5"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/plugin-helpers/-/plugin-helpers-1.18.5.tgz#e1d875cfb6a2f7bf4b4318135f7fee6e1200f3b0"
@@ -1261,7 +1279,7 @@
     auto-bind "~4.0.0"
     tslib "~2.2.0"
 
-"@graphql-codegen/visitor-plugin-common@^1.19.0", "@graphql-codegen/visitor-plugin-common@^1.19.1", "@graphql-codegen/visitor-plugin-common@^1.20.0":
+"@graphql-codegen/visitor-plugin-common@^1.17.20", "@graphql-codegen/visitor-plugin-common@^1.19.0", "@graphql-codegen/visitor-plugin-common@^1.19.1", "@graphql-codegen/visitor-plugin-common@^1.20.0":
   version "1.20.0"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-1.20.0.tgz#38d829eab7370c79aa5229190788f94adcae8f76"
   integrity sha512-AYrpy8NA3DpvhDLqYGerQRv44S+YAMPKtwT8x9GNVjzP0gVfmqi3gG1bDWbP5sm6kOZKvDC0kTxGePuBSZerxw==

@@ -2,13 +2,72 @@ import { generate } from '@graphql-codegen/cli';
 import { CodegenContext as CodegenConfig } from '@graphql-codegen/cli/config';
 import { Types } from '@graphql-codegen/plugin-helpers';
 import makeDir from 'make-dir';
-import path from 'path';
+import path, { dirname } from 'path';
+import { ConfigTypes } from './config';
 import { ExecContext } from './exec-context';
 import { writeFile } from './file';
 import { withHash } from './hash';
+import { removeExtname } from './paths';
 import { printError } from './print';
 import { CodegenContext, isAllSkip } from './types';
 import ConfiguredOutput = Types.ConfiguredOutput;
+
+const OPTIONAL_SCHEMA_PLUGINS = ['typescript-resolvers'];
+function findOptionalSchemaPlugins() {
+  const plugins: string[] = [];
+  for (const c of OPTIONAL_SCHEMA_PLUGINS) {
+    try {
+      plugins.push(c);
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+  }
+  return plugins;
+}
+
+// To avoid unnecessary complexity, graphql-let controls
+// all the presets including plugin options related to it as its spec.
+// I think it works for many of users, but there could be
+// cases where you need to configure this more. Issue it then.
+function getFixedSchemaConfig() {
+  return {
+    plugins: ['typescript', ...findOptionalSchemaPlugins()],
+  };
+}
+
+function createFixedDocumentPresetConfig(
+  context: CodegenContext,
+  schemaTsxFullPath: string,
+) {
+  const { tsxFullPath } = context;
+  const relPathToSchema = path.relative(
+    dirname(tsxFullPath),
+    removeExtname(schemaTsxFullPath),
+  );
+  return {
+    preset: 'import-types',
+    presetConfig: {
+      typesPath: relPathToSchema,
+      importTypesNamespace: '__SchemaTypes__', // I guess this is enough to avoid name duplication
+    },
+  };
+}
+
+const FIXED_DOCUMENT_PLUGIN_CONFIG = { importOperationTypesFrom: '' };
+function appendFixedDocumentPluginConfig(
+  plugins: ConfigTypes['plugins'],
+): ConfigTypes['plugins'] {
+  return plugins.map((p) => {
+    if (typeof p === 'string') {
+      // Ugly patch: I think "Root Level" and "Output Level" config
+      // are not passed to plugins. Only "Plugin Level" works.
+      return {
+        [p]: FIXED_DOCUMENT_PLUGIN_CONFIG,
+      };
+    } else {
+      return { ...p, ...FIXED_DOCUMENT_PLUGIN_CONFIG };
+    }
+  });
+}
 
 export function buildCodegenConfig(
   { cwd, config }: ExecContext,
@@ -18,29 +77,33 @@ export function buildCodegenConfig(
     [outputPath: string]: ConfiguredOutput;
   } = Object.create(null);
 
+  const context = codegenContext.find(({ type }) => type === 'schema-import');
+  if (!context) throw new Error('"schema-import" context must appear');
+  const { tsxFullPath: schemaTsxFullPath } = context;
+
   for (const context of codegenContext) {
     if (context.skip) continue;
     const { tsxFullPath } = context;
     let opts: ConfiguredOutput;
     switch (context.type) {
       case 'schema-import':
-        opts = {
-          plugins: ['typescript', 'typescript-resolvers'],
-        };
+        opts = getFixedSchemaConfig();
         break;
 
       case 'document-import':
       case 'load-call':
         opts = {
-          plugins: config.plugins,
+          plugins: appendFixedDocumentPluginConfig(config.plugins),
           documents: context.gqlRelPath,
+          ...createFixedDocumentPresetConfig(context, schemaTsxFullPath),
         };
         break;
 
       case 'gql-call':
         opts = {
-          plugins: config.plugins,
+          plugins: appendFixedDocumentPluginConfig(config.plugins),
           documents: context.resolvedGqlContent,
+          ...createFixedDocumentPresetConfig(context, schemaTsxFullPath),
         };
         break;
     }

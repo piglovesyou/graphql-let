@@ -1,10 +1,10 @@
-import { Types } from '@graphql-codegen/plugin-helpers/types';
+import { Types } from '@graphql-codegen/plugin-helpers';
 import { readFileSync } from 'fs';
 import globby from 'globby';
 import slash from 'slash';
 import { ConfigTypes } from '../lib/config';
 import { ExecContext } from '../lib/exec-context';
-import { createHashFromBuffers, readHash } from '../lib/hash';
+import { createHash, createHashFromBuffers, readHash } from '../lib/hash';
 import { createPaths, isURL } from '../lib/paths';
 import { printError } from '../lib/print';
 import { CodegenContext, SchemaImportCodegenContext } from '../lib/types';
@@ -49,6 +49,8 @@ function getSchemaPointers(
 function prepareCreateSchemaHashArgs(execContext: ExecContext) {
   const { config, configHash, cwd } = execContext;
   const schemaPointers = getSchemaPointers(config.schema!);
+  // TODO: How can we detect update of remote GraphQL Schema? ETag?
+  // It caches the remote introspection forever in the current implementation.
   const filePointers = schemaPointers.filter((p) => !isURL(p));
   return { configHash, cwd, filePointers };
 }
@@ -84,26 +86,29 @@ export async function appendFileSchemaContext(
   codegenContext: CodegenContext[],
 ) {
   const { config, configHash } = execContext;
-  // To pass config change on subsequent generation,
-  // configHash should be primary hash seed.
-  let schemaHash = configHash;
+  // We start our hash seed from configHash + schemaHash.
+  // If either of them changes, the hash changes, that triggers
+  // cache refresh in the subsequent generation process.
+  const schemaHash = createHash(
+    configHash + (await createSchemaHash(execContext)),
+  );
 
-  if (shouldGenResolverTypes(config)) {
-    schemaHash = await createSchemaHash(execContext);
-    const createdPaths = createPaths(execContext, config.schemaEntrypoint);
+  const createdPaths = createPaths(
+    execContext,
+    config.schemaEntrypoint || '__SCHEMA__',
+  );
 
-    const shouldUpdate =
-      schemaHash !== readHash(createdPaths.tsxFullPath) ||
-      schemaHash !== readHash(createdPaths.dtsFullPath);
+  const shouldUpdate =
+    schemaHash !== readHash(createdPaths.tsxFullPath) ||
+    schemaHash !== readHash(createdPaths.dtsFullPath);
 
-    const context: SchemaImportCodegenContext = {
-      ...createdPaths,
-      type: 'schema-import',
-      gqlHash: schemaHash,
-      skip: !shouldUpdate,
-    };
-    codegenContext.push(context);
-  }
+  const context: SchemaImportCodegenContext = {
+    ...createdPaths,
+    type: 'schema-import',
+    gqlHash: schemaHash,
+    skip: !shouldUpdate,
+  };
+  codegenContext.push(context);
 
   return { schemaHash };
 }
