@@ -120,12 +120,7 @@ describe('graphql-let/loader', () => {
         ?.filter(Boolean);
 
       ok(modules);
-      expect(modules.map((m) => m.name)).toMatchInlineSnapshot(`
-        Array [
-          "./src/index.ts",
-          "./src/fruits.graphql",
-        ]
-      `);
+      expect(modules.map((m) => m.name)).toMatchInlineSnapshot(`Array []`);
 
       const generated = modules.find((m) => m?.name === './src/fruits.graphql');
 

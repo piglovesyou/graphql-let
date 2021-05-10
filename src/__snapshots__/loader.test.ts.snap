@@ -67,7 +67,8 @@ useViewerYQuery();"
 `;
 
 exports[`graphql-let/loader options accept absolute config path in options.configFile 2`] = `
-"import { gql } from '@apollo/client';
+"
+import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {};
 

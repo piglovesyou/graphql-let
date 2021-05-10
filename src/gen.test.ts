@@ -55,24 +55,33 @@ describe('"graphql-let" command', () => {
     const pickProperties = (context: CodegenContext) =>
       pick(context, ['gqlRelPath', 'tsxRelPath', 'dtsRelPath', 'gqlHash']);
 
-    const result1 = (await gen({ cwd })) as DocumentImportCodegenContext[];
+    const result1 = await gen({ cwd });
     for (const r of result1) expect(r).toMatchObject({ skip: false });
     expect(result1.map(pickProperties)).toMatchSnapshot();
 
-    const result2 = (await gen({ cwd })) as DocumentImportCodegenContext[];
+    const result2 = await gen({ cwd });
     for (const r of result2) expect(r).toMatchObject({ skip: true });
     expect(result2.map(pickProperties)).toMatchSnapshot();
 
-    const props = ['tsxFullPath', 'dtsFullPath', 'gqlFullPath'] as (
-      | 'tsxFullPath'
-      | 'dtsFullPath'
-      | 'gqlFullPath'
-    )[];
-    for (const prop of props)
-      for (const [i, r2] of result2.entries())
-        expect(statSync(r2[prop]).mtime).toStrictEqual(
-          statSync(result1[i][prop]).mtime,
-        );
+    for (const [i, r2] of result2.entries()) {
+      const r1 = result1[i];
+      switch (r2.type) {
+        case 'document-import':
+          expect(statSync(r2.gqlFullPath).mtime).toStrictEqual(
+            statSync((r1 as DocumentImportCodegenContext).gqlFullPath).mtime,
+          );
+        case 'schema-import':
+          expect(statSync(r2.tsxFullPath).mtime).toStrictEqual(
+            statSync(r1.tsxFullPath).mtime,
+          );
+          expect(statSync(r2.dtsFullPath).mtime).toStrictEqual(
+            statSync(r1.dtsFullPath).mtime,
+          );
+          break;
+        default:
+          throw new Error(`"${r2.type}" should not appear this time`);
+      }
+    }
   });
 
   test(`passes config to graphql-codegen as expected
