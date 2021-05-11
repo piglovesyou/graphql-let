@@ -11,20 +11,15 @@ import {
   writeTiIndexForContext,
 } from './call-expressions/handle-codegen-context';
 import { resolveGraphQLDocument } from './call-expressions/type-inject';
-import { appendFileContext } from './file-imports/document-import';
-import { appendFileSchemaContext } from './file-imports/schema-import';
 import { processCodegenForContext } from './lib/codegen';
 import loadConfig from './lib/config';
+import { appendDocumentImportContext } from './lib/document-import';
 import { processDtsForContext } from './lib/dts';
-import createExecContext from './lib/exec-context';
+import { createExecContext } from './lib/exec-context';
 import { readFile } from './lib/file';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX, updateLog, updateLogDone } from './lib/print';
-import {
-  CodegenContext,
-  isAllSkip,
-  SchemaImportCodegenContext,
-} from './lib/types';
+import { isAllSkip, SchemaImportCodegenContext } from './lib/types';
 
 const optionsSchema: JsonSchema = {
   type: 'object',
@@ -57,16 +52,14 @@ const processLoaderForSources = memoize(
   ): Promise<string | Buffer> => {
     const [config, configHash] = await loadConfig(cwd, options.configFile);
     const { silent } = config;
-    const execContext = createExecContext(cwd, config, configHash);
-    const codegenContext: CodegenContext[] = [];
     const sourceRelPath = pathRelative(cwd, sourceFullPath);
     if (!silent) updateLog(`Processing ${sourceRelPath}...`);
 
-    const { schemaHash } = await appendFileSchemaContext(
-      execContext,
-      codegenContext,
+    const { execContext, codegenContext, schemaHash } = await createExecContext(
+      cwd,
+      config,
+      configHash,
     );
-    if (codegenContext.length !== 1) throw new Error('Never');
 
     const paths = appendLiteralAndLoadContextForTsSources(
       execContext,
@@ -76,6 +69,8 @@ const processLoaderForSources = memoize(
     );
     if (!paths.length) throw new Error('Never');
 
+    // If we only have 'schema-import' context, the source
+    // doesn't have any `gql()` or `load()` call. Return.
     if (codegenContext.length === 1) return sourceContent;
 
     if (isAllSkip(codegenContext)) {
@@ -134,10 +129,14 @@ const processLoaderForDocuments = memoize(
   ): Promise<string> => {
     const [config, configHash] = await loadConfig(cwd, options.configFile);
     const { silent } = config;
-    const execContext = createExecContext(cwd, config, configHash);
-    const codegenContext: SchemaImportCodegenContext[] = [];
     const graphqlRelPath = pathRelative(cwd, gqlFullPath);
     if (!silent) updateLog(`Processing ${graphqlRelPath}...`);
+
+    const { execContext, codegenContext, schemaHash } = await createExecContext(
+      cwd,
+      config,
+      configHash,
+    );
 
     // Add dependencies so editing dependent GraphQL emits HMR.
     const { dependantFullPaths } = resolveGraphQLDocument(
@@ -147,13 +146,8 @@ const processLoaderForDocuments = memoize(
     );
     for (const d of dependantFullPaths) addDependency(d);
 
-    const { schemaHash } = await appendFileSchemaContext(
-      execContext,
-      codegenContext,
-    );
-
     // const documentImportCodegenContext: DocumentImportCodegenContext[] = [];
-    await appendFileContext(execContext, schemaHash, codegenContext, [
+    await appendDocumentImportContext(execContext, schemaHash, codegenContext, [
       graphqlRelPath,
     ]);
     const [, fileContext] = codegenContext;
@@ -166,7 +160,7 @@ const processLoaderForDocuments = memoize(
     }
 
     if (!silent) updateLog(`Processing codegen for ${graphqlRelPath}...`);
-    const [{ content }] = await processCodegenForContext(
+    const [, { content }] = await processCodegenForContext(
       execContext,
       codegenContext,
     );

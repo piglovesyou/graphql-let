@@ -15,4 +15,5 @@ export async function matchPathsAndContents(
       });
     }),
   );
+  return files;
 }

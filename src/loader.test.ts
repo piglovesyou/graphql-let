@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { ok, strictEqual } from 'assert';
+import { ok } from 'assert';
 import 'core-js/es/array';
 import * as fs from 'fs';
-import glob from 'globby';
 import { join as pathJoin } from 'path';
 import { promisify } from 'util';
 import waitOn from 'wait-on';
@@ -11,6 +10,7 @@ import { Stats } from 'webpack';
 import * as print from './lib/print';
 import compiler from './lib/__tools/compile';
 import { prepareFixtures } from './lib/__tools/file';
+import { matchPathsAndContents } from './lib/__tools/match-paths-and-contents';
 
 const unlink = promisify(fs.unlink);
 
@@ -20,16 +20,16 @@ let silentFixtureDir: string;
 
 const basicEntrypoints = ['pages/index.tsx', 'pages/viewer.graphql'];
 
-function getOutputInfo(stats: Stats) {
+function getOutputInfo(stats: Stats): string[] {
   const { modules } = stats.toJson()!;
-  const acc: [name: string, output: string][] = [];
+  const names: string[] = [];
   (function getNamesAndOutputs(fnModules: Stats.FnModules[]) {
     for (const m of fnModules) {
-      if (m.name && m.source) acc.push([m.name, m.source]);
+      if (m.name && typeof m.source === 'string') names.push(m.name);
       if (m.modules) getNamesAndOutputs(m.modules);
     }
   })(modules!);
-  return acc;
+  return names;
 }
 
 describe('graphql-let/loader', () => {
@@ -50,17 +50,18 @@ describe('graphql-let/loader', () => {
 
   test('generates .tsx and .d.ts', async () => {
     const stats = await compiler(basicFixtureDir, basicEntrypoints, 'node');
-    const outputs = getOutputInfo(stats);
-    expect(outputs).toHaveLength(4);
-
-    const [, gqlOutput] = outputs.find(
-      ([name]) => name === './pages/viewer.graphql',
-    )!;
-    expect(gqlOutput).toMatchSnapshot();
-    const [, sourceOutput] = outputs.find(
-      ([name]) => name === './pages/index.tsx',
-    )!;
-    expect(sourceOutput).toMatchSnapshot();
+    expect(getOutputInfo(stats)).toMatchInlineSnapshot(`
+      Array [
+        "./__generated__/__SCHEMA__.tsx",
+        "./pages/viewer.graphql",
+        "./pages/index.tsx",
+        "./__generated__/pages/index-Viewer-Partial.tsx",
+      ]
+    `);
+    await matchPathsAndContents(
+      ['__generated__/**/*.tsx', '**/*.d.ts'],
+      basicFixtureDir,
+    );
   });
 
   test('runs well for simultaneous execution, assuming SSR', async () => {
@@ -77,16 +78,44 @@ describe('graphql-let/loader', () => {
         compiler(basicFixtureDir, [file], target),
       ),
     );
-    for (const [i, stats] of results.entries()) {
-      const [file] = expectedTargets[i];
-      const outputs = getOutputInfo(stats);
-      const [, output] = outputs.find(([name]) => name === './' + file)!;
-      expect(output).toMatchSnapshot();
-    }
-    const globResults = await glob('**/*.graphql.d.ts', {
-      cwd: basicFixtureDir,
-    });
-    strictEqual(globResults.length, 2);
+    const sourceNames = results.flatMap((r) => getOutputInfo(r));
+    expect(sourceNames).toMatchInlineSnapshot(`
+      Array [
+        "./__generated__/__SCHEMA__.tsx",
+        "./pages/index.tsx",
+        "./__generated__/pages/index-Viewer-Partial.tsx",
+        "./__generated__/__SCHEMA__.tsx",
+        "./pages/index.tsx",
+        "./__generated__/pages/index-Viewer-Partial.tsx",
+        "./pages/viewer.graphql",
+        "./pages/viewer.graphql",
+        "./pages/viewer2.graphql",
+        "./pages/viewer2.graphql",
+      ]
+    `);
+    expect(
+      await matchPathsAndContents(
+        [
+          '**/__generated__/**/*.tsx',
+          '**/__generated__/**/*.d.ts',
+          '**/*.graphql.d.ts',
+        ],
+        basicFixtureDir,
+      ),
+    ).toMatchInlineSnapshot(`
+      Array [
+        "__generated__/__SCHEMA__.tsx",
+        "__generated__/pages/index-Viewer-Partial.tsx",
+        "__generated__/pages/index-ViewerY-Partial.tsx",
+        "__generated__/pages/viewer.graphql.tsx",
+        "__generated__/pages/viewer2.graphql.tsx",
+        "node_modules/@types/graphql-let/__generated__/__SCHEMA__.d.ts",
+        "node_modules/@types/graphql-let/__generated__/pages/index-Viewer-Partial.d.ts",
+        "node_modules/@types/graphql-let/__generated__/pages/index-ViewerY-Partial.d.ts",
+        "pages/viewer.graphql.d.ts",
+        "pages/viewer2.graphql.d.ts",
+      ]
+    `);
   });
 
   test('The option "silent" suppresses standard output logs', async () => {
