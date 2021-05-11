@@ -1,11 +1,11 @@
 import { join as pathJoin } from 'path';
-import { ExecContext } from '../lib/exec-context';
-import { readFileSync } from '../lib/file';
-import { createHash, readHash } from '../lib/hash';
-import { createPaths } from '../lib/paths';
-import { CodegenContext, DocumentImportCodegenContext } from '../lib/types';
+import { ExecContext } from './exec-context';
+import { readFileSync } from './file';
+import { createHash, readHash } from './hash';
+import { createPaths } from './paths';
+import { CodegenContext, DocumentImportCodegenContext } from './types';
 
-export function appendFileContext(
+export function appendDocumentImportContext(
   execContext: ExecContext,
   schemaHash: string,
   codegenContext: CodegenContext[],

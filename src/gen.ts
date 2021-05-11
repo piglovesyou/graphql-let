@@ -7,12 +7,11 @@ import {
   writeTiIndexForContext,
 } from './call-expressions/handle-codegen-context';
 import { typesRootRelDir } from './call-expressions/type-inject';
-import { appendFileContext } from './file-imports/document-import';
-import { appendFileSchemaContext } from './file-imports/schema-import';
 import { processCodegenForContext } from './lib/codegen';
 import loadConfig from './lib/config';
+import { appendDocumentImportContext } from './lib/document-import';
 import { processDtsForContext } from './lib/dts';
-import createExecContext, { ExecContext } from './lib/exec-context';
+import { createExecContext, ExecContext } from './lib/exec-context';
 import { isTypeScriptPath, toDtsPath } from './lib/paths';
 import { updateLog } from './lib/print';
 import { CodegenContext, CommandOpts, isAllSkip } from './lib/types';
@@ -100,19 +99,22 @@ export async function gen({
 
   if (!silent) updateLog('Scanning...');
 
-  const execContext = createExecContext(cwd, config, configHash);
-  const codegenContext: CodegenContext[] = [];
+  const { execContext, codegenContext, schemaHash } = await createExecContext(
+    cwd,
+    config,
+    configHash,
+  );
 
   const { graphqlRelPaths, tsSourceRelPaths } = await findTargetSources(
     execContext,
   );
 
-  const { schemaHash } = await appendFileSchemaContext(
+  appendDocumentImportContext(
     execContext,
+    schemaHash,
     codegenContext,
+    graphqlRelPaths,
   );
-
-  appendFileContext(execContext, schemaHash, codegenContext, graphqlRelPaths);
 
   appendLiteralAndLoadContextForTsSources(
     execContext,
