@@ -3,7 +3,7 @@ import { ProjectConfig } from '@jest/types/build/Config';
 import { readFileSync } from 'fs';
 import { relative as pathRelative } from 'path';
 import { loadConfigSync } from './lib/config';
-import createExecContext from './lib/exec-context';
+import { createExecContextSync } from './lib/exec-context';
 import { createHash } from './lib/hash';
 import { createPaths } from './lib/paths';
 
@@ -28,7 +28,7 @@ const jestTransformer: Transformer = {
     const { rootDir: cwd } = jestConfig;
     const { configFile, subsequentTransformer } = getOption(jestConfig);
     const [config, configHash] = loadConfigSync(cwd, configFile);
-    const execContext = createExecContext(cwd, config, configHash);
+    const { execContext } = createExecContextSync(cwd, config, configHash);
 
     const { tsxFullPath } = createPaths(
       execContext,

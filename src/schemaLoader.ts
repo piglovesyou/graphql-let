@@ -1,23 +1,21 @@
 import logUpdate from 'log-update';
 import { loader } from 'webpack';
-import { appendFileSchemaContext } from './file-imports/schema-import';
 import { processCodegenForContext } from './lib/codegen';
 import loadConfig from './lib/config';
 import { processDtsForContext } from './lib/dts';
-import createExecContext from './lib/exec-context';
+import { createExecContext } from './lib/exec-context';
 import { readFile } from './lib/file';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX } from './lib/print';
-import { CodegenContext } from './lib/types';
 
 const processGraphQLCodegenSchemaLoader = memoize(
   async (cwd: string) => {
     const [config, configHash] = await loadConfig(cwd);
-    const execContext = createExecContext(cwd, config, configHash);
-    const codegenContext: CodegenContext[] = [];
-
-    await appendFileSchemaContext(execContext, codegenContext);
-    if (!codegenContext.length) throw new Error('Never');
+    const { execContext, codegenContext } = await createExecContext(
+      cwd,
+      config,
+      configHash,
+    );
 
     const [{ skip, tsxFullPath }] = codegenContext;
     if (skip) return await readFile(tsxFullPath, 'utf-8');

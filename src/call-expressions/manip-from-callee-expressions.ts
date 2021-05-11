@@ -23,6 +23,7 @@ export function manipulateFromCalleeExpressionsSync(
   const programPath = getProgramPath(
     gqlCalleePaths.concat(loadCalleePaths)[0]!,
   );
+  const codegenContext: CodegenContext[] = [];
   const { execContext, schemaHash } = prepareToManipulate(cwd, configFilePath);
 
   const callExpressionPathPairs: CallExpressionPathPairs = [];
@@ -44,8 +45,6 @@ export function manipulateFromCalleeExpressionsSync(
         'load',
       ),
     );
-
-  const codegenContext: CodegenContext[] = [];
 
   appendLiteralAndLoadCodegenContext(
     callExpressionPathPairs,
