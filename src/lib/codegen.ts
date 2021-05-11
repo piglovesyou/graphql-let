@@ -45,7 +45,9 @@ function createFixedDocumentPresetConfig(
   return {
     preset: 'import-types',
     presetConfig: {
-      typesPath: relPathToSchema,
+      typesPath: relPathToSchema.startsWith('.')
+        ? relPathToSchema
+        : './' + relPathToSchema,
       importTypesNamespace: '__SchemaTypes__', // I guess this is enough to avoid name duplication
     },
   };

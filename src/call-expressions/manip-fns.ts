@@ -8,12 +8,7 @@ import { writeTiIndexForContext } from './handle-codegen-context';
 
 export function prepareToManipulate(cwd: string, configFilePath?: string) {
   const [config, configHash] = loadConfigSync(cwd, configFilePath);
-  const { execContext, schemaHash } = createExecContextSync(
-    cwd,
-    config,
-    configHash,
-  );
-  return { execContext, schemaHash };
+  return createExecContextSync(cwd, config, configHash);
 }
 
 export async function generateFilesForContext(

@@ -77,6 +77,7 @@ const getConfigFromContent = (content: string): [ConfigTypes, string] => {
   return [buildConfig(parseYaml(content)), createHash(content)];
 };
 
+// Refactor with gensync
 export default async function loadConfig(
   cwd: string,
   configFilePath?: string,
