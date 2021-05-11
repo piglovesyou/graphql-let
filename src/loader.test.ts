@@ -14,10 +14,6 @@ import { matchPathsAndContents } from './lib/__tools/match-paths-and-contents';
 
 const unlink = promisify(fs.unlink);
 
-let basicFixtureDir: string;
-let monorepoFixtureDir: string;
-let silentFixtureDir: string;
-
 const basicEntrypoints = ['pages/index.tsx', 'pages/viewer.graphql'];
 
 function getOutputInfo(stats: Stats): string[] {
@@ -33,23 +29,12 @@ function getOutputInfo(stats: Stats): string[] {
 }
 
 describe('graphql-let/loader', () => {
-  beforeAll(async () => {
-    [basicFixtureDir] = await prepareFixtures(
+  test('generates .tsx and .d.ts', async () => {
+    const [fixtureDir] = await prepareFixtures(
       __dirname,
       '__fixtures/loader/basic',
     );
-    [monorepoFixtureDir] = await prepareFixtures(
-      __dirname,
-      '__fixtures/loader/monorepo',
-    );
-    [silentFixtureDir] = await prepareFixtures(
-      __dirname,
-      '__fixtures/loader/silent',
-    );
-  });
-
-  test('generates .tsx and .d.ts', async () => {
-    const stats = await compiler(basicFixtureDir, basicEntrypoints, 'node');
+    const stats = await compiler(fixtureDir, basicEntrypoints, 'node');
     expect(getOutputInfo(stats)).toMatchInlineSnapshot(`
       Array [
         "./__generated__/__SCHEMA__.tsx",
@@ -60,11 +45,16 @@ describe('graphql-let/loader', () => {
     `);
     await matchPathsAndContents(
       ['__generated__/**/*.tsx', '**/*.d.ts'],
-      basicFixtureDir,
+      fixtureDir,
     );
   });
 
   test('runs well for simultaneous execution, assuming SSR', async () => {
+    const [fixtureDir] = await prepareFixtures(
+      __dirname,
+      '__fixtures/loader/basic',
+      '.__fixtures/loader/basic-ssr',
+    );
     const expectedTargets: [string, 'node' | 'web'][] = [
       ['pages/index.tsx', 'node'],
       ['pages/index.tsx', 'web'],
@@ -75,7 +65,7 @@ describe('graphql-let/loader', () => {
     ];
     const results = await Promise.all(
       expectedTargets.map(([file, target]) =>
-        compiler(basicFixtureDir, [file], target),
+        compiler(fixtureDir, [file], target),
       ),
     );
     const sourceNames = results.flatMap((r) => getOutputInfo(r));
@@ -100,7 +90,7 @@ describe('graphql-let/loader', () => {
           '**/__generated__/**/*.d.ts',
           '**/*.graphql.d.ts',
         ],
-        basicFixtureDir,
+        fixtureDir,
       ),
     ).toMatchInlineSnapshot(`
       Array [
@@ -119,25 +109,26 @@ describe('graphql-let/loader', () => {
   });
 
   test('The option "silent" suppresses standard output logs', async () => {
+    const [fixtureDir] = await prepareFixtures(
+      __dirname,
+      '__fixtures/loader/silent',
+    );
     let messages = '';
     const mockFn = (m: any) => (messages += m + '\n');
     jest.spyOn(print, 'printInfo').mockImplementation(mockFn);
     jest.spyOn(print, 'updateLog').mockImplementation(mockFn);
 
-    await compiler(basicFixtureDir, basicEntrypoints, 'node');
-    expect(messages).not.toHaveLength(0);
-
-    messages = '';
-    await compiler(silentFixtureDir, basicEntrypoints, 'node');
+    await compiler(fixtureDir, basicEntrypoints, 'node');
     expect(messages).toHaveLength(0);
   });
 
   describe('options', () => {
     async function acceptsConfigPathInOptionsConfigFile(
+      fixtureDir: string,
       configFilePath: string,
     ) {
       const stats = await compiler(
-        pathJoin(monorepoFixtureDir, 'packages/app'),
+        pathJoin(fixtureDir, 'packages/app'),
         ['src/index.ts'],
         'web',
         { configFile: configFilePath },
@@ -149,7 +140,7 @@ describe('graphql-let/loader', () => {
         ?.filter(Boolean);
 
       ok(modules);
-      expect(modules.map((m) => m.name)).toMatchInlineSnapshot(`Array []`);
+      expect(modules.map((m) => m.name)).toMatchSnapshot();
 
       const generated = modules.find((m) => m?.name === './src/fruits.graphql');
 
@@ -157,7 +148,7 @@ describe('graphql-let/loader', () => {
 
       await waitOn({
         resources: [
-          `${monorepoFixtureDir}/packages/app/__generated__/src/fruits.graphql.tsx`,
+          `${fixtureDir}/packages/app/__generated__/src/fruits.graphql.tsx`,
         ],
       });
 
@@ -168,22 +159,34 @@ describe('graphql-let/loader', () => {
 
       await Promise.all([
         unlink(
-          `${monorepoFixtureDir}/packages/app/__generated__/src/fruits.graphql.tsx`,
+          `${fixtureDir}/packages/app/__generated__/src/fruits.graphql.tsx`,
         ),
-        unlink(`${monorepoFixtureDir}/packages/app/src/fruits.graphql.d.ts`),
+        unlink(`${fixtureDir}/packages/app/src/fruits.graphql.d.ts`),
       ]).catch(() => {
         /* discard error */
       });
     }
 
     test('accept relative config path in options.configFile', async () => {
+      const [fixtureDir] = await prepareFixtures(
+        __dirname,
+        '__fixtures/loader/monorepo',
+        '.__fixtures/loader/monorepo-relpath',
+      );
       await acceptsConfigPathInOptionsConfigFile(
+        fixtureDir,
         '../../config/.graphql-let.yml',
       );
     });
 
     test('accept absolute config path in options.configFile', async () => {
+      const [fixtureDir] = await prepareFixtures(
+        __dirname,
+        '__fixtures/loader/monorepo',
+        '.__fixtures/loader/monorepo-fullpath',
+      );
       await acceptsConfigPathInOptionsConfigFile(
+        fixtureDir,
         require.resolve('./__fixtures/loader/monorepo/config/.graphql-let.yml'),
       );
     });
