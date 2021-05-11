@@ -1,6 +1,8 @@
-import copyfiles from 'copyfiles';
-import { promises } from 'fs';
-import { join as pathJoin, resolve as pathResolve, sep } from 'path';
+import { constants, promises } from 'fs';
+import globby from 'globby';
+import makeDir from 'make-dir';
+import pMap from 'p-map';
+import { dirname, join as pathJoin } from 'path';
 import _rimraf from 'rimraf';
 import { promisify } from 'util';
 
@@ -12,7 +14,7 @@ export function normalizeNewLine(str: string) {
   return str;
 }
 
-export const { readFile: _readFile, writeFile, rename } = promises;
+export const { readFile: _readFile, writeFile, rename, copyFile } = promises;
 
 export function readFile(file: string) {
   return _readFile(file, 'utf-8').then(normalizeNewLine);
@@ -22,45 +24,28 @@ export function cleanup(cwd: string, relPaths: string[]) {
   return Promise.all(relPaths.map((rel) => rimraf(pathJoin(cwd, rel))));
 }
 
-export function copyDir(
-  baseFullDir: string,
-  srcRelDir: string,
-  destRelDir: string,
-): Promise<void> {
-  // baseFullDir: /Users/a/b/c
-  // srcRelDir: d/e
-  // destRelDir: .d/e
-  // It generates /Users/a/b/c/.d/e
-  if (srcRelDir === destRelDir) throw new Error('Kidding me?');
-  const relPathOffset = 1;
-  // pathResolve to strip empty dirs on right
-  const up = pathResolve(baseFullDir).split(sep).length + relPathOffset;
-  const [relRoot] = destRelDir.split('/');
-  return new Promise<void>((resolve, rejects) => {
-    copyfiles(
-      [pathJoin(baseFullDir, srcRelDir, '**'), pathJoin(baseFullDir, relRoot)],
-      { error: true, up, all: true },
-      (err) => {
-        if (err) return rejects(err);
-        resolve();
-      },
-    );
-  });
-}
-
 export type AbsFn = (rel: string) => string;
 
+/**
+ * Copy fixture dir for each test to avoid confliction
+ */
 export async function prepareFixtures(
   baseFullDir: string,
   fixtureSrcRelDir: string,
+  fixtureDestRelDir = '.' + fixtureSrcRelDir,
 ): Promise<[cwd: string, abs: AbsFn]> {
-  if (fixtureSrcRelDir.startsWith('..'))
-    throw new Error(
-      `It doesn't support backward relative paths like ${fixtureSrcRelDir}`,
-    );
-  const fixtureDestRelDir = '.' + fixtureSrcRelDir;
+  const files = await globby(['**'], {
+    cwd: pathJoin(baseFullDir, fixtureSrcRelDir),
+    dot: true,
+    absolute: false,
+  });
+  await pMap(files, async (relPath) => {
+    const srcPath = pathJoin(baseFullDir, fixtureSrcRelDir, relPath);
+    const destFile = pathJoin(baseFullDir, fixtureDestRelDir, relPath);
+    await makeDir(dirname(destFile));
+    await copyFile(srcPath, destFile, constants.COPYFILE_EXCL);
+  });
   const cwd = pathJoin(baseFullDir, fixtureDestRelDir);
   const abs = (relPath: string) => pathJoin(cwd, relPath);
-  await copyDir(baseFullDir, fixtureSrcRelDir, fixtureDestRelDir);
   return [cwd, abs];
 }

@@ -870,9 +870,15 @@ export declare type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQu
 "
 `;
 
+exports[`graphql-let/loader options accept absolute config path in options.configFile 1`] = `
+Array [
+  "./src/index.ts",
+  "./src/fruits.graphql",
+]
+`;
+
 exports[`graphql-let/loader options accept absolute config path in options.configFile 2`] = `
-"
-import { gql } from '@apollo/client';
+"import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {};
 
@@ -900,6 +906,13 @@ export function useGetFruitsLazyQuery(baseOptions) {
   };
   return Apollo.useLazyQuery(GetFruitsDocument, options);
 }"
+`;
+
+exports[`graphql-let/loader options accept relative config path in options.configFile 1`] = `
+Array [
+  "./src/index.ts",
+  "./src/fruits.graphql",
+]
 `;
 
 exports[`graphql-let/loader options accept relative config path in options.configFile 2`] = `
