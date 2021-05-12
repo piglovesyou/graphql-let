@@ -137,7 +137,19 @@ replace the corresponding lines depending on your needs.
 Note graphql-let is in `devDependencies`.
 
 ```bash
-yarn add -D graphql-let @graphql-codegen/cli @graphql-codegen/plugin-helpers @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo
+# Prerequisites
+yarn add -D typescript graphql
+
+# graphql-let as dev-dependency
+yarn add -D graphql-let
+
+# graphql-let's peer-dependencies
+yarn add -D @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/import-types-preset 
+
+# Install GraphQL code generator plugins depending on what you want
+yarn add -D @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo
+
+# Other libraries depending on your scenario
 yarn add @apollo/client
 ```
 
@@ -342,24 +354,26 @@ const { useNewsQuery } = gql("query News { braa }")
 const { useViewerQuery } = load("./viewer.graphql")
 ```
 
-## Configuration is compatible with codegen.yml, except:
+## How same/different between .graphql-let.yml and codegen.yml
 
-graphql-let passes most of the options to GraphQL code generator, so
-**`.graphql-let.yml` is mostly compatible with `codegen.yml`. However**, there
-are differences you should know. In short, the below diff is the quick migration
-guide.
+graphql-let half passes your config options to GraphQL code generator API and half controls them. Here explains how different these and why. You can see this section as a migration guide, too.
 
 ```diff
   schema: https://api.github.com/graphql
   documents: "**/*.graphql"
 - generates:
 -     ./__generated__/types.ts:
+-         config:
+-             configKey: configValue
 -         plugins:
 -             - typescript
 -             - typescript-operations
+-         preset: xxx
 + plugins:
 +     - typescript
 +     - typescript-operations
++ config:
++     configKey: configValue
 ```
 
 ### No `generates`
@@ -377,9 +391,13 @@ right now. But this could be changed logically, so please
 [vote by issuing](https://github.com/piglovesyou/graphql-let/issues) if you'd
 like.
 
-### Limitation: `documents` expects only `string | string[]`
+### No `preset`
 
-Document-pointer level options such as `noRequire: true` or
+[Presets](https://www.graphql-code-generator.com/docs/presets/presets-index) decide how to split/import each other, which graphql-let manages basically. graphql-let generates per-document `.d.ts` and binds up schema types into a shared file, that's why [`@graphql-codegen/import-types-preset`](https://www.graphql-code-generator.com/docs/presets/import-types) is a peer dependency. I think you don't need to concern about preset, because graphql-let takes care of what it does on your behalf. If you notice the use-case you need flexibility, please issue it.
+
+### Limitation: `documents` expects `string | string[]`
+
+Document-level options such as `noRequir` or
 [Custom Document Loader](https://graphql-code-generator.com/docs/getting-started/documents-field#custom-document-loader)
 are not supported.
 
