@@ -3,6 +3,7 @@ import { CodegenContext as CodegenConfig } from '@graphql-codegen/cli/config';
 import { Types } from '@graphql-codegen/plugin-helpers';
 import makeDir from 'make-dir';
 import path, { dirname } from 'path';
+import slash from 'slash';
 import { ConfigTypes } from './config';
 import { ExecContext } from './exec-context';
 import { writeFile } from './file';
@@ -38,9 +39,11 @@ function createFixedDocumentPresetConfig(
   schemaDtsFullPath: string,
 ) {
   const { dtsFullPath } = context;
-  const relPathToSchema = path.relative(
-    dirname(dtsFullPath),
-    schemaDtsFullPath.slice(0, schemaDtsFullPath.length - '.d.ts'.length),
+  const relPathToSchema = slash(
+    path.relative(
+      dirname(dtsFullPath),
+      schemaDtsFullPath.slice(0, schemaDtsFullPath.length - '.d.ts'.length),
+    ),
   );
   return {
     preset: 'import-types',
