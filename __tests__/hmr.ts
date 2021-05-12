@@ -47,26 +47,18 @@ const spawn = (
     ...opts,
   });
 
-const ensureOutputDts = async (message: string): Promise<ResultType> => {
-  const globResults = await glob(['**/*.graphql.d.ts', '**/*.graphqls.d.ts'], {
-    cwd,
-  });
-  strictEqual(
-    globResults.length,
-    2,
-    `"${JSON.stringify(globResults)}" is something wrong. ${message}`,
-  );
-  const [schemaDtsPath, documentDtsPath] = globResults.sort();
-  strictEqual(
-    schemaDtsPath,
-    'src/type-defs.graphqls.d.ts',
-    `${schemaDtsPath} is something wrong. ${message}`,
-  );
-  strictEqual(
-    documentDtsPath,
+const ensureOutputDts = async (): Promise<ResultType> => {
+  const globResults = (
+    await glob(['**/*.d.ts'], {
+      cwd,
+    })
+  ).sort();
+  expect(globResults).toMatchObject([
+    'node_modules/@types/graphql-let/__generated__/__SCHEMA__.d.ts',
+    'node_modules/@types/graphql-let/index.d.ts',
     'src/viewer.graphql.d.ts',
-    `${documentDtsPath} is something wrong. ${message}`,
-  );
+  ]);
+  const [schemaDtsPath, , documentDtsPath] = globResults;
   return {
     schemaDtsPath: schemaDtsPath,
     schema: await readFile(abs(schemaDtsPath)),
@@ -132,7 +124,7 @@ query Viewer {
         status
     }
 }
-`,
+`.trim(),
         'utf-8',
       );
       await timeout(3 * 1000);
