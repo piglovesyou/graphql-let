@@ -91,7 +91,7 @@ describe('HMR', () => {
       /************************************************************************
        * Ensure the command result
        */
-      const result1 = await ensureOutputDts('Ensure the initial state');
+      const result1 = await ensureOutputDts();
       expect(result1).toMatchSnapshot();
 
       /************************************************************************
@@ -106,7 +106,7 @@ describe('HMR', () => {
       /************************************************************************
        * Verify initial loader behavior
        */
-      const result2 = await ensureOutputDts('Verify initial loader behavior');
+      const result2 = await ensureOutputDts();
       expect(result2).toMatchObject(result1);
 
       /************************************************************************
@@ -132,9 +132,7 @@ query Viewer {
       let result3: ResultType;
       await retryable(
         async () => {
-          result3 = await ensureOutputDts(
-            'Verify HMR on document modification',
-          );
+          result3 = await ensureOutputDts();
           strictEqual(
             result3.schemaDtsPath,
             result1.schemaDtsPath,
@@ -182,9 +180,7 @@ type Query {
       let result4: ResultType;
       await retryable(
         async () => {
-          result4 = await ensureOutputDts(
-            'Verify HMR on schema modification - add "age" field',
-          );
+          result4 = await ensureOutputDts();
           notStrictEqual(
             result4.schema,
             result3.schema,
@@ -258,10 +254,8 @@ type Query {
         1000,
         60 * 1000,
       );
-      ok(
-        stderrContent.includes(
-          'GraphQLDocumentError: Cannot query field "name" on type "User".',
-        ),
+      expect(stderrContent).toContain(
+        'Error: Unable to find field "name" on type "User"!',
       );
 
       /************************************************************************

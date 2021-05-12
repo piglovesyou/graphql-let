@@ -144,7 +144,7 @@ async function processGraphQLCodegen(
   } catch (error) {
     if (error.name === 'ListrError' && error.errors != null) {
       for (const err of error.errors) {
-        err.message = `${err.message}${err.details}`;
+        err.message = `${err.message}${err.details || ''}`;
         printError(err);
       }
     } else {

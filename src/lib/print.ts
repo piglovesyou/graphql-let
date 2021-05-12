@@ -7,7 +7,7 @@ export function printInfo(message: string): void {
 }
 
 export function printError(err: Error): void {
-  console.error(PRINT_PREFIX + err.message + err.stack);
+  console.error(PRINT_PREFIX + err.message + '\n' + err.stack);
 }
 
 export function updateLog(message: string) {
