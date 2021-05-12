@@ -175,7 +175,6 @@ Edit it like this:
     - '**/*.graphql'
     - '**/*.tsx'
   plugins:
-    - typescript
 +   - typescript-operations
 +   - typescript-react-apollo
 ```
@@ -190,7 +189,6 @@ Edit it like this:
     - '**/*.graphql'
     - '**/*.tsx'
   plugins:
-    - typescript
     - typescript-operations
     - typescript-react-apollo
 + cacheDir: __generated__
@@ -370,7 +368,6 @@ graphql-let half passes your config options to GraphQL code generator API and ha
 -             - typescript-operations
 -         preset: xxx
 + plugins:
-+     - typescript
 +     - typescript-operations
 + config:
 +     configKey: configValue
@@ -407,11 +404,10 @@ In addition to `codegen.yml` options, graphql-let accepts these.
 
 ```yaml
 # "plugins", required. The plugins for GraphQL documents to run GraphQL code
-# generator with. Please note that you need to generate a TypeScript source here.
+# generator with. You should omit `typescript` plugin which graphql-let generates internally.
 # See here for more information. https://graphql-code-generator.com/docs/plugins/index
 # Example:
 plugins:
-    - typescript
     - typescript-operations
     - typescript-react-apollo
     - add: "/* eslint-disable */"
@@ -470,7 +466,6 @@ documents:
     - "**/*.graphql"
     - "!shouldBeIgnored1"
 plugins:
-    - typescript
     - typescript-operations
     - typescript-react-apollo
 ```
@@ -486,7 +481,6 @@ documents:
     - "**/*.graphql"
     - "!shouldBeIgnored1"
 plugins:
-    - typescript
     - typescript-operations
     - typescript-react-apollo
 respectGitIgnore: true
