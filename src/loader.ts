@@ -19,11 +19,7 @@ import { createExecContext } from './lib/exec-context';
 import { readFile } from './lib/file';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX, updateLog, updateLogDone } from './lib/print';
-import {
-  DocumentImportCodegenContext,
-  isAllSkip,
-  SchemaImportCodegenContext,
-} from './lib/types';
+import { isAllSkip, SchemaImportCodegenContext } from './lib/types';
 
 const optionsSchema: JsonSchema = {
   type: 'object',
@@ -142,8 +138,8 @@ const processLoaderForDocuments = memoize(
       configHash,
     );
 
-    // Having another array to capture only targets of the loader execution, excluding 'schema-import'
-    const documentImportContext: DocumentImportCodegenContext[] = [];
+    // // Having another array to capture only targets of the loader execution, excluding 'schema-import'
+    // const documentImportContext: DocumentImportCodegenContext[] = [];
 
     // Add dependencies so editing dependent GraphQL emits HMR.
     const { dependantFullPaths } = resolveGraphQLDocument(
@@ -154,13 +150,10 @@ const processLoaderForDocuments = memoize(
     for (const d of dependantFullPaths) addDependency(d);
 
     // const documentImportCodegenContext: DocumentImportCodegenContext[] = [];
-    await appendDocumentImportContext(
-      execContext,
-      schemaHash,
-      documentImportContext,
-      [graphqlRelPath],
-    );
-    const [fileContext] = documentImportContext;
+    await appendDocumentImportContext(execContext, schemaHash, codegenContext, [
+      graphqlRelPath,
+    ]);
+    const [, fileContext] = codegenContext;
     if (!fileContext) throw new Error('Never');
 
     const { skip, tsxFullPath } = fileContext;
@@ -170,21 +163,19 @@ const processLoaderForDocuments = memoize(
     }
 
     if (!silent) updateLog(`Processing codegen for ${graphqlRelPath}...`);
-    const codegenOutputs = await processCodegenForContext(execContext, [
-      ...codegenContext,
-      ...documentImportContext,
-    ]);
+    const codegenOutputs = await processCodegenForContext(
+      execContext,
+      codegenContext,
+    );
     // We need to find what we generate since the array order varies.
     const documentImportCodegenResult = codegenOutputs.find(
       ({ filename }) => filename === tsxFullPath,
     );
-    if (!documentImportCodegenResult) throw new Error('Should be appear.');
+    if (!documentImportCodegenResult)
+      throw new Error('Output of "document-import" should appear.');
 
     if (!silent) updateLog(`Generating d.ts for ${graphqlRelPath}...`);
-    await processDtsForContext(execContext, [
-      ...codegenContext,
-      ...documentImportContext,
-    ]);
+    await processDtsForContext(execContext, codegenContext);
 
     if (!silent) {
       updateLog(`Done processing ${graphqlRelPath}.`);
