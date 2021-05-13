@@ -23,11 +23,8 @@ integrating graphql-let. [A blog post](https://the-guild.dev/blog/graphql-let)
 
 ## Why this exists
 
-One of the strengths of GraphQL is
-[enforcing data types on runtime](https://graphql.github.io/graphql-spec/June2018/#sec-Value-Completion).
-Further, TypeScript and
-[GraphQL code generator](https://graphql-code-generator.com/) help it even
-safer to type your codebase statically. Both make a truly type-protected
+One of the strengths of GraphQL is [enforcing data types on runtime](https://graphql.github.io/graphql-spec/June2018/#sec-Value-Completion). Further, TypeScript and
+[GraphQL code generator](https://graphql-code-generator.com/) help it even safer to type your codebase statically. Both make a truly type-protected
 development environment with rich IDE assists.
 
 graphql-let enhances that development pattern by minimizing configuration setup,
