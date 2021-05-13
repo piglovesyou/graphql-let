@@ -108,7 +108,7 @@ export function removeImportDeclaration(
   }
 }
 
-const EXCLUDE_SCHME_IMPORT_CONTEXT_COUNT = 1;
+const EXCLUDE_SCHEMA_IMPORT_COUNT = 1;
 export function replaceCallExpressions(
   programPath: NodePath<t.Program>,
   sourceFullPath: string,
@@ -117,7 +117,7 @@ export function replaceCallExpressions(
 ) {
   if (
     callExpressionPaths.length !==
-    codegenContext.length - EXCLUDE_SCHME_IMPORT_CONTEXT_COUNT
+    codegenContext.length - EXCLUDE_SCHEMA_IMPORT_COUNT
   ) {
     throw new Error(
       'Number of load-call contexts and callExpressionPathPairs must be equal',

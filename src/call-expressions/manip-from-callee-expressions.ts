@@ -1,6 +1,6 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
-import { CodegenContext, isAllSkip } from '../lib/types';
+import { isAllSkip } from '../lib/types';
 import {
   CallExpressionPathPairs,
   getProgramPath,
@@ -23,8 +23,10 @@ export function manipulateFromCalleeExpressionsSync(
   const programPath = getProgramPath(
     gqlCalleePaths.concat(loadCalleePaths)[0]!,
   );
-  const codegenContext: CodegenContext[] = [];
-  const { execContext, schemaHash } = prepareToManipulate(cwd, configFilePath);
+  const { execContext, schemaHash, codegenContext } = prepareToManipulate(
+    cwd,
+    configFilePath,
+  );
 
   const callExpressionPathPairs: CallExpressionPathPairs = [];
   if (gqlCalleePaths?.length)

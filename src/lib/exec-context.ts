@@ -50,21 +50,6 @@ const createSchemaHashGenerator = gensync(function* (execContext: ExecContext) {
     .map((file) => readFileSync(file, 'utf-8'));
   return createHashFromBuffers([configHash, ...contents]);
 });
-// export const createSchemaHash = createSchemaHashGenerator.async;
-// export const createSchemaHashSync = createSchemaHashGenerator.sync;
-
-// export function createSchemaHashSync(execContext: ExecContext) {
-//   const { configHash, cwd, filePointers } = prepareCreateSchemaHashArgs(
-//     execContext,
-//   );
-//
-//   const files = globby.sync(filePointers, { cwd, absolute: true });
-//   const contents = files
-//     .map(slash)
-//     .sort()
-//     .map((file) => readFileSync(file));
-//   return createHashFromBuffers([configHash, ...contents]);
-// }
 
 const appendSchemaImportContextGenerator = gensync(function* (
   execContext: ExecContext,
@@ -94,10 +79,6 @@ const appendSchemaImportContextGenerator = gensync(function* (
 
   return schemaHash;
 });
-// export const appendSchemaImportContext =
-//   appendSchemaImportContextGenerator.async;
-// export const appendSchemaImportContextSync =
-//   appendSchemaImportContextGenerator.sync;
 
 const createExecContextGenerator = gensync(function* (
   cwd: string,
@@ -120,5 +101,6 @@ const createExecContextGenerator = gensync(function* (
 
   return { execContext, codegenContext, schemaHash };
 });
+
 export const createExecContext = createExecContextGenerator.async;
 export const createExecContextSync = createExecContextGenerator.sync;
