@@ -115,22 +115,18 @@ export function replaceCallExpressions(
   callExpressionPaths: CallExpressionPathPairs,
   codegenContext: CodegenContext[],
 ) {
-  if (
-    callExpressionPaths.length !==
-    codegenContext.length - EXCLUDE_SCHEMA_IMPORT_COUNT
-  ) {
-    throw new Error(
-      'Number of load-call contexts and callExpressionPathPairs must be equal',
-    );
-  }
-
   // Filter non-targets. 'schema-import', specifically
   const callCodegenContext = codegenContext.filter(
     ({ type }) => type === 'gql-call' || type === 'load-call',
   );
+
+  if (callExpressionPaths.length !== callCodegenContext.length)
+    throw new Error(
+      'Number of load-call contexts and callExpressionPathPairs must be equal',
+    );
+
   for (const [i, [callExpressionPath]] of callExpressionPaths.entries()) {
-    const { type, gqlHash, tsxFullPath } = callCodegenContext[i]!;
-    if (type !== 'gql-call' && type !== 'load-call') throw new Error('never');
+    const { gqlHash, tsxFullPath } = callCodegenContext[i]!;
 
     const tsxRelPathFromSource =
       './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
