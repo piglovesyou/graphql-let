@@ -36,9 +36,13 @@ function getFixedSchemaConfig() {
 
 function createFixedDocumentPresetConfig(
   context: CodegenContext,
+  execContext: ExecContext,
   schemaDtsFullPath: string,
 ) {
   const { dtsFullPath } = context;
+  const {
+    config: { config: userConfig },
+  } = execContext;
   const relPathToSchema = slash(
     path.relative(
       dirname(dtsFullPath),
@@ -51,7 +55,8 @@ function createFixedDocumentPresetConfig(
       typesPath: relPathToSchema.startsWith('.')
         ? relPathToSchema
         : './' + relPathToSchema,
-      importTypesNamespace: '__SchemaTypes__', // I guess this is enough to avoid name duplication
+      // Pass user config to presetConfig too to let them decide importTypesNamespace
+      ...userConfig,
     },
   };
 }
@@ -74,9 +79,10 @@ function appendFixedDocumentPluginConfig(
 }
 
 export function buildCodegenConfig(
-  { cwd, config }: ExecContext,
+  execContext: ExecContext,
   codegenContext: CodegenContext[],
 ) {
+  const { cwd, config } = execContext;
   const generates: {
     [outputPath: string]: ConfiguredOutput;
   } = Object.create(null);
@@ -99,7 +105,11 @@ export function buildCodegenConfig(
         opts = {
           plugins: appendFixedDocumentPluginConfig(config.plugins),
           documents: context.gqlRelPath,
-          ...createFixedDocumentPresetConfig(context, schemaDtsFullPath),
+          ...createFixedDocumentPresetConfig(
+            context,
+            execContext,
+            schemaDtsFullPath,
+          ),
         };
         break;
 
@@ -107,7 +117,11 @@ export function buildCodegenConfig(
         opts = {
           plugins: appendFixedDocumentPluginConfig(config.plugins),
           documents: context.resolvedGqlContent,
-          ...createFixedDocumentPresetConfig(context, schemaDtsFullPath),
+          ...createFixedDocumentPresetConfig(
+            context,
+            execContext,
+            schemaDtsFullPath,
+          ),
         };
         break;
     }
