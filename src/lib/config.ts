@@ -36,7 +36,7 @@ export function buildConfig(raw: UserConfigTypes): ConfigTypes {
 
   const hasUnnecessaryPlugin = raw.plugins.some((p) => {
     const name = typeof p === 'string' ? p : Object.keys(p)[0];
-    return name !== 'typescript';
+    return name === 'typescript';
   });
   if (hasUnnecessaryPlugin)
     printWarning(
