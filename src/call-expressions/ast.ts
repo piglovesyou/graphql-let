@@ -123,8 +123,15 @@ export function replaceCallExpressions(
       'Number of load-call contexts and callExpressionPathPairs must be equal',
     );
   }
+
+  // Filter non-targets. 'schema-import', specifically
+  const callCodegenContext = codegenContext.filter(
+    ({ type }) => type === 'gql-call' || type === 'load-call',
+  );
   for (const [i, [callExpressionPath]] of callExpressionPaths.entries()) {
-    const { gqlHash, tsxFullPath } = codegenContext[i]!;
+    const { type, gqlHash, tsxFullPath } = callCodegenContext[i]!;
+    if (type !== 'gql-call' && type !== 'load-call') continue;
+
     const tsxRelPathFromSource =
       './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
 

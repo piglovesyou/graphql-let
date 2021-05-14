@@ -37,9 +37,9 @@ describe('graphql-let/loader', () => {
     const stats = await compiler(fixtureDir, basicEntrypoints, 'node');
     expect(getOutputInfo(stats)).toMatchInlineSnapshot(`
       Array [
-        "./__generated__/__SCHEMA__.tsx",
         "./pages/viewer.graphql",
         "./pages/index.tsx",
+        "./__generated__/pages/index-ViewerY-Partial.tsx",
         "./__generated__/pages/index-Viewer-Partial.tsx",
       ]
     `);
@@ -71,11 +71,11 @@ describe('graphql-let/loader', () => {
     const sourceNames = results.flatMap((r) => getOutputInfo(r));
     expect(sourceNames).toMatchInlineSnapshot(`
       Array [
-        "./__generated__/__SCHEMA__.tsx",
         "./pages/index.tsx",
+        "./__generated__/pages/index-ViewerY-Partial.tsx",
         "./__generated__/pages/index-Viewer-Partial.tsx",
-        "./__generated__/__SCHEMA__.tsx",
         "./pages/index.tsx",
+        "./__generated__/pages/index-ViewerY-Partial.tsx",
         "./__generated__/pages/index-Viewer-Partial.tsx",
         "./pages/viewer.graphql",
         "./pages/viewer.graphql",

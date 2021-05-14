@@ -40,8 +40,8 @@ function nest1() {
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-import * as V5ad726831b4d6453254bbda154f051e2753a208f from './node_modules/graphql-let/__generated__/__SCHEMA__.tsx';
-const { useViewerQuery } = V5ad726831b4d6453254bbda154f051e2753a208f;
+import * as Vbc7e7ce14a68703b20e6630ea46328ca3787cb9b from './node_modules/graphql-let/__generated__/input-Viewer-Partial.ts';
+const { useViewerQuery } = Vbc7e7ce14a68703b20e6630ea46328ca3787cb9b;
 
 function nest1() {
   function nest2() {
@@ -546,8 +546,8 @@ function nest1() {
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-import * as V5ad726831b4d6453254bbda154f051e2753a208f from './node_modules/graphql-let/__generated__/__SCHEMA__.tsx';
-const { useViewerQuery } = V5ad726831b4d6453254bbda154f051e2753a208f;
+import * as V3b7d7669c03d3200ace95e5b82b9fc3886481723 from './node_modules/graphql-let/__generated__/input-Viewer-Partial.ts';
+const { useViewerQuery } = V3b7d7669c03d3200ace95e5b82b9fc3886481723;
 
 function nest1() {
   function nest2() {
@@ -1475,8 +1475,8 @@ function nest1() {
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-import * as V5ad726831b4d6453254bbda154f051e2753a208f from './node_modules/graphql-let/__generated__/__SCHEMA__.tsx';
-const { useViewerQuery } = V5ad726831b4d6453254bbda154f051e2753a208f;
+import * as V65c4e3d6b83501d52c00bab1e5211b6a0ccee904 from './node_modules/graphql-let/__generated__/input-Viewer.ts';
+const { useViewerQuery } = V65c4e3d6b83501d52c00bab1e5211b6a0ccee904;
 
 function nest1() {
   function nest2() {
