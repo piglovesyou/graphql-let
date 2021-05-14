@@ -130,7 +130,7 @@ export function replaceCallExpressions(
   );
   for (const [i, [callExpressionPath]] of callExpressionPaths.entries()) {
     const { type, gqlHash, tsxFullPath } = callCodegenContext[i]!;
-    if (type !== 'gql-call' && type !== 'load-call') continue;
+    if (type !== 'gql-call' && type !== 'load-call') throw new Error('never');
 
     const tsxRelPathFromSource =
       './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
