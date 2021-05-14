@@ -5,7 +5,7 @@ import { parse as parseYaml } from 'yaml';
 import { DEFAULT_CONFIG_FILENAME } from './consts';
 import { readFile, readFileSync } from './file';
 import { createHash } from './hash';
-import { printError } from './print';
+import { printError, printWarning } from './print';
 
 export type PartialGraphqlCodegenOptions = Omit<Types.Config, 'generates'>;
 
@@ -33,6 +33,17 @@ export function buildConfig(raw: UserConfigTypes): ConfigTypes {
 
   if (!raw.schema || !raw.documents || !raw.plugins)
     printError(new Error(`A config requires a "${name}" field`));
+
+  const hasUnnecessaryPlugin = raw.plugins.some((p) => {
+    const name = typeof p === 'string' ? p : Object.keys(p)[0];
+    return name !== 'typescript';
+  });
+  if (hasUnnecessaryPlugin)
+    printWarning(
+      `The plugin "typescript" should not appear in your config since graphql-let automatically generates types in "graphql-let/__generated__/__SCHEMA__", which each document's output internally imports.
+You can still have it, but it's redundant and can be problem if the types are massive, especially in product environment. More information: https://github.com/piglovesyou/graphql-let/issues/60
+`,
+    );
 
   // @ts-ignore
   if (raw.gqlDtsEntrypoint)
