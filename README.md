@@ -349,7 +349,7 @@ const { useNewsQuery } = gql("query News { braa }")
 const { useViewerQuery } = load("./viewer.graphql")
 ```
 
-## How same/different between .graphql-let.yml and codegen.yml
+## Difference between .graphql-let.yml and codegen.yml
 
 graphql-let half passes your config options to GraphQL code generator API and half controls them. Here explains how different these and why. You can see this section as a migration guide, too.
 
@@ -357,7 +357,7 @@ graphql-let half passes your config options to GraphQL code generator API and ha
   schema: https://api.github.com/graphql
   documents: "**/*.graphql"
 - generates:
--     ./__generated__/types.ts:
+-     ./__generated__/operations.ts:
 -         config:
 -             configKey: configValue
 -         plugins:
@@ -369,6 +369,10 @@ graphql-let half passes your config options to GraphQL code generator API and ha
 + config:
 +     configKey: configValue
 ```
+
+### Plugin `typescript` should not be specified
+
+You have to have `@graphql-codegen/typescript` as a dev dependency. graphql-let generates types **by default**, where it uses the plugin. The `plugins` in .graphql-let.yml is for per-document, which imports the shared types automatically. If you specify `typescript` as a plugin in .graphql-let, it's still okay, but you can imagine it's redundant.
 
 ### No `generates`
 
