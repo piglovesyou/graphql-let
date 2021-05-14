@@ -12,7 +12,6 @@ export type PartialGraphqlCodegenOptions = Omit<Types.Config, 'generates'>;
 export type GraphQLLetAdditionalOptions = {
   plugins: Array<string | Record<string, any>>;
   respectGitIgnore?: boolean;
-  schemaEntrypoint?: string;
   cacheDir?: string;
   TSConfigFile?: string;
   // gqlDtsEntrypoint?: string;
@@ -40,9 +39,16 @@ export function buildConfig(raw: UserConfigTypes): ConfigTypes {
   });
   if (hasUnnecessaryPlugin)
     printWarning(
-      `The plugin "typescript" should not appear in your config since graphql-let automatically generates types in "graphql-let/__generated__/__SCHEMA__", which each document's output internally imports.
+      `A plugin "typescript" should not appear in your config since graphql-let automatically generates types in "graphql-let/__generated__/__SCHEMA__", which each document's output internally imports.
 You can still have it, but it's redundant and can be problem if the types are massive, especially in product environment. More information: https://github.com/piglovesyou/graphql-let/issues/60
 `,
+    );
+
+  if ((raw as any).schemaEntrypoint)
+    printError(
+      new Error(
+        `An option "schemaEntrypoint" is deprecated. Remove it from the config and import types from "graphql-let/__generated__/__types__".`,
+      ),
     );
 
   // @ts-ignore
@@ -75,7 +81,6 @@ You can still have it, but it's redundant and can be problem if the types are ma
     typeInjectEntrypoint:
       raw.typeInjectEntrypoint || 'node_modules/@types/graphql-let/index.d.ts',
     generateOptions: raw.generateOptions || Object.create(null),
-    schemaEntrypoint: raw.schemaEntrypoint || '',
     silent: raw.silent || false,
   };
 }
