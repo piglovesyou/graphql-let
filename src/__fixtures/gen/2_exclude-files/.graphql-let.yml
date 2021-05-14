@@ -4,6 +4,5 @@ documents:
     - "**/*.graphql"
     - "!should-be-ignored"
 plugins:
-    - typescript
     - typescript-operations
     - typescript-react-apollo

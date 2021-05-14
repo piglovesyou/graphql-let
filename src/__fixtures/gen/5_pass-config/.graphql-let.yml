@@ -3,7 +3,6 @@ schemaEntrypoint: schema/type-defs.graphqls
 documents:
     - "**/*.graphql"
 plugins:
-    - typescript
     - typescript-operations
     - typescript-react-apollo
 config:

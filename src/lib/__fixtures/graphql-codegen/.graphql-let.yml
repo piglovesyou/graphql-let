@@ -3,7 +3,6 @@ documents:
     - "**/*.graphql"
     - "!shouldBeIgnored1"
 plugins:
-    - typescript
     - typescript-operations
     - typescript-react-apollo
 respectGitIgnore: true
