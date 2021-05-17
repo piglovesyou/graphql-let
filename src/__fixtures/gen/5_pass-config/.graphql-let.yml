@@ -1,5 +1,4 @@
 schema: "**/*.graphqls"
-schemaEntrypoint: schema/type-defs.graphqls
 documents:
     - "**/*.graphql"
 plugins:

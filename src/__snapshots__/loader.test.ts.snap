@@ -466,13 +466,6 @@ export declare type Resolvers<ContextType = any> = {
  * Use \\"Resolvers\\" root object instead. If you wish to get \\"IResolvers\\", add \\"typesPrefix: I\\" to your config.
  */
 export declare type IResolvers<ContextType = any> = Resolvers<ContextType>;
-
- 
-// This is an extra code in addition to what graphql-codegen makes.
-// Users are likely to use 'graphql-tag/loader' with 'graphql-tag/schema/loader'
-// in webpack. This code enables the result to be typed.
-import { DocumentNode } from 'graphql'
-export default DocumentNode
 "
 `;
 
@@ -1254,13 +1247,6 @@ export declare type Resolvers<ContextType = any> = {
  * Use \\"Resolvers\\" root object instead. If you wish to get \\"IResolvers\\", add \\"typesPrefix: I\\" to your config.
  */
 export declare type IResolvers<ContextType = any> = Resolvers<ContextType>;
-
- 
-// This is an extra code in addition to what graphql-codegen makes.
-// Users are likely to use 'graphql-tag/loader' with 'graphql-tag/schema/loader'
-// in webpack. This code enables the result to be typed.
-import { DocumentNode } from 'graphql'
-export default DocumentNode
 "
 `;
 
