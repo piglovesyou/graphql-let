@@ -54,7 +54,7 @@ const ensureOutputDts = async (): Promise<ResultType> => {
     })
   ).sort();
   expect(globResults).toMatchObject([
-    'node_modules/@types/graphql-let/__generated__/__SCHEMA__.d.ts',
+    'node_modules/@types/graphql-let/__generated__/__types__.d.ts',
     'node_modules/@types/graphql-let/index.d.ts',
     'src/viewer.graphql.d.ts',
   ]);

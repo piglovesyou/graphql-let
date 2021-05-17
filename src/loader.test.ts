@@ -94,12 +94,12 @@ describe('graphql-let/loader', () => {
       ),
     ).toMatchInlineSnapshot(`
       Array [
-        "__generated__/__SCHEMA__.tsx",
+        "__generated__/__types__.tsx",
         "__generated__/pages/index-Viewer-Partial.tsx",
         "__generated__/pages/index-ViewerY-Partial.tsx",
         "__generated__/pages/viewer.graphql.tsx",
         "__generated__/pages/viewer2.graphql.tsx",
-        "node_modules/@types/graphql-let/__generated__/__SCHEMA__.d.ts",
+        "node_modules/@types/graphql-let/__generated__/__types__.d.ts",
         "node_modules/@types/graphql-let/__generated__/pages/index-Viewer-Partial.d.ts",
         "node_modules/@types/graphql-let/__generated__/pages/index-ViewerY-Partial.d.ts",
         "pages/viewer.graphql.d.ts",

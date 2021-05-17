@@ -31,7 +31,7 @@ export function createPaths(
   };
 }
 
-export const SCHEMA_TYPES_BASENAME = '__SCHEMA__';
+export const SCHEMA_TYPES_BASENAME = '__types__';
 
 export function createSchemaPaths(execContext: ExecContext) {
   const { cwd, config, cacheFullDir } = execContext;
