@@ -7,4 +7,4 @@ plugins:
 config:
     useIndexSignature: true
 TSConfigFile: es3config.json
-cacheDir: __generated__
+cacheDir: .cache

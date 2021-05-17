@@ -39,8 +39,8 @@ describe('graphql-let/loader', () => {
       Array [
         "./pages/viewer.graphql",
         "./pages/index.tsx",
-        "./__generated__/pages/index-ViewerY-Partial.tsx",
-        "./__generated__/pages/index-Viewer-Partial.tsx",
+        "./.cache/pages/index-ViewerY-Partial.tsx",
+        "./.cache/pages/index-Viewer-Partial.tsx",
       ]
     `);
     await matchPathsAndContents(
@@ -72,11 +72,11 @@ describe('graphql-let/loader', () => {
     expect(sourceNames).toMatchInlineSnapshot(`
       Array [
         "./pages/index.tsx",
-        "./__generated__/pages/index-ViewerY-Partial.tsx",
-        "./__generated__/pages/index-Viewer-Partial.tsx",
+        "./.cache/pages/index-ViewerY-Partial.tsx",
+        "./.cache/pages/index-Viewer-Partial.tsx",
         "./pages/index.tsx",
-        "./__generated__/pages/index-ViewerY-Partial.tsx",
-        "./__generated__/pages/index-Viewer-Partial.tsx",
+        "./.cache/pages/index-ViewerY-Partial.tsx",
+        "./.cache/pages/index-Viewer-Partial.tsx",
         "./pages/viewer.graphql",
         "./pages/viewer.graphql",
         "./pages/viewer2.graphql",
@@ -94,11 +94,6 @@ describe('graphql-let/loader', () => {
       ),
     ).toMatchInlineSnapshot(`
       Array [
-        "__generated__/__types__.tsx",
-        "__generated__/pages/index-Viewer-Partial.tsx",
-        "__generated__/pages/index-ViewerY-Partial.tsx",
-        "__generated__/pages/viewer.graphql.tsx",
-        "__generated__/pages/viewer2.graphql.tsx",
         "node_modules/@types/graphql-let/__generated__/__types__.d.ts",
         "node_modules/@types/graphql-let/__generated__/pages/index-Viewer-Partial.d.ts",
         "node_modules/@types/graphql-let/__generated__/pages/index-ViewerY-Partial.d.ts",

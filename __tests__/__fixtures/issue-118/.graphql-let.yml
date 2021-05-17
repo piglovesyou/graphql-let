@@ -6,4 +6,4 @@ respectGitIgnore: true
 config:
     mappers:
         User: lib/user#User
-cacheDir: __generated__
+cacheDir: .cache

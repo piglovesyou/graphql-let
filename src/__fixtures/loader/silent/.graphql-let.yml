@@ -6,5 +6,5 @@ plugins:
     - typescript-operations
     - typescript-react-apollo
 respectGitIgnore: true
-cacheDir: __generated__
+cacheDir: .cache
 silent: true

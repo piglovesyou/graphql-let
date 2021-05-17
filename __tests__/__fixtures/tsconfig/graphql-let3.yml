@@ -6,4 +6,4 @@ plugins:
     - typescript-react-apollo
 config:
     useIndexSignature: true
-cacheDir: __generated__
+cacheDir: .cache

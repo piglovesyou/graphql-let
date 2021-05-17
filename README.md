@@ -178,7 +178,7 @@ Edit it like this:
 
 ### 3. Check your `cacheDir`
 
-`cacheDir` will have `.ts(x)`s that your sources will import. It's  `node_modules/graphql-let/__generated__` by default, but you may exclude `node_modules` for webpack compilation. In that case, we recommend setting up like this.
+`cacheDir` will have `.ts(x)`s that your sources will import. It's  `node_modules/.cache/graphql-let` by default, but you may exclude `node_modules` for webpack compilation. In that case, we recommend setting up like this.
 
 ```diff
   schema: lib/type-defs.graphqls
@@ -188,10 +188,10 @@ Edit it like this:
   plugins:
     - typescript-operations
     - typescript-react-apollo
-+ cacheDir: __generated__
++ cacheDir: .cache
 ```
 
-Remember you have to `.gitignore` the `__generated__` directory in the next section.
+Remember you have to `.gitignore` the `.cache` directory in the next section.
 
 ### 3. Add lines to .gitignore
 
@@ -201,6 +201,7 @@ these lines in your .gitignore.
 ```diff
 + *.graphql.d.ts
 + *.graphqls.d.ts
++ /.cache
 ```
 
 ### 4. Configure webpack.config.ts
@@ -315,7 +316,7 @@ const { useViewerQuery } = load("./viewer.graphql")
 Note these functions `gql()` and `load()` can't return types. If you want them,
 you can find the types generated internally.
 
-`graphql-let/__generated__/{ts relative path without extension}-{GraphQL document name}`
+`graphql-let/__generated__/{.d.ts relative path without extension}-{GraphQL document name}`
 is the path.
 
 ```typescript jsx
@@ -418,13 +419,13 @@ plugins:
 # Useful to prevent parsing files in such as `node_modules`.
 respectGitIgnore: true
 
-# "cacheDir", optional. `node_modules/graphql-let/__generated__` by default.
+# "cacheDir", optional. `node_modules/.cache/graphql-let` by default.
 # graphql-let takes care of intermediate `.ts(x)`s that GraphQL code generator
 # generates, but we still need to write them on the disk for caching and
 # TypeScript API purposes. This is the directory we store them to.
 # Examples:
-cacheDir: node_modules/graphql-let/__generated__
-cacheDir: __generated__
+cacheDir: node_modules/.cache/graphql-let
+cacheDir: .cache
 
 # "TSConfigFile", optional. `tsconfig.json` by default.
 # You can specify a custom config for generating `.d.ts`s.
@@ -489,7 +490,7 @@ config:
     reactApolloVersion: 3
     apolloReactComponentsImportFrom: "@apollo/client/react/components"
     useIndexSignature: true
-cacheDir: __generated__
+cacheDir: .cache
 TSConfigFile: tsconfig.compile.json
 typeInjectEntrypoint: typings/graphql-let.d.ts
 ```
@@ -598,17 +599,17 @@ export default resolvers;
 ```
 
 `graphql-let/schema/loader` is also available. It generates/updates
-`${schemaEntrypoint}.d.ts` but it doesn't transpile anything; just passes the
-file content to the next webpack loader. Set it up as below:
+`graphql-let/__generated__/__types__.d.ts` but it doesn't transpile anything; just passes the
+file content to the next webpack loader.
 
 ```diff
+  // webpack.config.ts
   const config: Configuration = {
     module: {
       rules: [
 +       {
 +         test: /\.graphqls$/,
 +         use: [
-+           { loader: 'graphql-tag/loader' },
 +           { loader: 'graphql-let/schema/loader' },
 +         ]
 +       }

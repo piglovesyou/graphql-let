@@ -8,4 +8,4 @@ plugins:
 respectGitIgnore: true
 config:
     useIndexSignature: true
-cacheDir: __generated__
+cacheDir: .cache

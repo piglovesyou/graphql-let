@@ -77,7 +77,7 @@ You can still have it, but it's redundant and can be problem if the types are ma
     // Set graphql-let default values
     respectGitIgnore:
       raw.respectGitIgnore !== undefined ? raw.respectGitIgnore : true,
-    cacheDir: raw.cacheDir || 'node_modules/graphql-let/__generated__',
+    cacheDir: raw.cacheDir || 'node_modules/.cache/graphql-let',
     TSConfigFile: raw.TSConfigFile || 'tsconfig.json',
     typeInjectEntrypoint:
       raw.typeInjectEntrypoint || 'node_modules/@types/graphql-let/index.d.ts',

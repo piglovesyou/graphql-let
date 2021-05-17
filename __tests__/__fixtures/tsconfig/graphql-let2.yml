@@ -8,4 +8,4 @@ config:
     withHOC: false
     withHocks: true
 TSConfigFile: esnextconfig.json
-cacheDir: __generated__
+cacheDir: .cache
