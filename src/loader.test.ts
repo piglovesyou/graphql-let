@@ -43,10 +43,7 @@ describe('graphql-let/loader', () => {
         "./.cache/pages/index-Viewer-Partial.tsx",
       ]
     `);
-    await matchPathsAndContents(
-      ['__generated__/**/*.tsx', '**/*.d.ts'],
-      fixtureDir,
-    );
+    await matchPathsAndContents(['.cache/**/*.tsx', '**/*.d.ts'], fixtureDir);
   });
 
   test('runs well for simultaneous execution, assuming SSR', async () => {
@@ -86,7 +83,7 @@ describe('graphql-let/loader', () => {
     expect(
       await matchPathsAndContents(
         [
-          '**/__generated__/**/*.tsx',
+          '**/.cache/**/*.tsx',
           '**/__generated__/**/*.d.ts',
           '**/*.graphql.d.ts',
         ],
@@ -94,6 +91,11 @@ describe('graphql-let/loader', () => {
       ),
     ).toMatchInlineSnapshot(`
       Array [
+        ".cache/__types__.tsx",
+        ".cache/pages/index-Viewer-Partial.tsx",
+        ".cache/pages/index-ViewerY-Partial.tsx",
+        ".cache/pages/viewer.graphql.tsx",
+        ".cache/pages/viewer2.graphql.tsx",
         "node_modules/@types/graphql-let/__generated__/__types__.d.ts",
         "node_modules/@types/graphql-let/__generated__/pages/index-Viewer-Partial.d.ts",
         "node_modules/@types/graphql-let/__generated__/pages/index-ViewerY-Partial.d.ts",
@@ -142,9 +144,7 @@ describe('graphql-let/loader', () => {
       ok(generated);
 
       await waitOn({
-        resources: [
-          `${fixtureDir}/packages/app/__generated__/src/fruits.graphql.tsx`,
-        ],
+        resources: [`${fixtureDir}/packages/app/.cache/src/fruits.graphql.tsx`],
       });
 
       expect(generated.source).toContain('export function useGetFruitsQuery');
@@ -153,9 +153,7 @@ describe('graphql-let/loader', () => {
       ).toMatchSnapshot();
 
       await Promise.all([
-        unlink(
-          `${fixtureDir}/packages/app/__generated__/src/fruits.graphql.tsx`,
-        ),
+        unlink(`${fixtureDir}/packages/app/.cache/src/fruits.graphql.tsx`),
         unlink(`${fixtureDir}/packages/app/src/fruits.graphql.d.ts`),
       ]).catch(() => {
         /* discard error */

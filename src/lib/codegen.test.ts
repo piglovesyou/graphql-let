@@ -23,6 +23,6 @@ describe('graphql-codegen.ts', () => {
       skip: false,
     });
     await processCodegenForContext(execContext, codegenContext);
-    await matchPathsAndContents(['__generated__'], cwd);
+    await matchPathsAndContents(['.cache'], cwd);
   });
 });

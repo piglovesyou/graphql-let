@@ -1,5 +1,6 @@
 node_modules/
 __generated__
+.cache
 
 # Logs
 npm-debug.log*
