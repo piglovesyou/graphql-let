@@ -147,4 +147,17 @@ describe('"graphql-let" command', () => {
     const added = secondFiles.filter((e) => !firstFiles.includes(e));
     expect(added).toMatchSnapshot('Added files');
   });
+
+  test(`Use types and Resolver Types`, async () => {
+    const [cwd] = await prepareFixtures(
+      __dirname,
+      '__fixtures/gen/9_use-types',
+    );
+    await gen({ cwd });
+    await matchPathsAndContents(
+      ['**/*.graphql.d.ts', '**/*.graphqls.d.ts'],
+      cwd,
+    );
+    await spawn('yarn', ['tsc'], { cwd });
+  });
 });

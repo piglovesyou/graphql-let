@@ -5,6 +5,7 @@ import { parse as parseYaml } from 'yaml';
 import { DEFAULT_CONFIG_FILENAME } from './consts';
 import { readFile, readFileSync } from './file';
 import { createHash } from './hash';
+import { SCHEMA_TYPES_BASENAME } from './paths';
 import { printError, printWarning } from './print';
 
 export type PartialGraphqlCodegenOptions = Omit<Types.Config, 'generates'>;
@@ -39,7 +40,7 @@ export function buildConfig(raw: UserConfigTypes): ConfigTypes {
   });
   if (hasUnnecessaryPlugin)
     printWarning(
-      `A plugin "typescript" should not appear in your config since graphql-let automatically generates types in "graphql-let/__generated__/__SCHEMA__", which each document's output internally imports.
+      `A plugin "typescript" should not appear in your config since graphql-let automatically generates types in "graphql-let/__generated__/${SCHEMA_TYPES_BASENAME}", which each document's output internally imports.
 You can still have it, but it's redundant and can be problem if the types are massive, especially in product environment. More information: https://github.com/piglovesyou/graphql-let/issues/60
 `,
     );
@@ -47,7 +48,7 @@ You can still have it, but it's redundant and can be problem if the types are ma
   if ((raw as any).schemaEntrypoint)
     printError(
       new Error(
-        `An option "schemaEntrypoint" is deprecated. Remove it from the config and import types from "graphql-let/__generated__/__types__".`,
+        `An option "schemaEntrypoint" is deprecated. Remove it from the config and import types from "graphql-let/__generated__/${SCHEMA_TYPES_BASENAME}".`,
       ),
     );
 
