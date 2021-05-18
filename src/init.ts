@@ -1,5 +1,5 @@
 import { writeFileSync } from 'fs';
-import { join as pathJoin } from 'path';
+import { join } from 'path';
 import { stringify as yamlStringify } from 'yaml';
 import { UserConfigTypes } from './lib/config';
 import { DEFAULT_CONFIG_FILENAME } from './lib/consts';
@@ -15,7 +15,7 @@ const DEFAULT_CONFIG: UserConfigTypes = {
 const defaultYamlContent = yamlStringify(DEFAULT_CONFIG);
 
 export default function init({ cwd }: CommandOpts) {
-  const configPath = pathJoin(cwd, DEFAULT_CONFIG_FILENAME);
+  const configPath = join(cwd, DEFAULT_CONFIG_FILENAME);
   writeFileSync(configPath, defaultYamlContent);
 
   printInfo(`${configPath} was created.`);

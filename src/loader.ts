@@ -1,7 +1,7 @@
 import generator from '@babel/generator';
 import { getOptions } from 'loader-utils';
 import logUpdate from 'log-update';
-import { relative as pathRelative } from 'path';
+import { relative } from 'path';
 import { validate } from 'schema-utils';
 import type { Schema as JsonSchema } from 'schema-utils/declarations/validate';
 import { loader } from 'webpack';
@@ -52,7 +52,7 @@ const processLoaderForSources = memoize(
   ): Promise<string | Buffer> => {
     const [config, configHash] = await loadConfig(cwd, options.configFile);
     const { silent } = config;
-    const sourceRelPath = pathRelative(cwd, sourceFullPath);
+    const sourceRelPath = relative(cwd, sourceFullPath);
     if (!silent) updateLog(`Processing ${sourceRelPath}...`);
 
     const { execContext, codegenContext, schemaHash } = await createExecContext(
@@ -129,7 +129,7 @@ const processLoaderForDocuments = memoize(
   ): Promise<string> => {
     const [config, configHash] = await loadConfig(cwd, options.configFile);
     const { silent } = config;
-    const graphqlRelPath = pathRelative(cwd, gqlFullPath);
+    const graphqlRelPath = relative(cwd, gqlFullPath);
     if (!silent) updateLog(`Processing ${graphqlRelPath}...`);
 
     const { execContext, codegenContext, schemaHash } = await createExecContext(

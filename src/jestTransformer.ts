@@ -1,7 +1,7 @@
 import { Transformer } from '@jest/transform';
 import { ProjectConfig } from '@jest/types/build/Config';
 import { readFileSync } from 'fs';
-import { relative as pathRelative } from 'path';
+import { relative } from 'path';
 import { loadConfigSync } from './lib/config';
 import { createExecContextSync } from './lib/exec-context';
 import { createHash } from './lib/hash';
@@ -30,10 +30,7 @@ const jestTransformer: Transformer = {
     const [config, configHash] = loadConfigSync(cwd, configFile);
     const { execContext } = createExecContextSync(cwd, config, configHash);
 
-    const { tsxFullPath } = createPaths(
-      execContext,
-      pathRelative(cwd, filePath),
-    );
+    const { tsxFullPath } = createPaths(execContext, relative(cwd, filePath));
     const tsxContent = readFileSync(tsxFullPath, 'utf-8');
 
     // Let users customize a subsequent transformer

@@ -3,7 +3,7 @@
 import { ok } from 'assert';
 import 'core-js/es/array';
 import * as fs from 'fs';
-import { join as pathJoin } from 'path';
+import { join } from 'path';
 import { promisify } from 'util';
 import waitOn from 'wait-on';
 import { Stats } from 'webpack';
@@ -125,7 +125,7 @@ describe('graphql-let/loader', () => {
       configFilePath: string,
     ) {
       const stats = await compiler(
-        pathJoin(fixtureDir, 'packages/app'),
+        join(fixtureDir, 'packages/app'),
         ['src/index.ts'],
         'web',
         { configFile: configFilePath },

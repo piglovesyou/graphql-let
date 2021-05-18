@@ -2,7 +2,7 @@ import { constants, promises } from 'fs';
 import globby from 'globby';
 import makeDir from 'make-dir';
 import pMap from 'p-map';
-import { dirname, join as pathJoin } from 'path';
+import { dirname, join } from 'path';
 import _rimraf from 'rimraf';
 import { promisify } from 'util';
 
@@ -21,7 +21,7 @@ export function readFile(file: string) {
 }
 
 export function cleanup(cwd: string, relPaths: string[]) {
-  return Promise.all(relPaths.map((rel) => rimraf(pathJoin(cwd, rel))));
+  return Promise.all(relPaths.map((rel) => rimraf(join(cwd, rel))));
 }
 
 export type AbsFn = (rel: string) => string;
@@ -35,17 +35,17 @@ export async function prepareFixtures(
   fixtureDestRelDir = '.' + fixtureSrcRelDir,
 ): Promise<[cwd: string, abs: AbsFn]> {
   const files = await globby(['**'], {
-    cwd: pathJoin(baseFullDir, fixtureSrcRelDir),
+    cwd: join(baseFullDir, fixtureSrcRelDir),
     dot: true,
     absolute: false,
   });
   await pMap(files, async (relPath) => {
-    const srcPath = pathJoin(baseFullDir, fixtureSrcRelDir, relPath);
-    const destFile = pathJoin(baseFullDir, fixtureDestRelDir, relPath);
+    const srcPath = join(baseFullDir, fixtureSrcRelDir, relPath);
+    const destFile = join(baseFullDir, fixtureDestRelDir, relPath);
     await makeDir(dirname(destFile));
     await copyFile(srcPath, destFile, constants.COPYFILE_EXCL);
   });
-  const cwd = pathJoin(baseFullDir, fixtureDestRelDir);
-  const abs = (relPath: string) => pathJoin(cwd, relPath);
+  const cwd = join(baseFullDir, fixtureDestRelDir);
+  const abs = (relPath: string) => join(cwd, relPath);
   return [cwd, abs];
 }

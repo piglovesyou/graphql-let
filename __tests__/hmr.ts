@@ -3,7 +3,7 @@
 import { notStrictEqual, ok, strictEqual } from 'assert';
 import execa from 'execa';
 import glob from 'globby';
-import { join as pathJoin } from 'path';
+import { join } from 'path';
 import waitOn from 'wait-on';
 import { killApp, timeout } from '../src/lib/__tools/child-process';
 import {
@@ -79,7 +79,7 @@ describe('HMR', () => {
       '**/*.graphqls.d.ts',
     ]);
     // Simulate "$ yarn graphql-let"
-    await spawn('node', [pathJoin(__dirname, '../bin/graphql-let.js')]);
+    await spawn('node', [join(__dirname, '../bin/graphql-let.js')]);
   });
   afterEach(async () => {
     await killApp(app);

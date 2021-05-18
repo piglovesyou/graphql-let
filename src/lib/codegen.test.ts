@@ -1,11 +1,11 @@
-import { join as pathJoin } from 'path';
+import { join } from 'path';
 import { processCodegenForContext } from './codegen';
 import loadConfig from './config';
 import { createExecContext } from './exec-context';
 import { createPaths } from './paths';
 import { matchPathsAndContents } from './__tools/match-paths-and-contents';
 
-const cwd = pathJoin(__dirname, '__fixtures/graphql-codegen');
+const cwd = join(__dirname, '__fixtures/graphql-codegen');
 
 describe('graphql-codegen.ts', () => {
   test('works', async () => {

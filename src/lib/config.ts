@@ -1,5 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { resolve as pathResolve } from 'path';
+import { resolve } from 'path';
 import { env } from 'string-env-interpolation';
 import { parse as parseYaml } from 'yaml';
 import { DEFAULT_CONFIG_FILENAME } from './consts';
@@ -87,7 +87,7 @@ You can still have it, but it's redundant and can be problem if the types are ma
 }
 
 export const getConfigPath = (cwd: string, configFilePath?: string) =>
-  pathResolve(cwd, configFilePath || DEFAULT_CONFIG_FILENAME);
+  resolve(cwd, configFilePath || DEFAULT_CONFIG_FILENAME);
 
 const getConfigFromContent = (content: string): [ConfigTypes, string] => {
   content = env(content);

@@ -1,6 +1,6 @@
 import { unlinkSync } from 'fs';
 import glob from 'globby';
-import { dirname, extname, join as pathJoin } from 'path';
+import { dirname, extname, join } from 'path';
 import slash from 'slash';
 import {
   appendLiteralAndLoadContextForTsSources,
@@ -68,11 +68,11 @@ async function removeObsoleteFiles(
 
   for (const relPath of graphqlRelPaths) {
     const ext = extname(relPath);
-    const pattern = toDtsPath(pathJoin(cwd, dirname(relPath), '*' + ext));
+    const pattern = toDtsPath(join(cwd, dirname(relPath), '*' + ext));
     globsToRemove.add(pattern);
   }
 
-  const projectTypeInjectFullDir = pathJoin(
+  const projectTypeInjectFullDir = join(
     cwd,
     dirname(config.typeInjectEntrypoint),
     typesRootRelDir,
@@ -80,7 +80,7 @@ async function removeObsoleteFiles(
   );
   globsToRemove.add(projectTypeInjectFullDir);
 
-  const cacheFullDir = pathJoin(cwd, config.cacheDir, '**/*');
+  const cacheFullDir = join(cwd, config.cacheDir, '**/*');
   globsToRemove.add(cacheFullDir);
 
   const candidates = await glob(Array.from(globsToRemove).map(slash), {

@@ -1,4 +1,4 @@
-import { join as pathJoin } from 'path';
+import { join } from 'path';
 import { ExecContext } from './exec-context';
 import { readFileSync } from './file';
 import { createHash, readHash } from './hash';
@@ -20,7 +20,7 @@ export function appendDocumentImportContext(
     // Loader passes gqlContent directly
     const gqlContent = gqlContents
       ? gqlContents[i]
-      : readFileSync(pathJoin(cwd, gqlRelPath), 'utf-8');
+      : readFileSync(join(cwd, gqlRelPath), 'utf-8');
     if (!gqlContent) throw new Error('never');
 
     const createdPaths = createPaths(execContext, gqlRelPath);

@@ -1,11 +1,11 @@
 import { ok, strictEqual } from 'assert';
-import { join as pathJoin } from 'path';
+import { join } from 'path';
 import { readHash } from './hash';
 
 describe('file.ts', () => {
   test('readHash reads file from generated file', async () => {
     const hash = readHash(
-      pathJoin(__dirname, '__fixtures/file/dummy-graphql-d-ts.txt'),
+      join(__dirname, '__fixtures/file/dummy-graphql-d-ts.txt'),
     );
     if (!hash) throw new Error('boom');
     strictEqual(hash.length, 40);
