@@ -1,6 +1,7 @@
-import { extname, isAbsolute, join } from 'path';
+import { dirname, extname, isAbsolute, join } from 'path';
+import { typesRootRelDir } from '../call-expressions/type-inject';
 import { ExecContext } from './exec-context';
-import { FileCreatedPaths } from './types';
+import { FileImportCreatedPaths } from './types';
 
 export const getCacheFullDir = (cwd: string, cacheDir: string) => {
   return isAbsolute(cacheDir) ? cacheDir : join(cwd, cacheDir);
@@ -13,7 +14,7 @@ export function toDtsPath(pathFragm: string) {
 export function createPaths(
   { cwd, cacheFullDir }: ExecContext,
   gqlRelPath: string,
-): FileCreatedPaths {
+): FileImportCreatedPaths {
   const tsxRelPath = `${gqlRelPath}.tsx`;
   const tsxFullPath = join(cacheFullDir, tsxRelPath);
   const dtsRelPath = toDtsPath(gqlRelPath);
@@ -27,6 +28,25 @@ export function createPaths(
     dtsFullPath,
     dtsRelPath,
     gqlFullPath,
+  };
+}
+
+export const SCHEMA_TYPES_BASENAME = '__types__';
+
+export function createSchemaPaths(execContext: ExecContext) {
+  const { cwd, config, cacheFullDir } = execContext;
+  const typeInjectFullDir = join(cwd, dirname(config.typeInjectEntrypoint));
+
+  const tsxRelPath = `${SCHEMA_TYPES_BASENAME}.tsx`;
+  const tsxFullPath = join(cacheFullDir, tsxRelPath);
+  const dtsRelPath = `${SCHEMA_TYPES_BASENAME}.d.ts`;
+  const dtsFullPath = join(typeInjectFullDir, typesRootRelDir, dtsRelPath);
+
+  return {
+    tsxRelPath,
+    tsxFullPath,
+    dtsRelPath,
+    dtsFullPath,
   };
 }
 

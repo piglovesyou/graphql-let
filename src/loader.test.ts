@@ -1,69 +1,57 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { ok, strictEqual } from 'assert';
+import { ok } from 'assert';
 import 'core-js/es/array';
 import * as fs from 'fs';
-import glob from 'globby';
-import { join as pathJoin } from 'path';
+import { join } from 'path';
 import { promisify } from 'util';
 import waitOn from 'wait-on';
 import { Stats } from 'webpack';
 import * as print from './lib/print';
 import compiler from './lib/__tools/compile';
 import { prepareFixtures } from './lib/__tools/file';
+import { matchPathsAndContents } from './lib/__tools/match-paths-and-contents';
 
 const unlink = promisify(fs.unlink);
 
-let basicFixtureDir: string;
-let monorepoFixtureDir: string;
-let silentFixtureDir: string;
-
 const basicEntrypoints = ['pages/index.tsx', 'pages/viewer.graphql'];
 
-function getOutputInfo(stats: Stats) {
+function getOutputInfo(stats: Stats): string[] {
   const { modules } = stats.toJson()!;
-  const acc: [name: string, output: string][] = [];
+  const names: string[] = [];
   (function getNamesAndOutputs(fnModules: Stats.FnModules[]) {
     for (const m of fnModules) {
-      if (m.name && m.source) acc.push([m.name, m.source]);
+      if (m.name && typeof m.source === 'string') names.push(m.name);
       if (m.modules) getNamesAndOutputs(m.modules);
     }
   })(modules!);
-  return acc;
+  return names;
 }
 
 describe('graphql-let/loader', () => {
-  beforeAll(async () => {
-    [basicFixtureDir] = await prepareFixtures(
+  test('generates .tsx and .d.ts', async () => {
+    const [fixtureDir] = await prepareFixtures(
       __dirname,
       '__fixtures/loader/basic',
     );
-    [monorepoFixtureDir] = await prepareFixtures(
-      __dirname,
-      '__fixtures/loader/monorepo',
-    );
-    [silentFixtureDir] = await prepareFixtures(
-      __dirname,
-      '__fixtures/loader/silent',
-    );
-  });
-
-  test('generates .tsx and .d.ts', async () => {
-    const stats = await compiler(basicFixtureDir, basicEntrypoints, 'node');
-    const outputs = getOutputInfo(stats);
-    expect(outputs).toHaveLength(4);
-
-    const [, gqlOutput] = outputs.find(
-      ([name]) => name === './pages/viewer.graphql',
-    )!;
-    expect(gqlOutput).toMatchSnapshot();
-    const [, sourceOutput] = outputs.find(
-      ([name]) => name === './pages/index.tsx',
-    )!;
-    expect(sourceOutput).toMatchSnapshot();
+    const stats = await compiler(fixtureDir, basicEntrypoints, 'node');
+    expect(getOutputInfo(stats)).toMatchInlineSnapshot(`
+      Array [
+        "./pages/viewer.graphql",
+        "./pages/index.tsx",
+        "./.cache/pages/index-ViewerY-Partial.tsx",
+        "./.cache/pages/index-Viewer-Partial.tsx",
+      ]
+    `);
+    await matchPathsAndContents(['.cache/**/*.tsx', '**/*.d.ts'], fixtureDir);
   });
 
   test('runs well for simultaneous execution, assuming SSR', async () => {
+    const [fixtureDir] = await prepareFixtures(
+      __dirname,
+      '__fixtures/loader/basic',
+      '.__fixtures/loader/basic-ssr',
+    );
     const expectedTargets: [string, 'node' | 'web'][] = [
       ['pages/index.tsx', 'node'],
       ['pages/index.tsx', 'web'],
@@ -74,41 +62,70 @@ describe('graphql-let/loader', () => {
     ];
     const results = await Promise.all(
       expectedTargets.map(([file, target]) =>
-        compiler(basicFixtureDir, [file], target),
+        compiler(fixtureDir, [file], target),
       ),
     );
-    for (const [i, stats] of results.entries()) {
-      const [file] = expectedTargets[i];
-      const outputs = getOutputInfo(stats);
-      const [, output] = outputs.find(([name]) => name === './' + file)!;
-      expect(output).toMatchSnapshot();
-    }
-    const globResults = await glob('**/*.graphql.d.ts', {
-      cwd: basicFixtureDir,
-    });
-    strictEqual(globResults.length, 2);
+    const sourceNames = results.flatMap((r) => getOutputInfo(r));
+    expect(sourceNames).toMatchInlineSnapshot(`
+      Array [
+        "./pages/index.tsx",
+        "./.cache/pages/index-ViewerY-Partial.tsx",
+        "./.cache/pages/index-Viewer-Partial.tsx",
+        "./pages/index.tsx",
+        "./.cache/pages/index-ViewerY-Partial.tsx",
+        "./.cache/pages/index-Viewer-Partial.tsx",
+        "./pages/viewer.graphql",
+        "./pages/viewer.graphql",
+        "./pages/viewer2.graphql",
+        "./pages/viewer2.graphql",
+      ]
+    `);
+    expect(
+      await matchPathsAndContents(
+        [
+          '**/.cache/**/*.tsx',
+          '**/__generated__/**/*.d.ts',
+          '**/*.graphql.d.ts',
+        ],
+        fixtureDir,
+      ),
+    ).toMatchInlineSnapshot(`
+      Array [
+        ".cache/__types__.tsx",
+        ".cache/pages/index-Viewer-Partial.tsx",
+        ".cache/pages/index-ViewerY-Partial.tsx",
+        ".cache/pages/viewer.graphql.tsx",
+        ".cache/pages/viewer2.graphql.tsx",
+        "node_modules/@types/graphql-let/__generated__/__types__.d.ts",
+        "node_modules/@types/graphql-let/__generated__/pages/index-Viewer-Partial.d.ts",
+        "node_modules/@types/graphql-let/__generated__/pages/index-ViewerY-Partial.d.ts",
+        "pages/viewer.graphql.d.ts",
+        "pages/viewer2.graphql.d.ts",
+      ]
+    `);
   });
 
   test('The option "silent" suppresses standard output logs', async () => {
+    const [fixtureDir] = await prepareFixtures(
+      __dirname,
+      '__fixtures/loader/silent',
+    );
     let messages = '';
     const mockFn = (m: any) => (messages += m + '\n');
     jest.spyOn(print, 'printInfo').mockImplementation(mockFn);
     jest.spyOn(print, 'updateLog').mockImplementation(mockFn);
 
-    await compiler(basicFixtureDir, basicEntrypoints, 'node');
-    expect(messages).not.toHaveLength(0);
-
-    messages = '';
-    await compiler(silentFixtureDir, basicEntrypoints, 'node');
+    await compiler(fixtureDir, basicEntrypoints, 'node');
     expect(messages).toHaveLength(0);
   });
 
   describe('options', () => {
     async function acceptsConfigPathInOptionsConfigFile(
+      fixtureDir: string,
       configFilePath: string,
     ) {
       const stats = await compiler(
-        pathJoin(monorepoFixtureDir, 'packages/app'),
+        join(fixtureDir, 'packages/app'),
         ['src/index.ts'],
         'web',
         { configFile: configFilePath },
@@ -120,21 +137,14 @@ describe('graphql-let/loader', () => {
         ?.filter(Boolean);
 
       ok(modules);
-      expect(modules.map((m) => m.name)).toMatchInlineSnapshot(`
-        Array [
-          "./src/index.ts",
-          "./src/fruits.graphql",
-        ]
-      `);
+      expect(modules.map((m) => m.name)).toMatchSnapshot();
 
       const generated = modules.find((m) => m?.name === './src/fruits.graphql');
 
       ok(generated);
 
       await waitOn({
-        resources: [
-          `${monorepoFixtureDir}/packages/app/__generated__/src/fruits.graphql.tsx`,
-        ],
+        resources: [`${fixtureDir}/packages/app/.cache/src/fruits.graphql.tsx`],
       });
 
       expect(generated.source).toContain('export function useGetFruitsQuery');
@@ -143,23 +153,33 @@ describe('graphql-let/loader', () => {
       ).toMatchSnapshot();
 
       await Promise.all([
-        unlink(
-          `${monorepoFixtureDir}/packages/app/__generated__/src/fruits.graphql.tsx`,
-        ),
-        unlink(`${monorepoFixtureDir}/packages/app/src/fruits.graphql.d.ts`),
+        unlink(`${fixtureDir}/packages/app/.cache/src/fruits.graphql.tsx`),
+        unlink(`${fixtureDir}/packages/app/src/fruits.graphql.d.ts`),
       ]).catch(() => {
         /* discard error */
       });
     }
 
     test('accept relative config path in options.configFile', async () => {
+      const [fixtureDir] = await prepareFixtures(
+        __dirname,
+        '__fixtures/loader/monorepo',
+        '.__fixtures/loader/monorepo-relpath',
+      );
       await acceptsConfigPathInOptionsConfigFile(
+        fixtureDir,
         '../../config/.graphql-let.yml',
       );
     });
 
     test('accept absolute config path in options.configFile', async () => {
+      const [fixtureDir] = await prepareFixtures(
+        __dirname,
+        '__fixtures/loader/monorepo',
+        '.__fixtures/loader/monorepo-fullpath',
+      );
       await acceptsConfigPathInOptionsConfigFile(
+        fixtureDir,
         require.resolve('./__fixtures/loader/monorepo/config/.graphql-let.yml'),
       );
     });

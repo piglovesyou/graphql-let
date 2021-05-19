@@ -2,11 +2,10 @@ schema: schema/type-defs.graphqls
 documents:
     - "**/*.graphql"
 plugins:
-    - typescript
     - typescript-operations
     - typescript-react-apollo
 config:
     withHOC: false
     withHocks: true
 TSConfigFile: esnextconfig.json
-cacheDir: __generated__
+cacheDir: .cache

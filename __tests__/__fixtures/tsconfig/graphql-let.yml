@@ -2,10 +2,9 @@ schema: schema/type-defs.graphqls
 documents:
     - "**/*.graphql"
 plugins:
-    - typescript
     - typescript-operations
     - typescript-react-apollo
 config:
     useIndexSignature: true
 TSConfigFile: es3config.json
-cacheDir: __generated__
+cacheDir: .cache

@@ -1,6 +1,6 @@
 import { processImport, VisitedFilesMap } from '@graphql-tools/import';
 import { OperationDefinitionNode, print } from 'graphql';
-import { basename, dirname, extname, join as pathJoin } from 'path';
+import { basename, dirname, extname, join } from 'path';
 import { ExecContext } from '../lib/exec-context';
 import { createHash, readHash } from '../lib/hash';
 
@@ -11,9 +11,9 @@ export function createTiPaths(
   srcRelPath: string,
   callIdentity: string,
 ) {
-  const abs = (relPath: string) => pathJoin(cwd, relPath);
+  const abs = (relPath: string) => join(cwd, relPath);
   const { cwd, config, cacheFullDir } = execContext;
-  const typeInjectFullDir = pathJoin(cwd, dirname(config.typeInjectEntrypoint));
+  const typeInjectFullDir = join(cwd, dirname(config.typeInjectEntrypoint));
 
   // srcRelPath: "pages/index.tsx"
   // "pages"
@@ -28,16 +28,16 @@ export function createTiPaths(
   // "index-2345.tsx"
   const tsxBasename = `${base}-${callIdentity}${ext}`;
   // "pages/index-2345.tsx"
-  const tsxRelPath = pathJoin(relDir, tsxBasename);
+  const tsxRelPath = join(relDir, tsxBasename);
   // "/Users/.../node_modules/graphql-let/__generated__/pages/index-2345.d.ts"
-  const tsxFullPath = pathJoin(cacheFullDir, tsxRelPath);
+  const tsxFullPath = join(cacheFullDir, tsxRelPath);
 
   // "index-2345.d.ts"
   const dtsBasename = `${base}-${callIdentity}.d.ts`;
   // "pages/index-2345.d.ts"
-  const dtsRelPath = pathJoin(relDir, dtsBasename);
+  const dtsRelPath = join(relDir, dtsBasename);
   // "/Users/.../node_modules/@types/graphql-let/pages/index-2345.d.ts"
-  const dtsFullPath = pathJoin(typeInjectFullDir, typesRootRelDir, dtsRelPath);
+  const dtsFullPath = join(typeInjectFullDir, typesRootRelDir, dtsRelPath);
   return {
     srcRelPath,
     srcFullPath,

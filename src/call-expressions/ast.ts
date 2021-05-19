@@ -108,16 +108,26 @@ export function removeImportDeclaration(
   }
 }
 
+const EXCLUDE_SCHEMA_IMPORT_COUNT = 1;
 export function replaceCallExpressions(
   programPath: NodePath<t.Program>,
   sourceFullPath: string,
   callExpressionPaths: CallExpressionPathPairs,
   codegenContext: CodegenContext[],
 ) {
-  if (callExpressionPaths.length !== codegenContext.length)
-    throw new Error('what');
+  // Filter non-targets. 'schema-import', specifically
+  const callCodegenContext = codegenContext.filter(
+    ({ type }) => type === 'gql-call' || type === 'load-call',
+  );
+
+  if (callExpressionPaths.length !== callCodegenContext.length)
+    throw new Error(
+      'Number of load-call contexts and callExpressionPathPairs must be equal',
+    );
+
   for (const [i, [callExpressionPath]] of callExpressionPaths.entries()) {
-    const { gqlHash, tsxFullPath } = codegenContext[i]!;
+    const { gqlHash, tsxFullPath } = callCodegenContext[i]!;
+
     const tsxRelPathFromSource =
       './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
 

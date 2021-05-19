@@ -1,6 +1,6 @@
 import { NodePath } from '@babel/core';
 import * as t from '@babel/types';
-import { CodegenContext, isAllSkip } from '../lib/types';
+import { isAllSkip } from '../lib/types';
 import {
   removeImportDeclaration,
   replaceCallExpressions,
@@ -21,8 +21,10 @@ export function manipulateFromProgramPath(
   );
   if (!callExpressionPathPairs.length) return;
 
-  const { execContext, schemaHash } = prepareToManipulate(cwd, configFilePath);
-  const codegenContext: CodegenContext[] = [];
+  const { execContext, schemaHash, codegenContext } = prepareToManipulate(
+    cwd,
+    configFilePath,
+  );
 
   appendLiteralAndLoadCodegenContext(
     callExpressionPathPairs,

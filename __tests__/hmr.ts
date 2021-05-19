@@ -3,7 +3,7 @@
 import { notStrictEqual, ok, strictEqual } from 'assert';
 import execa from 'execa';
 import glob from 'globby';
-import { join as pathJoin } from 'path';
+import { join } from 'path';
 import waitOn from 'wait-on';
 import { killApp, timeout } from '../src/lib/__tools/child-process';
 import {
@@ -47,26 +47,18 @@ const spawn = (
     ...opts,
   });
 
-const ensureOutputDts = async (message: string): Promise<ResultType> => {
-  const globResults = await glob(['**/*.graphql.d.ts', '**/*.graphqls.d.ts'], {
-    cwd,
-  });
-  strictEqual(
-    globResults.length,
-    2,
-    `"${JSON.stringify(globResults)}" is something wrong. ${message}`,
-  );
-  const [schemaDtsPath, documentDtsPath] = globResults.sort();
-  strictEqual(
-    schemaDtsPath,
-    'src/type-defs.graphqls.d.ts',
-    `${schemaDtsPath} is something wrong. ${message}`,
-  );
-  strictEqual(
-    documentDtsPath,
+const ensureOutputDts = async (): Promise<ResultType> => {
+  const globResults = (
+    await glob(['**/*.d.ts'], {
+      cwd,
+    })
+  ).sort();
+  expect(globResults).toMatchObject([
+    'node_modules/@types/graphql-let/__generated__/__types__.d.ts',
+    'node_modules/@types/graphql-let/index.d.ts',
     'src/viewer.graphql.d.ts',
-    `${documentDtsPath} is something wrong. ${message}`,
-  );
+  ]);
+  const [schemaDtsPath, , documentDtsPath] = globResults;
   return {
     schemaDtsPath: schemaDtsPath,
     schema: await readFile(abs(schemaDtsPath)),
@@ -87,7 +79,7 @@ describe('HMR', () => {
       '**/*.graphqls.d.ts',
     ]);
     // Simulate "$ yarn graphql-let"
-    await spawn('node', [pathJoin(__dirname, '../bin/graphql-let.js')]);
+    await spawn('node', [join(__dirname, '../bin/graphql-let.js')]);
   });
   afterEach(async () => {
     await killApp(app);
@@ -99,7 +91,7 @@ describe('HMR', () => {
       /************************************************************************
        * Ensure the command result
        */
-      const result1 = await ensureOutputDts('Ensure the initial state');
+      const result1 = await ensureOutputDts();
       expect(result1).toMatchSnapshot();
 
       /************************************************************************
@@ -114,7 +106,7 @@ describe('HMR', () => {
       /************************************************************************
        * Verify initial loader behavior
        */
-      const result2 = await ensureOutputDts('Verify initial loader behavior');
+      const result2 = await ensureOutputDts();
       expect(result2).toMatchObject(result1);
 
       /************************************************************************
@@ -132,7 +124,7 @@ query Viewer {
         status
     }
 }
-`,
+`.trim(),
         'utf-8',
       );
       await timeout(3 * 1000);
@@ -140,9 +132,7 @@ query Viewer {
       let result3: ResultType;
       await retryable(
         async () => {
-          result3 = await ensureOutputDts(
-            'Verify HMR on document modification',
-          );
+          result3 = await ensureOutputDts();
           strictEqual(
             result3.schemaDtsPath,
             result1.schemaDtsPath,
@@ -190,9 +180,7 @@ type Query {
       let result4: ResultType;
       await retryable(
         async () => {
-          result4 = await ensureOutputDts(
-            'Verify HMR on schema modification - add "age" field',
-          );
+          result4 = await ensureOutputDts();
           notStrictEqual(
             result4.schema,
             result3.schema,
@@ -266,10 +254,8 @@ type Query {
         1000,
         60 * 1000,
       );
-      ok(
-        stderrContent.includes(
-          'GraphQLDocumentError: Cannot query field "name" on type "User".',
-        ),
+      expect(stderrContent).toContain(
+        'Error: Unable to find field "name" on type "User"!',
       );
 
       /************************************************************************

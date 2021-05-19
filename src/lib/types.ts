@@ -24,7 +24,7 @@ export type CodegenContextBase<
 /**
  * Assumes `.graphql`s and `.graphqls`s
  */
-export type FileCreatedPaths = CreatedPathsBase & {
+export type FileImportCreatedPaths = CreatedPathsBase & {
   gqlRelPath: string;
   gqlFullPath: string;
 };
@@ -32,25 +32,26 @@ export type FileCreatedPaths = CreatedPathsBase & {
 /**
  * Assumes `gql(`query {}`)` calls in `.ts(x)`s
  */
-export type LiteralCreatedPaths = CreatedPathsBase & {
+export type GqlCallCreatedPaths = CreatedPathsBase & {
   srcRelPath: string;
   srcFullPath: string;
 };
 
-export type FileCodegenContext = CodegenContextBase<'document-import'> &
-  FileCreatedPaths;
-export type FileSchemaCodegenContext = CodegenContextBase<'schema-import'> &
-  FileCreatedPaths;
+export type SchemaImportCodegenContext = CodegenContextBase<'schema-import'> &
+  CreatedPathsBase;
 
-export type LiteralCodegenContext = {
+export type DocumentImportCodegenContext = CodegenContextBase<'document-import'> &
+  FileImportCreatedPaths;
+
+export type GqlCallCodegenContext = {
   type: 'gql-call';
   gqlContent: string;
   resolvedGqlContent: string;
   dependantFullPaths: string[];
 } & CodegenContextBase<'gql-call'> &
-  LiteralCreatedPaths;
+  GqlCallCreatedPaths;
 
-export type LoadCodegenContext = {
+export type LoadCallCodegenContext = {
   type: 'load-call';
   gqlPathFragment: string; // load(gqlPathFragment)
   srcRelPath: string;
@@ -62,14 +63,10 @@ export type LoadCodegenContext = {
   CreatedPathsBase;
 
 export type CodegenContext =
-  | FileCodegenContext
-  | FileSchemaCodegenContext
-  | LiteralCodegenContext
-  | LoadCodegenContext;
-
-export function isLiteralContext({ type }: CodegenContext): boolean {
-  return type === 'gql-call';
-}
+  | SchemaImportCodegenContext
+  | DocumentImportCodegenContext
+  | GqlCallCodegenContext
+  | LoadCallCodegenContext;
 
 export function isAllSkip(codegenContext: CodegenContext[]): boolean {
   for (const { skip } of codegenContext) if (!skip) return false;

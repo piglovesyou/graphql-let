@@ -3,7 +3,7 @@ import traverse, { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { writeFileSync } from 'fs';
 import makeDir from 'make-dir';
-import { basename, dirname, join as pathJoin } from 'path';
+import { basename, dirname, join } from 'path';
 import slash from 'slash';
 import { ExecContext } from '../lib/exec-context';
 import { readFileSync } from '../lib/file';
@@ -59,8 +59,8 @@ export function appendLiteralAndLoadCodegenContext(
 
       case 'load': {
         const gqlPathFragment = value;
-        const gqlRelPath = pathJoin(dirname(sourceRelPath), gqlPathFragment);
-        const gqlFullPath = pathJoin(cwd, gqlRelPath);
+        const gqlRelPath = join(dirname(sourceRelPath), gqlPathFragment);
+        const gqlFullPath = join(cwd, gqlRelPath);
         const gqlContent = readFileSync(gqlFullPath, 'utf-8');
         const {
           gqlHash,
@@ -108,7 +108,7 @@ export function appendLiteralAndLoadContextForTsSources(
   const { cwd } = execContext;
 
   for (const sourceRelPath of tsSourceRelPaths) {
-    const sourceFullPath = pathJoin(cwd, sourceRelPath);
+    const sourceFullPath = join(cwd, sourceRelPath);
     const sourceContent = readFileSync(sourceFullPath, 'utf-8');
     const fileNode = parse(sourceContent, parserOption);
     traverse(fileNode, {
@@ -138,18 +138,12 @@ export function writeTiIndexForContext(
   codegenContext: CodegenContext[],
 ) {
   const { cwd, config } = execContext;
-  const typeInjectEntrypointFullPath = pathJoin(
-    cwd,
-    config.typeInjectEntrypoint,
-  );
-  const typeInjectEntrypointFullDir = pathJoin(
+  const typeInjectEntrypointFullPath = join(cwd, config.typeInjectEntrypoint);
+  const typeInjectEntrypointFullDir = join(
     cwd,
     dirname(config.typeInjectEntrypoint),
   );
-  const gqlDtsMacroFullPath = pathJoin(
-    typeInjectEntrypointFullDir,
-    'macro.d.ts',
-  );
+  const gqlDtsMacroFullPath = join(typeInjectEntrypointFullDir, 'macro.d.ts');
   makeDir.sync(typeInjectEntrypointFullDir);
 
   let hasLiteral = false;
@@ -163,7 +157,7 @@ export function writeTiIndexForContext(
       case 'gql-call': {
         // For TS2691
         const dtsRelPathWithoutExtension = slash(
-          pathJoin(
+          join(
             typesRootRelDir,
             dirname(c.dtsRelPath),
             basename(c.dtsRelPath, '.d.ts'),
@@ -179,7 +173,7 @@ export function gql(gql: \`${c.gqlContent}\`): T${c.gqlHash}.__GraphQLLetTypeInj
       case 'load-call': {
         // For TS2691
         const dtsRelPathWithoutExtension = slash(
-          pathJoin(
+          join(
             typesRootRelDir,
             dirname(c.dtsRelPath),
             basename(c.dtsRelPath, '.d.ts'),

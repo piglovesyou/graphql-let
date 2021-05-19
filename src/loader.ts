@@ -1,7 +1,7 @@
 import generator from '@babel/generator';
 import { getOptions } from 'loader-utils';
 import logUpdate from 'log-update';
-import { relative as pathRelative } from 'path';
+import { relative } from 'path';
 import { validate } from 'schema-utils';
 import type { Schema as JsonSchema } from 'schema-utils/declarations/validate';
 import { loader } from 'webpack';
@@ -11,21 +11,15 @@ import {
   writeTiIndexForContext,
 } from './call-expressions/handle-codegen-context';
 import { resolveGraphQLDocument } from './call-expressions/type-inject';
-import { appendFileContext } from './file-imports/document-import';
-import { appendFileSchemaContext } from './file-imports/schema-import';
 import { processCodegenForContext } from './lib/codegen';
 import loadConfig from './lib/config';
+import { appendDocumentImportContext } from './lib/document-import';
 import { processDtsForContext } from './lib/dts';
-import createExecContext from './lib/exec-context';
+import { createExecContext } from './lib/exec-context';
 import { readFile } from './lib/file';
 import memoize from './lib/memoize';
 import { PRINT_PREFIX, updateLog, updateLogDone } from './lib/print';
-import {
-  CodegenContext,
-  FileCodegenContext,
-  FileSchemaCodegenContext,
-  isAllSkip,
-} from './lib/types';
+import { isAllSkip, SchemaImportCodegenContext } from './lib/types';
 
 const optionsSchema: JsonSchema = {
   type: 'object',
@@ -58,14 +52,13 @@ const processLoaderForSources = memoize(
   ): Promise<string | Buffer> => {
     const [config, configHash] = await loadConfig(cwd, options.configFile);
     const { silent } = config;
-    const execContext = createExecContext(cwd, config, configHash);
-    const codegenContext: CodegenContext[] = [];
-    const sourceRelPath = pathRelative(cwd, sourceFullPath);
+    const sourceRelPath = relative(cwd, sourceFullPath);
     if (!silent) updateLog(`Processing ${sourceRelPath}...`);
 
-    const { schemaHash } = await appendFileSchemaContext(
-      execContext,
-      codegenContext,
+    const { execContext, codegenContext, schemaHash } = await createExecContext(
+      cwd,
+      config,
+      configHash,
     );
 
     const paths = appendLiteralAndLoadContextForTsSources(
@@ -76,11 +69,13 @@ const processLoaderForSources = memoize(
     );
     if (!paths.length) throw new Error('Never');
 
-    if (!codegenContext.length) return sourceContent;
+    // If we only have 'schema-import' context, the source
+    // doesn't have any `gql()` or `load()` call. Return.
+    if (codegenContext.length === 1) return sourceContent;
 
     if (isAllSkip(codegenContext)) {
       if (!silent) updateLog(`Nothing to do. Cache was fresh.`);
-      const [{ tsxFullPath }] = codegenContext;
+      const [{ tsxFullPath }] = codegenContext as SchemaImportCodegenContext[];
       return await readFile(tsxFullPath, 'utf-8');
     }
 
@@ -91,8 +86,10 @@ const processLoaderForSources = memoize(
     for (const context of codegenContext) {
       switch (context.type) {
         case 'document-import':
-        case 'schema-import':
           throw new Error('Never');
+        case 'schema-import':
+          // Nothing to do
+          break;
         case 'gql-call':
         case 'load-call':
           for (const d of context.dependantFullPaths) addDependency(d);
@@ -132,10 +129,17 @@ const processLoaderForDocuments = memoize(
   ): Promise<string> => {
     const [config, configHash] = await loadConfig(cwd, options.configFile);
     const { silent } = config;
-    const execContext = createExecContext(cwd, config, configHash);
-    const codegenContext: FileSchemaCodegenContext[] = [];
-    const graphqlRelPath = pathRelative(cwd, gqlFullPath);
+    const graphqlRelPath = relative(cwd, gqlFullPath);
     if (!silent) updateLog(`Processing ${graphqlRelPath}...`);
+
+    const { execContext, codegenContext, schemaHash } = await createExecContext(
+      cwd,
+      config,
+      configHash,
+    );
+
+    // // Having another array to capture only targets of the loader execution, excluding 'schema-import'
+    // const documentImportContext: DocumentImportCodegenContext[] = [];
 
     // Add dependencies so editing dependent GraphQL emits HMR.
     const { dependantFullPaths } = resolveGraphQLDocument(
@@ -145,18 +149,11 @@ const processLoaderForDocuments = memoize(
     );
     for (const d of dependantFullPaths) addDependency(d);
 
-    const { schemaHash } = await appendFileSchemaContext(
-      execContext,
-      codegenContext,
-    );
-    const [fileSchemaContext] = codegenContext;
-    if (fileSchemaContext) addDependency(fileSchemaContext.gqlFullPath);
-
-    const fileCodegenContext: FileCodegenContext[] = [];
-    await appendFileContext(execContext, schemaHash, fileCodegenContext, [
+    // const documentImportCodegenContext: DocumentImportCodegenContext[] = [];
+    await appendDocumentImportContext(execContext, schemaHash, codegenContext, [
       graphqlRelPath,
     ]);
-    const [fileContext] = fileCodegenContext;
+    const [, fileContext] = codegenContext;
     if (!fileContext) throw new Error('Never');
 
     const { skip, tsxFullPath } = fileContext;
@@ -166,18 +163,25 @@ const processLoaderForDocuments = memoize(
     }
 
     if (!silent) updateLog(`Processing codegen for ${graphqlRelPath}...`);
-    const [{ content }] = await processCodegenForContext(execContext, [
-      fileContext,
-    ]);
+    const codegenOutputs = await processCodegenForContext(
+      execContext,
+      codegenContext,
+    );
+    // We need to find what we generate since the array order varies.
+    const documentImportCodegenResult = codegenOutputs.find(
+      ({ filename }) => filename === tsxFullPath,
+    );
+    if (!documentImportCodegenResult)
+      throw new Error('Output of "document-import" should appear.');
 
     if (!silent) updateLog(`Generating d.ts for ${graphqlRelPath}...`);
-    await processDtsForContext(execContext, [fileContext]);
+    await processDtsForContext(execContext, codegenContext);
 
     if (!silent) {
       updateLog(`Done processing ${graphqlRelPath}.`);
       updateLogDone();
     }
-    return content;
+    return documentImportCodegenResult.content;
   },
   (gqlFullPath: string) => gqlFullPath,
 );

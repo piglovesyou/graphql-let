@@ -1,18 +1,17 @@
 import { unlinkSync } from 'fs';
 import glob from 'globby';
-import { dirname, extname, join as pathJoin } from 'path';
+import { dirname, extname, join } from 'path';
 import slash from 'slash';
 import {
   appendLiteralAndLoadContextForTsSources,
   writeTiIndexForContext,
 } from './call-expressions/handle-codegen-context';
 import { typesRootRelDir } from './call-expressions/type-inject';
-import { appendFileContext } from './file-imports/document-import';
-import { appendFileSchemaContext } from './file-imports/schema-import';
 import { processCodegenForContext } from './lib/codegen';
 import loadConfig from './lib/config';
+import { appendDocumentImportContext } from './lib/document-import';
 import { processDtsForContext } from './lib/dts';
-import createExecContext, { ExecContext } from './lib/exec-context';
+import { createExecContext, ExecContext } from './lib/exec-context';
 import { isTypeScriptPath, toDtsPath } from './lib/paths';
 import { updateLog } from './lib/print';
 import { CodegenContext, CommandOpts, isAllSkip } from './lib/types';
@@ -69,11 +68,11 @@ async function removeObsoleteFiles(
 
   for (const relPath of graphqlRelPaths) {
     const ext = extname(relPath);
-    const pattern = toDtsPath(pathJoin(cwd, dirname(relPath), '*' + ext));
+    const pattern = toDtsPath(join(cwd, dirname(relPath), '*' + ext));
     globsToRemove.add(pattern);
   }
 
-  const projectTypeInjectFullDir = pathJoin(
+  const projectTypeInjectFullDir = join(
     cwd,
     dirname(config.typeInjectEntrypoint),
     typesRootRelDir,
@@ -81,7 +80,7 @@ async function removeObsoleteFiles(
   );
   globsToRemove.add(projectTypeInjectFullDir);
 
-  const cacheFullDir = pathJoin(cwd, config.cacheDir, '**/*');
+  const cacheFullDir = join(cwd, config.cacheDir, '**/*');
   globsToRemove.add(cacheFullDir);
 
   const candidates = await glob(Array.from(globsToRemove).map(slash), {
@@ -100,19 +99,22 @@ export async function gen({
 
   if (!silent) updateLog('Scanning...');
 
-  const execContext = createExecContext(cwd, config, configHash);
-  const codegenContext: CodegenContext[] = [];
+  const { execContext, codegenContext, schemaHash } = await createExecContext(
+    cwd,
+    config,
+    configHash,
+  );
 
   const { graphqlRelPaths, tsSourceRelPaths } = await findTargetSources(
     execContext,
   );
 
-  const { schemaHash } = await appendFileSchemaContext(
+  appendDocumentImportContext(
     execContext,
+    schemaHash,
     codegenContext,
+    graphqlRelPaths,
   );
-
-  appendFileContext(execContext, schemaHash, codegenContext, graphqlRelPaths);
 
   appendLiteralAndLoadContextForTsSources(
     execContext,

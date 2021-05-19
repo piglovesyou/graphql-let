@@ -6,7 +6,7 @@ export async function matchPathsAndContents(
   globPatterns: string[],
   cwd: string,
 ) {
-  const files = (await glob(globPatterns, { cwd })).sort();
+  const files = (await glob(globPatterns, { cwd, dot: true })).sort();
   expect(files).toMatchSnapshot(globPatterns.join(' + '));
   await Promise.all(
     files.map((file) => {
@@ -15,4 +15,5 @@ export async function matchPathsAndContents(
       });
     }),
   );
+  return files;
 }

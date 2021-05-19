@@ -1,11 +1,11 @@
-import { join as pathJoin } from 'path';
-import { ExecContext } from '../lib/exec-context';
-import { readFileSync } from '../lib/file';
-import { createHash, readHash } from '../lib/hash';
-import { createPaths } from '../lib/paths';
-import { CodegenContext, FileCodegenContext } from '../lib/types';
+import { join } from 'path';
+import { ExecContext } from './exec-context';
+import { readFileSync } from './file';
+import { createHash, readHash } from './hash';
+import { createPaths } from './paths';
+import { CodegenContext, DocumentImportCodegenContext } from './types';
 
-export function appendFileContext(
+export function appendDocumentImportContext(
   execContext: ExecContext,
   schemaHash: string,
   codegenContext: CodegenContext[],
@@ -20,7 +20,7 @@ export function appendFileContext(
     // Loader passes gqlContent directly
     const gqlContent = gqlContents
       ? gqlContents[i]
-      : readFileSync(pathJoin(cwd, gqlRelPath), 'utf-8');
+      : readFileSync(join(cwd, gqlRelPath), 'utf-8');
     if (!gqlContent) throw new Error('never');
 
     const createdPaths = createPaths(execContext, gqlRelPath);
@@ -33,7 +33,7 @@ export function appendFileContext(
     const shouldUpdate =
       gqlHash !== readHash(tsxFullPath) || gqlHash !== readHash(dtsFullPath);
 
-    const context: FileCodegenContext = {
+    const context: DocumentImportCodegenContext = {
       ...createdPaths,
       type: 'document-import',
       gqlHash,

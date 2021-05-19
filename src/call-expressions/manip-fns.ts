@@ -1,22 +1,14 @@
-import {
-  createSchemaHashSync,
-  shouldGenResolverTypes,
-} from '../file-imports/schema-import';
 import { processCodegenForContext } from '../lib/codegen';
 import { loadConfigSync } from '../lib/config';
 import { processDtsForContext } from '../lib/dts';
-import createExecContext, { ExecContext } from '../lib/exec-context';
+import { createExecContextSync, ExecContext } from '../lib/exec-context';
 import { toSync } from '../lib/to-sync';
 import { CodegenContext } from '../lib/types';
 import { writeTiIndexForContext } from './handle-codegen-context';
 
 export function prepareToManipulate(cwd: string, configFilePath?: string) {
   const [config, configHash] = loadConfigSync(cwd, configFilePath);
-  const execContext = createExecContext(cwd, config, configHash);
-  let schemaHash = configHash;
-  if (shouldGenResolverTypes(config))
-    schemaHash = createSchemaHashSync(execContext);
-  return { execContext, schemaHash };
+  return createExecContextSync(cwd, config, configHash);
 }
 
 export async function generateFilesForContext(

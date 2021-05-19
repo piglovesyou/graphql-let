@@ -3,8 +3,7 @@ documents:
     - "**/*.graphql"
     - "**/*.tsx"
 plugins:
-    - typescript
     - typescript-operations
     - typescript-react-apollo
 respectGitIgnore: true
-cacheDir: __generated__
+cacheDir: .cache

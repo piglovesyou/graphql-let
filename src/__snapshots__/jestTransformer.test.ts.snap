@@ -29,8 +29,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
 var defaultOptions = {};
-/** All built-in and custom scalars, mapped to their actual values */
-
 var ViewerDocument = (0, Apollo.gql)(_templateObject || (_templateObject = _taggedTemplateLiteral([\\"\\\\n    query Viewer {\\\\n  viewer {\\\\n    id\\\\n    name\\\\n    status\\\\n  }\\\\n}\\\\n    \\"])));
 /**
  * __useViewerQuery__

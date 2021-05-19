@@ -1,5 +1,5 @@
 import { Config } from '@jest/types';
-import { join as pathJoin } from 'path';
+import { join } from 'path';
 import jestTransformer from './jestTransformer';
 import compiler from './lib/__tools/compile';
 import { prepareFixtures } from './lib/__tools/file';
@@ -21,7 +21,7 @@ describe('graphql-let/jestTransformer', () => {
       .modules!.map((m) => m.source)
       .filter(Boolean);
 
-    const fullPath = pathJoin(cwd, fileName);
+    const fullPath = join(cwd, fileName);
     const { code: transformedContent } = jestTransformer.process(
       fileData!,
       fullPath,

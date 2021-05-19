@@ -1,6 +1,6 @@
 {
   "name": "graphql-let",
-  "version": "0.17.2",
+  "version": "0.18.0-beta.4",
   "repository": {
     "type": "git",
     "url": "git@github.com:piglovesyou/graphql-let.git"
@@ -58,6 +58,7 @@
     "@babel/preset-react": "^7.13.13",
     "@babel/preset-typescript": "^7.12.7",
     "@graphql-codegen/cli": "^1.20.0",
+    "@graphql-codegen/import-types-preset": "^1.18.1",
     "@graphql-codegen/plugin-helpers": "^1.18.2",
     "@graphql-codegen/typescript": "^1.21.1",
     "@graphql-codegen/typescript-operations": "^1.17.16",
@@ -115,6 +116,7 @@
     "lint-staged": "^10.5.4",
     "lodash.pick": "^4.4.0",
     "memory-fs": "^0.5.0",
+    "p-map": "^4.0.0",
     "prettier": "^2.2.1",
     "prettier-plugin-organize-imports": "^1.1.1",
     "raw-loader": "^4.0.2",
@@ -134,10 +136,10 @@
     "webpack-node-externals": "^2.5.2"
   },
   "peerDependencies": {
-    "@graphql-codegen/cli": "^1.20.0",
-    "@graphql-codegen/plugin-helpers": "^1.18.2",
+    "@graphql-codegen/cli": "*",
+    "@graphql-codegen/import-types-preset": "*",
+    "@graphql-codegen/typescript": "*",
     "graphql": "*",
-    "graphql-tag": "*",
     "typescript": "*"
   },
   "optionalDependencies": {
