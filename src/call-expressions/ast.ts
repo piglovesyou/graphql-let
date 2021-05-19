@@ -108,7 +108,6 @@ export function removeImportDeclaration(
   }
 }
 
-const EXCLUDE_SCHEMA_IMPORT_COUNT = 1;
 export function replaceCallExpressions(
   programPath: NodePath<t.Program>,
   sourceFullPath: string,
