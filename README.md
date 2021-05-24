@@ -204,7 +204,15 @@ for webpack compilation. In that case, we recommend setting up like this.
 + cacheDir: .cache
 ```
 
-Remember you have to `.gitignore` the `.cache` directory in the next section.
+Please note that files in `cacheDir` are only intermediate cache, possibly having wrong import paths. Your `tsconfig.json` probably complains, so give it a line for exclusion.
+
+```diff
+  // tsconfig.json
+  {
++   "excludes": [".cache"]
+  }
+```
+Also, remember you have to `.gitignore` the `.cache` directory in the next section.
 
 ### 3. Add lines to .gitignore
 
@@ -712,6 +720,16 @@ query Viewer {
     }
 }
 ```
+
+#### `.tsx`es generated in `cacheDir` (`.cache`) throw TypeScript errors of wrong import paths
+
+It's not a bug. Please exclude `cacheDir` from your TypeScript compilation. The files in `cacheDir` are only intermediates, which will speed your next execution.
+
+```
+Your GraphQL documents -> (call GraphQL code generator API *1) -> .tsx *2 -> (call TypeScript to distribute declarations *3) -> .d.ts
+```
+
+You're seeing the `*2`. It's used to skip `*1` and `*3`, and recodnized as generated implementations, which graphql-let/loader returns, for example.
 
 ## Contribution
 
