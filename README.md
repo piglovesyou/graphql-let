@@ -9,6 +9,8 @@ and
 [Next.js example](https://github.com/zeit/next.js/blob/canary/examples/with-typescript-graphql/README.md#readme)
 integrating graphql-let. [A blog post](https://the-guild.dev/blog/graphql-let)
 
+🛰 **[Migration guide to v0.18.0](https://github.com/piglovesyou/graphql-let/releases/tag/v0.18.0)**
+
 ## Table of Contents
 
 -   [Why this exists](#why-this-exists)
