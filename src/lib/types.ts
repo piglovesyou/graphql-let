@@ -76,3 +76,9 @@ export function isAllSkip(codegenContext: CodegenContext[]): boolean {
 export type BabelOptions = {
   configFilePath?: string;
 };
+
+export function getSchemaImportContext(codegenContext: CodegenContext[]) {
+  const context = codegenContext.find(({ type }) => type === 'schema-import');
+  if (!context) throw new Error('"schema-import" context must appear');
+  return context;
+}

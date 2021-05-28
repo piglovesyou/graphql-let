@@ -8,8 +8,9 @@ import { ConfigTypes } from './config';
 import { ExecContext } from './exec-context';
 import { writeFile } from './file';
 import { withHash } from './hash';
+import { toDotRelPath } from './paths';
 import { printError } from './print';
-import { CodegenContext, isAllSkip } from './types';
+import { CodegenContext, getSchemaImportContext, isAllSkip } from './types';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
 const OPTIONAL_SCHEMA_PLUGINS = ['typescript-resolvers'];
@@ -37,24 +38,24 @@ function getFixedSchemaConfig() {
 function createFixedDocumentPresetConfig(
   context: CodegenContext,
   execContext: ExecContext,
-  schemaDtsFullPath: string,
+  schemaTsxFullPath: string,
 ) {
-  const { dtsFullPath } = context;
+  const { tsxFullPath } = context;
   const {
     config: { config: userConfig },
   } = execContext;
   const relPathToSchema = slash(
-    path.relative(
-      dirname(dtsFullPath),
-      schemaDtsFullPath.slice(0, schemaDtsFullPath.length - '.d.ts'.length),
+    toDotRelPath(
+      path.relative(
+        dirname(tsxFullPath),
+        schemaTsxFullPath.slice(0, schemaTsxFullPath.length - '.tsx'.length),
+      ),
     ),
   );
   return {
     preset: 'import-types',
     presetConfig: {
-      typesPath: relPathToSchema.startsWith('.')
-        ? relPathToSchema
-        : './' + relPathToSchema,
+      typesPath: relPathToSchema,
       // Pass user config to presetConfig too to let them decide importTypesNamespace
       ...userConfig,
     },
@@ -86,10 +87,10 @@ export function buildCodegenConfig(
   const generates: {
     [outputPath: string]: ConfiguredOutput;
   } = Object.create(null);
-
-  const context = codegenContext.find(({ type }) => type === 'schema-import');
-  if (!context) throw new Error('"schema-import" context must appear');
-  const { dtsFullPath: schemaDtsFullPath } = context;
+  const {
+    // dtsFullPath: schemaDtsFullPath,
+    tsxFullPath: schemaTsxFullPath,
+  } = getSchemaImportContext(codegenContext);
 
   for (const context of codegenContext) {
     if (context.skip) continue;
@@ -108,7 +109,7 @@ export function buildCodegenConfig(
           ...createFixedDocumentPresetConfig(
             context,
             execContext,
-            schemaDtsFullPath,
+            schemaTsxFullPath,
           ),
         };
         break;
@@ -120,7 +121,7 @@ export function buildCodegenConfig(
           ...createFixedDocumentPresetConfig(
             context,
             execContext,
-            schemaDtsFullPath,
+            schemaTsxFullPath,
           ),
         };
         break;

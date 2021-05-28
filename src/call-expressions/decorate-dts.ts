@@ -1,12 +1,11 @@
-import generator from '@babel/generator';
 import { parse } from '@babel/parser';
 import traverse, { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
+import { File } from '@babel/types';
 import { parserOption } from './ast';
 
-export function addObjectExportToDts(dtsContent: string) {
+export function appendObjectExport(dtsAST: File) {
   // TODO: Build ast?
-
   let allExportsCode = `export declare type __GraphQLLetTypeInjection = { `;
   function pushProps({
     node: {
@@ -22,7 +21,6 @@ export function addObjectExportToDts(dtsContent: string) {
     // We cannot export TSTypeAliasDeclaration, since gql() cannot return type.
   };
 
-  const dtsAST = parse(dtsContent, parserOption);
   traverse(dtsAST, {
     ExportNamedDeclaration(path: any) {
       path.traverse(visitors);
@@ -40,7 +38,4 @@ export function addObjectExportToDts(dtsContent: string) {
       },
     },
   });
-
-  const { code } = generator(dtsAST);
-  return code;
 }
