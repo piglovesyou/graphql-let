@@ -106,7 +106,7 @@
     "diff": "^5.0.0",
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^8.0.0",
-    "eslint-plugin-jest": "^24.3.4",
+    "eslint-plugin-jest": "^24.3.6",
     "eslint-plugin-prettier": "^3.4.0",
     "execa": "^5.0.0",
     "graphql": "^14.6.0",
