@@ -63,3 +63,7 @@ export function isTypeScriptPath(path: string) {
   const x = extname(path);
   return x === '.ts' || x === '.tsx';
 }
+
+export function toDotRelPath(relPath: string) {
+  return relPath.startsWith('.') ? relPath : './' + relPath;
+}

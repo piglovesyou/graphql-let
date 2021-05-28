@@ -3,6 +3,7 @@ import { ParserOptions } from '@babel/parser';
 import * as t from '@babel/types';
 import { dirname, relative } from 'path';
 import slash from 'slash';
+import { toDotRelPath } from '../lib/paths';
 import { printError } from '../lib/print';
 import { CodegenContext } from '../lib/types';
 
@@ -127,8 +128,9 @@ export function replaceCallExpressions(
   for (const [i, [callExpressionPath]] of callExpressionPaths.entries()) {
     const { gqlHash, tsxFullPath } = callCodegenContext[i]!;
 
-    const tsxRelPathFromSource =
-      './' + slash(relative(dirname(sourceFullPath), tsxFullPath));
+    const tsxRelPathFromSource = slash(
+      toDotRelPath(relative(dirname(sourceFullPath), tsxFullPath)),
+    );
 
     const localVarName = `V${gqlHash}`;
 

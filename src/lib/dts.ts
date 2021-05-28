@@ -1,5 +1,9 @@
+import generator from '@babel/generator';
+import { parse } from '@babel/parser';
+import traverse from '@babel/traverse';
+import { File, stringLiteral } from '@babel/types';
 import makeDir from 'make-dir';
-import { dirname } from 'path';
+import { dirname, relative } from 'path';
 import slash from 'slash';
 import {
   CompilerOptions,
@@ -11,27 +15,80 @@ import {
   readConfigFile,
   sys,
 } from 'typescript';
-import { addObjectExportToDts } from '../call-expressions/decorate-dts';
+import { parserOption } from '../call-expressions/ast';
+import { appendObjectExport } from '../call-expressions/decorate-dts';
 import { ConfigTypes } from './config';
 import { ExecContext } from './exec-context';
 import { writeFile } from './file';
 import { withHash } from './hash';
-import { CodegenContext, isAllSkip } from './types';
+import { SCHEMA_TYPES_BASENAME, toDotRelPath } from './paths';
+import { CodegenContext, getSchemaImportContext, isAllSkip } from './types';
 
 const essentialCompilerOptions: CompilerOptions = {
   declaration: true,
   emitDeclarationOnly: true,
   skipLibCheck: true,
+  // jsx: JsxEmit.Preserve,
   noEmit: false,
 };
 
-function decorateDts(type: CodegenContext['type'], dtsContent: string) {
+function fixDtsImportPaths(
+  context: CodegenContext,
+  dtsAST: File,
+  schemaDtsFullPath: string,
+) {
+  const { dtsFullPath, type } = context;
+  const relPathToSchema = slash(
+    toDotRelPath(
+      relative(
+        dirname(dtsFullPath),
+        schemaDtsFullPath.slice(0, schemaDtsFullPath.length - '.d.ts'.length),
+      ),
+    ),
+  );
+
+  traverse(dtsAST, {
+    ImportDeclaration(path) {
+      if (path.node.source.value.endsWith(SCHEMA_TYPES_BASENAME)) {
+        switch (type) {
+          case 'document-import':
+            path.node.source = stringLiteral(
+              'graphql-let/__generated__/__types__',
+            );
+            break;
+          case 'gql-call':
+          case 'load-call':
+            path.node.source = stringLiteral(relPathToSchema);
+            break;
+        }
+      }
+    },
+  });
+  // It's okay if there's no import declaration
+
+  return dtsAST;
+}
+
+function decorateDts(
+  context: CodegenContext,
+  dtsContent: string,
+  schemaDtsFullPath: string,
+) {
+  const { type } = context;
+  const dtsAST = parse(dtsContent, parserOption);
+
   switch (type) {
     case 'load-call':
     case 'gql-call':
-      return addObjectExportToDts(dtsContent);
+      appendObjectExport(dtsAST);
+    case 'document-import':
+      // XXX: Ugly way to fix import paths
+      fixDtsImportPaths(context, dtsAST, schemaDtsFullPath);
   }
-  return dtsContent;
+
+  const { code } = generator(dtsAST);
+  return code;
+  // return dtsContent;
 }
 
 function resolveCompilerOptions(cwd: string, { TSConfigFile }: ConfigTypes) {
@@ -45,13 +102,13 @@ function resolveCompilerOptions(cwd: string, { TSConfigFile }: ConfigTypes) {
     );
     if (config != null) {
       const settings = convertCompilerOptionsFromJson(
-        { ...config['compilerOptions'], ...essentialCompilerOptions },
+        config['compilerOptions'],
         cwd,
       );
       if (settings.errors.length > 0) {
         console.log(settings.errors);
       }
-      compilerOptions = settings.options;
+      compilerOptions = { ...settings.options, ...essentialCompilerOptions };
     } else if (error) {
       console.error(
         `${error.file && error.file.fileName}: ${error.messageText}`,
@@ -139,11 +196,16 @@ export async function processDtsForContext(
     codegenContext.map(({ tsxFullPath }) => tsxFullPath),
   );
 
+  const {
+    dtsFullPath: schemaDtsFullPath,
+    // tsxFullPath: schemaTsxFullPath,
+  } = getSchemaImportContext(codegenContext);
+
   await makeDir(dirname(codegenContext[0].dtsFullPath));
   for (const [i, dtsContent] of dtsContents.entries()) {
     const ctx = codegenContext[i];
-    const { type, dtsFullPath, gqlHash } = ctx!;
-    let content = decorateDts(type, dtsContent);
+    const { dtsFullPath, gqlHash } = ctx!;
+    let content = decorateDts(ctx!, dtsContent, schemaDtsFullPath);
     content = withHash(gqlHash, content);
     await makeDir(dirname(dtsFullPath));
     await writeFile(dtsFullPath, content);
