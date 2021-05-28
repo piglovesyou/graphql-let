@@ -1,4 +1,4 @@
-import { useViewerQuery } from './viewer.graphql';
+import { useViewerLazyQuery, useViewerQuery } from './viewer.graphql';
 
 // @ts-expect-error
 useViewerQuery();
@@ -12,3 +12,10 @@ const result = useViewerQuery({
 result.data.viewer.status as string;
 // @ts-expect-error
 result.data.viewer.status as number;
+
+const [getViewer] = useViewerLazyQuery({ variables: { id: 'baa' } });
+
+// @ts-expect-error
+getViewer({ variables: {} });
+
+getViewer({ variables: { id: 'baa' } });
