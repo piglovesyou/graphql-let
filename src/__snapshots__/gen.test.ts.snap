@@ -56,8 +56,12 @@ export declare const ViewerDocument: Apollo.DocumentNode;
  * });
  */
 
-export declare function useViewerQuery(baseOptions: Apollo.QueryHookOptions<ViewerQuery, ViewerQueryVariables>): Apollo.QueryResult<ViewerQuery, any>;
-export declare function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>): Apollo.QueryTuple<ViewerQuery, any>;
+export declare function useViewerQuery(baseOptions: Apollo.QueryHookOptions<ViewerQuery, ViewerQueryVariables>): Apollo.QueryResult<ViewerQuery, Types.Exact<{
+  id: string;
+}>>;
+export declare function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>): Apollo.QueryTuple<ViewerQuery, Types.Exact<{
+  id: string;
+}>>;
 export declare type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export declare type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
 export declare type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;"
@@ -898,8 +902,12 @@ export declare const ViewerFromMacroDocument: Apollo.DocumentNode;
  * });
  */
 
-export declare function useViewerFromMacroQuery(baseOptions?: Apollo.QueryHookOptions<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>): Apollo.QueryResult<ViewerFromMacroQuery, any>;
-export declare function useViewerFromMacroLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>): Apollo.QueryTuple<ViewerFromMacroQuery, any>;
+export declare function useViewerFromMacroQuery(baseOptions?: Apollo.QueryHookOptions<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>): Apollo.QueryResult<ViewerFromMacroQuery, Types.Exact<{
+  [key: string]: never;
+}>>;
+export declare function useViewerFromMacroLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>): Apollo.QueryTuple<ViewerFromMacroQuery, Types.Exact<{
+  [key: string]: never;
+}>>;
 export declare type ViewerFromMacroQueryHookResult = ReturnType<typeof useViewerFromMacroQuery>;
 export declare type ViewerFromMacroLazyQueryHookResult = ReturnType<typeof useViewerFromMacroLazyQuery>;
 export declare type ViewerFromMacroQueryResult = Apollo.QueryResult<ViewerFromMacroQuery, ViewerFromMacroQueryVariables>;
@@ -948,8 +956,12 @@ export declare const ViewerFromMacro2Document: Apollo.DocumentNode;
  * });
  */
 
-export declare function useViewerFromMacro2Query(baseOptions?: Apollo.QueryHookOptions<ViewerFromMacro2Query, ViewerFromMacro2QueryVariables>): Apollo.QueryResult<ViewerFromMacro2Query, any>;
-export declare function useViewerFromMacro2LazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerFromMacro2Query, ViewerFromMacro2QueryVariables>): Apollo.QueryTuple<ViewerFromMacro2Query, any>;
+export declare function useViewerFromMacro2Query(baseOptions?: Apollo.QueryHookOptions<ViewerFromMacro2Query, ViewerFromMacro2QueryVariables>): Apollo.QueryResult<ViewerFromMacro2Query, Types.Exact<{
+  [key: string]: never;
+}>>;
+export declare function useViewerFromMacro2LazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerFromMacro2Query, ViewerFromMacro2QueryVariables>): Apollo.QueryTuple<ViewerFromMacro2Query, Types.Exact<{
+  [key: string]: never;
+}>>;
 export declare type ViewerFromMacro2QueryHookResult = ReturnType<typeof useViewerFromMacro2Query>;
 export declare type ViewerFromMacro2LazyQueryHookResult = ReturnType<typeof useViewerFromMacro2LazyQuery>;
 export declare type ViewerFromMacro2QueryResult = Apollo.QueryResult<ViewerFromMacro2Query, ViewerFromMacro2QueryVariables>;
@@ -998,8 +1010,12 @@ export declare const ViewerDocument: Apollo.DocumentNode;
  * });
  */
 
-export declare function useViewerQuery(baseOptions?: Apollo.QueryHookOptions<ViewerQuery, ViewerQueryVariables>): Apollo.QueryResult<ViewerQuery, any>;
-export declare function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>): Apollo.QueryTuple<ViewerQuery, any>;
+export declare function useViewerQuery(baseOptions?: Apollo.QueryHookOptions<ViewerQuery, ViewerQueryVariables>): Apollo.QueryResult<ViewerQuery, Types.Exact<{
+  [key: string]: never;
+}>>;
+export declare function useViewerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerQuery, ViewerQueryVariables>): Apollo.QueryTuple<ViewerQuery, Types.Exact<{
+  [key: string]: never;
+}>>;
 export declare type ViewerQueryHookResult = ReturnType<typeof useViewerQuery>;
 export declare type ViewerLazyQueryHookResult = ReturnType<typeof useViewerLazyQuery>;
 export declare type ViewerQueryResult = Apollo.QueryResult<ViewerQuery, ViewerQueryVariables>;
@@ -1048,8 +1064,12 @@ export declare const ViewerYDocument: Apollo.DocumentNode;
  * });
  */
 
-export declare function useViewerYQuery(baseOptions?: Apollo.QueryHookOptions<ViewerYQuery, ViewerYQueryVariables>): Apollo.QueryResult<ViewerYQuery, any>;
-export declare function useViewerYLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerYQuery, ViewerYQueryVariables>): Apollo.QueryTuple<ViewerYQuery, any>;
+export declare function useViewerYQuery(baseOptions?: Apollo.QueryHookOptions<ViewerYQuery, ViewerYQueryVariables>): Apollo.QueryResult<ViewerYQuery, Types.Exact<{
+  [key: string]: never;
+}>>;
+export declare function useViewerYLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ViewerYQuery, ViewerYQueryVariables>): Apollo.QueryTuple<ViewerYQuery, Types.Exact<{
+  [key: string]: never;
+}>>;
 export declare type ViewerYQueryHookResult = ReturnType<typeof useViewerYQuery>;
 export declare type ViewerYLazyQueryHookResult = ReturnType<typeof useViewerYLazyQuery>;
 export declare type ViewerYQueryResult = Apollo.QueryResult<ViewerYQuery, ViewerYQueryVariables>;

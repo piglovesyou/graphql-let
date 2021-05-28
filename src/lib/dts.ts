@@ -12,6 +12,7 @@ import {
   createProgram,
   findConfigFile,
   flattenDiagnosticMessageText,
+  JsxEmit,
   readConfigFile,
   sys,
 } from 'typescript';
@@ -28,7 +29,7 @@ const essentialCompilerOptions: CompilerOptions = {
   declaration: true,
   emitDeclarationOnly: true,
   skipLibCheck: true,
-  // jsx: JsxEmit.Preserve,
+  jsx: JsxEmit.Preserve,
   noEmit: false,
 };
 
