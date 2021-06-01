@@ -745,4 +745,4 @@ You're seeing the `*2`. It's used to skip `*1` and `*3`, and recodnized as gener
 
 ## License
 
-MIT
+Apache License Version 2.0
