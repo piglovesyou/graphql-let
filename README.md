@@ -396,8 +396,8 @@ section as a migration guide, too.
 You have to have `@graphql-codegen/typescript` as a dev dependency. graphql-let
 generates types **by default**, where it uses the plugin. The `plugins` in
 .graphql-let.yml is for per-document, which imports the shared types
-automatically. If you specify `typescript` as a plugin in .graphql-let, it's
-still okay, but you can imagine it's redundant.
+automatically. If you specify `typescript` as a plugin, it's
+still okay, but you can imagine it's kind of redundant.
 
 ### No `generates`
 
