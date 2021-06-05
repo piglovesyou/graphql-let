@@ -56,14 +56,24 @@ export function resolveGraphQLDocument(
   // This allows to start from content of GraphQL document, not file path
   const predefinedImports = { [importRootPath]: gqlContent };
   const map: VisitedFilesMap = new Map();
-  const documentNode = processImport(
-    importRootPath,
-    cwd,
-    predefinedImports,
-    map,
-  );
-  const dependantFullPaths = Array.from(map.keys());
-  return { documentNode, dependantFullPaths };
+  try {
+    const documentNode = processImport(
+      importRootPath,
+      cwd,
+      predefinedImports,
+      map,
+    );
+    const dependantFullPaths = Array.from(map.keys());
+    return { documentNode, dependantFullPaths };
+  } catch (e) {
+    // Reformat error log to include source file and position information
+    const { body, name } = e.source;
+    const stack = e.stack.split('\n').slice(1).join('\n');
+    const [{ line, column }] = e.locations;
+    e.message = `${name}; ${e.message}\nIn line ${line}, column ${column} of the following source:\n${body}`;
+    e.stack = stack;
+    throw e;
+  }
 }
 
 export function prepareAppendTiContext(
