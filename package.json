@@ -84,7 +84,7 @@
     "@types/memory-fs": "^0.3.3",
     "@types/minimist": "^1.2.1",
     "@types/node": "^15.6.0",
-    "@types/prettier": "^2.2.3",
+    "@types/prettier": "^2.3.0",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
     "@types/rimraf": "^3.0.0",
