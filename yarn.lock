@@ -2,22 +2,22 @@
 # yarn lockfile v1
 
 
-"@apollo/client@^3.3.7":
-  version "3.3.11"
-  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.3.11.tgz#125051405e83dc899d471d43b79fd6045d92a802"
-  integrity sha512-54+D5FB6RJlQ+g37f432gaexnyvDsG5X6L9VO5kqN54HJlbF8hCf/8CXtAQEHCWodAwZhy6kOLp2RM96829q3A==
+"@apollo/client@^3.3.20":
+  version "3.3.20"
+  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.3.20.tgz#8f0935fa991857e9cf2e73c9bd378ad7ec97caf8"
+  integrity sha512-hS7UmBwJweudw/J3M0RAcusMHNiRuGqkRH6g91PM2ev8cXScIMdXr/++9jo7wD1nAITMCMF4HQQ3LFaw/Or0Bw==
   dependencies:
     "@graphql-typed-document-node/core" "^3.0.0"
     "@types/zen-observable" "^0.8.0"
-    "@wry/context" "^0.5.2"
-    "@wry/equality" "^0.3.0"
+    "@wry/context" "^0.6.0"
+    "@wry/equality" "^0.5.0"
     fast-json-stable-stringify "^2.0.0"
     graphql-tag "^2.12.0"
     hoist-non-react-statics "^3.3.2"
-    optimism "^0.14.0"
+    optimism "^0.16.0"
     prop-types "^15.7.2"
-    symbol-observable "^2.0.0"
-    ts-invariant "^0.6.0"
+    symbol-observable "^4.0.0"
+    ts-invariant "^0.7.0"
     tslib "^1.10.0"
     zen-observable "^0.8.14"
 
@@ -2580,6 +2580,13 @@
   dependencies:
     tslib "^1.14.1"
 
+"@wry/context@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@wry/context/-/context-0.6.0.tgz#f903eceb89d238ef7e8168ed30f4511f92d83e06"
+  integrity sha512-sAgendOXR8dM7stJw3FusRxFHF/ZinU0lffsA2YTyyIOfic86JX02qlPqPVqJNZJPAxFt+2EE8bvq6ZlS0Kf+Q==
+  dependencies:
+    tslib "^2.1.0"
+
 "@wry/equality@^0.3.0":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@wry/equality/-/equality-0.3.1.tgz#81080cdc2e0d8265cd303faa0c64b38a77884e06"
@@ -2587,12 +2594,19 @@
   dependencies:
     tslib "^1.14.1"
 
-"@wry/trie@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@wry/trie/-/trie-0.2.1.tgz#4191e1d4a85dd77dfede383d65563138ed82fc47"
-  integrity sha512-sYkuXZqArky2MLQCv4tLW6hX3N8AfTZ5ZMBc8jC6Yy35WYr82UYLLtjS7k/uRGHOA0yTSjuNadG6QQ6a5CS5hQ==
+"@wry/equality@^0.5.0":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@wry/equality/-/equality-0.5.1.tgz#b22e4e1674d7bf1439f8ccdccfd6a785f6de68b0"
+  integrity sha512-FZKbdpbcVcbDxQrKcaBClNsQaMg9nof1RKM7mReJe5DKUzM5u8S7T+PqwNqvib5O2j2xxF1R4p5O3+b6baTrbw==
   dependencies:
-    tslib "^1.14.1"
+    tslib "^2.1.0"
+
+"@wry/trie@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@wry/trie/-/trie-0.3.0.tgz#3245e74988c4e3033299e479a1bf004430752463"
+  integrity sha512-Yw1akIogPhAT6XPYsRHlZZIS0tIGmAl9EYXHi2scf7LPKKqdqmow/Hu4kEqP2cJR3EjaU/9L0ZlAjFf3hFxmug==
+  dependencies:
+    tslib "^2.1.0"
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -8126,13 +8140,13 @@ optimism@^0.13.1:
   dependencies:
     "@wry/context" "^0.5.2"
 
-optimism@^0.14.0:
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/optimism/-/optimism-0.14.0.tgz#256fb079a3428585b40a3a8462f907e0abd2fc49"
-  integrity sha512-ygbNt8n4DOCVpkwiLF+IrKKeNHOjtr9aXLWGP9HNJGoblSGsnVbJLstcH6/nE9Xy5ZQtlkSioFQNnthmENW6FQ==
+optimism@^0.16.0:
+  version "0.16.1"
+  resolved "https://registry.yarnpkg.com/optimism/-/optimism-0.16.1.tgz#7c8efc1f3179f18307b887e18c15c5b7133f6e7d"
+  integrity sha512-64i+Uw3otrndfq5kaoGNoY7pvOhSsjFEN4bdEFh80MWVk/dbgJfMv7VFDeCT8LxNAlEVhQmdVEbfE7X2nWNIIg==
   dependencies:
-    "@wry/context" "^0.5.2"
-    "@wry/trie" "^0.2.1"
+    "@wry/context" "^0.6.0"
+    "@wry/trie" "^0.3.0"
 
 optionator@^0.8.1:
   version "0.8.3"
@@ -10105,6 +10119,11 @@ symbol-observable@^2.0.0:
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-2.0.3.tgz#5b521d3d07a43c351055fa43b8355b62d33fd16a"
   integrity sha512-sQV7phh2WCYAn81oAkakC5qjq2Ml0g8ozqz03wOGnx9dDlG1de6yrF+0RAzSJD8fPUow3PTSMf2SAbOGxb93BA==
 
+symbol-observable@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-4.0.0.tgz#5b425f192279e87f2f9b937ac8540d1984b39205"
+  integrity sha512-b19dMThMV4HVFynSAM1++gBHAbk2Tc/osgLIBZMKsyqh34jb2e8Os7T6ZW/Bt3pJFdBTd2JwAnAAEQV7rSNvcQ==
+
 symbol-tree@^3.2.4:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
@@ -10339,6 +10358,13 @@ ts-invariant@^0.6.0:
     "@types/ungap__global-this" "^0.3.1"
     "@ungap/global-this" "^0.4.2"
     tslib "^1.9.3"
+
+ts-invariant@^0.7.0:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/ts-invariant/-/ts-invariant-0.7.3.tgz#13aae22a4a165393aaf5cecdee45ef4128d358b8"
+  integrity sha512-UWDDeovyUTIMWj+45g5nhnl+8oo+GhxL5leTaHn5c8FkQWfh8v66gccLd2/YzVmV5hoQUjCEjhrXnQqVDJdvKA==
+  dependencies:
+    tslib "^2.1.0"
 
 ts-jest@^26.5.6:
   version "26.5.6"
