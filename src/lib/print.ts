@@ -11,7 +11,7 @@ export function printWarning(message: string): void {
 }
 
 export function printError(err: Error): void {
-  console.error(PRINT_PREFIX + err.message + '\n' + err.stack);
+  console.error(PRINT_PREFIX + err.toString() + '\n' + err.stack);
 }
 
 export function updateLog(message: string) {

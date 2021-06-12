@@ -112,7 +112,8 @@ describe('"graphql-let" command', () => {
     try {
       await gen({ cwd });
     } catch (e) {
-      expect(printedMessages.length).toBe(2); // TODO: Why 2?
+      // Two for __types__.tsx and viewer.grpahql.tsx
+      expect(printedMessages.length).toBe(2);
       expect(printedMessages[0]).toContain(`Failed to load schema
         Failed to load schema from **/*.graphqls:
 
