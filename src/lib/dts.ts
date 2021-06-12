@@ -179,7 +179,7 @@ export function genDts(
 
   if (tsxFullPaths.length !== dtsContents.length) {
     throw new Error(
-      `Never supposed to be here. Please make an issue on GitHub.`,
+      `Never. Requested .tsx length and result .d.ts length are not matched.`,
     );
   }
 

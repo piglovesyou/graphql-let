@@ -14,10 +14,11 @@ import { CodegenContext, getSchemaImportContext, isAllSkip } from './types';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
 const OPTIONAL_SCHEMA_PLUGINS = ['typescript-resolvers'];
-function findOptionalSchemaPlugins() {
+function getOptionalSchemaPlugins() {
   const plugins: string[] = [];
   for (const c of OPTIONAL_SCHEMA_PLUGINS) {
     try {
+      require(`@graphql-codegen/${c}`);
       plugins.push(c);
       // eslint-disable-next-line no-empty
     } catch (e) {}
@@ -31,7 +32,7 @@ function findOptionalSchemaPlugins() {
 // cases where you need to configure this more. Issue it then.
 function getFixedSchemaConfig() {
   return {
-    plugins: ['typescript', ...findOptionalSchemaPlugins()],
+    plugins: ['typescript', ...getOptionalSchemaPlugins()],
   };
 }
 
