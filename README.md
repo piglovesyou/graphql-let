@@ -472,22 +472,6 @@ TSConfigFile: tsconfig.compile.json
 # for `gql()` and `load()` calls.
 typeInjectEntrypoint: node_modules/@types/graphql-let/index.d.ts
 
-# "schemaEntrypoint", optional. You need this only if you want to use Resolver Types.
-# Since you could point to multiple schemas, this path is
-# used to generate `.d.ts` to generate `*.graphqls.d.ts`. If you do this,
-#
-#   schema: **/*.graphqls
-#   schemaEntrypoint: schema.graphqls
-#
-# you can import the generated resolver types like below.
-#
-#   import { Resolvers } from '../schema.graphqls'
-#
-# It doesn't matter if the file of the path exists. I recommend
-# you to specify a normal relative path without glob symbols (`**`) like this.
-schemaEntrypoint: schema.graphqls
-schemaEntrypoint: lib/schema.graphqls
-
 # "silent", optional. `false` by default.
 # Pass `true` if you want to suppress all standard output from graphql-let.
 silent: false
@@ -598,26 +582,22 @@ schema. Just use what you need; it's most likely to be `jest-transform-graphql`.
 
 If you meet the following conditions, graphql-let generates Resolver Types.
 
--   You have `schemaEntrypoint` in the config
 -   You have file paths including glob patterns in `schema`
 -   You have
     [`@graphql-codegen/typescript-resolvers`](https://graphql-code-generator.com/docs/plugins/typescript-resolvers)
     installed
--   your `schemaEntrypoint` in .graphql-let.yml points to a single local GraphQL
-    schema file (`.graphqls`)
 
 Run:
 
 ```bash
 yarn add -D @graphql-codegen/typescript-resolvers
-
 yarn graphql-let
 ```
 
-Then you will get `${schemaEntrypoint}.d.ts`. Import the types from it.
+Then you will get resolver types in `graphql-let/__generated__/__types__`.
 
 ```typescript
-import { Resolvers } from "../schema.graphqls";
+import { Resolvers } from "graphql-let/__generated__/__types__";
 
 const resolvers: Resolvers = {
   Query: {
@@ -631,9 +611,8 @@ const resolvers: Resolvers = {
 export default resolvers;
 ```
 
-`graphql-let/schema/loader` is also available. It generates/updates
-`graphql-let/__generated__/__types__.d.ts` but it doesn't transpile anything;
-just passes the file content to the next webpack loader.
+`graphql-let/schema/loader` is also available to update resolver types. It doesn't transpile anything;
+just detects file modification and passes the content to the next loader.
 
 ```diff
   // webpack.config.ts
