@@ -1,0 +1,27 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: weekly
+    day: saturday
+    time: "06:00"
+    timezone: Asia/Tokyo
+  ignore:
+  - dependency-name: webpack
+    versions:
+    - 5.25.0
+    - 5.27.0
+    - 5.28.0
+    - 5.30.0
+    - 5.31.2
+    - 5.35.1
+    - 5.36.2
+    - 5.37.0
+    - 5.37.1
+  - dependency-name: "@babel/parser"
+    versions:
+    - 7.14.1
+  - dependency-name: "@babel/traverse"
+    versions:
+    - 7.13.13
