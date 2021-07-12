@@ -62,7 +62,7 @@
     "@graphql-codegen/plugin-helpers": "^1.18.2",
     "@graphql-codegen/typescript": "^1.22.1",
     "@graphql-codegen/typescript-operations": "^1.17.16",
-    "@graphql-codegen/typescript-react-apollo": "^2.2.2",
+    "@graphql-codegen/typescript-react-apollo": "^2.3.0",
     "@graphql-codegen/typescript-resolvers": "^1.19.1",
     "@graphql-tools/graphql-file-loader": "^6.2.7",
     "@graphql-tools/import": "^6.3.1",
