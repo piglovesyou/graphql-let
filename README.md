@@ -719,8 +719,9 @@ You're seeing the `*2`. It's used to skip `*1` and `*3`, and recodnized as gener
 -   **Creating a PR** is always welcome!
     -   Running `npm run prepublishOnly` locally will get your local development
         ready.
-    -   Adding tests is preferable, but don't worry. Maybe someone else will
+    -   Adding tests is preferable, but not necessary. Maybe someone else will
         fill it.
+-   [We have a chronic accumulation of dependabot PRs](https://github.com/piglovesyou/graphql-let/pulls/app%2Fdependabot). Please help us fix these version conflicts by cloning the dependabot branches.
 
 ## License
 
