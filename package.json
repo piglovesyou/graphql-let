@@ -17,9 +17,7 @@
     "babel-plugin-macros"
   ],
   "license": "MIT",
-  "bin": {
-    "graphql-let": "bin/graphql-let.js"
-  },
+  "bin": "bin/graphql-let.js",
   "main": "index.js",
   "files": [
     "bin",
@@ -189,5 +187,6 @@
     "test": "jest",
     "build": "yarn clean && yarn compile",
     "prepublishOnly": "yarn lint && yarn typecheck && yarn build && yarn test"
-  }
+  },
+  "packageManager": "yarn@3.0.0"
 }
