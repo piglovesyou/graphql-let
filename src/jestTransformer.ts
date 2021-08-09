@@ -20,11 +20,20 @@ function getOption(jestConfig: ProjectConfig): JestTransformerOptions {
   return {};
 }
 
-const jestTransformer: Transformer = {
+const jestTransformer: Transformer<JestTransformerOptions> = {
   getCacheKey(fileData, filename, configString) {
     return createHash(fileData + filename + configString + 'graphql-let');
   },
-  process(input, filePath, jestConfig, transformOptions) {
+  process(
+    input,
+    filePath,
+    __compatJestConfig,
+    __compatTransformOptions?: unknown,
+  ) {
+    // jest v26 vs v27 changes to support both formats: start
+    const transformOptions = __compatTransformOptions ?? __compatJestConfig;
+    const jestConfig = __compatJestConfig?.config ?? __compatJestConfig;
+    // jest v26 vs v27 changes to support both formats: end
     const { rootDir: cwd } = jestConfig;
     const { configFile, subsequentTransformer } = getOption(jestConfig);
     const [config, configHash] = loadConfigSync(cwd, configFile);
