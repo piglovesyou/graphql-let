@@ -31,7 +31,6 @@ const jestTransformer: Transformer<JestTransformerOptions> = {
     __compatTransformOptions?: unknown,
   ) {
     // jest v26 vs v27 changes to support both formats: start
-    const transformOptions = __compatTransformOptions ?? __compatJestConfig;
     const jestConfig = __compatJestConfig?.config ?? __compatJestConfig;
     // jest v26 vs v27 changes to support both formats: end
     const { rootDir: cwd } = jestConfig;
@@ -45,23 +44,27 @@ const jestTransformer: Transformer<JestTransformerOptions> = {
     // Let users customize a subsequent transformer
     if (subsequentTransformer) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      return require(subsequentTransformer).process(
+      const _subsequentTransformer = require(subsequentTransformer);
+      return (
+        _subsequentTransformer?.default || _subsequentTransformer
+      ).process(
         tsxContent,
         tsxFullPath,
-        jestConfig,
-        transformOptions,
+        __compatJestConfig,
+        __compatTransformOptions,
       );
     }
 
     // "babel-jest" by default
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { createTransformer } = require('babel-jest');
+    const babelJest = require('babel-jest');
+    const { createTransformer } = babelJest?.default || babelJest;
     const babelTransformer = createTransformer({ cwd: cwd });
     return babelTransformer.process(
       tsxContent,
       tsxFullPath,
-      jestConfig,
-      transformOptions,
+      __compatJestConfig,
+      __compatTransformOptions,
     );
   },
 };
