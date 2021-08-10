@@ -33,7 +33,7 @@ jobs:
 
             - name: yarn install, lint, and test
               run: |
-                  yarn install --ignore-scripts
-                  yarn prepublishOnly
+                  yarn install --mode=skip-build
+                  yarn prepack
               env:
                   CI: true
