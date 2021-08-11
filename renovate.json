@@ -1,0 +1,17 @@
+{
+  "prConcurrentLimit": 5,
+  "schedule": ["every weekend"],
+  "packageRules": [
+    {
+      "matchPackagePatterns": [".*"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    },
+    {
+      "matchPackagePatterns": [".*"],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor"],
+      "automerge": true
+    }
+  ]
+}
