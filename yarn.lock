@@ -1600,17 +1600,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/import-types-preset@npm:1.18.1":
-  version: 1.18.1
-  resolution: "@graphql-codegen/import-types-preset@npm:1.18.1"
+"@graphql-codegen/import-types-preset@npm:1.18.6":
+  version: 1.18.6
+  resolution: "@graphql-codegen/import-types-preset@npm:1.18.6"
   dependencies:
     "@graphql-codegen/add": ^2.0.2
-    "@graphql-codegen/plugin-helpers": ^1.18.2
-    "@graphql-codegen/visitor-plugin-common": ^1.17.20
-    tslib: ~2.0.1
+    "@graphql-codegen/plugin-helpers": ^1.18.8
+    "@graphql-codegen/visitor-plugin-common": 1.22.0
+    tslib: ~2.3.0
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: cb3e44ad3f9688b8cb714ed45e257046768b1b41e4cefa7aa21b2f90c537c0b48f77db7ddc559575eb48acf61fb74215066b7cdfc393dddca8322047b646128a
+  checksum: b5aa7de66581b130951f621d6c1a577998e9c56f8ef21dead44d28ef6aebb1e04708ebc934188924ba710003dc9618ab6db511215b0a0fafa198a6cb0d428bf6
   languageName: node
   linkType: hard
 
@@ -1626,6 +1626,21 @@ __metadata:
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
   checksum: 055228cd4bc84be8e11e0922362972b72156630ad5a6b25219fe5e4e663fa59ac307e12459493d785b02e8e7427bc3f30fba398fb529b342b7e380f53bfd9bae
+  languageName: node
+  linkType: hard
+
+"@graphql-codegen/plugin-helpers@npm:^1.18.8":
+  version: 1.18.8
+  resolution: "@graphql-codegen/plugin-helpers@npm:1.18.8"
+  dependencies:
+    "@graphql-tools/utils": ^7.9.1
+    common-tags: 1.8.0
+    import-from: 4.0.0
+    lodash: ~4.17.0
+    tslib: ~2.3.0
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
+  checksum: 42ae1dcefd2bd181730acbadde1b56150b21b6e5b414760d4ce619c2953467eae91181d31fffdc0d40c6a810b6cf2f7476f666bbe73a64fe047b42e7eb255ef4
   languageName: node
   linkType: hard
 
@@ -1710,7 +1725,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/visitor-plugin-common@npm:1.21.3, @graphql-codegen/visitor-plugin-common@npm:^1.17.20, @graphql-codegen/visitor-plugin-common@npm:^1.20.0":
+"@graphql-codegen/visitor-plugin-common@npm:1.21.3, @graphql-codegen/visitor-plugin-common@npm:^1.20.0":
   version: 1.21.3
   resolution: "@graphql-codegen/visitor-plugin-common@npm:1.21.3"
   dependencies:
@@ -1727,6 +1742,26 @@ __metadata:
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
   checksum: 79c4e9a9915e9db885729b8f0b03bdea9ebbb456da5660f2f9f4e2ba43e892094d7d78ac8b1469d19fb074d2c03b0a38444ff122edf9bbbace63fd636d6452b1
+  languageName: node
+  linkType: hard
+
+"@graphql-codegen/visitor-plugin-common@npm:1.22.0":
+  version: 1.22.0
+  resolution: "@graphql-codegen/visitor-plugin-common@npm:1.22.0"
+  dependencies:
+    "@graphql-codegen/plugin-helpers": ^1.18.8
+    "@graphql-tools/optimize": ^1.0.1
+    "@graphql-tools/relay-operation-optimizer": ^6.3.0
+    array.prototype.flatmap: ^1.2.4
+    auto-bind: ~4.0.0
+    change-case-all: 1.0.14
+    dependency-graph: ^0.11.0
+    graphql-tag: ^2.11.0
+    parse-filepath: ^1.0.2
+    tslib: ~2.3.0
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
+  checksum: ed3ce44eed78d7cb2f15f96a08e9e19fc61ee4d2204712981edb26895371b5577b461f9813110d453a1882799747d8ad1edc4995c721ff99cc76b12e562b9587
   languageName: node
   linkType: hard
 
@@ -7493,7 +7528,7 @@ fsevents@^1.2.7:
     "@babel/preset-typescript": 7.13.0
     "@babel/traverse": 7.14.2
     "@graphql-codegen/cli": 1.21.1
-    "@graphql-codegen/import-types-preset": 1.18.1
+    "@graphql-codegen/import-types-preset": 1.18.6
     "@graphql-codegen/plugin-helpers": 1.18.7
     "@graphql-codegen/typescript": 1.22.1
     "@graphql-codegen/typescript-operations": 1.17.16
@@ -8133,6 +8168,13 @@ fsevents@^1.2.7:
   dependencies:
     resolve-from: ^5.0.0
   checksum: 5040a7400e77e41e2c3bb6b1b123b52a15a284de1ffc03d605879942c00e3a87428499d8d031d554646108a0f77652549411167f6a7788e4fc7027eefccf3356
+  languageName: node
+  linkType: hard
+
+"import-from@npm:4.0.0":
+  version: 4.0.0
+  resolution: "import-from@npm:4.0.0"
+  checksum: 1fa29c05b048da18914e91d9a529e5d9b91774bebbfab10e53f59bcc1667917672b971cf102fee857f142e5e433ce69fa1f0a596e1c7d82f9947a5ec352694b9
   languageName: node
   linkType: hard
 
