@@ -71,7 +71,7 @@
     "@types/babel__preset-env": "7.9.2",
     "@types/babel__traverse": "7.11.1",
     "@types/caller": "1.0.0",
-    "@types/copyfiles": "2.4.0",
+    "@types/copyfiles": "2.4.1",
     "@types/core-js": "2.5.4",
     "@types/diff": "5.0.0",
     "@types/eslint": "7.2.8",
