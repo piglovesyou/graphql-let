@@ -2443,12 +2443,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/babel-plugin-macros@npm:2.8.4":
-  version: 2.8.4
-  resolution: "@types/babel-plugin-macros@npm:2.8.4"
+"@types/babel-plugin-macros@npm:2.8.5":
+  version: 2.8.5
+  resolution: "@types/babel-plugin-macros@npm:2.8.5"
   dependencies:
     "@types/babel__core": "*"
-  checksum: d006acc89e57b7e497c335ec009d11a58e7b393a677c783bd8e97b50e6d100452b5765f9ca430d8730724e79261d7b5a5e0d0c780c1d11adacf132accbdf4445
+  checksum: 2a4ade60716c320dd20f0b1db5d2dc591304b8d20a8b0d86175b43024c91df817e0f5d960ac6838b9fe6f6b3465c3f91dd3c79278cc675542b3993061df932df
   languageName: node
   linkType: hard
 
@@ -7538,7 +7538,7 @@ fsevents@^1.2.7:
     "@graphql-tools/import": 6.3.1
     "@jest/transform": 26.6.2
     "@jest/types": 26.6.2
-    "@types/babel-plugin-macros": 2.8.4
+    "@types/babel-plugin-macros": 2.8.5
     "@types/babel__core": 7.1.14
     "@types/babel__preset-env": 7.9.1
     "@types/babel__traverse": 7.11.1
