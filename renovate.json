@@ -1,6 +1,6 @@
 {
+  "rangeStrategy": "pin",
   "prConcurrentLimit": 5,
-  "schedule": ["every weekend"],
   "packageRules": [
     {
       "matchPackagePatterns": [".*"],
