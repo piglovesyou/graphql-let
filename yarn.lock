@@ -2462,7 +2462,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/babel__core@npm:*, @types/babel__core@npm:7.1.14, @types/babel__core@npm:^7.0.0, @types/babel__core@npm:^7.1.7":
+"@types/babel__core@npm:*, @types/babel__core@npm:^7.0.0, @types/babel__core@npm:^7.1.7":
   version: 7.1.14
   resolution: "@types/babel__core@npm:7.1.14"
   dependencies:
@@ -2472,6 +2472,19 @@ __metadata:
     "@types/babel__template": "*"
     "@types/babel__traverse": "*"
   checksum: de4a1a4905e4fb66e9b5ea185704b209892fa104b6aec8705021a3ddf0ff017234c41a1b0bffb0acf2c361afd5352c2d216e3548c8a702ba2558ab63f0bf2200
+  languageName: node
+  linkType: hard
+
+"@types/babel__core@npm:7.1.15":
+  version: 7.1.15
+  resolution: "@types/babel__core@npm:7.1.15"
+  dependencies:
+    "@babel/parser": ^7.1.0
+    "@babel/types": ^7.0.0
+    "@types/babel__generator": "*"
+    "@types/babel__template": "*"
+    "@types/babel__traverse": "*"
+  checksum: 3ea016369666a013564f8d3119ae987b3a3f1bdf31cc90e0d58714eea10d6b89a9fb1f6146290ee239ecc285800b246f18be930625c1d83e79d074842e43ab7d
   languageName: node
   linkType: hard
 
@@ -7539,7 +7552,7 @@ fsevents@^1.2.7:
     "@jest/transform": 26.6.2
     "@jest/types": 26.6.2
     "@types/babel-plugin-macros": 2.8.5
-    "@types/babel__core": 7.1.14
+    "@types/babel__core": 7.1.15
     "@types/babel__preset-env": 7.9.2
     "@types/babel__traverse": 7.11.1
     "@types/caller": 1.0.0
