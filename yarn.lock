@@ -2484,10 +2484,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/babel__preset-env@npm:7.9.1":
-  version: 7.9.1
-  resolution: "@types/babel__preset-env@npm:7.9.1"
-  checksum: 2655cf7d177e85f9cc02b416eeec8e0d0f5df8aa717c50b9b7d0886907bb96c287030c5aa3895bdc9f2bcbdec4cdb728d706a77863542e9821bebf1aed9b4a70
+"@types/babel__preset-env@npm:7.9.2":
+  version: 7.9.2
+  resolution: "@types/babel__preset-env@npm:7.9.2"
+  checksum: a905ed92a3f602384966153e74a94790425e98af54e392a7fcfb5c5ded2f2a58c49a9fa64a0cb506fbffb8169ad25b56ea87983c812a4fb880f0716668c8c085
   languageName: node
   linkType: hard
 
@@ -7540,7 +7540,7 @@ fsevents@^1.2.7:
     "@jest/types": 26.6.2
     "@types/babel-plugin-macros": 2.8.5
     "@types/babel__core": 7.1.14
-    "@types/babel__preset-env": 7.9.1
+    "@types/babel__preset-env": 7.9.2
     "@types/babel__traverse": 7.11.1
     "@types/caller": 1.0.0
     "@types/copyfiles": 2.4.0
