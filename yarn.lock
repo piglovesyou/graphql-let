@@ -2573,10 +2573,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/diff@npm:5.0.0":
-  version: 5.0.0
-  resolution: "@types/diff@npm:5.0.0"
-  checksum: 31df424fd0bf21a18087ed4a9604570e172a5c9c992237f4e59e7aed1143cc5ccc902fb7fb1e2dbcc03ccda88e7aa9283eec363b1bf2180c924a4b75bc678644
+"@types/diff@npm:5.0.1":
+  version: 5.0.1
+  resolution: "@types/diff@npm:5.0.1"
+  checksum: 57aaee86dd6254949b4897999f78ce2eb0cabb28ddae4d178218717b8d9103524f99508d51926c3c89cd79cb6ffa18941f095b951c052cce9004d6fb8cfca64f
   languageName: node
   linkType: hard
 
@@ -7558,7 +7558,7 @@ fsevents@^1.2.7:
     "@types/caller": 1.0.0
     "@types/copyfiles": 2.4.1
     "@types/core-js": 2.5.4
-    "@types/diff": 5.0.0
+    "@types/diff": 5.0.1
     "@types/eslint": 7.2.8
     "@types/eslint-plugin-prettier": 3.1.0
     "@types/jest": 26.0.22
