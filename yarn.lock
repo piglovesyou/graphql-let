@@ -2559,10 +2559,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/copyfiles@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@types/copyfiles@npm:2.4.0"
-  checksum: 504aa34bbc06085cb32bfb10177019959255fe596b775a26e486568de15c76f411d218ad4396bae353d355e387e5cab8eaae1482784bc11702abcd3ca796edfb
+"@types/copyfiles@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@types/copyfiles@npm:2.4.1"
+  checksum: e586284f736c5e1336c7760972db44c26cb4aa02a7fea0d31694306b5569a499546f35990aec9c007df7506a9c0ab62ddb019d96d054560d39d423ebd5ecb917
   languageName: node
   linkType: hard
 
@@ -7556,7 +7556,7 @@ fsevents@^1.2.7:
     "@types/babel__preset-env": 7.9.2
     "@types/babel__traverse": 7.11.1
     "@types/caller": 1.0.0
-    "@types/copyfiles": 2.4.0
+    "@types/copyfiles": 2.4.1
     "@types/core-js": 2.5.4
     "@types/diff": 5.0.0
     "@types/eslint": 7.2.8
