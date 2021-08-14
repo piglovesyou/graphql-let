@@ -85,7 +85,7 @@
     "@types/prettier": "2.3.0",
     "@types/react": "17.0.3",
     "@types/react-dom": "17.0.9",
-    "@types/rimraf": "3.0.0",
+    "@types/rimraf": "3.0.1",
     "@types/wait-on": "5.3.1",
     "@types/webpack": "4.41.27",
     "@types/webpack-dev-server": "3.11.4",
