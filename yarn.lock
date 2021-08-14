@@ -2691,13 +2691,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:26.0.22":
-  version: 26.0.22
-  resolution: "@types/jest@npm:26.0.22"
+"@types/jest@npm:26.0.24":
+  version: 26.0.24
+  resolution: "@types/jest@npm:26.0.24"
   dependencies:
     jest-diff: ^26.0.0
     pretty-format: ^26.0.0
-  checksum: 8dee3e6778db4c1d4b89f6ecdaa7264fd24b445e567db3eef0efe271b724523827585547baa24f8bedcc8a431e4dffd63555996599f2556ba637e67bae7578cc
+  checksum: ae39675412f08d884926254e9b12bfd2b5a4e4d204c94d3148cb942174a474930d0c60540133c968f22241d4712b7940c96cbc883096eb326a4d5b206fb78bd0
   languageName: node
   linkType: hard
 
@@ -7561,7 +7561,7 @@ fsevents@^1.2.7:
     "@types/diff": 5.0.1
     "@types/eslint": 7.2.8
     "@types/eslint-plugin-prettier": 3.1.0
-    "@types/jest": 26.0.22
+    "@types/jest": 26.0.24
     "@types/loader-utils": 2.0.2
     "@types/lodash.pick": 4.4.6
     "@types/memory-fs": 0.3.3
