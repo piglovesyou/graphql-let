@@ -2963,16 +2963,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/webpack-dev-server@npm:3.11.4":
-  version: 3.11.4
-  resolution: "@types/webpack-dev-server@npm:3.11.4"
+"@types/webpack-dev-server@npm:3.11.5":
+  version: 3.11.5
+  resolution: "@types/webpack-dev-server@npm:3.11.5"
   dependencies:
     "@types/connect-history-api-fallback": "*"
     "@types/express": "*"
     "@types/serve-static": "*"
     "@types/webpack": ^4
     http-proxy-middleware: ^1.0.0
-  checksum: 06a3d08737df147bbfd3466ec6b38c7971d80cc6ef410933896b5f96c7cae2d36f4000214e637c4dd73b016e40e0577925aa16083c59367a48753d06dbdd2773
+  checksum: 474a01ee2408c3c6dccccdf671e31fe53e6d8733c482255381d87985c00541504ffb288c3153eda7135744f3afef98cda3d47738fc937f2362372697fe0edad2
   languageName: node
   linkType: hard
 
@@ -7573,7 +7573,7 @@ fsevents@^1.2.7:
     "@types/rimraf": 3.0.1
     "@types/wait-on": 5.3.1
     "@types/webpack": 4.41.27
-    "@types/webpack-dev-server": 3.11.4
+    "@types/webpack-dev-server": 3.11.5
     "@types/webpack-node-externals": 2.5.1
     "@types/yaml": 1.9.7
     "@typescript-eslint/eslint-plugin": 4.26.0
