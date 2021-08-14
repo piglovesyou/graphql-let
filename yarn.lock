@@ -2954,12 +2954,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/wait-on@npm:5.3.0":
-  version: 5.3.0
-  resolution: "@types/wait-on@npm:5.3.0"
+"@types/wait-on@npm:5.3.1":
+  version: 5.3.1
+  resolution: "@types/wait-on@npm:5.3.1"
   dependencies:
     "@types/node": "*"
-  checksum: 18c0820634b597bfb89505d58838c3502c924eebb619740f3e7e94fbe8b984a911f793434690a5b74919da526f922509dabd43aebaea9f66c351b748a236f322
+  checksum: 2a6e88a107930963ceea016dc733dc259dc52faf864933cd4d6f7fc6db7165254c10f8bfcb3b803237b2869674d988319ea4f958c0b6fd3763c5fcb9e489565a
   languageName: node
   linkType: hard
 
@@ -7571,7 +7571,7 @@ fsevents@^1.2.7:
     "@types/react": 17.0.3
     "@types/react-dom": 17.0.9
     "@types/rimraf": 3.0.0
-    "@types/wait-on": 5.3.0
+    "@types/wait-on": 5.3.1
     "@types/webpack": 4.41.27
     "@types/webpack-dev-server": 3.11.4
     "@types/webpack-node-externals": 2.5.1
