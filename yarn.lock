@@ -2976,12 +2976,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/webpack-node-externals@npm:2.5.1":
-  version: 2.5.1
-  resolution: "@types/webpack-node-externals@npm:2.5.1"
+"@types/webpack-node-externals@npm:2.5.2":
+  version: 2.5.2
+  resolution: "@types/webpack-node-externals@npm:2.5.2"
   dependencies:
     "@types/webpack": ^4
-  checksum: ef3f1d0f5eb397163f95435adc21de1dbc205bc4058de526035806d78a665c836e536ed9f723b7aaf8518a1e49f49761eda2911ee2742e21063b7db49dc84e2c
+  checksum: 07f5c39706ff5691db029c736da252fdaef455531453b59c1113de2109510df959f9e79141c1601c473163d65143d72dbf519db86eab6fb6a8cc9687796469c9
   languageName: node
   linkType: hard
 
@@ -7574,7 +7574,7 @@ fsevents@^1.2.7:
     "@types/wait-on": 5.3.1
     "@types/webpack": 4.41.27
     "@types/webpack-dev-server": 3.11.5
-    "@types/webpack-node-externals": 2.5.1
+    "@types/webpack-node-externals": 2.5.2
     "@types/yaml": 1.9.7
     "@typescript-eslint/eslint-plugin": 4.26.0
     "@typescript-eslint/parser": 4.28.3
