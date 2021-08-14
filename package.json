@@ -77,7 +77,7 @@
     "@types/eslint": "7.2.8",
     "@types/eslint-plugin-prettier": "3.1.0",
     "@types/jest": "26.0.24",
-    "@types/loader-utils": "2.0.2",
+    "@types/loader-utils": "2.0.3",
     "@types/lodash.pick": "4.4.6",
     "@types/memory-fs": "0.3.3",
     "@types/minimist": "1.2.1",

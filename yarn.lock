@@ -2740,13 +2740,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/loader-utils@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@types/loader-utils@npm:2.0.2"
+"@types/loader-utils@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@types/loader-utils@npm:2.0.3"
   dependencies:
     "@types/node": "*"
     "@types/webpack": ^4
-  checksum: 93d2a8fcb6a0bf818e65231bbbbb0cf31a369e8b48d10b4eaddd9851ba0222a4165ccc28bc13fab87a8369353c4915164e9f9231f70c7a65a28fcc7b19127f03
+  checksum: f50cce4ddd91f80b3a41476079cf41bc81e66c50b82a4cd69912f648e4e9881bf323cfb03795c96d3b1379f4f5bd9ab21201cc06f2785919611ca05490b85440
   languageName: node
   linkType: hard
 
@@ -7562,7 +7562,7 @@ fsevents@^1.2.7:
     "@types/eslint": 7.2.8
     "@types/eslint-plugin-prettier": 3.1.0
     "@types/jest": 26.0.24
-    "@types/loader-utils": 2.0.2
+    "@types/loader-utils": 2.0.3
     "@types/lodash.pick": 4.4.6
     "@types/memory-fs": 0.3.3
     "@types/minimist": 1.2.1
