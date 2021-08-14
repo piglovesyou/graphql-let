@@ -2854,12 +2854,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:17.0.3":
-  version: 17.0.3
-  resolution: "@types/react-dom@npm:17.0.3"
+"@types/react-dom@npm:17.0.9":
+  version: 17.0.9
+  resolution: "@types/react-dom@npm:17.0.9"
   dependencies:
     "@types/react": "*"
-  checksum: 102a3ee9ecf96fdd82d37d90860d0b80e160a368117e4e84512c801f8c7f381d7a2b9305f155670f42eab4784d036375cbf16c9905839dd0857e7031ff966803
+  checksum: b7e898e1a22643a371f58e801a3d1d8cf13a82d77063c24be73e840ef8d877ca1d04adc5db168d0dac3167dc050a26b1d70efc5fe8566a7f46a3c488a8322989
   languageName: node
   linkType: hard
 
@@ -7569,7 +7569,7 @@ fsevents@^1.2.7:
     "@types/node": 15.6.0
     "@types/prettier": 2.3.0
     "@types/react": 17.0.3
-    "@types/react-dom": 17.0.3
+    "@types/react-dom": 17.0.9
     "@types/rimraf": 3.0.0
     "@types/wait-on": 5.3.0
     "@types/webpack": 4.41.27
