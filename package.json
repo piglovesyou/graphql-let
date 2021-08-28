@@ -105,7 +105,7 @@
     "eslint": "7.20.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-jest": "24.3.6",
-    "eslint-plugin-prettier": "3.4.0",
+    "eslint-plugin-prettier": "3.4.1",
     "execa": "5.1.1",
     "graphql": "14.7.0",
     "graphql-tag": "2.12.5",
