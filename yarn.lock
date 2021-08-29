@@ -326,7 +326,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-plugin-utils@npm:7.13.0, @babel/helper-plugin-utils@npm:^7.0.0, @babel/helper-plugin-utils@npm:^7.10.4, @babel/helper-plugin-utils@npm:^7.12.13, @babel/helper-plugin-utils@npm:^7.13.0, @babel/helper-plugin-utils@npm:^7.8.0, @babel/helper-plugin-utils@npm:^7.8.3":
+"@babel/helper-plugin-utils@npm:7.14.5":
+  version: 7.14.5
+  resolution: "@babel/helper-plugin-utils@npm:7.14.5"
+  checksum: fe20e90a24d02770a60ebe80ab9f0dfd7258503cea8006c71709ac9af1aa3e47b0de569499673f11ea6c99597f8c0e4880ae1d505986e61101b69716820972fe
+  languageName: node
+  linkType: hard
+
+"@babel/helper-plugin-utils@npm:^7.0.0, @babel/helper-plugin-utils@npm:^7.10.4, @babel/helper-plugin-utils@npm:^7.12.13, @babel/helper-plugin-utils@npm:^7.13.0, @babel/helper-plugin-utils@npm:^7.8.0, @babel/helper-plugin-utils@npm:^7.8.3":
   version: 7.13.0
   resolution: "@babel/helper-plugin-utils@npm:7.13.0"
   checksum: 24f7a44e94662a5dc8bd98ab12625ccd96b11e789ef3f9efd4f6f0eeaf01a13b051a148e709fb1c4e1cacdb536987ea75f4b78509567a0117246ea917195a86b
@@ -7546,7 +7553,7 @@ fsevents@^1.2.7:
     "@apollo/react-components": 4.0.0
     "@apollo/react-hooks": 4.0.0
     "@babel/core": 7.14.3
-    "@babel/helper-plugin-utils": 7.13.0
+    "@babel/helper-plugin-utils": 7.14.5
     "@babel/parser": 7.14.3
     "@babel/plugin-syntax-jsx": 7.12.13
     "@babel/preset-env": 7.13.15
