@@ -53,7 +53,7 @@
     "@apollo/react-hooks": "4.0.0",
     "@babel/plugin-syntax-jsx": "7.14.5",
     "@babel/preset-env": "7.15.0",
-    "@babel/preset-react": "7.13.13",
+    "@babel/preset-react": "7.14.5",
     "@babel/preset-typescript": "7.13.0",
     "@graphql-codegen/cli": "1.21.1",
     "@graphql-codegen/import-types-preset": "1.18.6",
