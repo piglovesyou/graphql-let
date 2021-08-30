@@ -2286,18 +2286,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/typescript-operations@npm:1.17.16":
-  version: 1.17.16
-  resolution: "@graphql-codegen/typescript-operations@npm:1.17.16"
+"@graphql-codegen/typescript-operations@npm:1.18.4":
+  version: 1.18.4
+  resolution: "@graphql-codegen/typescript-operations@npm:1.18.4"
   dependencies:
-    "@graphql-codegen/plugin-helpers": ^1.18.5
-    "@graphql-codegen/typescript": ^1.22.0
-    "@graphql-codegen/visitor-plugin-common": ^1.20.0
+    "@graphql-codegen/plugin-helpers": ^1.18.8
+    "@graphql-codegen/typescript": ^1.23.0
+    "@graphql-codegen/visitor-plugin-common": 1.22.0
     auto-bind: ~4.0.0
-    tslib: ~2.2.0
+    tslib: ~2.3.0
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: c33f7d0f0b48c7023ac6b700fff06541517d29dd7a28b694de91e8c67df0f4e84892db1de50acdeca76f687f6b74777bba0f778537fbdd9961be205e70500589
+  checksum: 392238694251d4fdbc7e9c15fa7b7936b041eca3ae5036efd1d14a6fbd74b4863b539c84c9e4bd94246f70460c47496b0136381c2247e84b00979e6a9ae9d17d
   languageName: node
   linkType: hard
 
@@ -2344,6 +2344,20 @@ __metadata:
   peerDependencies:
     graphql: ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
   checksum: e3b72f64c576f0686c19e42a93f44a277f98a38263721dfe2ca2c3c72e459f0aca86898a9fe78952d844de1e3e23fb3cedb6104a1b7b572b674ab3f727cf34ae
+  languageName: node
+  linkType: hard
+
+"@graphql-codegen/typescript@npm:^1.23.0":
+  version: 1.23.0
+  resolution: "@graphql-codegen/typescript@npm:1.23.0"
+  dependencies:
+    "@graphql-codegen/plugin-helpers": ^1.18.8
+    "@graphql-codegen/visitor-plugin-common": 1.22.0
+    auto-bind: ~4.0.0
+    tslib: ~2.3.0
+  peerDependencies:
+    graphql: ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
+  checksum: 118f06965cd708288abee3543d3c62d26702c344c9b2bee0c8dec065ff22d2f7de36e2b311c3ad611056889f58538710c116575faa17554ba8bcd3c157088904
   languageName: node
   linkType: hard
 
@@ -8236,7 +8250,7 @@ fsevents@^1.2.7:
     "@graphql-codegen/import-types-preset": 1.18.6
     "@graphql-codegen/plugin-helpers": 1.18.8
     "@graphql-codegen/typescript": 1.22.1
-    "@graphql-codegen/typescript-operations": 1.17.16
+    "@graphql-codegen/typescript-operations": 1.18.4
     "@graphql-codegen/typescript-react-apollo": 2.3.1
     "@graphql-codegen/typescript-resolvers": 1.19.1
     "@graphql-tools/graphql-file-loader": 6.2.7
