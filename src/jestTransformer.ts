@@ -1,4 +1,4 @@
-import { Transformer } from '@jest/transform';
+import { SyncTransformer } from '@jest/transform';
 import { ProjectConfig } from '@jest/types/build/Config';
 import { readFileSync } from 'fs';
 import { relative } from 'path';
@@ -7,7 +7,7 @@ import { createExecContextSync } from './lib/exec-context';
 import { createHash } from './lib/hash';
 import { createPaths } from './lib/paths';
 
-type JestTransformerOptions = {
+export type JestTransformerOptions = {
   configFile?: string;
   subsequentTransformer?: string;
 };
@@ -27,7 +27,7 @@ function getOption(jestConfig: ProjectConfig): JestTransformerOptions {
   return {};
 }
 
-const jestTransformer: Transformer<JestTransformerOptions> = {
+const jestTransformer: SyncTransformer<JestTransformerOptions> = {
   getCacheKey(sourceText, sourcePath, options) {
     const configString = options?.configString || options;
 

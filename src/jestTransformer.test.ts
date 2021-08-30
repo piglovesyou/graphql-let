@@ -1,16 +1,17 @@
+import { TransformOptions } from '@jest/transform';
 import { Config } from '@jest/types';
 import { join } from 'path';
-import jestTransformer from './jestTransformer';
+import jestTransformer, { JestTransformerOptions } from './jestTransformer';
 import compiler from './lib/__tools/compile';
 import { prepareFixtures } from './lib/__tools/file';
 
 let cwd: string;
-let config: Partial<Config.ProjectConfig>;
+let config: Config.ProjectConfig;
 
 describe('graphql-let/jestTransformer', () => {
   beforeAll(async () => {
     [cwd] = await prepareFixtures(__dirname, '__fixtures/jestTransformer');
-    config = { rootDir: cwd };
+    config = { rootDir: cwd } as Config.ProjectConfig;
   });
 
   test('transforms .graphql', async () => {
@@ -22,12 +23,10 @@ describe('graphql-let/jestTransformer', () => {
       .filter(Boolean);
 
     const fullPath = join(cwd, fileName);
-    // @ts-expect-error
     const { code: transformedContent } = jestTransformer.process(
       fileData!,
       fullPath,
-      // @ts-expect-error
-      { config },
+      { config } as TransformOptions<JestTransformerOptions>,
     ) as { code: string };
     expect(removeSourcemapReference(transformedContent)).toMatchSnapshot();
   });
