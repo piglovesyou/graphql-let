@@ -12,6 +12,13 @@ type JestTransformerOptions = {
   subsequentTransformer?: string;
 };
 
+function getDefaultExportIfExists(moduleName: string) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const mod = require(moduleName);
+
+  return (mod?.default || mod) as typeof mod;
+}
+
 function getOption(jestConfig: ProjectConfig): JestTransformerOptions {
   if (!Array.isArray(jestConfig.transform)) return {};
   for (const [, entryPoint, opts] of jestConfig.transform) {
@@ -41,18 +48,16 @@ const jestTransformer: Transformer<JestTransformerOptions> = {
 
     // Let users customize a subsequent transformer
     if (subsequentTransformer) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const _subsequentTransformer = require(subsequentTransformer);
-      return (
-        _subsequentTransformer?.default || _subsequentTransformer
-      ).process(tsxContent, tsxFullPath, ...rest);
+      const _subsequentTransformer = getDefaultExportIfExists(
+        subsequentTransformer,
+      );
+      return _subsequentTransformer.process(tsxContent, tsxFullPath, ...rest);
     }
 
     // jest v26 vs v27 changes to support both formats: start
     // "babel-jest" by default
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const babelJest = require('babel-jest');
-    const { createTransformer } = babelJest?.default || babelJest;
+    const { createTransformer } = getDefaultExportIfExists('babel-jest');
     // jest v26 vs v27 changes to support both formats: end
     const babelTransformer = createTransformer({ cwd: cwd });
     return babelTransformer.process(tsxContent, tsxFullPath, ...rest);
