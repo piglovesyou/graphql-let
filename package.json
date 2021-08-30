@@ -32,7 +32,7 @@
     "@babel/core": "7.15.0",
     "@babel/helper-plugin-utils": "7.14.5",
     "@babel/parser": "7.15.3",
-    "@babel/traverse": "7.14.2",
+    "@babel/traverse": "7.15.0",
     "@graphql-tools/import": "6.3.1",
     "caller": "1.0.1",
     "gensync": "1.0.0-beta.2",
