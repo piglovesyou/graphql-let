@@ -5,12 +5,12 @@ import compiler from './lib/__tools/compile';
 import { prepareFixtures } from './lib/__tools/file';
 
 let cwd: string;
-let jestConfig: Config.ProjectConfig;
+let config: Partial<Config.ProjectConfig>;
 
 describe('graphql-let/jestTransformer', () => {
   beforeAll(async () => {
     [cwd] = await prepareFixtures(__dirname, '__fixtures/jestTransformer');
-    jestConfig = { rootDir: cwd } as Config.ProjectConfig;
+    config = { rootDir: cwd };
   });
 
   test('transforms .graphql', async () => {
@@ -22,10 +22,12 @@ describe('graphql-let/jestTransformer', () => {
       .filter(Boolean);
 
     const fullPath = join(cwd, fileName);
+    // @ts-expect-error
     const { code: transformedContent } = jestTransformer.process(
       fileData!,
       fullPath,
-      jestConfig,
+      // @ts-expect-error
+      { config },
     ) as { code: string };
     expect(removeSourcemapReference(transformedContent)).toMatchSnapshot();
   });
