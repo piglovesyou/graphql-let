@@ -2935,7 +2935,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/transform@npm:^27.1.0":
+"@jest/transform@npm:27.1.0, @jest/transform@npm:^27.1.0":
   version: 27.1.0
   resolution: "@jest/transform@npm:27.1.0"
   dependencies:
@@ -2958,7 +2958,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/types@npm:^27.1.0":
+"@jest/types@npm:27.1.0, @jest/types@npm:^27.1.0":
   version: 27.1.0
   resolution: "@jest/types@npm:27.1.0"
   dependencies:
@@ -3341,7 +3341,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:^27.0.1":
+"@types/jest@npm:27.0.1":
   version: 27.0.1
   resolution: "@types/jest@npm:27.0.1"
   dependencies:
@@ -4684,7 +4684,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-jest@npm:^27.1.0":
+"babel-jest@npm:27.1.0, babel-jest@npm:^27.1.0":
   version: 27.1.0
   resolution: "babel-jest@npm:27.1.0"
   dependencies:
@@ -8161,8 +8161,8 @@ fsevents@~2.3.1:
     "@graphql-codegen/typescript-resolvers": 1.19.1
     "@graphql-tools/graphql-file-loader": 6.2.7
     "@graphql-tools/import": 6.3.1
-    "@jest/transform": ^27.1.0
-    "@jest/types": ^27.1.0
+    "@jest/transform": 27.1.0
+    "@jest/types": 27.1.0
     "@types/babel-plugin-macros": 2.8.5
     "@types/babel__core": 7.1.15
     "@types/babel__preset-env": 7.9.2
@@ -8173,7 +8173,7 @@ fsevents@~2.3.1:
     "@types/diff": 5.0.1
     "@types/eslint": 7.2.8
     "@types/eslint-plugin-prettier": 3.1.0
-    "@types/jest": ^27.0.1
+    "@types/jest": 27.0.1
     "@types/loader-utils": 2.0.3
     "@types/lodash.pick": 4.4.6
     "@types/memory-fs": 0.3.3
@@ -8191,7 +8191,7 @@ fsevents@~2.3.1:
     "@typescript-eslint/eslint-plugin": 4.26.0
     "@typescript-eslint/parser": 4.28.3
     "@typescript/vfs": 1.3.4
-    babel-jest: ^27.1.0
+    babel-jest: 27.1.0
     babel-loader: 8.2.2
     babel-plugin-macros: 3.1.0
     babel-plugin-module-resolver: 4.1.0
@@ -8210,7 +8210,7 @@ fsevents@~2.3.1:
     graphql: 14.7.0
     graphql-tag: 2.12.5
     husky: 6.0.0
-    jest: ^27.1.0
+    jest: 27.1.0
     lint-staged: 10.5.4
     loader-utils: 2.0.0
     lodash.pick: 4.4.0
@@ -8231,7 +8231,7 @@ fsevents@~2.3.1:
     slash: 3.0.0
     string-env-interpolation: 1.0.1
     terminate: 2.1.2
-    ts-jest: ^27.0.5
+    ts-jest: 27.0.5
     tslib: 2.3.1
     typescript: 4.2.3
     wait-on: 5.3.0
@@ -10005,7 +10005,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"jest@npm:^27.1.0":
+"jest@npm:27.1.0":
   version: 27.1.0
   resolution: "jest@npm:27.1.0"
   dependencies:
@@ -14508,7 +14508,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:^27.0.5":
+"ts-jest@npm:27.0.5":
   version: 27.0.5
   resolution: "ts-jest@npm:27.0.5"
   dependencies:
