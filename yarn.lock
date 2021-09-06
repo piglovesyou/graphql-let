@@ -846,12 +846,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:7.15.3, @babel/parser@npm:^7.14.5, @babel/parser@npm:^7.15.0, @babel/parser@npm:^7.7.2":
-  version: 7.15.3
-  resolution: "@babel/parser@npm:7.15.3"
+"@babel/parser@npm:7.15.5, @babel/parser@npm:^7.15.4, @babel/parser@npm:^7.15.5":
+  version: 7.15.5
+  resolution: "@babel/parser@npm:7.15.5"
   bin:
     parser: ./bin/babel-parser.js
-  checksum: 4b9ba7e8ffe0a3d0dd8c61dee975c79863f7744177de677cb7d12f96549eb5c8b9ffc70ca2b1b2488b06e056da99a6273e2d7d68fc31f498d01483dfac149e13
+  checksum: abc39a66b9bf6c861e25b07ad99830c4da6ce345135ebe08ee81a0e8d2f62cddc5f1fd825885fcd609a41b59531c856083d880f7836bd89c148136f834dfc3fe
   languageName: node
   linkType: hard
 
@@ -864,12 +864,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.15.4, @babel/parser@npm:^7.15.5":
-  version: 7.15.5
-  resolution: "@babel/parser@npm:7.15.5"
+"@babel/parser@npm:^7.14.5, @babel/parser@npm:^7.15.0, @babel/parser@npm:^7.7.2":
+  version: 7.15.3
+  resolution: "@babel/parser@npm:7.15.3"
   bin:
     parser: ./bin/babel-parser.js
-  checksum: abc39a66b9bf6c861e25b07ad99830c4da6ce345135ebe08ee81a0e8d2f62cddc5f1fd825885fcd609a41b59531c856083d880f7836bd89c148136f834dfc3fe
+  checksum: 4b9ba7e8ffe0a3d0dd8c61dee975c79863f7744177de677cb7d12f96549eb5c8b9ffc70ca2b1b2488b06e056da99a6273e2d7d68fc31f498d01483dfac149e13
   languageName: node
   linkType: hard
 
@@ -8354,7 +8354,7 @@ fsevents@~2.3.1:
     "@apollo/react-hooks": 4.0.0
     "@babel/core": 7.15.5
     "@babel/helper-plugin-utils": 7.14.5
-    "@babel/parser": 7.15.3
+    "@babel/parser": 7.15.5
     "@babel/plugin-syntax-jsx": 7.14.5
     "@babel/preset-env": 7.15.0
     "@babel/preset-react": 7.14.5
