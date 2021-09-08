@@ -2801,7 +2801,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/import@npm:6.3.1, @graphql-tools/import@npm:^6.2.6":
+"@graphql-tools/import@npm:6.4.0":
+  version: 6.4.0
+  resolution: "@graphql-tools/import@npm:6.4.0"
+  dependencies:
+    resolve-from: 5.0.0
+    tslib: ~2.3.0
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: f2fd8b0a192a324637a638c4218d62f8a16824749b5ca796f46be34a539a745c3ac8e5fb38757ee774205fca23c500c7d063d206875e85a21e8f150b8c185a46
+  languageName: node
+  linkType: hard
+
+"@graphql-tools/import@npm:^6.2.6":
   version: 6.3.1
   resolution: "@graphql-tools/import@npm:6.3.1"
   dependencies:
@@ -8436,7 +8448,7 @@ fsevents@~2.3.1:
     "@graphql-codegen/typescript-react-apollo": 2.3.1
     "@graphql-codegen/typescript-resolvers": 1.19.1
     "@graphql-tools/graphql-file-loader": 6.2.7
-    "@graphql-tools/import": 6.3.1
+    "@graphql-tools/import": 6.4.0
     "@jest/transform": 27.1.0
     "@jest/types": 27.1.0
     "@types/babel-plugin-macros": 2.8.5
