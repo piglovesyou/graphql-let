@@ -51,6 +51,13 @@ const jestTransformer: SyncTransformer<JestTransformerOptions> = {
       const _subsequentTransformer = getDefaultExportIfExists(
         subsequentTransformer,
       );
+
+      if ('createTransformer' in _subsequentTransformer) {
+        return _subsequentTransformer
+          .createTransformer({ cwd: cwd })
+          .process(tsxContent, tsxFullPath, ...rest);
+      }
+
       return _subsequentTransformer.process(tsxContent, tsxFullPath, ...rest);
     }
 
