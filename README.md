@@ -493,9 +493,9 @@ Example with a bit more complicated options:
 
 ```yaml
 schema:
-    - https://api.github.com/graphql:
-          headers:
-              Authorization: YOUR-TOKEN-HERE
+    https://api.github.com/graphql:
+        headers:
+            Authorization: YOUR-TOKEN-HERE
 documents:
     - "**/*.graphql"
     - "!shouldBeIgnored1"
