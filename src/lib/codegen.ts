@@ -30,9 +30,11 @@ function getOptionalSchemaPlugins() {
 // all the presets including plugin options related to it as its spec.
 // I think it works for many of users, but there could be
 // cases where you need to configure this more. Issue it then.
-function getFixedSchemaConfig() {
+function getFixedSchemaConfig(
+  schemaPlugins: Array<string | Record<string, any>>,
+) {
   return {
-    plugins: ['typescript', ...getOptionalSchemaPlugins()],
+    plugins: ['typescript', ...schemaPlugins, ...getOptionalSchemaPlugins()],
   };
 }
 
@@ -99,7 +101,7 @@ export function buildCodegenConfig(
     let opts: ConfiguredOutput;
     switch (context.type) {
       case 'schema-import':
-        opts = getFixedSchemaConfig();
+        opts = getFixedSchemaConfig(config.schemaPlugins);
         break;
 
       case 'document-import':

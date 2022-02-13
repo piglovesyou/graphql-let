@@ -5,5 +5,7 @@ documents:
 plugins:
     - typescript-operations
     - typescript-react-apollo
+schemaPlugins:
+    - typescript-urql-graphcache
 respectGitIgnore: true
 cacheDir: .cache

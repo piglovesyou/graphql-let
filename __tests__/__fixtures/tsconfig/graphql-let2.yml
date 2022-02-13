@@ -4,6 +4,8 @@ documents:
 plugins:
     - typescript-operations
     - typescript-react-apollo
+schemaPlugins:
+    - typescript-urql-graphcache
 config:
     withHOC: false
     withHocks: true

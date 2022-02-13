@@ -62,6 +62,7 @@
     "@graphql-codegen/typescript-operations": "1.18.4",
     "@graphql-codegen/typescript-react-apollo": "2.3.1",
     "@graphql-codegen/typescript-resolvers": "1.19.1",
+    "@graphql-codegen/typescript-urql-graphcache": "^2.2.4",
     "@graphql-tools/graphql-file-loader": "6.2.7",
     "@graphql-tools/import": "6.4.0",
     "@jest/transform": "27.2.0",
