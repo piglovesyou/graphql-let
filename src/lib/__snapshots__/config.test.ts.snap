@@ -54,6 +54,38 @@ Array [
 ]
 `;
 
+exports[`config.ts loads config with default values 2`] = `
+Array [
+  Object {
+    "TSConfigFile": "tsconfig.json",
+    "cacheDir": "node_modules/.cache/graphql-let",
+    "documents": Array [
+      "**/*.graphql",
+    ],
+    "generateOptions": Object {},
+    "plugins": Array [
+      "typescript",
+    ],
+    "respectGitIgnore": true,
+    "schema": Array [
+      Object {
+        "https://yeah/graphql": Object {
+          "headers": Object {
+            "Authorization": "blaa",
+          },
+        },
+      },
+    ],
+    "schemaPlugins": Array [
+      "typescript-urql-graphcache",
+    ],
+    "silent": false,
+    "typeInjectEntrypoint": "node_modules/@types/graphql-let/index.d.ts",
+  },
+  "4933856f4c73056601c24f36aceabc5dcb014d12",
+]
+`;
+
 exports[`config.ts overwrite default values 1`] = `
 Object {
   "TSConfigFile": "tsconfig.yeah.json;",

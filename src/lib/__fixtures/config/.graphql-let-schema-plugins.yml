@@ -1,0 +1,9 @@
+schema:
+    - ${GRAPHQL_SERVER_ENDPOINT}:
+          headers:
+              Authorization: ${GRAPHQL_SERVER_TOKEN}
+documents: "**/*.graphql"
+plugins:
+    - typescript
+schemaPlugins:
+    - typescript-urql-graphcache
