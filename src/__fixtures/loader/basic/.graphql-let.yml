@@ -7,5 +7,6 @@ plugins:
     - typescript-react-apollo
 schemaPlugins:
     - typescript-urql-graphcache
+    - typescript-resolvers
 respectGitIgnore: true
 cacheDir: .cache
