@@ -28,6 +28,9 @@
     "jestTransformer.js",
     "babel.js"
   ],
+  "resolutions": {
+    "@types/react": "17.0.39"
+  },
   "dependencies": {
     "@babel/core": "7.15.5",
     "@babel/helper-plugin-utils": "7.14.5",
@@ -83,7 +86,7 @@
     "@types/minimist": "1.2.2",
     "@types/node": "15.6.0",
     "@types/prettier": "2.3.0",
-    "@types/react": "17.0.3",
+    "@types/react": "17.0.39",
     "@types/react-dom": "17.0.9",
     "@types/rimraf": "3.0.2",
     "@types/wait-on": "5.3.1",
