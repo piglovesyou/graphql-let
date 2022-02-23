@@ -33,6 +33,9 @@ function getOptionalSchemaPlugins() {
 function getFixedSchemaConfig() {
   return {
     plugins: ['typescript', ...getOptionalSchemaPlugins()],
+    config: {
+      typesPrefix: '',
+    },
   };
 }
 
