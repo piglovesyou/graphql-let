@@ -28,6 +28,9 @@
     "jestTransformer.js",
     "babel.js"
   ],
+  "resolutions": {
+    "@types/react": "17.0.39"
+  },
   "dependencies": {
     "@babel/core": "7.15.5",
     "@babel/helper-plugin-utils": "7.14.5",
