@@ -1,11 +1,11 @@
 import { SyncTransformer } from '@jest/transform';
 import { ProjectConfig } from '@jest/types/build/Config';
 import { readFileSync } from 'fs';
-import { relative } from 'path';
 import { loadConfigSync } from './lib/config';
 import { createExecContextSync } from './lib/exec-context';
 import { createHash } from './lib/hash';
 import { createPaths } from './lib/paths';
+import { dirName, relative, resolve } from 'path';
 
 export type JestTransformerOptions = {
   configFile?: string;
@@ -38,8 +38,11 @@ const jestTransformer: SyncTransformer<JestTransformerOptions> = {
     const [__compatJestConfig] = rest;
     const jestConfig = __compatJestConfig?.config ?? __compatJestConfig;
     // jest v26 vs v27 changes to support both formats: end
-    const { rootDir: cwd } = jestConfig;
+    let { rootDir: cwd } = jestConfig;
     const { configFile, subsequentTransformer } = getOption(jestConfig);
+    // If the congFile is in another directory from jest's rootDir, reset the working path since
+    // since the cache and transforms will operate relative to that config's location
+    const cwd = resolve(cwd, dirname(configFile));
     const [config, configHash] = loadConfigSync(cwd, configFile);
     const { execContext } = createExecContextSync(cwd, config, configHash);
 
