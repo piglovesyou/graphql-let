@@ -717,7 +717,7 @@ You're seeing the `*2`. It's used to skip `*1` and `*3`, and recodnized as gener
 -   **[Create an issue](https://github.com/piglovesyou/graphql-let/issues/new)**
     if you have ideas, find a bug, or anything.
 -   **Creating a PR** is always welcome!
-    -   Running `npm run prepublishOnly` locally will get your local development
+    -   Running `yarn run prepack` locally will get your local development
         ready.
     -   Adding tests is preferable, but not necessary. Maybe someone else will
         fill it.
