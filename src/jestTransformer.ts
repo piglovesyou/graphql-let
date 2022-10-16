@@ -1,5 +1,5 @@
 import { SyncTransformer } from '@jest/transform';
-import { ProjectConfig } from '@jest/types/build/Config';
+import { Config } from '@jest/types';
 import { readFileSync } from 'fs';
 import { relative } from 'path';
 import { loadConfigSync } from './lib/config';
@@ -19,7 +19,7 @@ function getDefaultExportIfExists(moduleName: string) {
   return (mod?.default || mod) as typeof mod;
 }
 
-function getOption(jestConfig: ProjectConfig): JestTransformerOptions {
+function getOption(jestConfig: Config.ProjectConfig): JestTransformerOptions {
   if (!Array.isArray(jestConfig.transform)) return {};
   for (const [, entryPoint, opts] of jestConfig.transform) {
     if (entryPoint.endsWith('graphql-let/jestTransformer.js')) return opts;
