@@ -123,7 +123,7 @@ describe('"graphql-let" command', () => {
       },
     });
 
-    // Sync fetch is used by the schema processor
+    // This fetch is used by the schema loader
     (nodeFetch as any).mockReturnValue({
       headers: new Map([['content-type', 'application/json']]),
       status: 200,
