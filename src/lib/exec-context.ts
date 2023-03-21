@@ -27,18 +27,34 @@ export type ExecContext = {
   cacheFullDir: string;
 };
 
-function getSchemaPointers(
-  schema: Types.InstanceOrArray<Types.Schema>,
-  _acc: string[] = [],
-): string[] {
-  if (typeof schema === 'string') {
-    _acc.push(schema);
-  } else if (Array.isArray(schema)) {
-    for (const s of schema) getSchemaPointers(s, _acc);
-  } else if (typeof schema === 'object') {
-    for (const s of Object.keys(schema)) getSchemaPointers(s, _acc);
+// From @graphql-codegen/plugin-helpers
+function normalizeInstanceOrArray<T>(type: T | T[]): T[] {
+  if (Array.isArray(type)) {
+    return type;
   }
-  return _acc;
+  if (!type) {
+    return [];
+  }
+
+  return [type];
+}
+
+type SchemaConfig = { [index: string]: any }
+function getSchemaPointers(
+  schema: Types.InstanceOrArray<Types.Schema>
+): SchemaConfig {
+  const schemaPointerMap: SchemaConfig = {};
+  const normalizedSchema = normalizeInstanceOrArray(schema);
+
+  normalizedSchema.forEach(denormalizedPtr => {
+    if (typeof denormalizedPtr === 'string') {
+      schemaPointerMap[denormalizedPtr] = {};
+    } else if (typeof denormalizedPtr === 'object') {
+      Object.assign(schemaPointerMap, denormalizedPtr);
+    }
+  });
+
+  return schemaPointerMap;
 }
 
 const createSchemaHashGenerator = gensync(function* (execContext: ExecContext) {
@@ -60,10 +76,7 @@ const createSchemaHashGenerator = gensync(function* (execContext: ExecContext) {
 
   const schema = printSchema(loadSchemaSync(schemaPointers, {
       cwd,
-      loaders: [ 
-        new CodeFileLoader(), 
-        new GraphQLFileLoader() 
-      ]
+      loaders
   }));
 
   return createHashFromBuffers([configHash, schema]);

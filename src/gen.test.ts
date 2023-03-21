@@ -102,23 +102,12 @@ describe('"graphql-let" command', () => {
     await spawn('yarn', ['tsc'], { cwd });
   });
 
-  test(`fails with detailed message on codegen error`, async () => {
+  test(`fails with detailed message on codegen schema load error`, async () => {
     const [cwd] = await prepareFixtures(__dirname, '__fixtures/gen/7_broken');
-    const printedMessages: string[] = [];
-    const printError = jest.spyOn(prints, 'printError');
-    printError.mockImplementation((err: Error) => {
-      printedMessages.push(err.message);
-    });
     try {
       await gen({ cwd });
     } catch (e) {
-      // Two for __types__.tsx and viewer.grpahql.tsx
-      expect(printedMessages.length).toBe(2);
-      expect(printedMessages[0]).toContain(`Failed to load schema
-        Failed to load schema from **/*.graphqls:
-
-        Type "Broke" not found in document.
-        Error: Type "Broke" not found in document.`);
+      expect(e.message).toContain(`Unknown type "Broke". Did you mean "Broken"`);
     }
   });
 
