@@ -9,7 +9,6 @@ import {
   loadSchema as loadSchemaAsync,
   loadSchemaSync,
 } from '@graphql-tools/load';
-import { PrismaLoader } from '@graphql-tools/prisma-loader';
 import { UrlLoader } from '@graphql-tools/url-loader';
 import gensync from 'gensync';
 import { printSchema } from 'graphql';
@@ -74,7 +73,7 @@ const createSchemaHashGenerator = gensync(function* (execContext: ExecContext) {
     new JsonFileLoader(),
     new UrlLoader(),
     new ApolloEngineLoader(),
-    new PrismaLoader(),
+    // new PrismaLoader(), - not Node 12 compatible
   ];
 
   const parsedSchema = yield* loadSchema(schemaPointers, {

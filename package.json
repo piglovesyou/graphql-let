@@ -44,7 +44,6 @@
     "@graphql-tools/import": "^6.7.0",
     "@graphql-tools/json-file-loader": "^7.0.0",
     "@graphql-tools/load": "^7.0.0",
-    "@graphql-tools/prisma-loader": "^7.0.0",
     "@graphql-tools/url-loader": "^7.0.0",
     "caller": "1.0.1",
     "gensync": "1.0.0-beta.2",
