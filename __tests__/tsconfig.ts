@@ -5,8 +5,9 @@ import {
   createSystem,
   createVirtualCompilerHost,
 } from '@typescript/vfs';
+import { fetch as nodeFetch } from '@whatwg-node/fetch';
 import { ok } from 'assert';
-import { fetch } from 'cross-fetch';
+import { fetch as crossFetch } from 'cross-fetch';
 import fs, { Dirent } from 'fs';
 import makeDir from 'make-dir';
 import { dirname, join } from 'path';
@@ -15,6 +16,7 @@ import gen from '../src/gen';
 import { AbsFn, prepareFixtures } from '../src/lib/__tools/file';
 
 jest.mock('cross-fetch');
+jest.mock('@whatwg-node/fetch');
 
 const getLib = (name: string) => {
   const lib = dirname(require.resolve('typescript'));
@@ -115,11 +117,22 @@ describe('"graphql-let" command', () => {
   test('handles schema objects', async () => {
     // eslint-disable-next-line
     const schemaJson = require('./__fixtures/tsconfig/schema.json');
-    (fetch as any).mockReturnValue({
+    (crossFetch as any).mockReturnValue({
       json() {
         return { data: schemaJson };
       },
     });
+
+    // This fetch is used by the schema loader
+    (nodeFetch as any).mockReturnValue({
+      headers: new Map([['content-type', 'application/json']]),
+      status: 200,
+      statusText: 'OK',
+      text() {
+        return JSON.stringify({ data: schemaJson });
+      },
+    });
+
     let error = null;
     try {
       await gen({
@@ -130,10 +143,19 @@ describe('"graphql-let" command', () => {
       console.log(e);
       error = e;
     }
+
     ok(error === null, error);
     // It's called twice in the library. Why?
     // expect(fetch).toHaveBeenCalledTimes(1);
-    expect(fetch).toHaveBeenCalledWith(
+    expect(nodeFetch).toHaveBeenCalledWith(
+      'http://localhost:3000/graphql',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: 'GRAPHQL-LET',
+        }),
+      }),
+    );
+    expect(crossFetch).toHaveBeenCalledWith(
       'http://localhost:3000/graphql',
       expect.objectContaining({
         headers: expect.objectContaining({

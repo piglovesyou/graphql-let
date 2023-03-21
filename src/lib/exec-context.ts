@@ -1,11 +1,20 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { readFileSync } from 'fs';
+import { ApolloEngineLoader } from '@graphql-tools/apollo-engine-loader';
+import { CodeFileLoader } from '@graphql-tools/code-file-loader';
+import { GitLoader } from '@graphql-tools/git-loader';
+import { GithubLoader } from '@graphql-tools/github-loader';
+import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
+import { JsonFileLoader } from '@graphql-tools/json-file-loader';
+import {
+  loadSchema as loadSchemaAsync,
+  loadSchemaSync,
+} from '@graphql-tools/load';
+import { UrlLoader } from '@graphql-tools/url-loader';
 import gensync from 'gensync';
-import slash from 'slash';
+import { printSchema } from 'graphql';
 import { ConfigTypes } from './config';
-import { globby } from './gensynced';
 import { createHash, createHashFromBuffers, readHash } from './hash';
-import { createSchemaPaths, getCacheFullDir, isURL } from './paths';
+import { createSchemaPaths, getCacheFullDir } from './paths';
 import { CodegenContext, SchemaImportCodegenContext } from './types';
 
 export type ExecContext = {
@@ -15,40 +24,65 @@ export type ExecContext = {
   cacheFullDir: string;
 };
 
+// From @graphql-codegen/plugin-helpers
+function normalizeInstanceOrArray<T>(type: T | T[]): T[] {
+  if (Array.isArray(type)) {
+    return type;
+  }
+  if (!type) {
+    return [];
+  }
+
+  return [type];
+}
+
+type SchemaConfig = { [index: string]: any };
 function getSchemaPointers(
   schema: Types.InstanceOrArray<Types.Schema>,
-  _acc: string[] = [],
-): string[] {
-  if (typeof schema === 'string') {
-    _acc.push(schema);
-  } else if (Array.isArray(schema)) {
-    for (const s of schema) getSchemaPointers(s, _acc);
-  } else if (typeof schema === 'object') {
-    for (const s of Object.keys(schema)) getSchemaPointers(s, _acc);
-  }
-  return _acc;
+): SchemaConfig {
+  const schemaPointerMap: SchemaConfig = {};
+  const normalizedSchema = normalizeInstanceOrArray(schema);
+
+  normalizedSchema.forEach((denormalizedPtr) => {
+    if (typeof denormalizedPtr === 'string') {
+      schemaPointerMap[denormalizedPtr] = {};
+    } else if (typeof denormalizedPtr === 'object') {
+      Object.assign(schemaPointerMap, denormalizedPtr);
+    }
+  });
+
+  return schemaPointerMap;
 }
 
-function prepareCreateSchemaHashArgs(execContext: ExecContext) {
-  const { config, configHash, cwd } = execContext;
-  const schemaPointers = getSchemaPointers(config.schema!);
-  // TODO: How can we detect update of remote GraphQL Schema? ETag?
-  // It caches the remote introspection forever in the current implementation.
-  const filePointers = schemaPointers.filter((p) => !isURL(p));
-  return { configHash, cwd, filePointers };
-}
+const loadSchema = gensync({
+  sync: loadSchemaSync,
+  async: loadSchemaAsync,
+});
 
 const createSchemaHashGenerator = gensync(function* (execContext: ExecContext) {
-  const { configHash, cwd, filePointers } = prepareCreateSchemaHashArgs(
-    execContext,
-  );
+  const { config, configHash, cwd } = execContext;
+  const schemaPointers = getSchemaPointers(config.schema!);
 
-  const files: string[] = yield* globby(filePointers, { cwd, absolute: true });
-  const contents = files
-    .map(slash)
-    .sort()
-    .map((file) => readFileSync(file, 'utf-8'));
-  return createHashFromBuffers([configHash, ...contents]);
+  // Uses the same loading mechanism as the underlying graphql-codegen
+  // See https://github.com/dotansimha/graphql-code-generator/blob/master/packages/graphql-codegen-cli/src/load.ts
+  const loaders = [
+    new CodeFileLoader(),
+    new GitLoader(),
+    new GithubLoader(),
+    new GraphQLFileLoader(),
+    new JsonFileLoader(),
+    new UrlLoader(),
+    new ApolloEngineLoader(),
+    // new PrismaLoader(), - not Node 12 compatible
+  ];
+
+  const parsedSchema = yield* loadSchema(schemaPointers, {
+    cwd,
+    loaders,
+  });
+  const schema = printSchema(parsedSchema);
+
+  return createHashFromBuffers([configHash, schema]);
 });
 
 const appendSchemaImportContextGenerator = gensync(function* (
