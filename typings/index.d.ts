@@ -1,7 +1,6 @@
 declare module 'terminate';
 declare module '@babel/helper-transform-fixture-test-runner';
 declare module '@babel/helper-plugin-utils';
-declare module '@ardatan/sync-fetch';
 declare module 'gensync' {
   interface GensyncFn<Ps = any, R = any> {
     (...args: Ps): Generator<unknown, R>;

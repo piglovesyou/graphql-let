@@ -4,7 +4,6 @@ import { statSync } from 'fs';
 import glob from 'globby';
 import pick from 'lodash.pick';
 import gen from './gen';
-import * as prints from './lib/print';
 import { CodegenContext, DocumentImportCodegenContext } from './lib/types';
 import { applyPatch } from './lib/__tools/apply-patch';
 import { spawn } from './lib/__tools/child-process';
@@ -107,7 +106,9 @@ describe('"graphql-let" command', () => {
     try {
       await gen({ cwd });
     } catch (e) {
-      expect(e.message).toContain(`Unknown type "Broke". Did you mean "Broken"`);
+      expect(e.message).toContain(
+        `Unknown type "Broke". Did you mean "Broken"`,
+      );
     }
   });
 

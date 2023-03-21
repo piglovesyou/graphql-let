@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import syncFetch from '@ardatan/sync-fetch';
 import {
   createDefaultMapFromNodeModules,
   createSystem,
   createVirtualCompilerHost,
 } from '@typescript/vfs';
+import { fetch as nodeFetch } from '@whatwg-node/fetch';
 import { ok } from 'assert';
 import { fetch as crossFetch } from 'cross-fetch';
 import fs, { Dirent } from 'fs';
@@ -16,7 +16,7 @@ import gen from '../src/gen';
 import { AbsFn, prepareFixtures } from '../src/lib/__tools/file';
 
 jest.mock('cross-fetch');
-jest.mock('@ardatan/sync-fetch');
+jest.mock('@whatwg-node/fetch');
 
 const getLib = (name: string) => {
   const lib = dirname(require.resolve('typescript'));
@@ -124,14 +124,14 @@ describe('"graphql-let" command', () => {
     });
 
     // Sync fetch is used by the schema processor
-    syncFetch.mockImplementation(() => ({
+    (nodeFetch as any).mockReturnValue({
       headers: new Map([['content-type', 'application/json']]),
       status: 200,
-      statusText: "OK",
+      statusText: 'OK',
       text() {
         return JSON.stringify({ data: schemaJson });
       },
-    }));
+    });
 
     let error = null;
     try {
@@ -147,7 +147,7 @@ describe('"graphql-let" command', () => {
     ok(error === null, error);
     // It's called twice in the library. Why?
     // expect(fetch).toHaveBeenCalledTimes(1);
-    expect(syncFetch).toHaveBeenCalledWith(
+    expect(nodeFetch).toHaveBeenCalledWith(
       'http://localhost:3000/graphql',
       expect.objectContaining({
         headers: expect.objectContaining({

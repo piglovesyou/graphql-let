@@ -6,18 +6,16 @@ import { GithubLoader } from '@graphql-tools/github-loader';
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
 import { JsonFileLoader } from '@graphql-tools/json-file-loader';
 import {
+  loadSchema as loadSchemaAsync,
   loadSchemaSync,
 } from '@graphql-tools/load';
-import { printSchema } from 'graphql';
 import { PrismaLoader } from '@graphql-tools/prisma-loader';
 import { UrlLoader } from '@graphql-tools/url-loader';
-import { readFileSync } from 'fs';
 import gensync from 'gensync';
-import slash from 'slash';
+import { printSchema } from 'graphql';
 import { ConfigTypes } from './config';
-import { globby } from './gensynced';
 import { createHash, createHashFromBuffers, readHash } from './hash';
-import { createSchemaPaths, getCacheFullDir, isURL } from './paths';
+import { createSchemaPaths, getCacheFullDir } from './paths';
 import { CodegenContext, SchemaImportCodegenContext } from './types';
 
 export type ExecContext = {
@@ -39,14 +37,14 @@ function normalizeInstanceOrArray<T>(type: T | T[]): T[] {
   return [type];
 }
 
-type SchemaConfig = { [index: string]: any }
+type SchemaConfig = { [index: string]: any };
 function getSchemaPointers(
-  schema: Types.InstanceOrArray<Types.Schema>
+  schema: Types.InstanceOrArray<Types.Schema>,
 ): SchemaConfig {
   const schemaPointerMap: SchemaConfig = {};
   const normalizedSchema = normalizeInstanceOrArray(schema);
 
-  normalizedSchema.forEach(denormalizedPtr => {
+  normalizedSchema.forEach((denormalizedPtr) => {
     if (typeof denormalizedPtr === 'string') {
       schemaPointerMap[denormalizedPtr] = {};
     } else if (typeof denormalizedPtr === 'object') {
@@ -56,6 +54,11 @@ function getSchemaPointers(
 
   return schemaPointerMap;
 }
+
+const loadSchema = gensync({
+  sync: loadSchemaSync,
+  async: loadSchemaAsync,
+});
 
 const createSchemaHashGenerator = gensync(function* (execContext: ExecContext) {
   const { config, configHash, cwd } = execContext;
@@ -74,10 +77,11 @@ const createSchemaHashGenerator = gensync(function* (execContext: ExecContext) {
     new PrismaLoader(),
   ];
 
-  const schema = printSchema(loadSchemaSync(schemaPointers, {
-      cwd,
-      loaders
-  }));
+  const parsedSchema = yield* loadSchema(schemaPointers, {
+    cwd,
+    loaders,
+  });
+  const schema = printSchema(parsedSchema);
 
   return createHashFromBuffers([configHash, schema]);
 });
