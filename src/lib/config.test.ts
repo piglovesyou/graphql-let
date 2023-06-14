@@ -1,7 +1,11 @@
-import loadConfig, { loadConfigSync } from './config';
+import loadConfig, { ConfigTypes, loadConfigSync } from './config';
 import { prepareFixtures } from './__tools/file';
 
 let cwd: string;
+
+// Some returned config values are absolute file paths that can change
+// depending on the environment. This function makes them consistent by removing them.
+const cleanConfig = ({ cwd, ...other }: ConfigTypes) => other;
 
 describe('config.ts', () => {
   beforeAll(async () => {
@@ -16,8 +20,8 @@ describe('config.ts', () => {
   });
 
   test('loads config with default values', async () => {
-    const actual = await loadConfig(cwd, '.graphql-let-simple.yml');
-    expect(actual).toMatchSnapshot();
+    const [actual, hash] = await loadConfig(cwd, '.graphql-let-simple.yml');
+    expect([cleanConfig(actual), hash]).toMatchSnapshot();
   });
 
   test('interpolates environment variables', () => {
@@ -32,6 +36,6 @@ describe('config.ts', () => {
 
   test('overwrite default values', async () => {
     const [actual] = await loadConfig(cwd, '.graphql-let-overwrite.yml');
-    expect(actual).toMatchSnapshot();
+    expect(cleanConfig(actual)).toMatchSnapshot();
   });
 });

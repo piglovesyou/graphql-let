@@ -1,7 +1,7 @@
 import { SyncTransformer } from '@jest/transform';
 import { ProjectConfig } from '@jest/types/build/Config';
 import { readFileSync } from 'fs';
-import { dirname, relative, resolve } from 'path';
+import { relative } from 'path';
 import { loadConfigSync } from './lib/config';
 import { createExecContextSync } from './lib/exec-context';
 import { createHash } from './lib/hash';
@@ -38,12 +38,12 @@ const jestTransformer: SyncTransformer<JestTransformerOptions> = {
     const [__compatJestConfig] = rest;
     const jestConfig = __compatJestConfig?.config ?? __compatJestConfig;
     // jest v26 vs v27 changes to support both formats: end
-    let { rootDir: cwd } = jestConfig;
+    const { rootDir } = jestConfig;
     const { configFile, subsequentTransformer } = getOption(jestConfig);
     // If the congFile is in another directory from jest's rootDir, reset the working path since
     // since the cache and transforms will operate relative to that config's location
-    const [config, configHash] = loadConfigSync(cwd, configFile);
-    cwd = configFile ? resolve(cwd, dirname(configFile)) : cwd;
+    const [config, configHash] = loadConfigSync(rootDir, configFile);
+    const cwd = config.cwd;
     const { execContext } = createExecContextSync(cwd, config, configHash);
 
     const { tsxFullPath } = createPaths(execContext, relative(cwd, sourcePath));

@@ -13,17 +13,17 @@ integrating graphql-let. [A blog post](https://the-guild.dev/blog/graphql-let)
 
 ## Table of Contents
 
--   [Why this exists](#why-this-exists)
--   [Entrypoints and features](#entrypoints-and-features)
--   [Getting started with webpack loader](#getting-started-with-webpack-loader)
--   [Getting started with babel-plugin-macros](#getting-started-with-babel-plugin-macros)
--   [Getting started with Babel Plugin](#getting-started-with-babel-plugin)
--   [Difference between .graphql-let.yml and codegen.yml](#difference-between-graphql-letyml-and-codegenyml)
--   [Jest Transformer](#jest-transformer)
--   [Experimental feature: Resolver Types](#experimental-feature-resolver-types)
--   [FAQ](#faq)
--   [Contribution](#contribution)
--   [License](#license)
+- [Why this exists](#why-this-exists)
+- [Entrypoints and features](#entrypoints-and-features)
+- [Getting started with webpack loader](#getting-started-with-webpack-loader)
+- [Getting started with babel-plugin-macros](#getting-started-with-babel-plugin-macros)
+- [Getting started with Babel Plugin](#getting-started-with-babel-plugin)
+- [Difference between .graphql-let.yml and codegen.yml](#difference-between-graphql-letyml-and-codegenyml)
+- [Jest Transformer](#jest-transformer)
+- [Experimental feature: Resolver Types](#experimental-feature-resolver-types)
+- [FAQ](#faq)
+- [Contribution](#contribution)
+- [License](#license)
 
 ## Why this exists
 
@@ -55,10 +55,10 @@ const News: React.FC = () => {
 
 Summary of characteristics of each entrypoint.
 
--   **CLI** for efficient code generation before your type checking
--   **webpack loader** to get HMR even on modifying GraphQL documents
--   **babel-plugin-macros** for the minimum configuration
--   **Babel plugin** if you don't want babel-plugin-macros
+- **CLI** for efficient code generation before your type checking
+- **webpack loader** to get HMR even on modifying GraphQL documents
+- **babel-plugin-macros** for the minimum configuration
+- **Babel plugin** if you don't want babel-plugin-macros
 
 All of them mostly do the same behind the scene.
 
@@ -125,14 +125,14 @@ Note there are a few differences between the entrypoints.
 
 There are things to make graphql-let light and stable.
 
--   Sharing the processes. Generating files is expensive, so it runs less time
-    to run GraphQL code generator and TypeScript API.
--   Caching. Embedding hashes, as your source states, reduces the number of
-    unnecessary processing.
--   Sharing the promises. The webpack compilation in typical SSR applications as
-    Next.js runs [targets](https://webpack.js.org/concepts/targets/) of `"node"`
-    and `"web"` simultaneously. If sources are the same, the compilation should
-    be once.
+- Sharing the processes. Generating files is expensive, so it runs less time
+  to run GraphQL code generator and TypeScript API.
+- Caching. Embedding hashes, as your source states, reduces the number of
+  unnecessary processing.
+- Sharing the promises. The webpack compilation in typical SSR applications as
+  Next.js runs [targets](https://webpack.js.org/concepts/targets/) of `"node"`
+  and `"web"` simultaneously. If sources are the same, the compilation should
+  be once.
 
 </details>
 
@@ -214,6 +214,7 @@ Please note that files in `cacheDir` are only intermediate cache, possibly havin
 +   "excludes": [".cache"]
   }
 ```
+
 Also, remember you have to `.gitignore` the `.cache` directory in the next section.
 
 ### 3. Add lines to .gitignore
@@ -460,6 +461,15 @@ respectGitIgnore: true
 cacheDir: node_modules/.cache/graphql-let
 cacheDir: .cache
 
+# "cwd", optional. Directory of the config file itself by default.
+# When evaluating `documents`, `cacheDir`, `schema`, what should be the "root" dir.
+# Because the cache is stored as a literal subdirectory matching the documents,
+# the search paths must share a common ancestor defined here.
+# Practically, this allows the config file and other folders
+# to be stored outside the process directory
+# Example:
+cwd: ../../
+
 # "TSConfigFile", optional. `tsconfig.json` by default.
 # You can specify a custom config for generating `.d.ts`s.
 # Examples:
@@ -480,33 +490,33 @@ silent: false
 Simple example:
 
 ```yaml
-schema: "schema/**/*.graphqls"
+schema: 'schema/**/*.graphqls'
 documents:
-    - "**/*.graphql"
-    - "!shouldBeIgnored1"
+  - '**/*.graphql'
+  - '!shouldBeIgnored1'
 plugins:
-    - typescript-operations
-    - typescript-react-apollo
+  - typescript-operations
+  - typescript-react-apollo
 ```
 
 Example with a bit more complicated options:
 
 ```yaml
 schema:
-    - https://api.github.com/graphql:
-          headers:
-              Authorization: YOUR-TOKEN-HERE
+  - https://api.github.com/graphql:
+      headers:
+        Authorization: YOUR-TOKEN-HERE
 documents:
-    - "**/*.graphql"
-    - "!shouldBeIgnored1"
+  - '**/*.graphql'
+  - '!shouldBeIgnored1'
 plugins:
-    - typescript-operations
-    - typescript-react-apollo
+  - typescript-operations
+  - typescript-react-apollo
 respectGitIgnore: true
 config:
-    reactApolloVersion: 3
-    apolloReactComponentsImportFrom: "@apollo/client/react/components"
-    useIndexSignature: true
+  reactApolloVersion: 3
+  apolloReactComponentsImportFrom: '@apollo/client/react/components'
+  useIndexSignature: true
 cacheDir: .cache
 TSConfigFile: tsconfig.compile.json
 typeInjectEntrypoint: typings/graphql-let.d.ts
@@ -514,11 +524,11 @@ typeInjectEntrypoint: typings/graphql-let.d.ts
 
 ### Limitations of `graphql-let/babel`
 
--   **Sadly**, type injection can't be done with TaggedTemplateExpression such
-    as `` gql`query {}` ``. This is the limitation of TypeScript.
-    [Please answer me if you have any ideas.](https://stackoverflow.com/questions/61917066/can-taggedtempalte-have-overload-signatures-with-a-certain-string-literal-argume)
--   Fragments are still not available. Please watch
-    [the issue.](https://github.com/piglovesyou/graphql-let/issues/65)
+- **Sadly**, type injection can't be done with TaggedTemplateExpression such
+  as `` gql`query {}` ``. This is the limitation of TypeScript.
+  [Please answer me if you have any ideas.](https://stackoverflow.com/questions/61917066/can-taggedtempalte-have-overload-signatures-with-a-certain-string-literal-argume)
+- Fragments are still not available. Please watch
+  [the issue.](https://github.com/piglovesyou/graphql-let/issues/65)
 
 ## Jest Transformer
 
@@ -582,10 +592,10 @@ schema. Just use what you need; it's most likely to be `jest-transform-graphql`.
 
 If you meet the following conditions, graphql-let generates Resolver Types.
 
--   You have file paths including glob patterns in `schema`
--   You have
-    [`@graphql-codegen/typescript-resolvers`](https://graphql-code-generator.com/docs/plugins/typescript-resolvers)
-    installed
+- You have file paths including glob patterns in `schema`
+- You have
+  [`@graphql-codegen/typescript-resolvers`](https://graphql-code-generator.com/docs/plugins/typescript-resolvers)
+  installed
 
 Run:
 
@@ -686,8 +696,8 @@ Define your fragment named as `partial.graphql`
 
 ```graphql
 fragment Partial on User {
-    id
-    name
+  id
+  name
 }
 ```
 
@@ -696,9 +706,9 @@ and import it.
 ```graphql
 # import Partial from './partial.graphql'
 query Viewer {
-    viewer {
-        ...Partial
-    }
+  viewer {
+    ...Partial
+  }
 }
 ```
 
@@ -714,14 +724,14 @@ You're seeing the `*2`. It's used to skip `*1` and `*3`, and recodnized as gener
 
 ## Contribution
 
--   **[Create an issue](https://github.com/piglovesyou/graphql-let/issues/new)**
-    if you have ideas, find a bug, or anything.
--   **Creating a PR** is always welcome!
-    -   Running `yarn run prepack` locally will get your local development
-        ready.
-    -   Adding tests is preferable, but not necessary. Maybe someone else will
-        fill it.
--   [We have a chronic accumulation of dependabot PRs](https://github.com/piglovesyou/graphql-let/pulls/app%2Fdependabot). Please help us fix these version conflicts by cloning the dependabot branches.
+- **[Create an issue](https://github.com/piglovesyou/graphql-let/issues/new)**
+  if you have ideas, find a bug, or anything.
+- **Creating a PR** is always welcome!
+  - Running `yarn run prepack` locally will get your local development
+    ready.
+  - Adding tests is preferable, but not necessary. Maybe someone else will
+    fill it.
+- [We have a chronic accumulation of dependabot PRs](https://github.com/piglovesyou/graphql-let/pulls/app%2Fdependabot). Please help us fix these version conflicts by cloning the dependabot branches.
 
 ## License
 

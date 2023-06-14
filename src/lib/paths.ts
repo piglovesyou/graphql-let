@@ -34,8 +34,11 @@ export function createPaths(
 export const SCHEMA_TYPES_BASENAME = '__types__';
 
 export function createSchemaPaths(execContext: ExecContext) {
-  const { cwd, config, cacheFullDir } = execContext;
-  const typeInjectFullDir = join(cwd, dirname(config.typeInjectEntrypoint));
+  const { config, cacheFullDir } = execContext;
+  const typeInjectFullDir = join(
+    config.cwd,
+    dirname(config.typeInjectEntrypoint),
+  );
 
   const tsxRelPath = `${SCHEMA_TYPES_BASENAME}.tsx`;
   const tsxFullPath = join(cacheFullDir, tsxRelPath);

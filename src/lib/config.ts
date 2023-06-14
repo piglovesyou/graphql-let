@@ -1,5 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
 import { env } from 'string-env-interpolation';
 import { parse as parseYaml } from 'yaml';
 import { DEFAULT_CONFIG_FILENAME } from './consts';
@@ -8,12 +8,13 @@ import { createHash } from './hash';
 import { SCHEMA_TYPES_BASENAME } from './paths';
 import { printError, printWarning } from './print';
 
-export type PartialGraphqlCodegenOptions = Omit<Types.Config, 'generates'>;
+type PartialGraphqlCodegenOptions = Omit<Types.Config, 'generates'>;
 
-export type GraphQLLetAdditionalOptions = {
+type GraphQLLetAdditionalOptions = {
   plugins: Array<string | Record<string, any>>;
   respectGitIgnore?: boolean;
   cacheDir?: string;
+  cwd?: string;
   TSConfigFile?: string;
   // gqlDtsEntrypoint?: string;
   typeInjectEntrypoint?: string;
@@ -27,7 +28,7 @@ export type ConfigTypes = PartialGraphqlCodegenOptions & {
   documents: Types.OperationDocumentGlobPath[];
 } & Required<GraphQLLetAdditionalOptions>;
 
-export function buildConfig(raw: UserConfigTypes): ConfigTypes {
+function buildConfig(raw: UserConfigTypes, configDir: string): ConfigTypes {
   if (typeof raw !== 'object')
     printError(new Error('A config file must shape an object'));
 
@@ -70,10 +71,19 @@ You can still have it, but it's redundant and can be problem if the types are ma
         new Error(`config.documents should be an array or a string`),
       ) as never);
 
+  if (documents.some((doc) => doc.indexOf('../') === 0))
+    printError(
+      new Error(
+        `"documents" should not escape the config directory and must have a common ancestor. 
+        Consider using cwd to set the common parent folder and define documents relative from that.`,
+      ),
+    );
+
   return {
     ...raw,
     // Normalized codegen options
     documents,
+    cwd: raw.cwd ? resolve(configDir, raw.cwd) : configDir,
     // Set graphql-let default values
     respectGitIgnore:
       raw.respectGitIgnore !== undefined ? raw.respectGitIgnore : true,
@@ -86,12 +96,15 @@ You can still have it, but it's redundant and can be problem if the types are ma
   };
 }
 
-export const getConfigPath = (cwd: string, configFilePath?: string) =>
+const getConfigPath = (cwd: string, configFilePath?: string) =>
   resolve(cwd, configFilePath || DEFAULT_CONFIG_FILENAME);
 
-const getConfigFromContent = (content: string): [ConfigTypes, string] => {
+const getConfigFromContent = (
+  content: string,
+  configDir: string,
+): [ConfigTypes, string] => {
   content = env(content);
-  return [buildConfig(parseYaml(content)), createHash(content)];
+  return [buildConfig(parseYaml(content), configDir), createHash(content)];
 };
 
 // Refactor with gensync
@@ -101,7 +114,7 @@ export default async function loadConfig(
 ): Promise<[ConfigTypes, string]> {
   const configPath = getConfigPath(cwd, configFilePath);
   const content = await readFile(configPath, 'utf-8');
-  return getConfigFromContent(content);
+  return getConfigFromContent(content, dirname(configPath));
 }
 
 export function loadConfigSync(
@@ -110,5 +123,5 @@ export function loadConfigSync(
 ): [ConfigTypes, string] {
   const configPath = getConfigPath(cwd, configFilePath);
   const content = readFileSync(configPath, 'utf-8');
-  return getConfigFromContent(content);
+  return getConfigFromContent(content, dirname(configPath));
 }

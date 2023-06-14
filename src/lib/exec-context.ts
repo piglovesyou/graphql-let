@@ -85,9 +85,9 @@ const createExecContextGenerator = gensync(function* (
   config: ConfigTypes,
   configHash: string,
 ) {
-  const cacheFullDir = getCacheFullDir(cwd, config.cacheDir);
+  const cacheFullDir = getCacheFullDir(config.cwd, config.cacheDir);
   const execContext = {
-    cwd,
+    cwd: config.cwd, // TODO: Remove and rely on config.cwd; left for now to clarify diff
     config,
     configHash,
     cacheFullDir,
