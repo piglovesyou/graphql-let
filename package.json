@@ -43,7 +43,7 @@
     "loader-utils": "2.0.4",
     "log-update": "4.0.0",
     "make-dir": "3.1.0",
-    "minimist": "1.2.5",
+    "minimist": "^1.2.6",
     "schema-utils": "3.0.0",
     "slash": "3.0.0",
     "string-env-interpolation": "1.0.1",
