@@ -2,6 +2,8 @@ schema: "**/*.graphqls"
 documents:
     - "**/*.graphql"
     - "**/*.tsx"
+schemaPlugins:
+    - typescript-resolvers
 plugins:
     - typescript-operations
     - typescript-react-apollo

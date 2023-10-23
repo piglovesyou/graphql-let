@@ -20,6 +20,11 @@ describe('config.ts', () => {
     expect(actual).toMatchSnapshot();
   });
 
+  test('loads config with default values', async () => {
+    const actual = await loadConfig(cwd, '.graphql-let-schema-plugins.yml');
+    expect(actual).toMatchSnapshot();
+  });
+
   test('interpolates environment variables', () => {
     const [{ schema }] = loadConfigSync(cwd, '.graphql-let-envvar.yml');
     expect(schema).toMatchSnapshot();

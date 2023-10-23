@@ -175,7 +175,7 @@ yarn graphql-let init
 Next, add
 [graphql-codegen plugins](https://graphql-code-generator.com/docs/plugins/index)
 in it. **Please note that you have to generate a TypeScript source** by the
-plugins.
+plugins. schemaPlugins are used for plugins that generates types from the schema and the result ends up into `__types__`.
 
 Edit it like this:
 
@@ -187,6 +187,8 @@ Edit it like this:
   plugins:
 +   - typescript-operations
 +   - typescript-react-apollo
++ schemaPlugins:
++   - typescript-urql-graphcache
 ```
 
 ### 3. Check your `cacheDir`

@@ -5,6 +5,8 @@ documents:
 plugins:
     - typescript-operations
     - typescript-react-apollo
+schemaPlugins:
+    - typescript-urql-graphcache
 respectGitIgnore: true
 config:
     useIndexSignature: true

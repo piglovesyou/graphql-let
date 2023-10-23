@@ -46,10 +46,43 @@ Array [
         },
       },
     ],
+    "schemaPlugins": Array [],
     "silent": false,
     "typeInjectEntrypoint": "node_modules/@types/graphql-let/index.d.ts",
   },
   "6134bbfa2c25f64acb7c526097ecc4e4014c2aa4",
+]
+`;
+
+exports[`config.ts loads config with default values 2`] = `
+Array [
+  Object {
+    "TSConfigFile": "tsconfig.json",
+    "cacheDir": "node_modules/.cache/graphql-let",
+    "documents": Array [
+      "**/*.graphql",
+    ],
+    "generateOptions": Object {},
+    "plugins": Array [
+      "typescript",
+    ],
+    "respectGitIgnore": true,
+    "schema": Array [
+      Object {
+        "https://yeah/graphql": Object {
+          "headers": Object {
+            "Authorization": "blaa",
+          },
+        },
+      },
+    ],
+    "schemaPlugins": Array [
+      "typescript-urql-graphcache",
+    ],
+    "silent": false,
+    "typeInjectEntrypoint": "node_modules/@types/graphql-let/index.d.ts",
+  },
+  "4933856f4c73056601c24f36aceabc5dcb014d12",
 ]
 `;
 
@@ -66,6 +99,7 @@ Object {
   ],
   "respectGitIgnore": false,
   "schema": "**/*.graphql",
+  "schemaPlugins": Array [],
   "silent": false,
   "typeInjectEntrypoint": "typings/yeah.d.ts;",
 }

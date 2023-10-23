@@ -13,29 +13,6 @@ import { printError } from './print';
 import { CodegenContext, getSchemaImportContext, isAllSkip } from './types';
 import ConfiguredOutput = Types.ConfiguredOutput;
 
-const OPTIONAL_SCHEMA_PLUGINS = ['typescript-resolvers'];
-function getOptionalSchemaPlugins() {
-  const plugins: string[] = [];
-  for (const c of OPTIONAL_SCHEMA_PLUGINS) {
-    try {
-      require(`@graphql-codegen/${c}`);
-      plugins.push(c);
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-  }
-  return plugins;
-}
-
-// To avoid unnecessary complexity, graphql-let controls
-// all the presets including plugin options related to it as its spec.
-// I think it works for many of users, but there could be
-// cases where you need to configure this more. Issue it then.
-function getFixedSchemaConfig() {
-  return {
-    plugins: ['typescript', ...getOptionalSchemaPlugins()],
-  };
-}
-
 function createFixedDocumentPresetConfig(
   context: CodegenContext,
   execContext: ExecContext,
@@ -99,7 +76,9 @@ export function buildCodegenConfig(
     let opts: ConfiguredOutput;
     switch (context.type) {
       case 'schema-import':
-        opts = getFixedSchemaConfig();
+        opts = {
+          plugins: ['typescript', ...config.schemaPlugins],
+        };
         break;
 
       case 'document-import':

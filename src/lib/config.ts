@@ -12,6 +12,7 @@ export type PartialGraphqlCodegenOptions = Omit<Types.Config, 'generates'>;
 
 export type GraphQLLetAdditionalOptions = {
   plugins: Array<string | Record<string, any>>;
+  schemaPlugins?: Array<string | Record<string, any>>;
   respectGitIgnore?: boolean;
   cacheDir?: string;
   TSConfigFile?: string;
@@ -72,6 +73,7 @@ You can still have it, but it's redundant and can be problem if the types are ma
 
   return {
     ...raw,
+    schemaPlugins: raw.schemaPlugins ?? [],
     // Normalized codegen options
     documents,
     // Set graphql-let default values
