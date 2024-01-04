@@ -191,5 +191,5 @@
     "build": "yarn clean && yarn compile",
     "prepack": "yarn lint && yarn typecheck && yarn build && yarn test"
   },
-  "packageManager": "yarn@3.0.0"
+  "packageManager": "yarn@4.0.2"
 }
