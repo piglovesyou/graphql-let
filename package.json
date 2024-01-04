@@ -70,7 +70,7 @@
     "@jest/transform": "27.2.0",
     "@jest/types": "27.1.0",
     "@types/babel-plugin-macros": "2.8.5",
-    "@types/babel__core": "7.1.15",
+    "@types/babel__core": "7.20.5",
     "@types/babel__preset-env": "7.9.2",
     "@types/babel__traverse": "7.11.1",
     "@types/caller": "1.0.0",
