@@ -180,7 +180,9 @@ describe('graphql-let/loader', () => {
       );
       await acceptsConfigPathInOptionsConfigFile(
         fixtureDir,
-        require.resolve('./__fixtures/loader/monorepo/config/.graphql-let.yml'),
+        require.resolve(
+          './.__fixtures/loader/monorepo-fullpath/config/.graphql-let.yml',
+        ),
       );
     });
   });

@@ -47,10 +47,11 @@ const processLoaderForSources = memoize(
     sourceFullPath: string,
     sourceContent: string | Buffer,
     addDependency: (path: string) => void,
-    cwd: string,
-    options: GraphQLLetLoaderOptions,
+    loaderCwd: string,
+    { configFile }: GraphQLLetLoaderOptions,
   ): Promise<string | Buffer> => {
-    const [config, configHash] = await loadConfig(cwd, options.configFile);
+    const [config, configHash] = await loadConfig(loaderCwd, configFile);
+    const cwd = config.cwd;
     const { silent } = config;
     const sourceRelPath = relative(cwd, sourceFullPath);
     if (!silent) updateLog(`Processing ${sourceRelPath}...`);
@@ -124,10 +125,11 @@ const processLoaderForDocuments = memoize(
     gqlFullPath: string,
     gqlContent: string | Buffer,
     addDependency: (path: string) => void,
-    cwd: string,
-    options: GraphQLLetLoaderOptions,
+    loaderCwd: string,
+    { configFile }: GraphQLLetLoaderOptions,
   ): Promise<string> => {
-    const [config, configHash] = await loadConfig(cwd, options.configFile);
+    const [config, configHash] = await loadConfig(loaderCwd, configFile);
+    const cwd = config.cwd;
     const { silent } = config;
     const graphqlRelPath = relative(cwd, gqlFullPath);
     if (!silent) updateLog(`Processing ${graphqlRelPath}...`);
