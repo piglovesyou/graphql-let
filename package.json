@@ -29,7 +29,8 @@
     "babel.js"
   ],
   "resolutions": {
-    "@types/react": "17.0.39"
+    "@types/react": "17.0.39",
+    "minimist": "^1.2.8"
   },
   "dependencies": {
     "@babel/core": "7.15.5",
@@ -43,7 +44,7 @@
     "loader-utils": "2.0.4",
     "log-update": "4.0.0",
     "make-dir": "3.1.0",
-    "minimist": "^1.2.6",
+    "minimist": "^1.2.8",
     "schema-utils": "3.0.0",
     "slash": "3.0.0",
     "string-env-interpolation": "1.0.1",
@@ -191,5 +192,8 @@
     "build": "yarn clean && yarn compile",
     "prepack": "yarn lint && yarn typecheck && yarn build && yarn test"
   },
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.0.2",
+  "engines": {
+    "node": ">=18.12.0"
+  }
 }
